@@ -671,10 +671,10 @@
         "pnpm biome check . runs without errors",
         "pnpm test runs vitest successfully"
       ],
-      "status": "in_progress",
+      "status": "done",
       "startedAt": "2026-01-18T20:11:18.138377+00:00",
-      "completedAt": null,
-      "updatedAt": "2026-01-18T20:11:18.138590+00:00"
+      "completedAt": "2026-01-18T20:18:21.540671+00:00",
+      "updatedAt": "2026-01-18T20:18:21.540504+00:00"
     },
     {
       "id": "S02",
@@ -693,7 +693,11 @@
         "shadcn/ui components render with Fuchsia theme",
         "Dark/light mode toggle works",
         "Toast notifications display correctly"
-      ]
+      ],
+      "status": "in_progress",
+      "startedAt": "2026-01-18T20:18:23.644896+00:00",
+      "completedAt": null,
+      "updatedAt": "2026-01-18T20:18:23.645119+00:00"
     },
     {
       "id": "S03",

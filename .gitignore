@@ -45,3 +45,7 @@ convex/_generated
 
 # Keep .env.example for reference
 !.env.example
+
+# Dev browser skill artifacts
+.opencode/skills/dev-browser/profiles/
+.opencode/skills/dev-browser/tmp/
