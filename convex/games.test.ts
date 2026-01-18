@@ -1,7 +1,10 @@
 import { convexTest } from "convex-test";
 import { expect, test } from "vitest";
 import { api } from "./_generated/api";
+import type { TimelineEntry } from "./lib/gameLogic";
 import schema from "./schema";
+
+const modules = import.meta.glob("./**/*.ts");
 
 async function seedTestTracks(t: ReturnType<typeof convexTest>) {
   await t.run(async (ctx) => {
@@ -531,4 +534,573 @@ test("skipTurn handles end of turn order", async () => {
   expect(result.nextTurnPlayerId).toBe(turnOrder[0]);
 });
 
-const modules = import.meta.glob("./**/*.ts");
+async function setupGameForResolve(t: ReturnType<typeof convexTest>) {
+  const { code } = await t.mutation(api.lobbies.create, {
+    sessionId: "host-resolve",
+    displayName: "HostResolve",
+  });
+
+  await t.mutation(api.lobbies.join, {
+    code,
+    sessionId: "player1-resolve",
+    displayName: "Player1",
+  });
+
+  await t.mutation(api.lobbies.join, {
+    code,
+    sessionId: "player2-resolve",
+    displayName: "Player2",
+  });
+
+  const lobby = await t.query(api.lobbies.get, { code });
+
+  await t.mutation(api.games.start, {
+    lobbyId: lobby!._id,
+    sessionId: "host-resolve",
+  });
+
+  const game = await t.query(api.games.getCurrent, { lobbyId: lobby!._id });
+
+  return { code, lobbyId: lobby!._id, gameId: game!._id, game };
+}
+
+test("resolveAndNext rejects when caller is not host", async () => {
+  const t = convexTest(schema, modules);
+
+  await seedMoreTestTracks(t, 10);
+
+  const { lobbyId } = await setupGameForResolve(t);
+
+  await expect(
+    t.mutation(api.games.resolveAndNext, {
+      lobbyId,
+      sessionId: "player1-resolve",
+    }),
+  ).rejects.toThrow("Only the host can resolve the round");
+});
+
+test("resolveAndNext rejects when no active game", async () => {
+  const t = convexTest(schema, modules);
+
+  const { code: code2 } = await t.mutation(api.lobbies.create, {
+    sessionId: "host-resolve-game",
+    displayName: "HostResolveGame",
+  });
+
+  const lobby = await t.query(api.lobbies.get, { code: code2 });
+
+  await expect(
+    t.mutation(api.games.resolveAndNext, {
+      lobbyId: lobby!._id,
+      sessionId: "host-resolve-game",
+    }),
+  ).rejects.toThrow("No active game in this lobby");
+});
+
+test("resolveAndNext rejects when game is not active", async () => {
+  const t = convexTest(schema, modules);
+
+  await seedMoreTestTracks(t, 10);
+
+  const { lobbyId } = await setupGameForResolve(t);
+
+  const game = await t.query(api.games.getCurrent, { lobbyId });
+
+  await t.run(async (ctx) => {
+    await ctx.db.patch(game!._id, { status: "finished" });
+  });
+
+  await expect(
+    t.mutation(api.games.resolveAndNext, {
+      lobbyId,
+      sessionId: "host-resolve",
+    }),
+  ).rejects.toThrow("Game is not active");
+});
+
+test("resolveAndNext rejects when round is not in betting phase", async () => {
+  const t = convexTest(schema, modules);
+
+  await seedMoreTestTracks(t, 10);
+
+  const { lobbyId } = await setupGameForResolve(t);
+
+  await expect(
+    t.mutation(api.games.resolveAndNext, {
+      lobbyId,
+      sessionId: "host-resolve",
+    }),
+  ).rejects.toThrow("Can only resolve round during betting phase");
+});
+
+test("resolveAndNext rejects when placement not submitted", async () => {
+  const t = convexTest(schema, modules);
+
+  await seedMoreTestTracks(t, 10);
+
+  const { lobbyId } = await setupGameForResolve(t);
+
+  const game = await t.query(api.games.getCurrent, { lobbyId });
+
+  await t.run(async (ctx) => {
+    const round = await ctx.db.get(game!.currentRoundId!);
+    await ctx.db.patch(round!._id, { phase: "betting" });
+  });
+
+  await expect(
+    t.mutation(api.games.resolveAndNext, {
+      lobbyId,
+      sessionId: "host-resolve",
+    }),
+  ).rejects.toThrow("Round placement has not been submitted");
+});
+
+test("resolveAndNext adds card to turn player when correct", async () => {
+  const t = convexTest(schema, modules);
+
+  await seedMoreTestTracks(t, 10);
+
+  const { lobbyId } = await setupGameForResolve(t);
+
+  const game = await t.query(api.games.getCurrent, { lobbyId });
+
+  const turnPlayerId = game!.turnPlayerId!;
+
+  await t.run(async (ctx) => {
+    const round = await ctx.db.get(game!.currentRoundId!);
+    await ctx.db.patch(round!._id, {
+      phase: "betting",
+      placement: { proposedIndex: 0, submittedAt: Date.now() },
+    });
+
+    const player = await ctx.db.get(turnPlayerId);
+    const track = await ctx.db.get(round!.trackId!);
+
+    await ctx.db.patch(player!._id, {
+      timeline: [
+        {
+          trackId: track!._id,
+          year: track!.year + 10,
+          earnedAtRoundNumber: 1,
+          earnedBy: "placement",
+        },
+      ],
+      timelineSize: 1,
+    });
+  });
+
+  const result = await t.mutation(api.games.resolveAndNext, {
+    lobbyId,
+    sessionId: "host-resolve",
+  });
+
+  expect(result.gameEnded).toBe(false);
+
+  const updatedPlayer = await t.run(async (ctx) => {
+    return await ctx.db.get(turnPlayerId);
+  });
+
+  expect(updatedPlayer?.timelineSize).toBe(2);
+  expect(updatedPlayer?.timeline).toHaveLength(2);
+});
+
+test("resolveAndNext discards card when turn player wrong", async () => {
+  const t = convexTest(schema, modules);
+
+  await seedMoreTestTracks(t, 10);
+
+  const { lobbyId } = await setupGameForResolve(t);
+
+  const game = await t.query(api.games.getCurrent, { lobbyId });
+
+  const turnPlayerId = game!.turnPlayerId!;
+
+  await t.run(async (ctx) => {
+    const round = await ctx.db.get(game!.currentRoundId!);
+    await ctx.db.patch(round!._id, {
+      phase: "betting",
+      placement: { proposedIndex: 100, submittedAt: Date.now() },
+    });
+  });
+
+  const result = await t.mutation(api.games.resolveAndNext, {
+    lobbyId,
+    sessionId: "host-resolve",
+  });
+
+  expect(result.gameEnded).toBe(false);
+
+  const updatedPlayer = await t.run(async (ctx) => {
+    return await ctx.db.get(turnPlayerId);
+  });
+
+  expect(updatedPlayer?.timelineSize).toBe(0);
+  expect(updatedPlayer?.timeline).toHaveLength(0);
+});
+
+test("resolveAndNext ends game when win condition met", async () => {
+  const t = convexTest(schema, modules);
+
+  await seedMoreTestTracks(t, 20);
+
+  const { code } = await t.mutation(api.lobbies.create, {
+    sessionId: "host-win",
+    displayName: "HostWin",
+  });
+
+  await t.mutation(api.lobbies.join, {
+    code,
+    sessionId: "player1-win",
+    displayName: "Player1",
+  });
+
+  const lobby = await t.query(api.lobbies.get, { code });
+
+  await t.mutation(api.games.start, {
+    lobbyId: lobby!._id,
+    sessionId: "host-win",
+  });
+
+  const game = await t.query(api.games.getCurrent, { lobbyId: lobby!._id });
+  const turnPlayerId = game!.turnPlayerId!;
+
+  await t.run(async (ctx) => {
+    const round = await ctx.db.get(game!.currentRoundId!);
+    await ctx.db.patch(round!._id, {
+      phase: "betting",
+      placement: { proposedIndex: 9, submittedAt: Date.now() },
+    });
+
+    const player = await ctx.db.get(turnPlayerId);
+    if (player) {
+      const tracks = await ctx.db.query("tracks").collect();
+      const timelineEntries: TimelineEntry[] = [];
+      for (let i = 0; i < Math.min(9, tracks.length); i++) {
+        timelineEntries.push({
+          trackId: tracks[i]!._id,
+          year: tracks[i]!.year,
+          earnedAtRoundNumber: 1,
+          earnedBy: "placement" as const,
+        });
+      }
+      await ctx.db.patch(player._id, {
+        timeline: timelineEntries,
+        timelineSize: timelineEntries.length,
+      });
+    }
+  });
+
+  const playerAfterSetup = await t.run(async (ctx) => {
+    return await ctx.db.get(turnPlayerId);
+  });
+
+  expect(playerAfterSetup?.timelineSize).toBeGreaterThanOrEqual(9);
+
+  const result = await t.mutation(api.games.resolveAndNext, {
+    lobbyId: lobby!._id,
+    sessionId: "host-win",
+  });
+
+  expect(result.gameEnded).toBe(true);
+  expect(result.winnerPlayerId).toBe(turnPlayerId);
+
+  const updatedGame = await t.query(api.games.getCurrent, { lobbyId: lobby!._id });
+  expect(updatedGame?.status).toBe("finished");
+  expect(updatedGame?.winnerPlayerId).toBe(turnPlayerId);
+});
+
+test("resolveAndNext creates next round after resolution", async () => {
+  const t = convexTest(schema, modules);
+
+  await seedMoreTestTracks(t, 20);
+
+  const { lobbyId } = await setupGameForResolve(t);
+
+  const game = await t.query(api.games.getCurrent, { lobbyId });
+  const oldRoundId = game!.currentRoundId!;
+  const oldTurnPlayerId = game!.turnPlayerId!;
+
+  const turnOrder = game!.turnOrder!;
+  const currentTurnIndex = turnOrder.indexOf(oldTurnPlayerId);
+  const nextTurnIndex = (currentTurnIndex + 1) % turnOrder.length;
+  const expectedNextTurnPlayerId = turnOrder[nextTurnIndex]!;
+
+  await t.run(async (ctx) => {
+    const round = await ctx.db.get(oldRoundId);
+    await ctx.db.patch(round!._id, {
+      phase: "betting",
+      placement: { proposedIndex: 0, submittedAt: Date.now() },
+    });
+  });
+
+  const result = await t.mutation(api.games.resolveAndNext, {
+    lobbyId,
+    sessionId: "host-resolve",
+  });
+
+  expect(result.gameEnded).toBe(false);
+  expect(result.nextRoundId).toBeDefined();
+  expect(result.nextRoundId).not.toBe(oldRoundId);
+  expect(result.nextTurnPlayerId).toBe(expectedNextTurnPlayerId);
+
+  const updatedGame = await t.query(api.games.getCurrent, { lobbyId });
+  expect(updatedGame?.currentRoundId).toBe(result.nextRoundId);
+  expect(updatedGame?.currentRoundNumber).toBe(2);
+  expect(updatedGame?.turnPlayerId).toBe(expectedNextTurnPlayerId);
+
+  const nextRound = await t.run(async (ctx) => {
+    return await ctx.db.get(result.nextRoundId!);
+  });
+  expect(nextRound?.phase).toBe("placing");
+  expect(nextRound?.roundNumber).toBe(2);
+});
+
+test("resolveAndNext handles betting outcomes correctly", async () => {
+  const t = convexTest(schema, modules);
+
+  await seedMoreTestTracks(t, 10);
+
+  const { lobbyId } = await setupGameForResolve(t);
+
+  const game = await t.query(api.games.getCurrent, { lobbyId });
+
+  const turnPlayerId = game!.turnPlayerId!;
+
+  const nonTurnPlayerId = game!.turnOrder.find((id) => id !== turnPlayerId)!;
+
+  const nonTurnPlayer = await t.run(async (ctx) => {
+    return await ctx.db.get(nonTurnPlayerId);
+  });
+
+  const nonTurnSessionId = nonTurnPlayer?.sessionId ?? "player1-resolve";
+
+  await t.run(async (ctx) => {
+    const round = await ctx.db.get(game!.currentRoundId!);
+    const track = await ctx.db.get(round!.trackId!);
+
+    await ctx.db.patch(round!._id, {
+      phase: "betting",
+      placement: { proposedIndex: 0, submittedAt: Date.now() },
+    });
+
+    const player = await ctx.db.get(turnPlayerId);
+    await ctx.db.patch(player!._id, {
+      timeline: [
+        {
+          trackId: track!._id,
+          year: track!.year + 10,
+          earnedAtRoundNumber: 1,
+          earnedBy: "placement",
+        },
+      ],
+      timelineSize: 1,
+      coins: 3,
+    });
+
+    const otherPlayer = await ctx.db.get(nonTurnPlayerId);
+    await ctx.db.patch(otherPlayer!._id, { coins: 3 });
+  });
+
+  await t.mutation(api.bets.preview, {
+    lobbyId,
+    sessionId: nonTurnSessionId,
+    proposedIndex: 1,
+  });
+
+  await t.mutation(api.bets.lockIn, {
+    lobbyId,
+    sessionId: nonTurnSessionId,
+  });
+
+  const result = await t.mutation(api.games.resolveAndNext, {
+    lobbyId,
+    sessionId: "host-resolve",
+  });
+
+  expect(result.gameEnded).toBe(false);
+
+  const updatedOtherPlayer = await t.run(async (ctx) => {
+    return await ctx.db.get(nonTurnPlayerId);
+  });
+
+  expect(updatedOtherPlayer?.coins).toBe(2);
+});
+
+test("resolveAndNext awards card to bettor when turn player wrong and bettor correct", async () => {
+  const t = convexTest(schema, modules);
+
+  await seedMoreTestTracks(t, 10);
+
+  const { lobbyId } = await setupGameForResolve(t);
+
+  const game = await t.query(api.games.getCurrent, { lobbyId });
+
+  const turnPlayerId = game!.turnPlayerId!;
+
+  const nonTurnPlayerId = game!.turnOrder.find((id) => id !== turnPlayerId)!;
+
+  const nonTurnPlayer = await t.run(async (ctx) => {
+    return await ctx.db.get(nonTurnPlayerId);
+  });
+
+  const nonTurnSessionId = nonTurnPlayer?.sessionId ?? "player1-resolve";
+
+  await t.run(async (ctx) => {
+    const round = await ctx.db.get(game!.currentRoundId!);
+    const track = await ctx.db.get(round!.trackId!);
+
+    await ctx.db.patch(round!._id, {
+      phase: "betting",
+      placement: { proposedIndex: 100, submittedAt: Date.now() },
+    });
+
+    const player = await ctx.db.get(turnPlayerId);
+    await ctx.db.patch(player!._id, {
+      timeline: [
+        {
+          trackId: track!._id,
+          year: track!.year + 10,
+          earnedAtRoundNumber: 1,
+          earnedBy: "placement",
+        },
+      ],
+      timelineSize: 1,
+    });
+  });
+
+  await t.mutation(api.bets.preview, {
+    lobbyId,
+    sessionId: nonTurnSessionId,
+    proposedIndex: 0,
+  });
+
+  await t.mutation(api.bets.lockIn, {
+    lobbyId,
+    sessionId: nonTurnSessionId,
+  });
+
+  const result = await t.mutation(api.games.resolveAndNext, {
+    lobbyId,
+    sessionId: "host-resolve",
+  });
+
+  expect(result.gameEnded).toBe(false);
+
+  const updatedOtherPlayer = await t.run(async (ctx) => {
+    return await ctx.db.get(nonTurnPlayerId);
+  });
+
+  expect(updatedOtherPlayer?.timelineSize).toBe(1);
+  expect(updatedOtherPlayer?.timeline).toHaveLength(1);
+  expect(updatedOtherPlayer?.coins).toBe(2);
+});
+
+test("resolveAndNext sets round phase to resolved", async () => {
+  const t = convexTest(schema, modules);
+
+  await seedMoreTestTracks(t, 10);
+
+  const { lobbyId } = await setupGameForResolve(t);
+
+  const game = await t.query(api.games.getCurrent, { lobbyId });
+
+  await t.run(async (ctx) => {
+    const round = await ctx.db.get(game!.currentRoundId!);
+    await ctx.db.patch(round!._id, {
+      phase: "betting",
+      placement: { proposedIndex: 0, submittedAt: Date.now() },
+    });
+  });
+
+  await t.mutation(api.games.resolveAndNext, {
+    lobbyId,
+    sessionId: "host-resolve",
+  });
+
+  const updatedRound = await t.run(async (ctx) => {
+    return await ctx.db.get(game!.currentRoundId!);
+  });
+
+  expect(updatedRound?.phase).toBe("resolved");
+  expect(updatedRound?.resolution).toBeDefined();
+  expect(updatedRound?.resolution?.resolvedAt).toBeDefined();
+});
+
+test("resolveAndNext handles empty betting phase", async () => {
+  const t = convexTest(schema, modules);
+
+  await seedMoreTestTracks(t, 10);
+
+  const { lobbyId } = await setupGameForResolve(t);
+
+  const game = await t.query(api.games.getCurrent, { lobbyId });
+
+  await t.run(async (ctx) => {
+    const round = await ctx.db.get(game!.currentRoundId!);
+    await ctx.db.patch(round!._id, {
+      phase: "betting",
+      placement: { proposedIndex: 0, submittedAt: Date.now() },
+    });
+  });
+
+  const result = await t.mutation(api.games.resolveAndNext, {
+    lobbyId,
+    sessionId: "host-resolve",
+  });
+
+  expect(result.gameEnded).toBe(false);
+  expect(result.nextRoundId).toBeDefined();
+});
+
+test("resolveAndNext handles no tracks available", async () => {
+  const t = convexTest(schema, modules);
+
+  await t.run(async (ctx) => {
+    await ctx.db.insert("tracks", {
+      title: "Only Track",
+      artist: "Test Artist",
+      year: 1980,
+      externalIds: { youtubeVideoId: "abc123" },
+      links: {},
+      createdAt: Date.now(),
+      source: "test",
+    });
+  });
+
+  const { code } = await t.mutation(api.lobbies.create, {
+    sessionId: "host-notracks",
+    displayName: "HostNoTracks",
+  });
+
+  await t.mutation(api.lobbies.join, {
+    code,
+    sessionId: "player1-notracks",
+    displayName: "Player1",
+  });
+
+  const lobby = await t.query(api.lobbies.get, { code });
+
+  await t.mutation(api.games.start, {
+    lobbyId: lobby!._id,
+    sessionId: "host-notracks",
+  });
+
+  const game = await t.query(api.games.getCurrent, { lobbyId: lobby!._id });
+
+  await t.run(async (ctx) => {
+    const round = await ctx.db.get(game!.currentRoundId!);
+    await ctx.db.patch(round!._id, {
+      phase: "betting",
+      placement: { proposedIndex: 0, submittedAt: Date.now() },
+    });
+  });
+
+  const result = await t.mutation(api.games.resolveAndNext, {
+    lobbyId: lobby!._id,
+    sessionId: "host-notracks",
+  });
+
+  expect(result.gameEnded).toBe(true);
+  expect(result.winnerPlayerId).toBeNull();
+  expect(result.noTracksAvailable).toBe(true);
+});

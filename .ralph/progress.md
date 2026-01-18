@@ -77,3 +77,56 @@ Run summary: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-174
   - Use for loop instead of Promise.all for sequential DB reads to avoid Convex rate limits
   - Early returns for empty cases (no game, no round, no bets) improve performance
 ---
+## [2026-01-18 20:03:00] - S20: Placement Validation Logic
+Thread: 
+Run: 20260118-200149-19116 (iteration 1)
+Run log: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-200149-19116-iter-1.log
+Run summary: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-200149-19116-iter-1.md
+- Guardrails reviewed: yes
+- No-commit run: false
+- Commit: f8f02f7 feat: implement placement validation logic (S20)
+- Post-commit status: clean
+- Verification:
+  - Command: pnpm test convex/lib/gameLogic.test.ts -> PASS (23/23 tests)
+  - Command: pnpm biome check . -> PASS
+- Files changed:
+  - convex/lib/gameLogic.ts (new file with computeValidIndexRange and isPlacementCorrect)
+  - convex/lib/gameLogic.test.ts (new file with 23 comprehensive tests)
+- What was implemented:
+  - computeValidIndexRange: Computes valid placement index range (min, max) given timeline and new song year
+  - Handles same-year songs: any order among them is valid
+  - isPlacementCorrect: Validates if proposed index falls within valid range
+  - Edge cases: empty timeline, single item, multiple same-year groups, boundary conditions
+- **Learnings for future iterations:**
+  - Same-year songs require special handling - any position among existing same-year songs is valid
+  - Empty timeline returns {min: 0, max: 0} - only index 0 is valid for first placement
+  - Single item timeline: if same year, range is [0, 1] (can place before or after)
+  - Algorithm finds first index >= year and last index <= year for boundaries
+---
+
+## [2026-01-18 20:01:00] - S22: Skip Turn Mutation
+Thread: 
+Run: 20260118-195345-4266 (iteration 1)
+Run log: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-195345-4266-iter-1.log
+Run summary: 
+- Guardrails reviewed: yes
+- No-commit run: false
+- Commit: ee4b582 feat: implement games.skipTurn mutation for host to skip disconnected player (S22)
+- Post-commit status: clean
+- Verification:
+  - Command: pnpm test -- --testNamePattern="skipTurn" convex/games.test.ts -> PASS
+  - Command: pnpm biome check convex/games.ts convex/games.test.ts -> PASS
+- Files changed:
+  - convex/games.ts
+  - convex/games.test.ts
+- What was implemented
+  - Added skipTurn mutation to convex/games.ts that allows host to skip disconnected player's turn
+  - Validates caller is host, game is active
+  - Advances turn to next player in turnOrder
+  - Creates new round with new track using selectTrackForRound
+  - Added comprehensive tests for skipTurn mutation
+- **Learnings for future iterations:**
+  - Patterns discovered: Same pattern as resolveAndNext for advancing turns and creating new rounds
+  - Gotchas encountered: Git checkout reverted changes multiple times; had to re-implement
+  - Useful context: seedMoreTestTracks helper needed for tests with multiple rounds
+---
