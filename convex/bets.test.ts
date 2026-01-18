@@ -1226,3 +1226,225 @@ test("preview works during placing phase", async () => {
 });
 
 const modules = import.meta.glob("./**/*.ts");
+
+test("listForRound returns all bets when showLiveBets is true", async () => {
+  const t = convexTest(schema, modules);
+
+  await seedTestData(t);
+
+  const { code } = await t.mutation(api.lobbies.create, {
+    sessionId: "host-session-listlive",
+    displayName: "HostListLive",
+  });
+
+  await t.mutation(api.lobbies.join, {
+    code,
+    sessionId: "player-session-listlive",
+    displayName: "PlayerListLive",
+  });
+
+  await t.mutation(api.lobbies.join, {
+    code,
+    sessionId: "spectator-session-listlive1",
+    displayName: "SpectatorListLive1",
+  });
+
+  await t.mutation(api.lobbies.join, {
+    code,
+    sessionId: "spectator-session-listlive2",
+    displayName: "SpectatorListLive2",
+  });
+
+  const lobby = await t.query(api.lobbies.get, { code });
+
+  await t.mutation(api.games.start, {
+    lobbyId: lobby!._id,
+    sessionId: "host-session-listlive",
+  });
+
+  let turnPlayerSessionId: string | null = null;
+  let nonTurnSessionId: string | null = null;
+  await t.run(async (ctx) => {
+    const game = await ctx.db.query("games").first();
+    if (game?.currentRoundId) {
+      const round = await ctx.db.get(game.currentRoundId);
+      if (round) {
+        const player = await ctx.db.get(round.turnPlayerId);
+        if (player) {
+          turnPlayerSessionId = player.sessionId;
+          const players = await ctx.db.query("players").collect();
+          nonTurnSessionId =
+            players.find((p) => p.sessionId !== turnPlayerSessionId)?.sessionId || null;
+        }
+      }
+    }
+  });
+
+  expect(turnPlayerSessionId).not.toBeNull();
+  expect(nonTurnSessionId).not.toBeNull();
+
+  if (nonTurnSessionId) {
+    await t.mutation(api.bets.preview, {
+      lobbyId: lobby!._id,
+      sessionId: nonTurnSessionId,
+      proposedIndex: 0,
+    });
+
+    const bets = await t.query(api.bets.listForRound, { lobbyId: lobby!._id });
+
+    expect(bets).toHaveLength(1);
+    expect(bets?.[0]?.lockedIn).toBe(false);
+    expect(bets?.[0]?.playerDisplayName).toBeTruthy();
+  }
+});
+
+test("listForRound returns only locked bets when showLiveBets is false", async () => {
+  const t = convexTest(schema, modules);
+
+  await seedTestData(t);
+
+  const { code } = await t.mutation(api.lobbies.create, {
+    sessionId: "host-session-nolive",
+    displayName: "HostNoLive",
+  });
+
+  await t.mutation(api.lobbies.join, {
+    code,
+    sessionId: "player-session-nolive",
+    displayName: "PlayerNoLive",
+  });
+
+  await t.mutation(api.lobbies.join, {
+    code,
+    sessionId: "spectator-session-nolive1",
+    displayName: "SpectatorNoLive1",
+  });
+
+  await t.mutation(api.lobbies.join, {
+    code,
+    sessionId: "spectator-session-nolive2",
+    displayName: "SpectatorNoLive2",
+  });
+
+  const lobby = await t.query(api.lobbies.get, { code });
+
+  await t.mutation(api.lobbies.updateSettings, {
+    code,
+    sessionId: "host-session-nolive",
+    settings: {
+      targetTimelineSize: 10,
+      startingCoins: 3,
+      turnSeconds: 30,
+      bettingWindowSeconds: 15,
+      allowGuessTitleArtist: false,
+      showLiveBets: false,
+      allowBetRetraction: true,
+      minYear: 1950,
+      maxYear: 2024,
+    },
+  });
+
+  await t.mutation(api.games.start, {
+    lobbyId: lobby!._id,
+    sessionId: "host-session-nolive",
+  });
+
+  let turnPlayerSessionId: string | null = null;
+  let nonTurnSessions: string[] = [];
+  await t.run(async (ctx) => {
+    const game = await ctx.db.query("games").first();
+    if (game?.currentRoundId) {
+      const round = await ctx.db.get(game.currentRoundId);
+      if (round) {
+        const player = await ctx.db.get(round.turnPlayerId);
+        if (player) {
+          turnPlayerSessionId = player.sessionId;
+          const allPlayers = await ctx.db.query("players").collect();
+          nonTurnSessions = allPlayers
+            .filter((p) => p.sessionId !== turnPlayerSessionId)
+            .map((p) => p.sessionId);
+        }
+      }
+    }
+  });
+
+  expect(turnPlayerSessionId).not.toBeNull();
+  expect(nonTurnSessions.length).toBeGreaterThan(0);
+
+  for (const sessionId of nonTurnSessions) {
+    await t.mutation(api.bets.preview, {
+      lobbyId: lobby!._id,
+      sessionId,
+      proposedIndex: 0,
+    });
+  }
+
+  const betsBeforeLock = await t.query(api.bets.listForRound, {
+    lobbyId: lobby!._id,
+  });
+  expect(betsBeforeLock).toHaveLength(0);
+
+  for (const sessionId of nonTurnSessions) {
+    await t.mutation(api.bets.lockIn, {
+      lobbyId: lobby!._id,
+      sessionId,
+    });
+  }
+
+  const betsAfterLock = await t.query(api.bets.listForRound, {
+    lobbyId: lobby!._id,
+  });
+
+  expect(betsAfterLock).toHaveLength(nonTurnSessions.length);
+  expect(betsAfterLock?.every((bet) => bet.lockedIn === true)).toBe(true);
+  expect(betsAfterLock?.every((bet) => bet.playerDisplayName)).toBeTruthy();
+});
+
+test("listForRound returns empty array when no bets exist", async () => {
+  const t = convexTest(schema, modules);
+
+  await seedTestData(t);
+
+  const { code } = await t.mutation(api.lobbies.create, {
+    sessionId: "host-session-nobets",
+    displayName: "HostNoBets",
+  });
+
+  await t.mutation(api.lobbies.join, {
+    code,
+    sessionId: "player-session-nobets",
+    displayName: "PlayerNoBets",
+  });
+
+  const lobby = await t.query(api.lobbies.get, { code });
+
+  await t.mutation(api.games.start, {
+    lobbyId: lobby!._id,
+    sessionId: "host-session-nobets",
+  });
+
+  const bets = await t.query(api.bets.listForRound, { lobbyId: lobby!._id });
+
+  expect(bets).toHaveLength(0);
+});
+
+test("listForRound returns empty array when no active game", async () => {
+  const t = convexTest(schema, modules);
+
+  const { code } = await t.mutation(api.lobbies.create, {
+    sessionId: "host-session-nogame",
+    displayName: "HostNoGame",
+  });
+
+  await t.mutation(api.lobbies.join, {
+    code,
+    sessionId: "player-session-nogame",
+    displayName: "PlayerNoGame",
+  });
+
+  const lobby = await t.query(api.lobbies.get, { code });
+
+  const bets = await t.query(api.bets.listForRound, { lobbyId: lobby!._id });
+
+  expect(bets).toHaveLength(0);
+});

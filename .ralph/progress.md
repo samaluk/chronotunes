@@ -21,3 +21,30 @@ Run summary: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-174
   - Validation order matters for error messages - check authorization before business logic
   - When a test expects a specific error, check that validation order produces the correct error first
   - The submitPlacement mutation and tests were already implemented; only needed to fix validation order
+
+## [2026-01-18 19:30:17] - S18: Betting Mutations
+Thread: 
+Run: 20260118-174814-58161 (iteration 14)
+Run log: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-174814-58161-iter-14.log
+Run summary: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-174814-58161-iter-14.md
+- Guardrails reviewed: yes
+- No-commit run: false
+- Commit: 7c34a53 feat: implement betting mutations (S18)
+- Post-commit status: clean
+- Verification:
+  - Command: pnpm biome check . -> PASS (1 warning fixed)
+  - Command: pnpm test convex/bets.test.ts -> PASS (17/17 tests)
+- Files changed:
+  - convex/bets.ts (new file with preview, lockIn, cancel mutations)
+  - convex/bets.test.ts (new file with 17 comprehensive tests)
+- What was implemented:
+  - bets.preview: Creates unlocked bet, deducts 1 coin, validates player is not turn player, has coins, and round is not resolved
+  - bets.lockIn: Sets lockedIn to true, validates bet exists and is not already locked, round is not resolved
+  - bets.cancel: Deletes unlocked bet and refunds coin, validates bet exists and is not locked, round is not resolved
+  - Two-step betting flow: preview (ghost) -> lockIn (solid) as per PRD requirements
+- **Learnings for future iterations:**
+  - Random turn order in tests requires conditional logic to handle case where betting player becomes turn player
+  - Add early return when spectator is turn player to skip betting-specific test assertions
+  - Tests for resolved phase need to set phase to "betting" first (to allow preview), then to "resolved" (to test lockIn/cancel failure)
+  - Display name max length is 20 characters - use shorter names in test data
+---

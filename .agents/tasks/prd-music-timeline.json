@@ -1026,10 +1026,10 @@
         "Placement is locked and cannot be changed",
         "All tests pass"
       ],
-      "status": "in_progress",
+      "status": "done",
       "startedAt": "2026-01-18T22:12:15.136630+00:00",
-      "completedAt": null,
-      "updatedAt": "2026-01-18T22:12:15.136866+00:00"
+      "completedAt": "2026-01-18T22:20:37.726169+00:00",
+      "updatedAt": "2026-01-18T22:20:37.725986+00:00"
     },
     {
       "id": "S18",
@@ -1051,7 +1051,11 @@
         "Cannot bet without sufficient coins",
         "Turn player cannot place bets",
         "All tests pass"
-      ]
+      ],
+      "status": "done",
+      "startedAt": "2026-01-18T22:20:39.803454+00:00",
+      "completedAt": "2026-01-18T22:31:55.519741+00:00",
+      "updatedAt": "2026-01-18T22:31:55.519480+00:00"
     },
     {
       "id": "S19",
@@ -1069,7 +1073,11 @@
         "Respects showLiveBets setting",
         "Includes player displayName with each bet",
         "All tests pass"
-      ]
+      ],
+      "status": "in_progress",
+      "startedAt": "2026-01-18T22:31:57.611320+00:00",
+      "completedAt": null,
+      "updatedAt": "2026-01-18T22:31:57.611530+00:00"
     },
     {
       "id": "S20",

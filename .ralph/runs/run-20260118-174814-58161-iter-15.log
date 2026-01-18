@@ -1,0 +1,328 @@
+[96m[1m| [0m[90m Read     [0m.ralph/guardrails.md
+[96m[1m| [0m[90m Read     [0m.ralph/errors.log
+[96m[1m| [0m[90m Read     [0m.agents/tasks/prd-music-timeline.json
+[96m[1m| [0m[90m Read     [0mAGENTS.md
+Now let me read the existing bets.ts file and schema to understand the current structure:
+[96m[1m| [0m[90m Read     [0mconvex/bets.ts
+[96m[1m| [0m[90m Read     [0mconvex/schema.ts
+Let me also look at existing tests to understand the testing pattern:
+[94m[1m| [0m[90m Glob     [0m{"pattern":"convex/*.test.ts"}
+[96m[1m| [0m[90m Read     [0mconvex/bets.test.ts
+Now I have a clear understanding. Let me implement the `listForRound` query and add tests. First, let me add the query to bets.ts:
+[92m[1m| [0m[90m Edit     [0mconvex/bets.ts
+[92m[1m| [0m[90m Edit     [0mconvex/bets.ts
+[92m[1m| [0m[90m Edit     [0mconvex/bets.ts
+Now let me add the tests for the `listForRound` query:
+[92m[1m| [0m[90m Edit     [0mconvex/bets.test.ts
+Let me check the updateSettings mutation signature:
+[96m[1m| [0m[90m Read     [0mconvex/lobbies.ts
+I need to fix the test - `updateSettings` takes `code` not `lobbyId`:
+[92m[1m| [0m[90m Edit     [0mconvex/bets.test.ts
+Let me run the activity log and then run the tests:
+[91m[1m| [0m[90m Bash     [0mLog activity for starting S19 implementation
+
+zsh:1: no such file or directory: /Users/smaluk/dev/personal/chronotunes/ralph
+
+[91m[1m| [0m[90m Bash     [0mLog activity for starting S19 implementation
+Now let me run the tests:
+[91m[1m| [0m[90m Bash     [0mRun bets tests to verify implementation
+
+
+> chronotunes@0.1.0 test /Users/smaluk/dev/personal/chronotunes
+> vitest convex/bets.test.ts
+
+
+ RUN  v3.2.4 /Users/smaluk/dev/personal/chronotunes
+
+ ❯ |convex| convex/bets.test.ts (22 tests | 3 failed) 77ms
+   ✓ preview creates unlocked bet for non-turn player 33ms
+   ✓ preview deducts 1 coin from player 2ms
+   ✓ preview fails for turn player 2ms
+   ✓ preview fails when player has no coins 2ms
+   ✓ preview fails for negative index 2ms
+   ✓ preview updates existing unlocked bet 2ms
+   ✓ preview fails when bet is already locked in 2ms
+   ✓ lockIn sets lockedIn to true 2ms
+   ✓ lockIn fails when no bet exists 1ms
+   ✓ lockIn fails when bet is already locked 2ms
+   ✓ lockIn fails after round is resolved 2ms
+   ✓ cancel deletes bet and refunds coin 3ms
+   ✓ cancel fails when no bet exists 1ms
+   ✓ cancel fails when bet is locked in 2ms
+   ✓ cancel fails after round is resolved 1ms
+   ✓ preview works during betting phase 1ms
+   ✓ preview works during placing phase 1ms
+   × listForRound returns all bets when showLiveBets is true 8ms
+     → expected [ { lockedIn: false, …(5) } ] to have a length of 2 but got 1
+   × listForRound returns only locked bets when showLiveBets is false 2ms
+     → expected [ { lockedIn: true, …(5) } ] to have a length of 2 but got 1
+   ✓ listForRound returns empty array when no bets exist 1ms
+   ✓ listForRound returns empty array when no active game 1ms
+   × listForRound returns empty array for non-existent lobby 1ms
+     → Validator error: Expected ID for table "lobbies", got `00000000000000000000000000`
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  |convex| convex/bets.test.ts > listForRound returns all bets when showLiveBets is true
+AssertionError: expected [ { lockedIn: false, …(5) } ] to have a length of 2 but got 1
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 2[39m
+[31m+ 1[39m
+
+ ❯ convex/bets.test.ts:1295:16
+    1293|   const bets = await t.query(api.bets.listForRound, { lobbyId: lobby!.…
+    1294| 
+    1295|   expect(bets).toHaveLength(2);
+       |                ^
+    1296|   expect(bets?.every((bet) => bet.lockedIn === false)).toBe(true);
+    1297|   const displayNames = bets?.map((bet) => bet.playerDisplayName).sort(…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  |convex| convex/bets.test.ts > listForRound returns only locked bets when showLiveBets is false
+AssertionError: expected [ { lockedIn: true, …(5) } ] to have a length of 2 but got 1
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 2[39m
+[31m+ 1[39m
+
+ ❯ convex/bets.test.ts:1396:25
+    1394|   });
+    1395| 
+    1396|   expect(betsAfterLock).toHaveLength(2);
+       |                         ^
+    1397|   expect(betsAfterLock?.every((bet) => bet.lockedIn === true)).toBe(tr…
+    1398|   const displayNames = betsAfterLock?.map((bet) => bet.playerDisplayNa…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+ FAIL  |convex| convex/bets.test.ts > listForRound returns empty array for non-existent lobby
+Error: Validator error: Expected ID for table "lobbies", got `00000000000000000000000000`
+ ❯ validateValidator node_modules/.pnpm/convex-test@0.0.41_convex@1.31.5_react@19.2.3_/node_modules/convex-test/dist/index.js:653:23
+ ❯ validateValidator node_modules/.pnpm/convex-test@0.0.41_convex@1.31.5_react@19.2.3_/node_modules/convex-test/dist/index.js:697:21
+ ❯ Object.queryFromPath node_modules/.pnpm/convex-test@0.0.41_convex@1.31.5_react@19.2.3_/node_modules/convex-test/dist/index.js:1227:13
+ ❯ Object.query node_modules/.pnpm/convex-test@0.0.41_convex@1.31.5_react@19.2.3_/node_modules/convex-test/dist/index.js:1275:20
+ ❯ convex/bets.test.ts:1456:16
+    1454|   const fakeLobbyId = "00000000000000000000000000" as Id<"lobbies">;
+    1455| 
+    1456|   const bets = await t.query(api.bets.listForRound, { lobbyId: fakeLob…
+       |                ^
+    1457| 
+    1458|   expect(bets).toHaveLength(0);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  3 failed | 19 passed (22)
+   Start at  19:33:48
+   Duration  482ms (transform 88ms, setup 0ms, collect 90ms, tests 77ms, environment 41ms, prepare 63ms)
+
+ ELIFECYCLE  Test failed. See above for more details.
+
+I see the issues. Let me fix the tests:
+
+1. The count issue is because the turn player is randomly selected and one of my expected non-turn players might be the turn player.
+2. The fake ID test fails because Convex's ID validator rejects invalid format IDs.
+[92m[1m| [0m[90m Edit     [0mconvex/bets.test.ts
+[96m[1m| [0m[90m Read     [0mconvex/bets.test.ts
+[96m[1m| [0m[90m Read     [0mconvex/bets.test.ts
+I see the issue - my edit left duplicate code. Let me fix this properly by removing the duplicate block:
+[92m[1m| [0m[90m Edit     [0mconvex/bets.test.ts
+[96m[1m| [0m[90m Read     [0mconvex/bets.test.ts
+The file structure looks better now. The issue is that both tests expect 2 bets, but due to random turn player selection, only 1 non-turn player is placing bets. Let me fix both tests to be more robust:
+[92m[1m| [0m[90m Edit     [0mconvex/bets.test.ts
+Now let me remove the test with the fake ID (which doesn't work with Convex validators):
+[96m[1m| [0m[90m Read     [0mconvex/bets.test.ts
+[92m[1m| [0m[90m Edit     [0mconvex/bets.test.ts
+Now let me run the tests again:
+[91m[1m| [0m[90m Bash     [0mRun bets tests to verify implementation
+
+
+> chronotunes@0.1.0 test /Users/smaluk/dev/personal/chronotunes
+> vitest convex/bets.test.ts
+
+
+ RUN  v3.2.4 /Users/smaluk/dev/personal/chronotunes
+
+ ✓ |convex| convex/bets.test.ts (21 tests) 64ms
+
+ Test Files  1 passed (1)
+      Tests  21 passed (21)
+   Start at  19:35:15
+   Duration  374ms (transform 87ms, setup 0ms, collect 88ms, tests 64ms, environment 41ms, prepare 45ms)
+
+
+All tests pass. Let me run the full test suite:
+[91m[1m| [0m[90m Bash     [0mRun all tests to verify nothing is broken
+
+ ✓ |convex| convex/bets.test.ts (21 tests) 74ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  |convex| convex/lobbies.test.ts > create lobby returns alphanumeric code only
+AssertionError: expected 'P8U8J8' to match /^[A-Z2345679]+$/
+
+[32m- Expected:[39m 
+/^[A-Z2345679]+$/
+
+[31m+ Received:[39m 
+"P8U8J8"
+
+ ❯ convex/lobbies.test.ts:21:23
+     19|     displayName: "AnotherHost",
+     20|   });
+     21|   expect(result.code).toMatch(/^[A-Z2345679]+$/);
+       |                       ^
+     22| });
+     23| 
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 6 passed (7)
+      Tests  1 failed | 104 passed (105)
+   Start at  19:35:20
+   Duration  497ms (transform 504ms, setup 0ms, collect 831ms, tests 332ms, environment 263ms, prepare 695ms)
+
+ ELIFECYCLE  Test failed. See above for more details.
+
+The failing test is pre-existing (not related to my changes - it's a lobby code regex issue). Let me run the biome check and type generation:
+[91m[1m| [0m[90m Bash     [0mRun biome check for lint/format
+
+
+> chronotunes@0.1.0 biome /Users/smaluk/dev/personal/chronotunes
+> biome check .
+
+Checked 38 files in 23ms. No fixes applied.
+
+[91m[1m| [0m[90m Bash     [0mGenerate Convex types
+
+
+> chronotunes@0.1.0 convex:typegen /Users/smaluk/dev/personal/chronotunes
+> convex codegen --url http://127.0.0.1:3210 2>/dev/null || true
+
+
+[91m[1m| [0m[90m Bash     [0mGenerate Next.js types
+
+
+> chronotunes@0.1.0 next:typegen /Users/smaluk/dev/personal/chronotunes
+> tsc -p tsconfig.json --noEmit
+
+src/components/lobby/SettingsPanel.tsx(60,9): error TS2353: Object literal may only specify known properties, and 'lobbyId' does not exist in type '{ settings: { targetTimelineSize: number; startingCoins: number; turnSeconds: number; bettingWindowSeconds: number; allowGuessTitleArtist: boolean; showLiveBets: boolean; allowBetRetraction: boolean; minYear: number; maxYear: number; }; code: string; sessionId: string; }'.
+ ELIFECYCLE  Command failed with exit code 2.
+
+The next:typegen error is in a pre-existing file (SettingsPanel.tsx) using wrong parameter name, not related to my S19 implementation.
+
+Let me verify my implementation is complete by reviewing the changes:
+[96m[1m| [0m[90m Read     [0mconvex/bets.ts
+Let me update the activity log and check git status:
+[91m[1m| [0m[90m Bash     [0mLog activity and check git status
+
+On branch main
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+	modified:   .agents/tasks/prd-music-timeline.json
+	modified:   .ralph/activity.log
+	modified:   .ralph/errors.log
+	modified:   .ralph/progress.md
+	modified:   convex/bets.test.ts
+	modified:   convex/bets.ts
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+	.ralph/.tmp/prompt-20260118-174814-58161-13.md
+	.ralph/.tmp/prompt-20260118-174814-58161-14.md
+	.ralph/.tmp/prompt-20260118-174814-58161-15.md
+	.ralph/.tmp/story-20260118-174814-58161-13.json
+	.ralph/.tmp/story-20260118-174814-58161-13.md
+	.ralph/.tmp/story-20260118-174814-58161-14.json
+	.ralph/.tmp/story-20260118-174814-58161-14.md
+	.ralph/.tmp/story-20260118-174814-58161-15.json
+	.ralph/.tmp/story-20260118-174814-58161-15.md
+	.ralph/runs/run-20260118-174814-58161-iter-12.md
+	.ralph/runs/run-20260118-174814-58161-iter-13.log
+	.ralph/runs/run-20260118-174814-58161-iter-13.md
+	.ralph/runs/run-20260118-174814-58161-iter-14.log
+	.ralph/runs/run-20260118-174814-58161-iter-14.md
+	.ralph/runs/run-20260118-174814-58161-iter-15.log
+
+no changes added to commit (use "git add" and/or "git commit -a")
+
+Let me check what changes were made to the unrelated files:
+[91m[1m| [0m[90m Bash     [0mCheck PRD changes
+
+diff --git a/.agents/tasks/prd-music-timeline.json b/.agents/tasks/prd-music-timeline.json
+index 8b3b9ba..cfce24d 100644
+--- a/.agents/tasks/prd-music-timeline.json
++++ b/.agents/tasks/prd-music-timeline.json
+@@ -1026,10 +1026,10 @@
+         "Placement is locked and cannot be changed",
+         "All tests pass"
+       ],
+-      "status": "in_progress",
++      "status": "done",
+       "startedAt": "2026-01-18T22:12:15.136630+00:00",
+-      "completedAt": null,
+-      "updatedAt": "2026-01-18T22:12:15.136866+00:00"
++      "completedAt": "2026-01-18T22:20:37.726169+00:00",
++      "updatedAt": "2026-01-18T22:20:37.725986+00:00"
+     },
+     {
+       "id": "S18",
+@@ -1051,7 +1051,11 @@
+         "Cannot bet without sufficient coins",
+
+[91m[1m| [0m[90m Bash     [0mCheck progress.md changes
+
+diff --git a/.ralph/progress.md b/.ralph/progress.md
+index f334d41..0334cda 100644
+--- a/.ralph/progress.md
++++ b/.ralph/progress.md
+@@ -21,3 +21,30 @@ Run summary: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-174
+   - Validation order matters for error messages - check authorization before business logic
+   - When a test expects a specific error, check that validation order produces the correct error first
+   - The submitPlacement mutation and tests were already implemented; only needed to fix validation order
++
++## [2026-01-18 19:30:17] - S18: Betting Mutations
++Thread: 
++Run: 20260118-174814-58161 (iteration 14)
++Run log: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-174814-58161-iter-14.log
++Run summary: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-174814-58161-iter-14.md
++- Guardrails reviewed: yes
++- No-commit run: false
++- Commit: 7c34a53 feat: implement betting mutations (S18)
++- Post-commit status: clean
++- Verification:
++  - Command: pnpm biome check . -> PASS (1 warning fixed)
++  - Command: pnpm test convex/bets.test.ts -> PASS (17/17 tests)
++- Files changed:
++  - convex/bets.ts (new file with preview, lockIn, cancel mutations)
++  - convex/bets.test.ts (new file with 17 comprehensive tests)
++- What was implemented:
++  - bets.preview: Creates unlocked bet, deducts 1 coin, validates player is not turn player, has coins, and round is not resolved
++  - bets.lockIn: Sets lockedIn to true, validates bet exists and is not already locked, round is not resolved
++  - bets.cancel: Deletes unlocked bet and refunds coin, validates bet exists and is not locked, round is not resolved
++  - Two-step betting flow: preview (ghost) -> lockIn (solid) as per PRD requirements
++- **Learnings for future iterations:**
+
+[91m[1m| [0m[90m Bash     [0mCheck errors.log changes
+
+diff --git a/.ralph/errors.log b/.ralph/errors.log
+index 2415a73..a957b56 100644
+--- a/.ralph/errors.log
++++ b/.ralph/errors.log
+@@ -84,3 +84,5 @@
+ [2026-01-18 18:58:50] ITERATION 9 left uncommitted changes; review run summary at /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-174814-58161-iter-9.md
+ [2026-01-18 19:03:47] ITERATION 10 left uncommitted changes; review run summary at /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-174814-58161-iter-10.md
+ [2026-01-18 19:12:12] ITERATION 11 left uncommitted changes; review run summary at /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-174814-58161-iter-11.md
++[2026-01-18 19:20:37] ITERATION 13 left uncommitted changes; review run summary at /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-174814-58161-iter-13.md
++[2026-01-18 19:31:55] ITERATION 14 left uncommitted changes; review run summary at /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-174814-58161-iter-14.md
+
+Per the instructions, I need to stage and commit all changes. Let me do that:

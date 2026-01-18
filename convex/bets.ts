@@ -1,5 +1,6 @@
 import { ConvexError, v } from "convex/values";
-import { mutation } from "./_generated/server";
+import type { Id } from "./_generated/dataModel";
+import { mutation, query } from "./_generated/server";
 
 export const preview = mutation({
   args: { lobbyId: v.id("lobbies"), sessionId: v.string(), proposedIndex: v.number() },
@@ -225,5 +226,75 @@ export const cancel = mutation({
     await ctx.db.patch(player._id, {
       coins: player.coins + 1,
     });
+  },
+});
+
+type BetWithPlayer = {
+  playerId: Id<"players">;
+  playerDisplayName: string;
+  proposedIndex: number;
+  placedAt: number;
+  lockedIn: boolean;
+  status: "pending" | "won" | "lost";
+};
+
+export const listForRound = query({
+  args: { lobbyId: v.id("lobbies") },
+  handler: async (ctx, args): Promise<BetWithPlayer[]> => {
+    const { lobbyId } = args;
+
+    const lobby = await ctx.db.get(lobbyId);
+
+    if (!lobby) {
+      throw new ConvexError("Lobby not found");
+    }
+
+    if (!lobby.activeGameId) {
+      return [];
+    }
+
+    const game = await ctx.db.get(lobby.activeGameId);
+
+    if (!game || !game.currentRoundId) {
+      return [];
+    }
+
+    const round = await ctx.db.get(game.currentRoundId);
+
+    if (!round) {
+      return [];
+    }
+
+    const bets = await ctx.db
+      .query("roundBets")
+      .withIndex("by_round", (q) => q.eq("roundId", round._id))
+      .collect();
+
+    if (bets.length === 0) {
+      return [];
+    }
+
+    const showLiveBets = lobby.settings.showLiveBets;
+
+    const filteredBets = showLiveBets ? bets : bets.filter((bet) => bet.lockedIn);
+
+    const betsWithPlayers: BetWithPlayer[] = [];
+
+    for (const bet of filteredBets) {
+      const player = await ctx.db.get(bet.playerId);
+
+      if (player) {
+        betsWithPlayers.push({
+          playerId: bet.playerId,
+          playerDisplayName: player.displayName,
+          proposedIndex: bet.proposedIndex,
+          placedAt: bet.placedAt,
+          lockedIn: bet.lockedIn,
+          status: bet.status,
+        });
+      }
+    }
+
+    return betsWithPlayers;
   },
 });
