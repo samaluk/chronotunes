@@ -472,4 +472,62 @@ test("leave lobby works when non-host leaves", async () => {
   expect(host?.sessionId).toBe("host-session-nonhost");
 });
 
+test("get lobby returns lobby by code", async () => {
+  const t = convexTest(schema, modules);
+
+  const { code } = await t.mutation(api.lobbies.create, {
+    sessionId: "get-session-host",
+    displayName: "GetHost",
+  });
+
+  const lobby = await t.query(api.lobbies.get, { code });
+
+  expect(lobby).not.toBeNull();
+  expect(lobby?.code).toBe(code);
+  expect(lobby?.status).toBe("lobby");
+  expect(lobby?.hostSessionId).toBe("get-session-host");
+});
+
+test("get lobby returns null for invalid code", async () => {
+  const t = convexTest(schema, modules);
+
+  const lobby = await t.query(api.lobbies.get, { code: "INVALID" });
+
+  expect(lobby).toBeNull();
+});
+
+test("get lobby is case insensitive for code", async () => {
+  const t = convexTest(schema, modules);
+
+  const { code } = await t.mutation(api.lobbies.create, {
+    sessionId: "get-case-session-host",
+    displayName: "GetCaseHost",
+  });
+
+  const lowerLobby = await t.query(api.lobbies.get, { code: code.toLowerCase() });
+  const upperLobby = await t.query(api.lobbies.get, { code: code.toUpperCase() });
+
+  expect(lowerLobby).not.toBeNull();
+  expect(upperLobby).not.toBeNull();
+  expect(lowerLobby?._id).toBe(upperLobby?._id);
+});
+
+test("get lobby returns lobby with settings", async () => {
+  const t = convexTest(schema, modules);
+
+  const { code } = await t.mutation(api.lobbies.create, {
+    sessionId: "get-settings-host",
+    displayName: "GetSettingsHost",
+  });
+
+  const lobby = await t.query(api.lobbies.get, { code });
+
+  expect(lobby).not.toBeNull();
+  expect(lobby?.settings).toBeDefined();
+  expect(lobby?.settings.targetTimelineSize).toBe(10);
+  expect(lobby?.settings.startingCoins).toBe(3);
+  expect(lobby?.settings.turnSeconds).toBe(30);
+  expect(lobby?.settings.bettingWindowSeconds).toBe(15);
+});
+
 const modules = import.meta.glob("./**/*.ts");

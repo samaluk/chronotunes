@@ -1,5 +1,5 @@
 import { ConvexError, v } from "convex/values";
-import { mutation } from "./_generated/server";
+import { mutation, query } from "./_generated/server";
 
 const LOBBY_CODE_CHARS = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
 const LOBBY_CODE_LENGTH = 6;
@@ -177,5 +177,19 @@ export const leave = mutation({
         await ctx.db.patch(lobby._id, { hostSessionId: newHost.sessionId });
       }
     }
+  },
+});
+
+export const get = query({
+  args: { code: v.string() },
+  handler: async (ctx, args) => {
+    const { code } = args;
+
+    const lobby = await ctx.db
+      .query("lobbies")
+      .filter((q) => q.eq(q.field("code"), code.toUpperCase()))
+      .first();
+
+    return lobby;
   },
 });
