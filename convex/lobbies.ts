@@ -64,7 +64,6 @@ export const create = mutation({
       hostSessionId: sessionId,
       status: "lobby",
       settings: DEFAULT_SETTINGS,
-      activeGameId: undefined,
     });
 
     await ctx.db.insert("players", {
@@ -79,5 +78,57 @@ export const create = mutation({
     });
 
     return { code: code! };
+  },
+});
+
+export const join = mutation({
+  args: {
+    code: v.string(),
+    sessionId: v.string(),
+    displayName: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const { code, sessionId, displayName } = args;
+
+    if (displayName.length < 1 || displayName.length > 20) {
+      throw new ConvexError("Display name must be between 1 and 20 characters");
+    }
+
+    const lobby = await ctx.db
+      .query("lobbies")
+      .filter((q) => q.eq(q.field("code"), code.toUpperCase()))
+      .first();
+
+    if (!lobby) {
+      throw new ConvexError("Lobby not found");
+    }
+
+    if (lobby.status !== "lobby") {
+      throw new ConvexError("Cannot join lobby that is not in lobby status");
+    }
+
+    const existingPlayer = await ctx.db
+      .query("players")
+      .filter((q) =>
+        q.and(q.eq(q.field("lobbyId"), lobby._id), q.eq(q.field("sessionId"), sessionId)),
+      )
+      .first();
+
+    if (existingPlayer) {
+      throw new ConvexError("You are already in this lobby");
+    }
+
+    await ctx.db.insert("players", {
+      lobbyId: lobby._id,
+      sessionId,
+      displayName,
+      isHost: false,
+      coins: lobby.settings.startingCoins,
+      timeline: [],
+      timelineSize: 0,
+      createdAt: Date.now(),
+    });
+
+    return { lobbyId: lobby._id };
   },
 });

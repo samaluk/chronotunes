@@ -101,4 +101,195 @@ test("create lobby generates unique codes", async () => {
   expect(codes.size).toBe(10);
 });
 
+test("join lobby adds player to existing lobby", async () => {
+  const t = convexTest(schema, modules);
+
+  const { code } = await t.mutation(api.lobbies.create, {
+    sessionId: "host-session",
+    displayName: "HostPlayer",
+  });
+
+  await t.mutation(api.lobbies.join, {
+    code,
+    sessionId: "player-session",
+    displayName: "NewPlayer",
+  });
+
+  const players = await t.run(async (ctx) => {
+    const allPlayers = await ctx.db.query("players").collect();
+    return allPlayers;
+  });
+
+  expect(players).toHaveLength(2);
+  const newPlayer = players.find((p) => p.sessionId === "player-session");
+  expect(newPlayer).not.toBeUndefined();
+  expect(newPlayer?.displayName).toBe("NewPlayer");
+  expect(newPlayer?.isHost).toBe(false);
+  expect(newPlayer?.coins).toBe(3);
+});
+
+test("join lobby returns lobby id", async () => {
+  const t = convexTest(schema, modules);
+
+  const { code } = await t.mutation(api.lobbies.create, {
+    sessionId: "host-session-return",
+    displayName: "HostReturn",
+  });
+
+  const result = await t.mutation(api.lobbies.join, {
+    code,
+    sessionId: "player-session-return",
+    displayName: "PlayerReturn",
+  });
+
+  expect(result.lobbyId).toBeDefined();
+});
+
+test("join lobby rejects invalid code", async () => {
+  const t = convexTest(schema, modules);
+
+  await expect(
+    t.mutation(api.lobbies.join, {
+      code: "INVALID",
+      sessionId: "player-session",
+      displayName: "Player",
+    }),
+  ).rejects.toThrow("Lobby not found");
+});
+
+test("join lobby rejects empty display name", async () => {
+  const t = convexTest(schema, modules);
+
+  const { code } = await t.mutation(api.lobbies.create, {
+    sessionId: "host-session-empty",
+    displayName: "HostEmpty",
+  });
+
+  await expect(
+    t.mutation(api.lobbies.join, {
+      code,
+      sessionId: "player-session-empty",
+      displayName: "",
+    }),
+  ).rejects.toThrow();
+});
+
+test("join lobby rejects display name too long", async () => {
+  const t = convexTest(schema, modules);
+
+  const { code } = await t.mutation(api.lobbies.create, {
+    sessionId: "host-session-long",
+    displayName: "HostLong",
+  });
+
+  await expect(
+    t.mutation(api.lobbies.join, {
+      code,
+      sessionId: "player-session-long",
+      displayName: "ThisDisplayNameIsWayTooLongToBeValid",
+    }),
+  ).rejects.toThrow();
+});
+
+test("join lobby rejects when session already in lobby", async () => {
+  const t = convexTest(schema, modules);
+
+  const { code } = await t.mutation(api.lobbies.create, {
+    sessionId: "host-session-dup",
+    displayName: "HostDup",
+  });
+
+  await t.mutation(api.lobbies.join, {
+    code,
+    sessionId: "player-session-dup",
+    displayName: "AlreadyJoined",
+  });
+
+  await expect(
+    t.mutation(api.lobbies.join, {
+      code,
+      sessionId: "player-session-dup",
+      displayName: "Again",
+    }),
+  ).rejects.toThrow("You are already in this lobby");
+});
+
+test("join lobby rejects when lobby status is in_game", async () => {
+  const t = convexTest(schema, modules);
+
+  const { code } = await t.mutation(api.lobbies.create, {
+    sessionId: "host-session-game",
+    displayName: "HostGame",
+  });
+
+  await t.run(async (ctx) => {
+    const lobby = await ctx.db.query("lobbies").first();
+    if (lobby) {
+      await ctx.db.patch(lobby._id, { status: "in_game" });
+    }
+  });
+
+  await expect(
+    t.mutation(api.lobbies.join, {
+      code,
+      sessionId: "player-session-game",
+      displayName: "PlayerGame",
+    }),
+  ).rejects.toThrow("Cannot join lobby that is not in lobby status");
+});
+
+test("join lobby is case insensitive for code", async () => {
+  const t = convexTest(schema, modules);
+
+  const { code } = await t.mutation(api.lobbies.create, {
+    sessionId: "host-session-case",
+    displayName: "HostCase",
+  });
+
+  const lowerCode = code.toLowerCase();
+
+  await t.mutation(api.lobbies.join, {
+    code: lowerCode,
+    sessionId: "player-session-case",
+    displayName: "PlayerCase",
+  });
+
+  const players = await t.run(async (ctx) => {
+    const allPlayers = await ctx.db.query("players").collect();
+    return allPlayers;
+  });
+
+  expect(players).toHaveLength(2);
+});
+
+test("join lobby uses lobby's starting coins setting", async () => {
+  const t = convexTest(schema, modules);
+
+  const { code } = await t.mutation(api.lobbies.create, {
+    sessionId: "host-session-coins",
+    displayName: "HostCoins",
+  });
+
+  await t.run(async (ctx) => {
+    const lobby = await ctx.db.query("lobbies").first();
+    if (lobby) {
+      await ctx.db.patch(lobby._id, { settings: { ...lobby.settings, startingCoins: 5 } });
+    }
+  });
+
+  await t.mutation(api.lobbies.join, {
+    code,
+    sessionId: "player-session-coins",
+    displayName: "PlayerCoins",
+  });
+
+  const players = await t.run(async (ctx) => {
+    const allPlayers = await ctx.db.query("players").collect();
+    return allPlayers;
+  });
+
+  const newPlayer = players.find((p) => p.sessionId === "player-session-coins");
+  expect(newPlayer?.coins).toBe(5);
+});
+
 const modules = import.meta.glob("./**/*.ts");
