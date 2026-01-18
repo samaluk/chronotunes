@@ -92,3 +92,35 @@ Run summary: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-171
   - sonner Toaster should be inside ThemeProvider to inherit theme context
   - dev-browser profiles/ and tmp/ should be gitignored to avoid committing test artifacts
 ---
+
+## [2026-01-18 17:29] - S03: Database Schema
+Thread: 
+Run: 20260118-171118-33460 (iteration 3)
+Run log: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-171118-33460-iter-3.log
+Run summary: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-171118-33460-iter-3.md
+- Guardrails reviewed: yes
+- No-commit run: false
+- Commit: eab76ad feat(schema): add Convex database schema with all tables and indexes
+- Post-commit status: clean (run log file tracked separately)
+- Verification:
+  - Command: pnpm convex:typegen -> PASS
+  - Command: pnpm biome check . -> PASS (17 files checked)
+  - Command: pnpm test -> PASS (2 tests)
+- Files changed:
+  - convex/schema.ts (new - complete database schema)
+- What was implemented:
+  - Created convex/schema.ts with complete Convex database schema
+  - lobbies table with code, hostSessionId, status, settings, activeGameId (indexed by_code)
+  - players table with lobbyId, sessionId, displayName, isHost, coins, timeline (indexed by_lobby, by_lobby_and_session)
+  - games table with lobbyId, status, currentRoundNumber, turnPlayerId, turnOrder, winnerPlayerId (indexed by_lobby)
+  - rounds table with gameId, roundNumber, turnPlayerId, trackId, phase, placement, resolution (indexed by_game)
+  - roundBets table with roundId, playerId, proposedIndex, lockedIn, status (indexed by_round, by_round_and_player)
+  - tracks table with mbid, title, artist, year, externalIds, links (indexed by_year, by_year_and_creation)
+  - All embedded objects defined: lobbySettings, timelineEntry, placement, placementPreview, guess, resolution, externalIds, trackLinks
+  - All enum types defined: lobbyStatus, gameStatus, roundPhase, betStatus
+- **Learnings for future iterations:**
+  - Convex schema uses v.literal() for enum values in v.union()
+  - Embedded objects should be defined as const validators before use in tables
+  - Use v.optional() for nullable fields like hostTransferDeadline
+  - Indexes are chained with .index() method on defineTable()
+---
