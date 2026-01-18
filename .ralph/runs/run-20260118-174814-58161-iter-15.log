@@ -375,3 +375,41 @@ M  convex/bets.ts
  M .ralph/runs/run-20260118-174814-58161-iter-15.log
 cbc31e7 feat: implement bets.listForRound query (S19)
 
+[91m[1m| [0m[90m Bash     [0mAdd remaining file and verify clean state
+
+M  .ralph/runs/run-20260118-174814-58161-iter-15.log
+
+[91m[1m| [0m[90m Bash     [0mCommit remaining file
+
+[main 93b49f8] chore: add run log
+ 1 file changed, 49 insertions(+)
+ M .ralph/runs/run-20260118-174814-58161-iter-15.log
+
+[91m[1m| [0m[90m Bash     [0mCheck staged changes in log file
+[91m[1m| [0m[90m Bash     [0mCheck full git status
+
+On branch main
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+	modified:   .ralph/runs/run-20260118-174814-58161-iter-15.log
+
+no changes added to commit (use "git add" and/or "git commit -a")
+
+The log file was modified after commit (expected system behavior). Let me now update the progress log:
+[96m[1m| [0m[90m Read     [0m.ralph/progress.md
+[91m[1m| [0m[90m Bash     [0mCheck exact end of progress.md
+
+  - Random turn order in tests requires conditional logic to handle case where betting player becomes turn player
+  - Add early return when spectator is turn player to skip betting-specific test assertions
+  - Tests for resolved phase need to set phase to "betting" first (to allow preview), then to "resolved" (to test lockIn/cancel failure)
+  - Display name max length is 20 characters - use shorter names in test data
+---
+
+[92m[1m| [0m[90m Edit     [0m.ralph/progress.md
+[91m[1m| [0m[90m Bash     [0mCommit progress update
+
+[main 66604c9] docs: add S19 progress entry
+ 1 file changed, 29 insertions(+)
+ M .ralph/runs/run-20260118-174814-58161-iter-15.log
+
