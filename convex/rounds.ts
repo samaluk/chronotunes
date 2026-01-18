@@ -1,6 +1,6 @@
-import { v } from "convex/values";
+import { ConvexError, v } from "convex/values";
 import type { Id } from "./_generated/dataModel";
-import { query } from "./_generated/server";
+import { mutation, query } from "./_generated/server";
 
 export const getCurrent = query({
   args: { lobbyId: v.id("lobbies"), sessionId: v.string() },
@@ -69,5 +69,68 @@ export const getCurrent = query({
       track: trackInfo,
       isHost,
     };
+  },
+});
+
+export const setPlacementPreview = mutation({
+  args: { lobbyId: v.id("lobbies"), sessionId: v.string(), proposedIndex: v.number() },
+  handler: async (ctx, args) => {
+    const { lobbyId, sessionId, proposedIndex } = args;
+
+    const lobby = await ctx.db.get(lobbyId);
+
+    if (!lobby) {
+      throw new ConvexError("Lobby not found");
+    }
+
+    if (!lobby.activeGameId) {
+      throw new ConvexError("No active game in this lobby");
+    }
+
+    const game = await ctx.db.get(lobby.activeGameId);
+
+    if (!game) {
+      throw new ConvexError("Game not found");
+    }
+
+    if (!game.currentRoundId) {
+      throw new ConvexError("No current round in this game");
+    }
+
+    const round = await ctx.db.get(game.currentRoundId);
+
+    if (!round) {
+      throw new ConvexError("Round not found");
+    }
+
+    if (round.phase !== "placing") {
+      throw new ConvexError("Can only preview placement during placing phase");
+    }
+
+    const player = await ctx.db
+      .query("players")
+      .filter((q) =>
+        q.and(q.eq(q.field("lobbyId"), lobbyId), q.eq(q.field("sessionId"), sessionId)),
+      )
+      .first();
+
+    if (!player) {
+      throw new ConvexError("Player not found in this lobby");
+    }
+
+    if (round.turnPlayerId !== player._id) {
+      throw new ConvexError("Only the turn player can preview placement");
+    }
+
+    if (proposedIndex < 0) {
+      throw new ConvexError("Proposed index cannot be negative");
+    }
+
+    await ctx.db.patch(round._id, {
+      placementPreview: {
+        proposedIndex,
+        updatedAt: Date.now(),
+      },
+    });
   },
 });
