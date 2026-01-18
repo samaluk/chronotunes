@@ -694,10 +694,10 @@
         "Dark/light mode toggle works",
         "Toast notifications display correctly"
       ],
-      "status": "in_progress",
+      "status": "done",
       "startedAt": "2026-01-18T20:18:23.644896+00:00",
-      "completedAt": null,
-      "updatedAt": "2026-01-18T20:18:23.645119+00:00"
+      "completedAt": "2026-01-18T20:27:25.310950+00:00",
+      "updatedAt": "2026-01-18T20:27:25.310729+00:00"
     },
     {
       "id": "S03",
@@ -716,7 +716,11 @@
         "just convex dev deploys schema without errors",
         "All indexes are created correctly",
         "Schema types are generated and available"
-      ]
+      ],
+      "status": "in_progress",
+      "startedAt": "2026-01-18T20:27:27.389596+00:00",
+      "completedAt": null,
+      "updatedAt": "2026-01-18T20:27:27.389808+00:00"
     },
     {
       "id": "S04",
