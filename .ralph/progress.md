@@ -130,3 +130,36 @@ Run summary:
   - Gotchas encountered: Git checkout reverted changes multiple times; had to re-implement
   - Useful context: seedMoreTestTracks helper needed for tests with multiple rounds
 ---
+
+## [2026-01-18 20:22:00] - S21: Round Resolution Mutation
+Thread: 
+Run: 20260118-200149-19116 (iteration 2)
+Run log: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-200149-19116-iter-2.log
+Run summary: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-200149-19116-iter-2.md
+- Guardrails reviewed: yes
+- No-commit run: false
+- Commit: 830b8a5 S21: Implement games.resolveAndNext mutation for round resolution
+- Post-commit status: clean
+- Verification:
+  - Command: pnpm biome check . -> PASS
+  - Command: pnpm test convex/games.test.ts -> PASS (28/28 tests)
+- Files changed:
+  - convex/games.ts (added resolveAndNext mutation ~180 lines)
+  - convex/games.test.ts (added 13 comprehensive tests for resolveAndNext)
+- What was implemented:
+  - Added resolveAndNext mutation that resolves current round and advances game
+  - Computes valid index range using computeValidIndexRange from gameLogic
+  - Determines if turn player placement was correct
+  - Handles betting outcomes:
+    - Turn player correct: adds card to turn player timeline, bettors lose bet coins
+    - Turn player wrong + bettor correct: bettor wins card, keeps coin
+    - Turn player wrong + bettor wrong: bettor loses coin
+  - Checks win condition (timelineSize >= targetTimelineSize)
+  - Creates next round with new track or ends game if no tracks available
+- **Learnings for future iterations:**
+  - Bet preview already deducts coins; resolution should NOT deduct additional coins
+  - Valid index range depends on track year relative to existing timeline entries
+  - Turn order randomization means tests need to dynamically find non-turn players
+  - Debug output is crucial for understanding complex state transitions
+  - Test setup order matters: seed tracks BEFORE game creation to ensure availability
+---
