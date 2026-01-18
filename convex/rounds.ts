@@ -134,3 +134,71 @@ export const setPlacementPreview = mutation({
     });
   },
 });
+
+export const submitPlacement = mutation({
+  args: { lobbyId: v.id("lobbies"), sessionId: v.string() },
+  handler: async (ctx, args) => {
+    const { lobbyId, sessionId } = args;
+
+    const lobby = await ctx.db.get(lobbyId);
+
+    if (!lobby) {
+      throw new ConvexError("Lobby not found");
+    }
+
+    if (!lobby.activeGameId) {
+      throw new ConvexError("No active game in this lobby");
+    }
+
+    const game = await ctx.db.get(lobby.activeGameId);
+
+    if (!game) {
+      throw new ConvexError("Game not found");
+    }
+
+    if (!game.currentRoundId) {
+      throw new ConvexError("No current round in this game");
+    }
+
+    const round = await ctx.db.get(game.currentRoundId);
+
+    if (!round) {
+      throw new ConvexError("Round not found");
+    }
+
+    if (round.placement) {
+      throw new ConvexError("Placement has already been submitted");
+    }
+
+    const player = await ctx.db
+      .query("players")
+      .filter((q) =>
+        q.and(q.eq(q.field("lobbyId"), lobbyId), q.eq(q.field("sessionId"), sessionId)),
+      )
+      .first();
+
+    if (!player) {
+      throw new ConvexError("Player not found in this lobby");
+    }
+
+    if (round.turnPlayerId !== player._id) {
+      throw new ConvexError("Only the turn player can submit placement");
+    }
+
+    if (round.phase !== "placing") {
+      throw new ConvexError("Can only submit placement during placing phase");
+    }
+
+    if (!round.placementPreview) {
+      throw new ConvexError("Please preview your placement first");
+    }
+
+    await ctx.db.patch(round._id, {
+      placement: {
+        proposedIndex: round.placementPreview.proposedIndex,
+        submittedAt: Date.now(),
+      },
+      phase: "betting",
+    });
+  },
+});

@@ -982,10 +982,10 @@
         "Returns null if no active game",
         "All tests pass"
       ],
-      "status": "in_progress",
+      "status": "done",
       "startedAt": "2026-01-18T21:58:52.977750+00:00",
-      "completedAt": null,
-      "updatedAt": "2026-01-18T21:58:52.977926+00:00"
+      "completedAt": "2026-01-18T22:03:47.844193+00:00",
+      "updatedAt": "2026-01-18T22:03:47.843780+00:00"
     },
     {
       "id": "S16",
@@ -1003,7 +1003,11 @@
         "Error if not turn player",
         "Error if wrong phase",
         "All tests pass"
-      ]
+      ],
+      "status": "done",
+      "startedAt": "2026-01-18T22:03:49.928164+00:00",
+      "completedAt": "2026-01-18T22:12:13.046151+00:00",
+      "updatedAt": "2026-01-18T22:12:13.045676+00:00"
     },
     {
       "id": "S17",
@@ -1021,7 +1025,11 @@
         "Round phase changes to 'betting'",
         "Placement is locked and cannot be changed",
         "All tests pass"
-      ]
+      ],
+      "status": "in_progress",
+      "startedAt": "2026-01-18T22:12:15.136630+00:00",
+      "completedAt": null,
+      "updatedAt": "2026-01-18T22:12:15.136866+00:00"
     },
     {
       "id": "S18",

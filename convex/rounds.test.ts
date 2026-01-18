@@ -478,4 +478,296 @@ test("setPlacementPreview updates existing preview", async () => {
   expect(updatedRound?.placementPreview?.proposedIndex).toBe(2);
 });
 
+test("submitPlacement allows turn player to finalize placement", async () => {
+  const t = convexTest(schema, modules);
+
+  await seedTestData(t);
+
+  const { code } = await t.mutation(api.lobbies.create, {
+    sessionId: "host-session-submit",
+    displayName: "HostSubmit",
+  });
+
+  await t.mutation(api.lobbies.join, {
+    code,
+    sessionId: "player-session-submit",
+    displayName: "PlayerSubmit",
+  });
+
+  const lobby = await t.query(api.lobbies.get, { code });
+
+  await t.mutation(api.games.start, {
+    lobbyId: lobby!._id,
+    sessionId: "host-session-submit",
+  });
+
+  let turnPlayerSessionId: string | null = null;
+  await t.run(async (ctx) => {
+    const game = await ctx.db.query("games").first();
+    if (game?.currentRoundId) {
+      const round = await ctx.db.get(game.currentRoundId);
+      if (round) {
+        const player = await ctx.db.get(round.turnPlayerId);
+        if (player) {
+          turnPlayerSessionId = player.sessionId;
+        }
+      }
+    }
+  });
+
+  expect(turnPlayerSessionId).not.toBeNull();
+
+  await t.mutation(api.rounds.setPlacementPreview, {
+    lobbyId: lobby!._id,
+    sessionId: turnPlayerSessionId!,
+    proposedIndex: 1,
+  });
+
+  const result = await t.mutation(api.rounds.submitPlacement, {
+    lobbyId: lobby!._id,
+    sessionId: turnPlayerSessionId!,
+  });
+
+  expect(result).toBeNull();
+
+  const round = await t.query(api.rounds.getCurrent, {
+    lobbyId: lobby!._id,
+    sessionId: "host-session-submit",
+  });
+
+  expect(round?.placement).not.toBeNull();
+  expect(round?.placement?.proposedIndex).toBe(1);
+  expect(round?.placement?.submittedAt).toBeDefined();
+  expect(round?.phase).toBe("betting");
+});
+
+test("submitPlacement fails for non-turn player", async () => {
+  const t = convexTest(schema, modules);
+
+  await seedTestData(t);
+
+  const { code } = await t.mutation(api.lobbies.create, {
+    sessionId: "host-session-notturn",
+    displayName: "HostNotTurn",
+  });
+
+  await t.mutation(api.lobbies.join, {
+    code,
+    sessionId: "player-session-notturn",
+    displayName: "PlayerNotTurn",
+  });
+
+  const lobby = await t.query(api.lobbies.get, { code });
+
+  await t.mutation(api.games.start, {
+    lobbyId: lobby!._id,
+    sessionId: "host-session-notturn",
+  });
+
+  let roundId: Id<"rounds"> | null = null;
+  let turnPlayerId: Id<"players"> | null = null;
+
+  await t.run(async (ctx) => {
+    const game = await ctx.db.query("games").first();
+    if (game?.currentRoundId) {
+      roundId = game.currentRoundId;
+      const round = await ctx.db.get(game.currentRoundId);
+      if (round) {
+        turnPlayerId = round.turnPlayerId;
+      }
+    }
+  });
+
+  expect(roundId).not.toBeNull();
+  expect(turnPlayerId).not.toBeNull();
+
+  let playerId: Id<"players"> | null = null;
+  await t.run(async (ctx) => {
+    const player = await ctx.db
+      .query("players")
+      .filter((q) => q.eq(q.field("sessionId"), "player-session-notturn"))
+      .first();
+    if (player) {
+      playerId = player._id;
+    }
+  });
+
+  expect(playerId).not.toBeNull();
+
+  if (playerId !== turnPlayerId) {
+    await expect(
+      t.mutation(api.rounds.submitPlacement, {
+        lobbyId: lobby!._id,
+        sessionId: "player-session-notturn",
+      }),
+    ).rejects.toThrow("Only the turn player can submit placement");
+  } else {
+    const result = await t.mutation(api.rounds.submitPlacement, {
+      lobbyId: lobby!._id,
+      sessionId: "player-session-notturn",
+    });
+    expect(result).toBeNull();
+  }
+});
+
+test("submitPlacement fails when not in placing phase", async () => {
+  const t = convexTest(schema, modules);
+
+  await seedTestData(t);
+
+  const { code } = await t.mutation(api.lobbies.create, {
+    sessionId: "host-session-wrong-phase",
+    displayName: "HostWrongPhase",
+  });
+
+  await t.mutation(api.lobbies.join, {
+    code,
+    sessionId: "player-session-wrong-phase",
+    displayName: "PlayerWrongPhase",
+  });
+
+  const lobby = await t.query(api.lobbies.get, { code });
+
+  await t.mutation(api.games.start, {
+    lobbyId: lobby!._id,
+    sessionId: "host-session-wrong-phase",
+  });
+
+  const game = await t.query(api.games.getCurrent, { lobbyId: lobby!._id });
+
+  await t.run(async (ctx) => {
+    if (game?.currentRoundId) {
+      await ctx.db.patch(game.currentRoundId, { phase: "betting" });
+    }
+  });
+
+  let turnPlayerSessionId: string | null = null;
+  await t.run(async (ctx) => {
+    const game = await ctx.db.query("games").first();
+    if (game?.currentRoundId) {
+      const round = await ctx.db.get(game.currentRoundId);
+      if (round) {
+        const player = await ctx.db.get(round.turnPlayerId);
+        if (player) {
+          turnPlayerSessionId = player.sessionId;
+        }
+      }
+    }
+  });
+
+  expect(turnPlayerSessionId).not.toBeNull();
+
+  await expect(
+    t.mutation(api.rounds.submitPlacement, {
+      lobbyId: lobby!._id,
+      sessionId: turnPlayerSessionId!,
+    }),
+  ).rejects.toThrow("Can only submit placement during placing phase");
+});
+
+test("submitPlacement fails when already submitted", async () => {
+  const t = convexTest(schema, modules);
+
+  await seedTestData(t);
+
+  const { code } = await t.mutation(api.lobbies.create, {
+    sessionId: "host-session-already",
+    displayName: "HostAlready",
+  });
+
+  await t.mutation(api.lobbies.join, {
+    code,
+    sessionId: "player-session-already",
+    displayName: "PlayerAlready",
+  });
+
+  const lobby = await t.query(api.lobbies.get, { code });
+
+  await t.mutation(api.games.start, {
+    lobbyId: lobby!._id,
+    sessionId: "host-session-already",
+  });
+
+  let turnPlayerSessionId: string | null = null;
+  await t.run(async (ctx) => {
+    const game = await ctx.db.query("games").first();
+    if (game?.currentRoundId) {
+      const round = await ctx.db.get(game.currentRoundId);
+      if (round) {
+        const player = await ctx.db.get(round.turnPlayerId);
+        if (player) {
+          turnPlayerSessionId = player.sessionId;
+        }
+      }
+    }
+  });
+
+  expect(turnPlayerSessionId).not.toBeNull();
+
+  await t.mutation(api.rounds.setPlacementPreview, {
+    lobbyId: lobby!._id,
+    sessionId: turnPlayerSessionId!,
+    proposedIndex: 0,
+  });
+
+  await t.mutation(api.rounds.submitPlacement, {
+    lobbyId: lobby!._id,
+    sessionId: turnPlayerSessionId!,
+  });
+
+  await expect(
+    t.mutation(api.rounds.submitPlacement, {
+      lobbyId: lobby!._id,
+      sessionId: turnPlayerSessionId!,
+    }),
+  ).rejects.toThrow("Placement has already been submitted");
+});
+
+test("submitPlacement fails without preview", async () => {
+  const t = convexTest(schema, modules);
+
+  await seedTestData(t);
+
+  const { code } = await t.mutation(api.lobbies.create, {
+    sessionId: "host-session-nopreview",
+    displayName: "HostNoPreview",
+  });
+
+  await t.mutation(api.lobbies.join, {
+    code,
+    sessionId: "player-session-nopreview",
+    displayName: "PlayerNoPreview",
+  });
+
+  const lobby = await t.query(api.lobbies.get, { code });
+
+  await t.mutation(api.games.start, {
+    lobbyId: lobby!._id,
+    sessionId: "host-session-nopreview",
+  });
+
+  let turnPlayerSessionId: string | null = null;
+  await t.run(async (ctx) => {
+    const game = await ctx.db.query("games").first();
+    if (game?.currentRoundId) {
+      const round = await ctx.db.get(game.currentRoundId);
+      if (round) {
+        const player = await ctx.db.get(round.turnPlayerId);
+        if (player) {
+          turnPlayerSessionId = player.sessionId;
+        }
+      }
+    }
+  });
+
+  expect(turnPlayerSessionId).not.toBeNull();
+
+  await expect(
+    t.mutation(api.rounds.submitPlacement, {
+      lobbyId: lobby!._id,
+      sessionId: turnPlayerSessionId!,
+    }),
+  ).rejects.toThrow("Please preview your placement first");
+});
+
 const modules = import.meta.glob("./**/*.ts");

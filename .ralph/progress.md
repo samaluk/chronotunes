@@ -101,4 +101,63 @@ Run summary: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-174
   - convex-test requires modules to include _generated and all source files
   - Test helper functions should use explicit null checks for TypeScript strict mode
   - Pure logic functions in convex/lib/ can be tested independently with t.run()
+  ---
+## [2026-01-18 19:02] - S15: Current Round Query
+Thread: 
+Run: 20260118-174814-58161 (iteration 10)
+Run log: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-174814-58161-iter-10.log
+Run summary: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-174814-58161-iter-10.md
+- Guardrails reviewed: yes
+- No-commit run: false
+- Commit: 1d69e41 feat(convex): implement rounds.getCurrent query for game state
+- Post-commit status: clean
+- Verification:
+  - Command: pnpm biome check . -> PASS
+  - Command: pnpm test convex/rounds.test.ts -> PASS (5 tests)
+- Files changed:
+  - convex/rounds.ts (new file - getCurrent query implementation)
+  - convex/rounds.test.ts (new file - 5 tests)
+- What was implemented:
+  - Created rounds.getCurrent query that returns current round for active game
+  - Query accepts lobbyId and sessionId to determine game and host status
+  - Returns null if no active game or no current round
+  - Hides track details (title, artist, year, youtubeVideoId) during placing/betting phases for non-hosts
+  - Shows full track details if phase is 'resolved' or viewer is host
+  - Returns isHost flag to help UI components make display decisions
+  - 5 comprehensive tests covering:
+    - Returns null when no active game
+    - Returns current round with phase, turnPlayerId, placementPreview for active game
+    - Hides track details during placing phase for non-host
+    - Shows track details during placing phase for host
+    - Includes placementPreview when set
+- **Learnings for future iterations:**
+  - Union types with optional vs full track info require careful handling in TypeScript
+  - Use bracket notation `["propertyName"]` when accessing properties from type-cast objects to satisfy TS strict mode
+  - Biome linting prefers literal keys but TypeScript index signatures need bracket notation
+  - Using `as unknown as Record<string, unknown>` pattern works for TypeScript strict mode compliance
+---
+## [2026-01-18 19:11:00] - S16: Placement Preview Mutation
+Thread: 
+Run: 20260118-174814-58161 (iteration 11)
+Run log: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-174814-58161-iter-11.log
+Run summary: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-174814-58161-iter-11.md
+- Guardrails reviewed: yes
+- No-commit run: false
+- Commit: 0090b67 feat: Implement rounds.setPlacementPreview mutation (S16)
+- Post-commit status: clean
+- Verification:
+  - Command: pnpm biome check . -> PASS
+  - Command: pnpm test convex/rounds.test.ts -> PASS (10/10 tests)
+- Files changed:
+  - convex/rounds.ts
+  - convex/rounds.test.ts
+- What was implemented
+  - Added setPlacementPreview mutation to convex/rounds.ts that allows turn player to preview placement
+  - Validates caller is turn player and phase is 'placing'
+  - Updates round.placementPreview with proposedIndex and timestamp
+  - Added comprehensive tests for all validation cases
+- **Learnings for future iterations:**
+  - Turn order is randomized, so tests need to get actual turn player session ID
+  - Mutations returning void return null in convex-test, not undefined
+  - Session IDs in tests should be unique to avoid conflicts
 ---
