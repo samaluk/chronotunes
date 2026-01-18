@@ -49,3 +49,46 @@ Run summary: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-171
   - convex-test latest version is 0.0.41, not 0.0.42
   - Next.js Turbopack shows workspace root warnings when multiple lockfiles exist
 ---
+
+## [2026-01-18 17:28] - S02: UI Foundation Setup
+Thread: 
+Run: 20260118-171118-33460 (iteration 2)
+Run log: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-171118-33460-iter-2.log
+Run summary: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-171118-33460-iter-2.md
+- Guardrails reviewed: yes
+- No-commit run: false
+- Commit: 4548d2d feat(ui): add UI foundation with theming and toast support
+- Post-commit status: clean (run log file tracked separately)
+- Verification:
+  - Command: pnpm biome check . -> PASS
+  - Command: pnpm test -> PASS (2 tests)
+  - Command: pnpm next:typegen -> PASS
+  - Command: pnpm build -> PASS
+  - Browser: Light mode UI -> PASS (Fuchsia theme visible)
+  - Browser: Dark mode toggle -> PASS (theme switches correctly)
+  - Browser: Toast notification -> PASS (sonner displays in bottom-right)
+- Files changed:
+  - package.json (added next-themes, sonner, fluid-tailwindcss)
+  - pnpm-lock.yaml (updated with new deps)
+  - src/app/globals.css (added fluid-tailwindcss plugin)
+  - src/app/layout.tsx (integrated Providers, updated metadata)
+  - src/app/page.tsx (demo landing page with theme toggle and toast)
+  - src/app/providers.tsx (new - ConvexProvider + ThemeProvider + Toaster)
+  - src/components/ui/theme-toggle.tsx (new - theme toggle component)
+  - .gitignore (added dev-browser artifacts)
+- What was implemented:
+  - Tailwind CSS v4.1 with fluid-tailwindcss for responsive typography
+  - shadcn/ui already configured with Lyra/base-vega style and Fuchsia theme
+  - Lucide icons already installed
+  - next-themes for dark/light mode with system preference support
+  - sonner for toast notifications with richColors and closeButton
+  - providers.tsx with ConvexProvider (handles missing URL gracefully) and ThemeProvider
+  - ThemeToggle component with Sun/Moon icons and smooth transitions
+  - Demo landing page showcasing all UI components
+- **Learnings for future iterations:**
+  - ConvexProvider requires CONVEX_URL at runtime; handle null gracefully during static builds
+  - fluid-tailwindcss uses @plugin directive in Tailwind v4
+  - ThemeProvider needs suppressHydrationWarning on html element to prevent mismatch warnings
+  - sonner Toaster should be inside ThemeProvider to inherit theme context
+  - dev-browser profiles/ and tmp/ should be gitignored to avoid committing test artifacts
+---
