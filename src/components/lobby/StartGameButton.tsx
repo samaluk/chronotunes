@@ -6,6 +6,7 @@ import { Play, Users } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { api } from "@/convex/_generated/api.js";
+import { getSessionId } from "@/lib/session";
 
 interface StartGameButtonProps {
   lobbyId: GenericId<"lobbies">;
@@ -23,7 +24,8 @@ export function StartGameButton({
 
   const handleStartGame = async (): Promise<void> => {
     try {
-      const _result = await startGame({ lobbyId });
+      const sessionId = getSessionId();
+      const _result = await startGame({ lobbyId, sessionId });
       toast.success("Game started!");
       router.refresh();
     } catch (error) {
