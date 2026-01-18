@@ -193,3 +193,61 @@ export const get = query({
     return lobby;
   },
 });
+
+const lobbySettingsValidator = v.object({
+  targetTimelineSize: v.number(),
+  startingCoins: v.number(),
+  turnSeconds: v.number(),
+  bettingWindowSeconds: v.number(),
+  allowGuessTitleArtist: v.boolean(),
+  showLiveBets: v.boolean(),
+  allowBetRetraction: v.boolean(),
+  minYear: v.number(),
+  maxYear: v.number(),
+});
+
+export const updateSettings = mutation({
+  args: {
+    lobbyId: v.id("lobbies"),
+    settings: lobbySettingsValidator,
+  },
+  handler: async (ctx, args) => {
+    const { lobbyId, settings } = args;
+
+    const lobby = await ctx.db.get(lobbyId);
+
+    if (!lobby) {
+      throw new ConvexError("Lobby not found");
+    }
+
+    if (lobby.status !== "lobby") {
+      throw new ConvexError("Cannot update settings for a lobby that is not in lobby status");
+    }
+
+    if (settings.targetTimelineSize < 5 || settings.targetTimelineSize > 15) {
+      throw new ConvexError("Target timeline size must be between 5 and 15");
+    }
+
+    if (settings.startingCoins < 1 || settings.startingCoins > 10) {
+      throw new ConvexError("Starting coins must be between 1 and 10");
+    }
+
+    if (settings.turnSeconds < 15 || settings.turnSeconds > 120) {
+      throw new ConvexError("Turn seconds must be between 15 and 120");
+    }
+
+    if (settings.bettingWindowSeconds < 5 || settings.bettingWindowSeconds > 60) {
+      throw new ConvexError("Betting window seconds must be between 5 and 60");
+    }
+
+    if (settings.minYear < 1900 || settings.minYear > settings.maxYear) {
+      throw new ConvexError("Invalid minimum year");
+    }
+
+    if (settings.maxYear < settings.minYear || settings.maxYear > 2030) {
+      throw new ConvexError("Invalid maximum year");
+    }
+
+    await ctx.db.patch(lobbyId, { settings });
+  },
+});
