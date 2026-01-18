@@ -1,0 +1,1347 @@
+{
+  "meta": {
+    "title": "ChronoTunes - Multiplayer Music Timeline Game",
+    "slug": "chronotunes",
+    "version": "1.0.0",
+    "created": "2026-01-18",
+    "type": "web-application"
+  },
+  "overview": {
+    "summary": "A browser-based multiplayer music timeline game inspired by Hitster. Players compete to place songs in chronological order while others bet on their success. Uses YouTube for audio playback and Convex for real-time multiplayer sync.",
+    "problem": "Music trivia games like Hitster require physical cards and are limited to in-person play. There's no accessible online version that lets friends play together remotely with betting mechanics.",
+    "solution": "A real-time multiplayer web game with turn-based timeline placement, spectator betting on outcomes, and coin-based economy. Built on Convex for instant sync across all players.",
+    "target_users": [
+      "Music enthusiasts aged 18-45",
+      "Friend groups wanting remote game nights",
+      "Trivia and party game fans",
+      "Casual gamers seeking quick multiplayer sessions"
+    ]
+  },
+  "tech_stack": {
+    "core": {
+      "framework": "Next.js 16 (App Router)",
+      "language": "TypeScript",
+      "backend": "Convex (realtime BaaS)",
+      "package_manager": "pnpm"
+    },
+    "frontend_ui": {
+      "styling": "Tailwind CSS v4.1",
+      "responsive": "fluid-tailwindcss",
+      "components": "shadcn/ui (Base UI, Lyra style, Neutral base, Fuchsia theme)",
+      "icons": "Lucide",
+      "theming": "next-themes (light/dark mode)",
+      "toasts": "sonner",
+      "i18n": "next-intl (locales: en, es, fr, de, pt, ja)"
+    },
+    "convex_ecosystem": {
+      "presence": "@convex-dev/presence",
+      "helpers": "convex-helpers (sessions, relationships)",
+      "local_dev": "Local OSS backend (no cloud account needed)"
+    },
+    "tooling": {
+      "linting": "Biome (not ESLint)",
+      "typescript": "typescript-go (faster LSP)",
+      "commands": "just (command runner)"
+    },
+    "utilities": {
+      "url_state": "nuqs (if needed)",
+      "audio": "YouTube IFrame API"
+    },
+    "testing": {
+      "framework": "Vitest",
+      "convex_mock": "convex-test",
+      "runtime": "@edge-runtime/vm",
+      "react": "React Testing Library"
+    }
+  },
+  "data_models": {
+    "lobbies": {
+      "code": "string (6-char alphanumeric, indexed)",
+      "hostSessionId": "string",
+      "hostTransferDeadline": "number (optional, set when host disconnects)",
+      "status": "enum: lobby | in_game | finished",
+      "settings": {
+        "targetTimelineSize": "number",
+        "startingCoins": "number",
+        "turnSeconds": "number",
+        "bettingWindowSeconds": "number",
+        "allowGuessTitleArtist": "boolean",
+        "showLiveBets": "boolean",
+        "allowBetRetraction": "boolean",
+        "minYear": "number",
+        "maxYear": "number"
+      },
+      "activeGameId": "Id<games> (optional)"
+    },
+    "players": {
+      "lobbyId": "Id<lobbies> (indexed)",
+      "sessionId": "string (indexed with lobbyId)",
+      "displayName": "string",
+      "isHost": "boolean",
+      "coins": "number",
+      "timeline": "[{ trackId, year, earnedAtRoundNumber, earnedBy }] (embedded, max 10)",
+      "timelineSize": "number (denormalized)",
+      "createdAt": "number"
+    },
+    "games": {
+      "lobbyId": "Id<lobbies> (indexed)",
+      "status": "enum: active | paused | finished",
+      "startedAt": "number",
+      "endedAt": "number (optional)",
+      "currentRoundNumber": "number",
+      "currentRoundId": "Id<rounds> (optional)",
+      "turnPlayerId": "Id<players> (optional)",
+      "turnOrder": "Id<players>[] (explicit order)",
+      "winnerPlayerId": "Id<players> (optional)"
+    },
+    "rounds": {
+      "gameId": "Id<games> (indexed)",
+      "roundNumber": "number",
+      "turnPlayerId": "Id<players>",
+      "trackId": "Id<tracks>",
+      "phase": "enum: placing | betting | resolved",
+      "startedAt": "number",
+      "placementPreview": "{ proposedIndex, updatedAt } (optional)",
+      "placement": "{ proposedIndex, submittedAt } (optional)",
+      "guess": "{ guessedTitle, guessedArtist, isCorrect, awardedCoin, submittedAt } (optional)",
+      "resolution": "{ validIndexMin, validIndexMax, turnPlayerWasCorrect, awardedPlayerIds, coinDeltas, resolvedAt } (optional)"
+    },
+    "roundBets": {
+      "roundId": "Id<rounds> (indexed)",
+      "playerId": "Id<players>",
+      "proposedIndex": "number",
+      "placedAt": "number",
+      "lockedIn": "boolean (two-step: preview -> confirm)",
+      "status": "enum: pending | won | lost"
+    },
+    "tracks": {
+      "mbid": "string (optional)",
+      "title": "string",
+      "artist": "string",
+      "year": "number (indexed with _creationTime)",
+      "durationMs": "number (optional)",
+      "externalIds": "{ spotifyTrackId?, youtubeVideoId?, deezerTrackId? }",
+      "links": "{ spotifyUrl?, youtubeUrl?, deezerUrl? }",
+      "createdAt": "number",
+      "source": "string"
+    }
+  },
+  "features": [
+    {
+      "id": "F001",
+      "name": "Lobby System",
+      "priority": "must-have",
+      "phase": 2,
+      "description": "Create and join game rooms with 6-char alphanumeric codes",
+      "mutations": [
+        "lobbies.create",
+        "lobbies.join",
+        "lobbies.leave",
+        "lobbies.updateSettings",
+        "lobbies.transferHost",
+        "lobbies.kick"
+      ],
+      "queries": [
+        "lobbies.get",
+        "players.list",
+        "players.getMe"
+      ],
+      "acceptance_criteria": [
+        "Host creates room, receives 6-char code",
+        "Players join via code",
+        "Lobby shows all connected players",
+        "Host can configure game settings",
+        "Host can kick players",
+        "Manual host transfer supported"
+      ]
+    },
+    {
+      "id": "F002",
+      "name": "Session Management",
+      "priority": "must-have",
+      "phase": 1,
+      "description": "Anonymous session-based player identity using localStorage",
+      "acceptance_criteria": [
+        "Session ID generated and stored in localStorage",
+        "Session persists across page refreshes",
+        "convex-helpers sessionWrapper used for mutations",
+        "No user accounts required"
+      ]
+    },
+    {
+      "id": "F003",
+      "name": "Presence System",
+      "priority": "must-have",
+      "phase": 1,
+      "description": "Real-time online status indicators using @convex-dev/presence",
+      "acceptance_criteria": [
+        "Players see who is online/offline",
+        "Presence indicators in lobby and game",
+        "Host disconnect detected for failover"
+      ]
+    },
+    {
+      "id": "F004",
+      "name": "Game Start & Turn Order",
+      "priority": "must-have",
+      "phase": 3,
+      "description": "Host starts game, explicit turn order established",
+      "mutations": [
+        "games.start"
+      ],
+      "acceptance_criteria": [
+        "Host clicks Start Game when ready",
+        "Turn order randomized or by join order",
+        "First round begins with first player",
+        "Lobby status changes to in_game"
+      ]
+    },
+    {
+      "id": "F005",
+      "name": "Timeline Placement",
+      "priority": "must-have",
+      "phase": 3,
+      "description": "Turn player places song on chronological timeline",
+      "mutations": [
+        "rounds.setPlacementPreview",
+        "rounds.submitPlacement"
+      ],
+      "queries": [
+        "rounds.getCurrent"
+      ],
+      "acceptance_criteria": [
+        "Turn player sees their timeline and new song",
+        "Timeline sorted by year ascending",
+        "Drag/drop to position song between existing cards",
+        "Preview shows proposed placement",
+        "Submit finalizes placement",
+        "Correct if placed in valid range for song's year",
+        "Same-year songs: any order valid among them"
+      ]
+    },
+    {
+      "id": "F006",
+      "name": "Two-Step Betting System",
+      "priority": "must-have",
+      "phase": 3,
+      "description": "Non-turn players bet on where song should go with preview/confirm flow",
+      "mutations": [
+        "bets.preview",
+        "bets.lockIn",
+        "bets.cancel"
+      ],
+      "queries": [
+        "bets.listForRound"
+      ],
+      "acceptance_criteria": [
+        "Non-turn players can place bets during placing phase",
+        "Step 1: Select slot creates unlocked bet (ghost/semi-transparent)",
+        "Step 2: Confirm locks bet in (solid)",
+        "Can cancel unlocked bets (coin refunded)",
+        "Only locked bets count at resolution",
+        "Bet costs 1 coin",
+        "showLiveBets setting controls visibility"
+      ]
+    },
+    {
+      "id": "F007",
+      "name": "Round Resolution",
+      "priority": "must-have",
+      "phase": 3,
+      "description": "Resolve placement correctness and betting outcomes",
+      "mutations": [
+        "games.resolveAndNext"
+      ],
+      "acceptance_criteria": [
+        "Compute validIndexMin/validIndexMax from year boundaries",
+        "Turn player correct: card added to timeline",
+        "Turn player wrong: card discarded",
+        "If turn player correct: all bettors lose coins",
+        "If turn player wrong + bettor valid index: bettor wins card + keeps coin",
+        "If turn player wrong + bettor invalid index: bettor loses coin",
+        "Advance to next round/player"
+      ]
+    },
+    {
+      "id": "F008",
+      "name": "Win Condition",
+      "priority": "must-have",
+      "phase": 3,
+      "description": "First player to reach target timeline size wins",
+      "acceptance_criteria": [
+        "Check win condition after each round resolution",
+        "Default target: 10 cards (configurable)",
+        "Game status set to finished",
+        "Winner recorded in game record"
+      ]
+    },
+    {
+      "id": "F009",
+      "name": "YouTube Audio Playback",
+      "priority": "must-have",
+      "phase": 5,
+      "description": "All players load YouTube video for song playback",
+      "acceptance_criteria": [
+        "YouTube IFrame API integration",
+        "All clients load same video simultaneously",
+        "Accept minor sync differences between players",
+        "Handle unavailable videos (fallback to new song)",
+        "Song title/artist hidden during play"
+      ]
+    },
+    {
+      "id": "F010",
+      "name": "Host Failover",
+      "priority": "must-have",
+      "phase": 6,
+      "description": "Automatic host transfer when host disconnects",
+      "acceptance_criteria": [
+        "Presence detects host disconnect",
+        "Set hostTransferDeadline = now + 30s",
+        "Game status set to paused",
+        "Schedule checkHostTransfer in 30s",
+        "If still disconnected: random online player becomes host",
+        "Game resumes automatically",
+        "Original host can rejoin as normal player"
+      ]
+    },
+    {
+      "id": "F011",
+      "name": "Skip Turn",
+      "priority": "must-have",
+      "phase": 3,
+      "description": "Host can skip disconnected player's turn",
+      "mutations": [
+        "games.skipTurn"
+      ],
+      "acceptance_criteria": [
+        "Host sees skip button for disconnected turn player",
+        "Turn advances to next player",
+        "Current song may be discarded or reused"
+      ]
+    },
+    {
+      "id": "F012",
+      "name": "Soft Timer",
+      "priority": "should-have",
+      "phase": 4,
+      "description": "Advisory timer for turns (not enforced server-side)",
+      "acceptance_criteria": [
+        "Visual countdown during turns",
+        "Configurable duration in settings",
+        "Timer is advisory only (no auto-skip)"
+      ]
+    },
+    {
+      "id": "F013",
+      "name": "Title/Artist Guessing",
+      "priority": "should-have",
+      "phase": 6,
+      "description": "Turn player can guess song title/artist for bonus coin",
+      "mutations": [
+        "rounds.submitGuess"
+      ],
+      "acceptance_criteria": [
+        "Optional input fields for title and artist",
+        "Correct guess awards bonus coin",
+        "Controlled by allowGuessTitleArtist setting"
+      ]
+    },
+    {
+      "id": "F014",
+      "name": "Track Management",
+      "priority": "must-have",
+      "phase": 5,
+      "description": "Song database with YouTube IDs and metadata",
+      "queries": [
+        "tracks.getForRound",
+        "tracks.getPublic"
+      ],
+      "acceptance_criteria": [
+        "Tracks stored with title, artist, year, youtubeVideoId",
+        "Manual JSON import for MVP",
+        "Track selection algorithm avoids repeats in game",
+        "Host-only access to full metadata during round",
+        "Public metadata revealed after resolution"
+      ]
+    }
+  ],
+  "queries": {
+    "lobbies.get": "Lobby state, settings, host by code",
+    "players.list": "All players summary for lobby",
+    "players.getMe": "Current user details by sessionId",
+    "games.getCurrent": "Active game state for lobby",
+    "rounds.getCurrent": "Current round phase, placement, track",
+    "bets.listForRound": "Bets for round (if showLiveBets)",
+    "tracks.getForRound": "Host only, full track metadata",
+    "tracks.getPublicForRound": "Post-reveal track metadata"
+  },
+  "mutations": {
+    "lobby": [
+      "lobbies.create - generates code, creates host player",
+      "lobbies.join - join by code with displayName",
+      "lobbies.leave - leave lobby",
+      "lobbies.updateSettings - host only",
+      "lobbies.transferHost - host only",
+      "lobbies.kick - host only"
+    ],
+    "game": [
+      "games.start - host starts game",
+      "rounds.setPlacementPreview - turn player previews placement",
+      "rounds.submitPlacement - turn player confirms placement",
+      "rounds.submitGuess - turn player guesses title/artist",
+      "bets.preview - non-turn creates unlocked bet",
+      "bets.lockIn - non-turn locks bet",
+      "bets.cancel - non-turn cancels unlocked bet",
+      "games.resolveAndNext - host resolves round",
+      "games.skipTurn - host skips disconnected player"
+    ]
+  },
+  "game_rules": {
+    "placement_validation": [
+      "Timeline sorted by year ascending",
+      "New song correct if placed in valid range for its year",
+      "Same-year songs: any order among them is valid",
+      "validIndexMin/validIndexMax computed from year boundaries"
+    ],
+    "betting_outcomes": [
+      "Turn player correct + Any bettor = Bettor loses coin",
+      "Turn player wrong + Bettor valid index = Bettor wins card, keeps coin",
+      "Turn player wrong + Bettor invalid index = Bettor loses coin"
+    ],
+    "two_step_betting": [
+      "Player selects slot -> bet created, lockedIn=false (ghost)",
+      "Player confirms -> lockedIn=true (solid)",
+      "Only locked bets count at resolution",
+      "Unlocked bets auto-cancelled (coin refunded)"
+    ],
+    "win_condition": "First player with timelineSize >= targetTimelineSize wins"
+  },
+  "ui_components": {
+    "pages": {
+      "/": "Landing page",
+      "/lobby/[code]": "Lobby and game view"
+    },
+    "lobby_layout": [
+      "Header (code, player count, host controls)",
+      "PresenceIndicators"
+    ],
+    "lobby_waiting": [
+      "PlayerList",
+      "SettingsPanel (host only)",
+      "StartGameButton (host only)"
+    ],
+    "game_view": [
+      "GameHeader (round#, turn, soft timer)",
+      "YouTubePlayer",
+      "PlayersBar (timelines, coins)",
+      "CurrentRoundPanel",
+      "MyTimeline"
+    ],
+    "current_round_panel": [
+      "TimelinePlacer (turn player, placing phase)",
+      "WaitingView (others, placing phase)",
+      "BettingPanel (betting phase)",
+      "RoundResults (resolved phase)"
+    ],
+    "game_results": "Final standings and song reveals"
+  },
+  "project_structure": {
+    "app": {
+      "[locale]/page.tsx": "Landing (with locale)",
+      "[locale]/lobby/[code]/page.tsx": "Lobby + game (with locale)",
+      "[locale]/layout.tsx": "Locale layout with NextIntlClientProvider",
+      "layout.tsx": "Root layout",
+      "providers.tsx": "Context providers"
+    },
+    "components": {
+      "ui/": "shadcn components",
+      "lobby/": "Lobby-specific components",
+      "game/": "Game-specific components",
+      "player/": "YouTube wrapper"
+    },
+    "convex": {
+      "schema.ts": "Database schema",
+      "lib/": "sessionWrapper, gameLogic",
+      "lobbies.ts": "Lobby mutations/queries",
+      "players.ts": "Player mutations/queries",
+      "games.ts": "Game mutations/queries",
+      "rounds.ts": "Round mutations/queries",
+      "bets.ts": "Bet mutations/queries",
+      "tracks.ts": "Track queries",
+      "presence.ts": "Presence setup"
+    },
+    "i18n": {
+      "request.ts": "getRequestConfig for next-intl",
+      "routing.ts": "defineRouting with locales"
+    },
+    "messages": {
+      "en.json": "English translations (default)",
+      "es.json": "Spanish translations",
+      "fr.json": "French translations",
+      "de.json": "German translations",
+      "pt.json": "Portuguese translations",
+      "ja.json": "Japanese translations"
+    },
+    "lib": {
+      "session.ts": "Client sessionId util",
+      "hooks/": "Custom React hooks"
+    }
+  },
+  "implementation_phases": [
+    {
+      "phase": 1,
+      "name": "Foundation",
+      "tasks": [
+        "Init Next.js 16 + Convex + pnpm",
+        "Local Convex backend setup (Justfile)",
+        "Biome setup (replace ESLint)",
+        "Vitest + convex-test setup",
+        "vitest.config.ts with edge-runtime",
+        "Schema (all tables + indexes)",
+        "Presence component setup",
+        "Session management (convex-helpers)",
+        "Tailwind v4.1 + fluid-tailwindcss",
+        "shadcn/ui (Lyra style, Fuchsia theme)",
+        "next-themes + sonner",
+        "Session ID client util (localStorage)",
+        "typescript-go config",
+        "next-intl setup (i18n/request.ts, i18n/routing.ts, middleware.ts)",
+        "Create messages/en.json with initial translation keys",
+        "Set up app/[locale] structure with NextIntlClientProvider"
+      ]
+    },
+    {
+      "phase": 2,
+      "name": "Lobby",
+      "tasks": [
+        "lobbies.create mutation + tests",
+        "lobbies.join mutation + tests",
+        "lobbies.leave mutation + tests",
+        "lobbies.get query + tests",
+        "players.list query + tests",
+        "players.getMe query + tests",
+        "Lobby page + waiting room UI",
+        "Settings panel component",
+        "Presence indicators component"
+      ]
+    },
+    {
+      "phase": 3,
+      "name": "Core Game Loop",
+      "tasks": [
+        "games.start mutation + tests",
+        "Track selection algorithm + tests",
+        "rounds.getCurrent query + tests",
+        "rounds.setPlacementPreview mutation + tests",
+        "rounds.submitPlacement mutation + tests",
+        "bets.preview mutation + tests",
+        "bets.lockIn mutation + tests",
+        "bets.cancel mutation + tests",
+        "bets.listForRound query + tests",
+        "games.resolveAndNext mutation + tests",
+        "games.skipTurn mutation + tests",
+        "Win condition logic + tests"
+      ]
+    },
+    {
+      "phase": 4,
+      "name": "Game UI",
+      "tasks": [
+        "Game view layout",
+        "TimelinePlacer component + tests",
+        "BettingSlot component + tests",
+        "BettingPanel component + tests",
+        "RoundResults component + tests",
+        "PlayersBar component + tests",
+        "SoftTimer component + tests",
+        "MyTimeline component + tests"
+      ]
+    },
+    {
+      "phase": 5,
+      "name": "Audio + Tracks",
+      "tasks": [
+        "YouTubePlayer component + tests",
+        "Video error handling (fallback to new song)",
+        "Manual track import (JSON or dashboard)",
+        "tracks.getForRound query + tests",
+        "tracks.getPublic query + tests"
+      ]
+    },
+    {
+      "phase": 6,
+      "name": "Polish",
+      "tasks": [
+        "Host disconnect detection + tests",
+        "Host failover (pause + timer + transfer) + tests",
+        "Manual host transfer + tests",
+        "Player disconnect handling + tests",
+        "Title/artist guessing",
+        "Game restart flow",
+        "Loading/error states"
+      ]
+    },
+    {
+      "phase": 7,
+      "name": "Observability",
+      "tasks": [
+        "Sentry (frontend + backend wrappers)",
+        "PostHog analytics"
+      ]
+    }
+  ],
+  "testing_methodology": {
+    "pre_commit_checks": [
+      "pnpm biome check .",
+      "pnpm next:typegen",
+      "pnpm convex:typegen",
+      "pnpm test"
+    ],
+    "test_patterns": {
+      "convex_functions": "*.test.ts alongside code using convex-test",
+      "components": "*.test.tsx with React Testing Library",
+      "pure_logic": "lib/*.test.ts for isolated logic"
+    },
+    "environments": {
+      "convex": "edge-runtime",
+      "react": "jsdom"
+    },
+    "guidelines": [
+      "One component per .tsx file (except shadcn/ui)",
+      "Extract subcomponents to separate files",
+      "Each exported function must have unit tests",
+      "Pure logic in lib/, tested independently"
+    ]
+  },
+  "local_development": {
+    "backend": "Local Convex OSS (no cloud account)",
+    "prerequisites": [
+      "Rust toolchain",
+      "just command runner"
+    ],
+    "workflow": [
+      "Terminal 1: just run-local-backend",
+      "Terminal 2: just convex dev",
+      "Terminal 3: pnpm dev"
+    ],
+    "env_vars": {
+      "NEXT_PUBLIC_CONVEX_URL": "http://127.0.0.1:3210"
+    }
+  },
+  "decisions": {
+    "structure": "Monorepo, convex/ at root",
+    "timeline_storage": "Embedded array (max 10)",
+    "query_architecture": "Decoupled (6+ queries)",
+    "state_management": "No client lib, Convex only",
+    "sessions": "localStorage + convex-helpers",
+    "lobby_codes": "6-char alphanumeric",
+    "timer": "Soft (advisory)",
+    "audio": "YouTube IFrame, all clients load video",
+    "tracks": "Deferred, manual import for MVP",
+    "host_failover": "30s timer, auto-transfer",
+    "i18n": "next-intl with locale in URL path"
+  },
+  "out_of_scope": [
+    "Native mobile apps",
+    "Spotify or Apple Music integration",
+    "Voice chat between players",
+    "Monetization features",
+    "AI-generated playlists",
+    "Automated track seeding (deferred)",
+    "User accounts (session-only for MVP)"
+  ],
+  "stories": [
+    {
+      "id": "S01",
+      "title": "Project Initialization",
+      "description": "Initialize Next.js 16 project with App Router, TypeScript, pnpm, and Convex backend integration",
+      "tasks": [
+        "Create Next.js 16 project with App Router and TypeScript using pnpm",
+        "Install and configure Convex with convex-helpers for sessions",
+        "Create Justfile with commands for local Convex backend",
+        "Configure Biome for linting and formatting (replace ESLint)",
+        "Set up Vitest with convex-test and @edge-runtime/vm",
+        "Create vitest.config.ts with edge-runtime for convex and jsdom for react"
+      ],
+      "acceptance_criteria": [
+        "pnpm dev starts Next.js successfully",
+        "just run-local-backend starts local Convex backend",
+        "just convex dev deploys to local backend",
+        "pnpm biome check . runs without errors",
+        "pnpm test runs vitest successfully"
+      ],
+      "status": "in_progress",
+      "startedAt": "2026-01-18T20:11:18.138377+00:00",
+      "completedAt": null,
+      "updatedAt": "2026-01-18T20:11:18.138590+00:00"
+    },
+    {
+      "id": "S02",
+      "title": "UI Foundation Setup",
+      "description": "Configure Tailwind CSS v4.1, shadcn/ui with Lyra style and Fuchsia theme, and theming utilities",
+      "tasks": [
+        "Install and configure Tailwind CSS v4.1 with fluid-tailwindcss",
+        "Initialize shadcn/ui with Base UI, Lyra style, Neutral base color, Fuchsia theme",
+        "Install Lucide icons",
+        "Configure next-themes for light/dark mode",
+        "Install and configure sonner for toast notifications",
+        "Create app/providers.tsx with ConvexProvider and ThemeProvider"
+      ],
+      "acceptance_criteria": [
+        "Tailwind styles apply correctly",
+        "shadcn/ui components render with Fuchsia theme",
+        "Dark/light mode toggle works",
+        "Toast notifications display correctly"
+      ]
+    },
+    {
+      "id": "S03",
+      "title": "Database Schema",
+      "description": "Create Convex schema with all tables: lobbies, players, games, rounds, roundBets, tracks",
+      "tasks": [
+        "Create convex/schema.ts with lobbies table (code, hostSessionId, status, settings, activeGameId)",
+        "Add players table (lobbyId, sessionId, displayName, isHost, coins, timeline, timelineSize)",
+        "Add games table (lobbyId, status, currentRoundNumber, turnPlayerId, turnOrder, winnerPlayerId)",
+        "Add rounds table (gameId, roundNumber, turnPlayerId, trackId, phase, placement, resolution)",
+        "Add roundBets table (roundId, playerId, proposedIndex, lockedIn, status)",
+        "Add tracks table (title, artist, year, externalIds with youtubeVideoId)",
+        "Create all necessary indexes for efficient queries"
+      ],
+      "acceptance_criteria": [
+        "just convex dev deploys schema without errors",
+        "All indexes are created correctly",
+        "Schema types are generated and available"
+      ]
+    },
+    {
+      "id": "S04",
+      "title": "Session Management",
+      "description": "Implement client-side session ID management using localStorage and convex-helpers sessionWrapper",
+      "tasks": [
+        "Create lib/session.ts with getSessionId() that generates and persists UUID in localStorage",
+        "Create convex/lib/sessionWrapper.ts using convex-helpers for session-based mutations",
+        "Export useSessionId hook for React components"
+      ],
+      "acceptance_criteria": [
+        "Session ID is generated on first visit",
+        "Session ID persists across page refreshes",
+        "Session ID is available in Convex mutations via sessionWrapper"
+      ]
+    },
+    {
+      "id": "S05",
+      "title": "Presence System",
+      "description": "Set up @convex-dev/presence for real-time online status indicators",
+      "tasks": [
+        "Install @convex-dev/presence package",
+        "Create convex/presence.ts with presence configuration",
+        "Create usePresence hook for tracking player online status",
+        "Create PresenceIndicator component showing online/offline status"
+      ],
+      "acceptance_criteria": [
+        "Players appear as online when connected",
+        "Players appear as offline when disconnected",
+        "Presence updates in real-time across all clients"
+      ]
+    },
+    {
+      "id": "S06",
+      "title": "Create Lobby Mutation",
+      "description": "Implement lobbies.create mutation that generates 6-char code and creates host player",
+      "tasks": [
+        "Create convex/lobbies.ts with create mutation",
+        "Generate unique 6-char alphanumeric lobby code",
+        "Create lobby with default settings (targetTimelineSize: 10, startingCoins: 3, etc.)",
+        "Create host player record linked to lobby",
+        "Write convex/lobbies.test.ts with tests for create mutation"
+      ],
+      "acceptance_criteria": [
+        "Mutation returns lobby code",
+        "Lobby is created with status 'lobby'",
+        "Host player is created with isHost: true",
+        "Lobby code is unique and 6 characters",
+        "All tests pass"
+      ]
+    },
+    {
+      "id": "S07",
+      "title": "Join Lobby Mutation",
+      "description": "Implement lobbies.join mutation for players to join existing lobbies by code",
+      "tasks": [
+        "Add join mutation to convex/lobbies.ts",
+        "Validate lobby exists and status is 'lobby'",
+        "Check player is not already in lobby",
+        "Create player record with displayName and starting coins",
+        "Write tests for join mutation including error cases"
+      ],
+      "acceptance_criteria": [
+        "Player can join lobby with valid code",
+        "Player receives starting coins from lobby settings",
+        "Error thrown if lobby not found",
+        "Error thrown if lobby status is not 'lobby'",
+        "Error thrown if session already in lobby",
+        "All tests pass"
+      ]
+    },
+    {
+      "id": "S08",
+      "title": "Leave Lobby Mutation",
+      "description": "Implement lobbies.leave mutation for players to leave a lobby",
+      "tasks": [
+        "Add leave mutation to convex/lobbies.ts",
+        "Remove player record from lobby",
+        "If leaving player is host, transfer host to another player or delete lobby if empty",
+        "Write tests for leave mutation"
+      ],
+      "acceptance_criteria": [
+        "Player can leave lobby",
+        "Player record is deleted",
+        "Host is transferred if host leaves and other players exist",
+        "Lobby is deleted if last player leaves",
+        "All tests pass"
+      ]
+    },
+    {
+      "id": "S09",
+      "title": "Lobby Queries",
+      "description": "Implement queries for lobby state: lobbies.get, players.list, players.getMe",
+      "tasks": [
+        "Add get query to convex/lobbies.ts (by code)",
+        "Create convex/players.ts with list query (by lobbyId)",
+        "Add getMe query to convex/players.ts (by lobbyId and sessionId)",
+        "Write tests for all queries"
+      ],
+      "acceptance_criteria": [
+        "lobbies.get returns lobby with settings by code",
+        "players.list returns all players in lobby",
+        "players.getMe returns current player or null",
+        "All tests pass"
+      ]
+    },
+    {
+      "id": "S10",
+      "title": "Landing Page",
+      "description": "Create landing page with Create Game and Join Game options",
+      "tasks": [
+        "Create app/page.tsx with landing page layout",
+        "Add Create Game button that calls lobbies.create and redirects to /lobby/[code]",
+        "Add Join Game form with code input that redirects to /lobby/[code]",
+        "Add display name input (stored in localStorage)",
+        "Style with shadcn/ui components and Fuchsia theme"
+      ],
+      "acceptance_criteria": [
+        "Landing page renders with Create and Join options",
+        "Create Game creates lobby and redirects to lobby page",
+        "Join Game validates code format and redirects",
+        "Display name is captured and used when creating/joining"
+      ]
+    },
+    {
+      "id": "S11",
+      "title": "Lobby Waiting Room",
+      "description": "Create lobby page showing players, settings, and start button for host",
+      "tasks": [
+        "Create app/lobby/[code]/page.tsx",
+        "Display lobby code prominently for sharing",
+        "Create PlayerList component showing all players with presence indicators",
+        "Create SettingsPanel component (host only) for game settings",
+        "Create StartGameButton (host only) that calls games.start",
+        "Handle lobby not found with redirect to home"
+      ],
+      "acceptance_criteria": [
+        "Lobby page shows lobby code",
+        "All players are listed with online status",
+        "Host sees settings panel and start button",
+        "Non-host players see waiting state",
+        "Settings changes update in real-time for all players"
+      ]
+    },
+    {
+      "id": "S12",
+      "title": "Lobby Settings Mutation",
+      "description": "Implement lobbies.updateSettings mutation for host to configure game",
+      "tasks": [
+        "Add updateSettings mutation to convex/lobbies.ts",
+        "Validate caller is host",
+        "Allow updating: targetTimelineSize, startingCoins, turnSeconds, bettingWindowSeconds, showLiveBets, minYear, maxYear",
+        "Write tests for updateSettings"
+      ],
+      "acceptance_criteria": [
+        "Host can update all configurable settings",
+        "Non-host receives error",
+        "Settings are validated (e.g., targetTimelineSize 5-15)",
+        "All tests pass"
+      ]
+    },
+    {
+      "id": "S13",
+      "title": "Start Game Mutation",
+      "description": "Implement games.start mutation to begin the game",
+      "tasks": [
+        "Create convex/games.ts with start mutation",
+        "Validate caller is host and lobby status is 'lobby'",
+        "Require minimum 2 players",
+        "Create game record with randomized turnOrder",
+        "Update lobby status to 'in_game' and set activeGameId",
+        "Create first round with random track selection",
+        "Write tests for games.start"
+      ],
+      "acceptance_criteria": [
+        "Game is created with status 'active'",
+        "Turn order is randomized from all players",
+        "First round is created with phase 'placing'",
+        "Lobby status changes to 'in_game'",
+        "Error if less than 2 players",
+        "All tests pass"
+      ]
+    },
+    {
+      "id": "S14",
+      "title": "Track Selection Algorithm",
+      "description": "Implement algorithm to select random tracks avoiding duplicates within a game",
+      "tasks": [
+        "Create convex/lib/trackSelection.ts with selectTrackForRound function",
+        "Query available tracks within minYear-maxYear range",
+        "Exclude tracks already used in current game",
+        "Return random track from remaining pool",
+        "Write tests for track selection"
+      ],
+      "acceptance_criteria": [
+        "Returns track within year range",
+        "Never returns track already used in game",
+        "Returns null if no tracks available",
+        "All tests pass"
+      ]
+    },
+    {
+      "id": "S15",
+      "title": "Current Round Query",
+      "description": "Implement rounds.getCurrent query for game state",
+      "tasks": [
+        "Create convex/rounds.ts with getCurrent query",
+        "Return current round with phase, turnPlayerId, placementPreview",
+        "Include track info only if phase is 'resolved' or viewer is host",
+        "Write tests for getCurrent"
+      ],
+      "acceptance_criteria": [
+        "Returns current round for active game",
+        "Hides track details during placing/betting phases for non-host",
+        "Returns null if no active game",
+        "All tests pass"
+      ]
+    },
+    {
+      "id": "S16",
+      "title": "Placement Preview Mutation",
+      "description": "Implement rounds.setPlacementPreview for turn player to preview placement",
+      "tasks": [
+        "Add setPlacementPreview mutation to convex/rounds.ts",
+        "Validate caller is turn player and phase is 'placing'",
+        "Update round.placementPreview with proposedIndex and timestamp",
+        "Write tests for setPlacementPreview"
+      ],
+      "acceptance_criteria": [
+        "Turn player can set preview index",
+        "Preview updates in real-time for all players",
+        "Error if not turn player",
+        "Error if wrong phase",
+        "All tests pass"
+      ]
+    },
+    {
+      "id": "S17",
+      "title": "Submit Placement Mutation",
+      "description": "Implement rounds.submitPlacement for turn player to finalize placement",
+      "tasks": [
+        "Add submitPlacement mutation to convex/rounds.ts",
+        "Validate caller is turn player and phase is 'placing'",
+        "Set round.placement with proposedIndex and timestamp",
+        "Transition phase to 'betting' (or skip to resolution if no betting)",
+        "Write tests for submitPlacement"
+      ],
+      "acceptance_criteria": [
+        "Turn player can submit final placement",
+        "Round phase changes to 'betting'",
+        "Placement is locked and cannot be changed",
+        "All tests pass"
+      ]
+    },
+    {
+      "id": "S18",
+      "title": "Betting Mutations",
+      "description": "Implement bets.preview, bets.lockIn, and bets.cancel for two-step betting",
+      "tasks": [
+        "Create convex/bets.ts with preview mutation (creates unlocked bet)",
+        "Add lockIn mutation (sets lockedIn: true)",
+        "Add cancel mutation (deletes unlocked bet, refunds coin)",
+        "Validate caller is not turn player",
+        "Validate player has coins for betting",
+        "Deduct coin on preview, refund on cancel",
+        "Write tests for all betting mutations"
+      ],
+      "acceptance_criteria": [
+        "Non-turn player can preview bet (ghost state)",
+        "Player can lock in bet (solid state)",
+        "Player can cancel unlocked bet and get coin refunded",
+        "Cannot bet without sufficient coins",
+        "Turn player cannot place bets",
+        "All tests pass"
+      ]
+    },
+    {
+      "id": "S19",
+      "title": "Bets List Query",
+      "description": "Implement bets.listForRound query to show current bets",
+      "tasks": [
+        "Add listForRound query to convex/bets.ts",
+        "Return all bets for round if showLiveBets is true",
+        "Return only locked bets if showLiveBets is false",
+        "Include player info for each bet",
+        "Write tests for listForRound"
+      ],
+      "acceptance_criteria": [
+        "Returns bets for current round",
+        "Respects showLiveBets setting",
+        "Includes player displayName with each bet",
+        "All tests pass"
+      ]
+    },
+    {
+      "id": "S20",
+      "title": "Placement Validation Logic",
+      "description": "Implement placement validation algorithm computing valid index range",
+      "tasks": [
+        "Create convex/lib/gameLogic.ts with computeValidIndexRange function",
+        "Given timeline array and new song year, compute validIndexMin and validIndexMax",
+        "Handle same-year songs (any order valid)",
+        "Create isPlacementCorrect function comparing proposed index to valid range",
+        "Write comprehensive tests for edge cases"
+      ],
+      "acceptance_criteria": [
+        "Correctly identifies valid placement range",
+        "Same-year songs can be in any order",
+        "Empty timeline allows index 0",
+        "All tests pass including edge cases"
+      ]
+    },
+    {
+      "id": "S21",
+      "title": "Round Resolution Mutation",
+      "description": "Implement games.resolveAndNext to resolve round and advance game",
+      "tasks": [
+        "Add resolveAndNext mutation to convex/games.ts",
+        "Compute if turn player placement was correct",
+        "If correct: add track to turn player timeline, all bettors lose coins",
+        "If wrong: discard track, bettors with valid index win card + keep coin, others lose coin",
+        "Update player timelines and coins",
+        "Check win condition (timelineSize >= targetTimelineSize)",
+        "Create next round or end game",
+        "Write tests for resolveAndNext"
+      ],
+      "acceptance_criteria": [
+        "Turn player gets card if correct",
+        "Betting outcomes match game rules",
+        "Player coins and timelines update correctly",
+        "Game ends if win condition met",
+        "Next round created if game continues",
+        "All tests pass"
+      ]
+    },
+    {
+      "id": "S22",
+      "title": "Skip Turn Mutation",
+      "description": "Implement games.skipTurn for host to skip disconnected player",
+      "tasks": [
+        "Add skipTurn mutation to convex/games.ts",
+        "Validate caller is host",
+        "Advance to next player in turnOrder",
+        "Create new round with new track",
+        "Write tests for skipTurn"
+      ],
+      "acceptance_criteria": [
+        "Host can skip current turn",
+        "Turn advances to next player",
+        "New round is created",
+        "All tests pass"
+      ]
+    },
+    {
+      "id": "S23",
+      "title": "Game View Layout",
+      "description": "Create game view UI structure within lobby page",
+      "tasks": [
+        "Update app/lobby/[code]/page.tsx to show GameView when lobby status is 'in_game'",
+        "Create components/game/GameView.tsx with layout structure",
+        "Create GameHeader showing round number, whose turn, and timer",
+        "Create PlayersBar showing all players with timeline size and coins",
+        "Create CurrentRoundPanel placeholder for phase-specific content"
+      ],
+      "acceptance_criteria": [
+        "Game view renders when game is active",
+        "Header shows current round and turn player",
+        "Players bar shows all players with stats",
+        "Layout is responsive (mobile and desktop)"
+      ]
+    },
+    {
+      "id": "S24",
+      "title": "My Timeline Component",
+      "description": "Create component showing current player's timeline",
+      "tasks": [
+        "Create components/game/MyTimeline.tsx",
+        "Display cards in chronological order by year",
+        "Show song title, artist, year for each card",
+        "Indicate how each card was earned (own turn vs betting win)"
+      ],
+      "acceptance_criteria": [
+        "Timeline displays all player's cards",
+        "Cards are sorted by year ascending",
+        "Card details are visible",
+        "Earned-by indicator shows correctly"
+      ]
+    },
+    {
+      "id": "S25",
+      "title": "Timeline Placer Component",
+      "description": "Create drag-and-drop component for turn player to place songs",
+      "tasks": [
+        "Create components/game/TimelinePlacer.tsx",
+        "Show current timeline with drop zones between cards",
+        "Show new song card to be placed (without year)",
+        "Implement drag-and-drop or tap-to-select placement",
+        "Call rounds.setPlacementPreview on position change",
+        "Add Submit Placement button calling rounds.submitPlacement"
+      ],
+      "acceptance_criteria": [
+        "Turn player sees timeline with insertion points",
+        "Can drag or tap to select position",
+        "Preview updates in real-time",
+        "Submit button finalizes placement"
+      ]
+    },
+    {
+      "id": "S26",
+      "title": "Betting Panel Component",
+      "description": "Create betting UI for non-turn players",
+      "tasks": [
+        "Create components/game/BettingPanel.tsx",
+        "Show turn player's timeline with betting slots",
+        "Display coin balance and bet status",
+        "Create BettingSlot component for each position",
+        "Implement two-step flow: select (ghost) then confirm (solid)",
+        "Allow cancel for unlocked bets"
+      ],
+      "acceptance_criteria": [
+        "Non-turn players see betting interface",
+        "Can select slot (ghost preview)",
+        "Can confirm bet (solid lock)",
+        "Can cancel unlocked bet",
+        "Coin balance updates correctly"
+      ]
+    },
+    {
+      "id": "S27",
+      "title": "Round Results Component",
+      "description": "Create component showing round resolution results",
+      "tasks": [
+        "Create components/game/RoundResults.tsx",
+        "Show song reveal (title, artist, year)",
+        "Show if turn player was correct or wrong",
+        "Show betting outcomes for each bettor",
+        "Display coin changes and card awards",
+        "Add Next Round button (host) or waiting state"
+      ],
+      "acceptance_criteria": [
+        "Song details are revealed",
+        "Turn player result is clear",
+        "Betting outcomes are listed",
+        "Host can advance to next round",
+        "Non-host sees waiting state"
+      ]
+    },
+    {
+      "id": "S28",
+      "title": "Soft Timer Component",
+      "description": "Create advisory countdown timer for turns",
+      "tasks": [
+        "Create components/game/SoftTimer.tsx",
+        "Display countdown based on round.startedAt and settings.turnSeconds",
+        "Show visual indicator when time is low",
+        "Timer is purely advisory (no auto-actions)"
+      ],
+      "acceptance_criteria": [
+        "Timer counts down from turnSeconds",
+        "Visual warning when time is low",
+        "Timer continues past zero (no enforcement)"
+      ]
+    },
+    {
+      "id": "S29",
+      "title": "YouTube Player Component",
+      "description": "Create YouTube IFrame wrapper for audio playback",
+      "tasks": [
+        "Create components/player/YouTubePlayer.tsx",
+        "Load YouTube IFrame API",
+        "Play video by youtubeVideoId from round track",
+        "Hide video element (audio only or minimal UI)",
+        "Handle video unavailable errors",
+        "Add play/pause controls"
+      ],
+      "acceptance_criteria": [
+        "Video loads and plays audio",
+        "Video is hidden or minimal",
+        "Playback controls work",
+        "Error handling for unavailable videos"
+      ]
+    },
+    {
+      "id": "S30",
+      "title": "Track Import",
+      "description": "Create mechanism to import tracks into database",
+      "tasks": [
+        "Create convex/tracks.ts with import mutation",
+        "Accept array of tracks with title, artist, year, youtubeVideoId",
+        "Validate required fields and year range",
+        "Create seed data JSON file with sample tracks",
+        "Write import script or Convex dashboard function"
+      ],
+      "acceptance_criteria": [
+        "Tracks can be imported via mutation",
+        "Validation prevents invalid data",
+        "Sample tracks are available for testing"
+      ]
+    },
+    {
+      "id": "S31",
+      "title": "Track Queries",
+      "description": "Implement track queries for game rounds",
+      "tasks": [
+        "Add getForRound query to convex/tracks.ts (host only, full metadata)",
+        "Add getPublic query (post-resolution, public metadata)",
+        "Return track info based on round phase and viewer role",
+        "Write tests for track queries"
+      ],
+      "acceptance_criteria": [
+        "Host can see full track info during round",
+        "Others see only youtubeVideoId during placing/betting",
+        "Full metadata visible after resolution",
+        "All tests pass"
+      ]
+    },
+    {
+      "id": "S32",
+      "title": "Host Disconnect Detection",
+      "description": "Detect host disconnection using presence system",
+      "tasks": [
+        "Create scheduled function to check host presence",
+        "When host disconnects, set hostTransferDeadline on lobby",
+        "Set game status to 'paused' if game is active",
+        "Write tests for disconnect detection"
+      ],
+      "acceptance_criteria": [
+        "Host disconnect is detected within seconds",
+        "Lobby hostTransferDeadline is set",
+        "Game pauses if in progress",
+        "All tests pass"
+      ]
+    },
+    {
+      "id": "S33",
+      "title": "Host Failover",
+      "description": "Implement automatic host transfer after timeout",
+      "tasks": [
+        "Create scheduled function checkHostTransfer",
+        "After 30s timeout, if host still disconnected, transfer to random online player",
+        "Update lobby.hostSessionId and player.isHost flags",
+        "Resume game if it was paused",
+        "Allow original host to rejoin as regular player",
+        "Write tests for host failover"
+      ],
+      "acceptance_criteria": [
+        "New host is selected after 30s timeout",
+        "Game resumes with new host",
+        "Original host can rejoin as player",
+        "All tests pass"
+      ]
+    },
+    {
+      "id": "S34",
+      "title": "Manual Host Transfer",
+      "description": "Allow host to manually transfer host role",
+      "tasks": [
+        "Add transferHost mutation to convex/lobbies.ts",
+        "Validate caller is current host",
+        "Update hostSessionId and player isHost flags",
+        "Write tests for manual transfer"
+      ],
+      "acceptance_criteria": [
+        "Host can transfer to any player",
+        "New host gets host controls",
+        "Old host becomes regular player",
+        "All tests pass"
+      ]
+    },
+    {
+      "id": "S35",
+      "title": "Game Results View",
+      "description": "Create end game screen with final standings",
+      "tasks": [
+        "Create components/game/GameResults.tsx",
+        "Display winner prominently",
+        "Show final standings with timeline sizes",
+        "List all songs played with years",
+        "Add Play Again button (returns to lobby)"
+      ],
+      "acceptance_criteria": [
+        "Winner is displayed clearly",
+        "All players ranked by timeline size",
+        "Song history is visible",
+        "Can start new game from results"
+      ]
+    },
+    {
+      "id": "S36",
+      "title": "Loading and Error States",
+      "description": "Add proper loading and error handling throughout UI",
+      "tasks": [
+        "Create loading skeletons for all major components",
+        "Add error boundaries with retry options",
+        "Handle Convex connection errors gracefully",
+        "Show reconnecting state during network issues"
+      ],
+      "acceptance_criteria": [
+        "Loading states show during data fetching",
+        "Errors display helpful messages",
+        "Retry option available on recoverable errors",
+        "Network issues show reconnecting indicator"
+      ]
+    },
+    {
+      "id": "S37",
+      "title": "Internationalization Setup",
+      "description": "Set up next-intl for multi-language support with locale routing",
+      "tasks": [
+        "Install next-intl package",
+        "Create i18n/request.ts with getRequestConfig",
+        "Create i18n/routing.ts with defineRouting (locales: en, es, fr, de, pt, ja)",
+        "Create middleware.ts for locale detection and routing",
+        "Restructure app/ to app/[locale]/ with NextIntlClientProvider in layout",
+        "Create messages/en.json with all UI string keys organized by namespace",
+        "Create messages/ files for es, fr, de, pt, ja (can start with en copy)",
+        "Update all components to use useTranslations hook",
+        "Update server components to use getTranslations",
+        "Create locale switcher component"
+      ],
+      "acceptance_criteria": [
+        "App routes include locale prefix (e.g., /en/lobby/ABC123)",
+        "Translations load correctly for each locale",
+        "useTranslations works in client components",
+        "getTranslations works in server components",
+        "Locale switcher allows changing language",
+        "Browser language detection works on first visit",
+        "Links preserve current locale"
+      ]
+    }
+  ]
+}
