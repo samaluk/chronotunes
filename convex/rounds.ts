@@ -181,12 +181,12 @@ export const submitPlacement = mutation({
       throw new ConvexError("Player not found in this lobby");
     }
 
-    if (round.turnPlayerId !== player._id) {
-      throw new ConvexError("Only the turn player can submit placement");
-    }
-
     if (round.phase !== "placing") {
       throw new ConvexError("Can only submit placement during placing phase");
+    }
+
+    if (round.turnPlayerId !== player._id) {
+      throw new ConvexError("Only the turn player can submit placement");
     }
 
     if (!round.placementPreview) {
