@@ -717,10 +717,10 @@
         "All indexes are created correctly",
         "Schema types are generated and available"
       ],
-      "status": "in_progress",
+      "status": "done",
       "startedAt": "2026-01-18T20:27:27.389596+00:00",
-      "completedAt": null,
-      "updatedAt": "2026-01-18T20:27:27.389808+00:00"
+      "completedAt": "2026-01-18T20:30:27.862198+00:00",
+      "updatedAt": "2026-01-18T20:30:27.862023+00:00"
     },
     {
       "id": "S04",
@@ -735,7 +735,11 @@
         "Session ID is generated on first visit",
         "Session ID persists across page refreshes",
         "Session ID is available in Convex mutations via sessionWrapper"
-      ]
+      ],
+      "status": "in_progress",
+      "startedAt": "2026-01-18T20:47:29.257672+00:00",
+      "completedAt": null,
+      "updatedAt": "2026-01-18T20:47:29.257924+00:00"
     },
     {
       "id": "S05",
@@ -751,7 +755,11 @@
         "Players appear as online when connected",
         "Players appear as offline when disconnected",
         "Presence updates in real-time across all clients"
-      ]
+      ],
+      "status": "in_progress",
+      "startedAt": "2026-01-18T20:47:58.801193+00:00",
+      "completedAt": null,
+      "updatedAt": "2026-01-18T20:47:58.801385+00:00"
     },
     {
       "id": "S06",
@@ -770,7 +778,11 @@
         "Host player is created with isHost: true",
         "Lobby code is unique and 6 characters",
         "All tests pass"
-      ]
+      ],
+      "status": "done",
+      "startedAt": "2026-01-18T20:48:14.604352+00:00",
+      "completedAt": "2026-01-18T21:02:21.774458+00:00",
+      "updatedAt": "2026-01-18T21:02:21.774271+00:00"
     },
     {
       "id": "S07",
@@ -790,7 +802,11 @@
         "Error thrown if lobby status is not 'lobby'",
         "Error thrown if session already in lobby",
         "All tests pass"
-      ]
+      ],
+      "status": "done",
+      "startedAt": "2026-01-18T21:02:23.865799+00:00",
+      "completedAt": "2026-01-18T21:04:59.886966+00:00",
+      "updatedAt": "2026-01-18T21:04:59.886728+00:00"
     },
     {
       "id": "S08",
@@ -808,7 +824,11 @@
         "Host is transferred if host leaves and other players exist",
         "Lobby is deleted if last player leaves",
         "All tests pass"
-      ]
+      ],
+      "status": "done",
+      "startedAt": "2026-01-18T21:05:01.966055+00:00",
+      "completedAt": "2026-01-18T21:07:41.231383+00:00",
+      "updatedAt": "2026-01-18T21:07:41.230931+00:00"
     },
     {
       "id": "S09",
@@ -825,7 +845,11 @@
         "players.list returns all players in lobby",
         "players.getMe returns current player or null",
         "All tests pass"
-      ]
+      ],
+      "status": "done",
+      "startedAt": "2026-01-18T21:07:43.327345+00:00",
+      "completedAt": "2026-01-18T21:12:51.367692+00:00",
+      "updatedAt": "2026-01-18T21:12:51.367295+00:00"
     },
     {
       "id": "S10",
@@ -843,7 +867,11 @@
         "Create Game creates lobby and redirects to lobby page",
         "Join Game validates code format and redirects",
         "Display name is captured and used when creating/joining"
-      ]
+      ],
+      "status": "done",
+      "startedAt": "2026-01-18T21:12:53.458339+00:00",
+      "completedAt": "2026-01-18T21:23:49.827053+00:00",
+      "updatedAt": "2026-01-18T21:23:49.826879+00:00"
     },
     {
       "id": "S11",
@@ -863,7 +891,11 @@
         "Host sees settings panel and start button",
         "Non-host players see waiting state",
         "Settings changes update in real-time for all players"
-      ]
+      ],
+      "status": "done",
+      "startedAt": "2026-01-18T21:23:51.909538+00:00",
+      "completedAt": "2026-01-18T21:41:14.569525+00:00",
+      "updatedAt": "2026-01-18T21:41:14.569331+00:00"
     },
     {
       "id": "S12",
@@ -880,7 +912,11 @@
         "Non-host receives error",
         "Settings are validated (e.g., targetTimelineSize 5-15)",
         "All tests pass"
-      ]
+      ],
+      "status": "in_progress",
+      "startedAt": "2026-01-18T21:41:16.654991+00:00",
+      "completedAt": null,
+      "updatedAt": "2026-01-18T21:41:16.655175+00:00"
     },
     {
       "id": "S13",

@@ -530,4 +530,588 @@ test("get lobby returns lobby with settings", async () => {
   expect(lobby?.settings.bettingWindowSeconds).toBe(15);
 });
 
+test("updateSettings allows host to update targetTimelineSize", async () => {
+  const t = convexTest(schema, modules);
+
+  const { code } = await t.mutation(api.lobbies.create, {
+    sessionId: "host-session-update",
+    displayName: "HostUpdate",
+  });
+
+  await t.mutation(api.lobbies.updateSettings, {
+    code,
+    sessionId: "host-session-update",
+    settings: {
+      targetTimelineSize: 8,
+      startingCoins: 3,
+      turnSeconds: 30,
+      bettingWindowSeconds: 15,
+      allowGuessTitleArtist: true,
+      showLiveBets: true,
+      allowBetRetraction: true,
+      minYear: 1950,
+      maxYear: 2025,
+    },
+  });
+
+  const lobby = await t.query(api.lobbies.get, { code });
+  expect(lobby?.settings.targetTimelineSize).toBe(8);
+});
+
+test("updateSettings allows host to update startingCoins", async () => {
+  const t = convexTest(schema, modules);
+
+  const { code } = await t.mutation(api.lobbies.create, {
+    sessionId: "host-session-coins",
+    displayName: "HostCoins",
+  });
+
+  await t.mutation(api.lobbies.updateSettings, {
+    code,
+    sessionId: "host-session-coins",
+    settings: {
+      targetTimelineSize: 10,
+      startingCoins: 5,
+      turnSeconds: 30,
+      bettingWindowSeconds: 15,
+      allowGuessTitleArtist: true,
+      showLiveBets: true,
+      allowBetRetraction: true,
+      minYear: 1950,
+      maxYear: 2025,
+    },
+  });
+
+  const lobby = await t.query(api.lobbies.get, { code });
+  expect(lobby?.settings.startingCoins).toBe(5);
+});
+
+test("updateSettings allows host to update turnSeconds", async () => {
+  const t = convexTest(schema, modules);
+
+  const { code } = await t.mutation(api.lobbies.create, {
+    sessionId: "host-session-turn",
+    displayName: "HostTurn",
+  });
+
+  await t.mutation(api.lobbies.updateSettings, {
+    code,
+    sessionId: "host-session-turn",
+    settings: {
+      targetTimelineSize: 10,
+      startingCoins: 3,
+      turnSeconds: 60,
+      bettingWindowSeconds: 15,
+      allowGuessTitleArtist: true,
+      showLiveBets: true,
+      allowBetRetraction: true,
+      minYear: 1950,
+      maxYear: 2025,
+    },
+  });
+
+  const lobby = await t.query(api.lobbies.get, { code });
+  expect(lobby?.settings.turnSeconds).toBe(60);
+});
+
+test("updateSettings allows host to update year range", async () => {
+  const t = convexTest(schema, modules);
+
+  const { code } = await t.mutation(api.lobbies.create, {
+    sessionId: "host-session-years",
+    displayName: "HostYears",
+  });
+
+  await t.mutation(api.lobbies.updateSettings, {
+    code,
+    sessionId: "host-session-years",
+    settings: {
+      targetTimelineSize: 10,
+      startingCoins: 3,
+      turnSeconds: 30,
+      bettingWindowSeconds: 15,
+      allowGuessTitleArtist: true,
+      showLiveBets: true,
+      allowBetRetraction: true,
+      minYear: 1960,
+      maxYear: 2020,
+    },
+  });
+
+  const lobby = await t.query(api.lobbies.get, { code });
+  expect(lobby?.settings.minYear).toBe(1960);
+  expect(lobby?.settings.maxYear).toBe(2020);
+});
+
+test("updateSettings rejects non-host", async () => {
+  const t = convexTest(schema, modules);
+
+  const { code } = await t.mutation(api.lobbies.create, {
+    sessionId: "host-session-reject",
+    displayName: "HostReject",
+  });
+
+  await t.mutation(api.lobbies.join, {
+    code,
+    sessionId: "player-session-reject",
+    displayName: "PlayerReject",
+  });
+
+  await expect(
+    t.mutation(api.lobbies.updateSettings, {
+      code,
+      sessionId: "player-session-reject",
+      settings: {
+        targetTimelineSize: 10,
+        startingCoins: 3,
+        turnSeconds: 30,
+        bettingWindowSeconds: 15,
+        allowGuessTitleArtist: true,
+        showLiveBets: true,
+        allowBetRetraction: true,
+        minYear: 1950,
+        maxYear: 2025,
+      },
+    }),
+  ).rejects.toThrow("Only the host can update settings");
+});
+
+test("updateSettings rejects targetTimelineSize below 5", async () => {
+  const t = convexTest(schema, modules);
+
+  const { code } = await t.mutation(api.lobbies.create, {
+    sessionId: "host-session-min",
+    displayName: "HostMin",
+  });
+
+  await expect(
+    t.mutation(api.lobbies.updateSettings, {
+      code,
+      sessionId: "host-session-min",
+      settings: {
+        targetTimelineSize: 4,
+        startingCoins: 3,
+        turnSeconds: 30,
+        bettingWindowSeconds: 15,
+        allowGuessTitleArtist: true,
+        showLiveBets: true,
+        allowBetRetraction: true,
+        minYear: 1950,
+        maxYear: 2025,
+      },
+    }),
+  ).rejects.toThrow("Target timeline size must be between 5 and 15");
+});
+
+test("updateSettings rejects targetTimelineSize above 15", async () => {
+  const t = convexTest(schema, modules);
+
+  const { code } = await t.mutation(api.lobbies.create, {
+    sessionId: "host-session-max",
+    displayName: "HostMax",
+  });
+
+  await expect(
+    t.mutation(api.lobbies.updateSettings, {
+      code,
+      sessionId: "host-session-max",
+      settings: {
+        targetTimelineSize: 16,
+        startingCoins: 3,
+        turnSeconds: 30,
+        bettingWindowSeconds: 15,
+        allowGuessTitleArtist: true,
+        showLiveBets: true,
+        allowBetRetraction: true,
+        minYear: 1950,
+        maxYear: 2025,
+      },
+    }),
+  ).rejects.toThrow("Target timeline size must be between 5 and 15");
+});
+
+test("updateSettings rejects startingCoins below 1", async () => {
+  const t = convexTest(schema, modules);
+
+  const { code } = await t.mutation(api.lobbies.create, {
+    sessionId: "host-session-coins-min",
+    displayName: "HostCoinsMin",
+  });
+
+  await expect(
+    t.mutation(api.lobbies.updateSettings, {
+      code,
+      sessionId: "host-session-coins-min",
+      settings: {
+        targetTimelineSize: 10,
+        startingCoins: 0,
+        turnSeconds: 30,
+        bettingWindowSeconds: 15,
+        allowGuessTitleArtist: true,
+        showLiveBets: true,
+        allowBetRetraction: true,
+        minYear: 1950,
+        maxYear: 2025,
+      },
+    }),
+  ).rejects.toThrow("Starting coins must be between 1 and 10");
+});
+
+test("updateSettings rejects startingCoins above 10", async () => {
+  const t = convexTest(schema, modules);
+
+  const { code } = await t.mutation(api.lobbies.create, {
+    sessionId: "host-session-coins-max",
+    displayName: "HostCoinsMax",
+  });
+
+  await expect(
+    t.mutation(api.lobbies.updateSettings, {
+      code,
+      sessionId: "host-session-coins-max",
+      settings: {
+        targetTimelineSize: 10,
+        startingCoins: 11,
+        turnSeconds: 30,
+        bettingWindowSeconds: 15,
+        allowGuessTitleArtist: true,
+        showLiveBets: true,
+        allowBetRetraction: true,
+        minYear: 1950,
+        maxYear: 2025,
+      },
+    }),
+  ).rejects.toThrow("Starting coins must be between 1 and 10");
+});
+
+test("updateSettings rejects turnSeconds below 15", async () => {
+  const t = convexTest(schema, modules);
+
+  const { code } = await t.mutation(api.lobbies.create, {
+    sessionId: "host-session-turn-min",
+    displayName: "HostTurnMin",
+  });
+
+  await expect(
+    t.mutation(api.lobbies.updateSettings, {
+      code,
+      sessionId: "host-session-turn-min",
+      settings: {
+        targetTimelineSize: 10,
+        startingCoins: 3,
+        turnSeconds: 14,
+        bettingWindowSeconds: 15,
+        allowGuessTitleArtist: true,
+        showLiveBets: true,
+        allowBetRetraction: true,
+        minYear: 1950,
+        maxYear: 2025,
+      },
+    }),
+  ).rejects.toThrow("Turn seconds must be between 15 and 120");
+});
+
+test("updateSettings rejects turnSeconds above 120", async () => {
+  const t = convexTest(schema, modules);
+
+  const { code } = await t.mutation(api.lobbies.create, {
+    sessionId: "host-session-turn-max",
+    displayName: "HostTurnMax",
+  });
+
+  await expect(
+    t.mutation(api.lobbies.updateSettings, {
+      code,
+      sessionId: "host-session-turn-max",
+      settings: {
+        targetTimelineSize: 10,
+        startingCoins: 3,
+        turnSeconds: 121,
+        bettingWindowSeconds: 15,
+        allowGuessTitleArtist: true,
+        showLiveBets: true,
+        allowBetRetraction: true,
+        minYear: 1950,
+        maxYear: 2025,
+      },
+    }),
+  ).rejects.toThrow("Turn seconds must be between 15 and 120");
+});
+
+test("updateSettings rejects bettingWindowSeconds below 5", async () => {
+  const t = convexTest(schema, modules);
+
+  const { code } = await t.mutation(api.lobbies.create, {
+    sessionId: "host-session-bet-min",
+    displayName: "HostBetMin",
+  });
+
+  await expect(
+    t.mutation(api.lobbies.updateSettings, {
+      code,
+      sessionId: "host-session-bet-min",
+      settings: {
+        targetTimelineSize: 10,
+        startingCoins: 3,
+        turnSeconds: 30,
+        bettingWindowSeconds: 4,
+        allowGuessTitleArtist: true,
+        showLiveBets: true,
+        allowBetRetraction: true,
+        minYear: 1950,
+        maxYear: 2025,
+      },
+    }),
+  ).rejects.toThrow("Betting window seconds must be between 5 and 60");
+});
+
+test("updateSettings rejects bettingWindowSeconds above 60", async () => {
+  const t = convexTest(schema, modules);
+
+  const { code } = await t.mutation(api.lobbies.create, {
+    sessionId: "host-session-bet-max",
+    displayName: "HostBetMax",
+  });
+
+  await expect(
+    t.mutation(api.lobbies.updateSettings, {
+      code,
+      sessionId: "host-session-bet-max",
+      settings: {
+        targetTimelineSize: 10,
+        startingCoins: 3,
+        turnSeconds: 30,
+        bettingWindowSeconds: 61,
+        allowGuessTitleArtist: true,
+        showLiveBets: true,
+        allowBetRetraction: true,
+        minYear: 1950,
+        maxYear: 2025,
+      },
+    }),
+  ).rejects.toThrow("Betting window seconds must be between 5 and 60");
+});
+
+test("updateSettings rejects minYear below 1900", async () => {
+  const t = convexTest(schema, modules);
+
+  const { code } = await t.mutation(api.lobbies.create, {
+    sessionId: "host-session-year-min",
+    displayName: "HostYearMin",
+  });
+
+  await expect(
+    t.mutation(api.lobbies.updateSettings, {
+      code,
+      sessionId: "host-session-year-min",
+      settings: {
+        targetTimelineSize: 10,
+        startingCoins: 3,
+        turnSeconds: 30,
+        bettingWindowSeconds: 15,
+        allowGuessTitleArtist: true,
+        showLiveBets: true,
+        allowBetRetraction: true,
+        minYear: 1899,
+        maxYear: 2025,
+      },
+    }),
+  ).rejects.toThrow("Invalid minimum year");
+});
+
+test("updateSettings rejects minYear above maxYear", async () => {
+  const t = convexTest(schema, modules);
+
+  const { code } = await t.mutation(api.lobbies.create, {
+    sessionId: "host-session-year-range",
+    displayName: "HostYearRange",
+  });
+
+  await expect(
+    t.mutation(api.lobbies.updateSettings, {
+      code,
+      sessionId: "host-session-year-range",
+      settings: {
+        targetTimelineSize: 10,
+        startingCoins: 3,
+        turnSeconds: 30,
+        bettingWindowSeconds: 15,
+        allowGuessTitleArtist: true,
+        showLiveBets: true,
+        allowBetRetraction: true,
+        minYear: 2020,
+        maxYear: 2010,
+      },
+    }),
+  ).rejects.toThrow("Invalid minimum year");
+});
+
+test("updateSettings rejects maxYear below minYear", async () => {
+  const t = convexTest(schema, modules);
+
+  const { code } = await t.mutation(api.lobbies.create, {
+    sessionId: "host-session-max-min",
+    displayName: "HostMaxMin",
+  });
+
+  await expect(
+    t.mutation(api.lobbies.updateSettings, {
+      code,
+      sessionId: "host-session-max-min",
+      settings: {
+        targetTimelineSize: 10,
+        startingCoins: 3,
+        turnSeconds: 30,
+        bettingWindowSeconds: 15,
+        allowGuessTitleArtist: true,
+        showLiveBets: true,
+        allowBetRetraction: true,
+        minYear: 1950,
+        maxYear: 1940,
+      },
+    }),
+  ).rejects.toThrow("Invalid minimum year");
+});
+
+test("updateSettings rejects maxYear above 2030", async () => {
+  const t = convexTest(schema, modules);
+
+  const { code } = await t.mutation(api.lobbies.create, {
+    sessionId: "host-session-max-future",
+    displayName: "HostMaxFuture",
+  });
+
+  await expect(
+    t.mutation(api.lobbies.updateSettings, {
+      code,
+      sessionId: "host-session-max-future",
+      settings: {
+        targetTimelineSize: 10,
+        startingCoins: 3,
+        turnSeconds: 30,
+        bettingWindowSeconds: 15,
+        allowGuessTitleArtist: true,
+        showLiveBets: true,
+        allowBetRetraction: true,
+        minYear: 1950,
+        maxYear: 2031,
+      },
+    }),
+  ).rejects.toThrow("Invalid maximum year");
+});
+
+test("updateSettings rejects when lobby not found", async () => {
+  const t = convexTest(schema, modules);
+
+  await expect(
+    t.mutation(api.lobbies.updateSettings, {
+      code: "NOTFOUND",
+      sessionId: "some-session",
+      settings: {
+        targetTimelineSize: 10,
+        startingCoins: 3,
+        turnSeconds: 30,
+        bettingWindowSeconds: 15,
+        allowGuessTitleArtist: true,
+        showLiveBets: true,
+        allowBetRetraction: true,
+        minYear: 1950,
+        maxYear: 2025,
+      },
+    }),
+  ).rejects.toThrow("Lobby not found");
+});
+
+test("updateSettings rejects when lobby status is in_game", async () => {
+  const t = convexTest(schema, modules);
+
+  const { code } = await t.mutation(api.lobbies.create, {
+    sessionId: "host-session-game",
+    displayName: "HostGame",
+  });
+
+  await t.run(async (ctx) => {
+    const lobby = await ctx.db.query("lobbies").first();
+    if (lobby) {
+      await ctx.db.patch(lobby._id, { status: "in_game" });
+    }
+  });
+
+  await expect(
+    t.mutation(api.lobbies.updateSettings, {
+      code,
+      sessionId: "host-session-game",
+      settings: {
+        targetTimelineSize: 10,
+        startingCoins: 3,
+        turnSeconds: 30,
+        bettingWindowSeconds: 15,
+        allowGuessTitleArtist: true,
+        showLiveBets: true,
+        allowBetRetraction: true,
+        minYear: 1950,
+        maxYear: 2025,
+      },
+    }),
+  ).rejects.toThrow("Cannot update settings for a lobby that is not in lobby status");
+});
+
+test("updateSettings is case insensitive for code", async () => {
+  const t = convexTest(schema, modules);
+
+  const { code } = await t.mutation(api.lobbies.create, {
+    sessionId: "host-session-case",
+    displayName: "HostCase",
+  });
+
+  await t.mutation(api.lobbies.updateSettings, {
+    code: code.toLowerCase(),
+    sessionId: "host-session-case",
+    settings: {
+      targetTimelineSize: 12,
+      startingCoins: 3,
+      turnSeconds: 30,
+      bettingWindowSeconds: 15,
+      allowGuessTitleArtist: true,
+      showLiveBets: true,
+      allowBetRetraction: true,
+      minYear: 1950,
+      maxYear: 2025,
+    },
+  });
+
+  const lobby = await t.query(api.lobbies.get, { code: code.toUpperCase() });
+  expect(lobby?.settings.targetTimelineSize).toBe(12);
+});
+
+test("updateSettings allows host to toggle boolean settings", async () => {
+  const t = convexTest(schema, modules);
+
+  const { code } = await t.mutation(api.lobbies.create, {
+    sessionId: "host-session-bool",
+    displayName: "HostBool",
+  });
+
+  await t.mutation(api.lobbies.updateSettings, {
+    code,
+    sessionId: "host-session-bool",
+    settings: {
+      targetTimelineSize: 10,
+      startingCoins: 3,
+      turnSeconds: 30,
+      bettingWindowSeconds: 15,
+      allowGuessTitleArtist: false,
+      showLiveBets: false,
+      allowBetRetraction: false,
+      minYear: 1950,
+      maxYear: 2025,
+    },
+  });
+
+  const lobby = await t.query(api.lobbies.get, { code });
+  expect(lobby?.settings.allowGuessTitleArtist).toBe(false);
+  expect(lobby?.settings.showLiveBets).toBe(false);
+  expect(lobby?.settings.allowBetRetraction).toBe(false);
+});
+
 const modules = import.meta.glob("./**/*.ts");

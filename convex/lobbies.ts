@@ -208,16 +208,24 @@ const lobbySettingsValidator = v.object({
 
 export const updateSettings = mutation({
   args: {
-    lobbyId: v.id("lobbies"),
+    code: v.string(),
+    sessionId: v.string(),
     settings: lobbySettingsValidator,
   },
   handler: async (ctx, args) => {
-    const { lobbyId, settings } = args;
+    const { code, sessionId, settings } = args;
 
-    const lobby = await ctx.db.get(lobbyId);
+    const lobby = await ctx.db
+      .query("lobbies")
+      .filter((q) => q.eq(q.field("code"), code.toUpperCase()))
+      .first();
 
     if (!lobby) {
       throw new ConvexError("Lobby not found");
+    }
+
+    if (lobby.hostSessionId !== sessionId) {
+      throw new ConvexError("Only the host can update settings");
     }
 
     if (lobby.status !== "lobby") {
@@ -248,6 +256,6 @@ export const updateSettings = mutation({
       throw new ConvexError("Invalid maximum year");
     }
 
-    await ctx.db.patch(lobbyId, { settings });
+    await ctx.db.patch(lobby._id, { settings });
   },
 });
