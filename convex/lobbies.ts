@@ -132,3 +132,50 @@ export const join = mutation({
     return { lobbyId: lobby._id };
   },
 });
+
+export const leave = mutation({
+  args: {
+    code: v.string(),
+    sessionId: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const { code, sessionId } = args;
+
+    const lobby = await ctx.db
+      .query("lobbies")
+      .filter((q) => q.eq(q.field("code"), code.toUpperCase()))
+      .first();
+
+    if (!lobby) {
+      throw new ConvexError("Lobby not found");
+    }
+
+    const player = await ctx.db
+      .query("players")
+      .filter((q) =>
+        q.and(q.eq(q.field("lobbyId"), lobby._id), q.eq(q.field("sessionId"), sessionId)),
+      )
+      .first();
+
+    if (!player) {
+      throw new ConvexError("You are not in this lobby");
+    }
+
+    await ctx.db.delete(player._id);
+
+    if (player.isHost) {
+      const remainingPlayers = await ctx.db
+        .query("players")
+        .filter((q) => q.eq(q.field("lobbyId"), lobby._id))
+        .collect();
+
+      if (remainingPlayers.length === 0) {
+        await ctx.db.delete(lobby._id);
+      } else {
+        const newHost = remainingPlayers[0]!;
+        await ctx.db.patch(newHost._id, { isHost: true });
+        await ctx.db.patch(lobby._id, { hostSessionId: newHost.sessionId });
+      }
+    }
+  },
+});

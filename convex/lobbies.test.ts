@@ -292,4 +292,184 @@ test("join lobby uses lobby's starting coins setting", async () => {
   expect(newPlayer?.coins).toBe(5);
 });
 
+test("leave lobby removes player from lobby", async () => {
+  const t = convexTest(schema, modules);
+
+  const { code } = await t.mutation(api.lobbies.create, {
+    sessionId: "host-session-leave",
+    displayName: "HostLeave",
+  });
+
+  await t.mutation(api.lobbies.join, {
+    code,
+    sessionId: "player-session-leave",
+    displayName: "PlayerLeave",
+  });
+
+  let players = await t.run(async (ctx) => {
+    const allPlayers = await ctx.db.query("players").collect();
+    return allPlayers;
+  });
+  expect(players).toHaveLength(2);
+
+  await t.mutation(api.lobbies.leave, {
+    code,
+    sessionId: "player-session-leave",
+  });
+
+  players = await t.run(async (ctx) => {
+    const allPlayers = await ctx.db.query("players").collect();
+    return allPlayers;
+  });
+  expect(players).toHaveLength(1);
+  expect(players[0]?.sessionId).toBe("host-session-leave");
+});
+
+test("leave lobby rejects when player not in lobby", async () => {
+  const t = convexTest(schema, modules);
+
+  const { code } = await t.mutation(api.lobbies.create, {
+    sessionId: "host-session-not-in",
+    displayName: "HostNotIn",
+  });
+
+  await expect(
+    t.mutation(api.lobbies.leave, {
+      code,
+      sessionId: "random-session-not-in",
+    }),
+  ).rejects.toThrow("You are not in this lobby");
+});
+
+test("leave lobby rejects when lobby not found", async () => {
+  const t = convexTest(schema, modules);
+
+  await expect(
+    t.mutation(api.lobbies.leave, {
+      code: "NOTFOUND",
+      sessionId: "some-session",
+    }),
+  ).rejects.toThrow("Lobby not found");
+});
+
+test("leave lobby transfers host when host leaves and players remain", async () => {
+  const t = convexTest(schema, modules);
+
+  const { code } = await t.mutation(api.lobbies.create, {
+    sessionId: "host-session-transfer",
+    displayName: "HostTransfer",
+  });
+
+  await t.mutation(api.lobbies.join, {
+    code,
+    sessionId: "player-session-transfer",
+    displayName: "PlayerTransfer",
+  });
+
+  await t.mutation(api.lobbies.leave, {
+    code,
+    sessionId: "host-session-transfer",
+  });
+
+  const players = await t.run(async (ctx) => {
+    const allPlayers = await ctx.db.query("players").collect();
+    return allPlayers;
+  });
+  expect(players).toHaveLength(1);
+  expect(players[0]?.isHost).toBe(true);
+  expect(players[0]?.sessionId).toBe("player-session-transfer");
+
+  const lobby = await t.run(async (ctx) => {
+    const lobbies = await ctx.db.query("lobbies").collect();
+    return lobbies[0];
+  });
+  expect(lobby?.hostSessionId).toBe("player-session-transfer");
+});
+
+test("leave lobby deletes lobby when last player leaves", async () => {
+  const t = convexTest(schema, modules);
+
+  const { code } = await t.mutation(api.lobbies.create, {
+    sessionId: "host-session-delete",
+    displayName: "HostDelete",
+  });
+
+  await t.mutation(api.lobbies.leave, {
+    code,
+    sessionId: "host-session-delete",
+  });
+
+  const lobbies = await t.run(async (ctx) => {
+    const allLobbies = await ctx.db.query("lobbies").collect();
+    return allLobbies;
+  });
+  expect(lobbies).toHaveLength(0);
+
+  const players = await t.run(async (ctx) => {
+    const allPlayers = await ctx.db.query("players").collect();
+    return allPlayers;
+  });
+  expect(players).toHaveLength(0);
+});
+
+test("leave lobby is case insensitive for code", async () => {
+  const t = convexTest(schema, modules);
+
+  const { code } = await t.mutation(api.lobbies.create, {
+    sessionId: "host-session-case-leave",
+    displayName: "HostCaseLeave",
+  });
+
+  await t.mutation(api.lobbies.join, {
+    code,
+    sessionId: "player-session-case-leave",
+    displayName: "PlayerCaseLeave",
+  });
+
+  await t.mutation(api.lobbies.leave, {
+    code: code.toLowerCase(),
+    sessionId: "player-session-case-leave",
+  });
+
+  const players = await t.run(async (ctx) => {
+    const allPlayers = await ctx.db.query("players").collect();
+    return allPlayers;
+  });
+  expect(players).toHaveLength(1);
+});
+
+test("leave lobby works when non-host leaves", async () => {
+  const t = convexTest(schema, modules);
+
+  const { code } = await t.mutation(api.lobbies.create, {
+    sessionId: "host-session-nonhost",
+    displayName: "HostNonHost",
+  });
+
+  await t.mutation(api.lobbies.join, {
+    code,
+    sessionId: "player-session-nonhost",
+    displayName: "PlayerNonHost",
+  });
+
+  await t.mutation(api.lobbies.join, {
+    code,
+    sessionId: "player-session-nonhost2",
+    displayName: "PlayerNonHost2",
+  });
+
+  await t.mutation(api.lobbies.leave, {
+    code,
+    sessionId: "player-session-nonhost",
+  });
+
+  const players = await t.run(async (ctx) => {
+    const allPlayers = await ctx.db.query("players").collect();
+    return allPlayers;
+  });
+  expect(players).toHaveLength(2);
+  const host = players.find((p) => p.isHost);
+  expect(host?.sessionId).toBe("host-session-nonhost");
+});
+
 const modules = import.meta.glob("./**/*.ts");
