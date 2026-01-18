@@ -913,10 +913,10 @@
         "Settings are validated (e.g., targetTimelineSize 5-15)",
         "All tests pass"
       ],
-      "status": "in_progress",
+      "status": "done",
       "startedAt": "2026-01-18T21:41:16.654991+00:00",
-      "completedAt": null,
-      "updatedAt": "2026-01-18T21:41:16.655175+00:00"
+      "completedAt": "2026-01-18T21:46:06.788560+00:00",
+      "updatedAt": "2026-01-18T21:46:06.788327+00:00"
     },
     {
       "id": "S13",
@@ -938,7 +938,11 @@
         "Lobby status changes to 'in_game'",
         "Error if less than 2 players",
         "All tests pass"
-      ]
+      ],
+      "status": "done",
+      "startedAt": "2026-01-18T21:46:08.865287+00:00",
+      "completedAt": "2026-01-18T21:52:41.198664+00:00",
+      "updatedAt": "2026-01-18T21:52:41.198459+00:00"
     },
     {
       "id": "S14",
@@ -956,7 +960,11 @@
         "Never returns track already used in game",
         "Returns null if no tracks available",
         "All tests pass"
-      ]
+      ],
+      "status": "done",
+      "startedAt": "2026-01-18T21:52:43.277177+00:00",
+      "completedAt": "2026-01-18T21:58:50.909152+00:00",
+      "updatedAt": "2026-01-18T21:58:50.908698+00:00"
     },
     {
       "id": "S15",
@@ -973,7 +981,11 @@
         "Hides track details during placing/betting phases for non-host",
         "Returns null if no active game",
         "All tests pass"
-      ]
+      ],
+      "status": "in_progress",
+      "startedAt": "2026-01-18T21:58:52.977750+00:00",
+      "completedAt": null,
+      "updatedAt": "2026-01-18T21:58:52.977926+00:00"
     },
     {
       "id": "S16",

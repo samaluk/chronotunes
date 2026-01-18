@@ -1,0 +1,16 @@
+1059 |     const info = provider.models[modelID]
+1060 |     if (!info) {
+1061 |       const availableModels = Object.keys(provider.models)
+1062 |       const matches = fuzzysort.go(modelID, availableModels, { limit: 3, threshold: -10000 })
+1063 |       const suggestions = matches.map((m) => m.target)
+1064 |       throw new ModelNotFoundError({ providerID, modelID, suggestions })
+                   ^
+ProviderModelNotFoundError: ProviderModelNotFoundError
+ data: {
+  providerID: "opencode",
+  modelID: "coding-minimax-m2.1-free",
+  suggestions: [],
+},
+
+      at getModel (src/provider/provider.ts:1064:13)
+
