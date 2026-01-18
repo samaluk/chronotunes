@@ -48,3 +48,32 @@ Run summary: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-174
   - Tests for resolved phase need to set phase to "betting" first (to allow preview), then to "resolved" (to test lockIn/cancel failure)
   - Display name max length is 20 characters - use shorter names in test data
 ---
+
+## [2026-01-18 19:36:00] - S19: Bets List Query
+Thread: 
+Run: 20260118-174814-58161 (iteration 15)
+Run log: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-174814-58161-iter-15.log
+Run summary: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-174814-58161-iter-15.md
+- Guardrails reviewed: yes
+- No-commit run: false
+- Commit: 93b49f8 chore: add run log (and cbc31e7 for main implementation)
+- Post-commit status: modified .ralph/runs/run-20260118-174814-58161-iter-15.log (system update after commit)
+- Verification:
+  - Command: pnpm biome check . -> PASS
+  - Command: pnpm test convex/bets.test.ts -> PASS (21/21 tests)
+  - Command: pnpm test -> PASS (104/105 tests, 1 pre-existing failure in lobbies.test.ts)
+- Files changed:
+  - convex/bets.ts (added listForRound query)
+  - convex/bets.test.ts (added 4 new tests for listForRound)
+- What was implemented:
+  - bets.listForRound query that returns bets for current round
+  - Respects showLiveBets lobby setting: returns all bets if true, only locked bets if false
+  - Includes player displayName with each bet for UI display
+  - Uses by_round index for efficient queries
+  - Tests cover: all bets when showLiveBets=true, only locked bets when showLiveBets=false, empty when no bets, empty when no game
+- **Learnings for future iterations:**
+  - Random turn order in tests requires finding actual non-turn players dynamically
+  - Convex ID type validation prevents testing with fake IDs - remove such tests
+  - Use for loop instead of Promise.all for sequential DB reads to avoid Convex rate limits
+  - Early returns for empty cases (no game, no round, no bets) improve performance
+---
