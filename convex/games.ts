@@ -1,6 +1,7 @@
 import { ConvexError, v } from "convex/values";
 import type { Id } from "./_generated/dataModel";
 import { mutation, query } from "./_generated/server";
+import { selectTrackForRound } from "./lib/trackSelection";
 
 function shuffleArray<T>(array: readonly T[]): T[] {
   const shuffled = [...array];
@@ -106,5 +107,82 @@ export const getCurrent = query({
     const game = await ctx.db.get(lobby.activeGameId);
 
     return game;
+  },
+});
+
+export const skipTurn = mutation({
+  args: { lobbyId: v.id("lobbies"), sessionId: v.string() },
+  handler: async (ctx, args) => {
+    const { lobbyId, sessionId } = args;
+
+    const lobby = await ctx.db.get(lobbyId);
+
+    if (!lobby) {
+      throw new ConvexError("Lobby not found");
+    }
+
+    if (!lobby.activeGameId) {
+      throw new ConvexError("No active game in this lobby");
+    }
+
+    if (lobby.hostSessionId !== sessionId) {
+      throw new ConvexError("Only the host can skip a turn");
+    }
+
+    const game = await ctx.db.get(lobby.activeGameId);
+
+    if (!game) {
+      throw new ConvexError("Game not found");
+    }
+
+    if (game.status !== "active") {
+      throw new ConvexError("Game is not active");
+    }
+
+    const currentTurnIndex = game.turnOrder.indexOf(game.turnPlayerId!);
+    const nextTurnIndex = (currentTurnIndex + 1) % game.turnOrder.length;
+    const nextTurnPlayerId = game.turnOrder[nextTurnIndex]!;
+
+    const nextRoundNumber = game.currentRoundNumber + 1;
+    const selectedTrack = await selectTrackForRound(ctx, {
+      gameId: game._id,
+      minYear: lobby.settings.minYear,
+      maxYear: lobby.settings.maxYear,
+    });
+
+    if (!selectedTrack) {
+      await ctx.db.patch(game._id, {
+        status: "finished",
+        endedAt: Date.now(),
+      });
+
+      await ctx.db.patch(lobbyId, {
+        status: "finished",
+      });
+
+      return { gameEnded: true, winnerPlayerId: null, noTracksAvailable: true };
+    }
+
+    const nextRoundId = await ctx.db.insert("rounds", {
+      gameId: game._id,
+      roundNumber: nextRoundNumber,
+      turnPlayerId: nextTurnPlayerId,
+      trackId: selectedTrack.trackId,
+      phase: "placing",
+      startedAt: Date.now(),
+    });
+
+    await ctx.db.patch(game._id, {
+      currentRoundNumber: nextRoundNumber,
+      currentRoundId: nextRoundId,
+      turnPlayerId: nextTurnPlayerId,
+    });
+
+    return {
+      gameEnded: false,
+      winnerPlayerId: null,
+      nextRoundId,
+      nextTurnPlayerId,
+    };
   },
 });
