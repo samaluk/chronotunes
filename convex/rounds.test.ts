@@ -113,7 +113,7 @@ test("getCurrent hides track details during placing phase for non-host", async (
   expect(result).not.toBeNull();
   expect(result?.phase).toBe("placing");
   expect(result?.track).not.toBeNull();
-  expect((result?.track).toBeDefined();
+  expect((result?.track?.trackId).toBeDefined();
   expect((result?.track as unknown as Record<string, unknown>).title).toBeUndefined();
   expect((result?.track as unknown as Record<string, unknown>).artist).toBeUndefined();
   expect((result?.track as unknown as Record<string, unknown>).year).toBeUndefined();
