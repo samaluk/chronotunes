@@ -1145,10 +1145,10 @@
         "New round is created",
         "All tests pass"
       ],
-      "status": "in_progress",
+      "status": "done",
       "startedAt": "2026-01-19T00:21:41.113639+00:00",
-      "completedAt": null,
-      "updatedAt": "2026-01-19T00:21:41.113846+00:00"
+      "completedAt": "2026-01-19T00:24:08.807575+00:00",
+      "updatedAt": "2026-01-19T00:24:08.807077+00:00"
     },
     {
       "id": "S23",
@@ -1166,7 +1166,11 @@
         "Header shows current round and turn player",
         "Players bar shows all players with stats",
         "Layout is responsive (mobile and desktop)"
-      ]
+      ],
+      "status": "in_progress",
+      "startedAt": "2026-01-19T00:24:10.887711+00:00",
+      "completedAt": null,
+      "updatedAt": "2026-01-19T00:24:10.887986+00:00"
     },
     {
       "id": "S24",

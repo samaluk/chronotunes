@@ -259,3 +259,33 @@ Run summary: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-210
   - Tracks table requires createdAt field when inserting in tests
   - Component tests need proper mock reset between tests to avoid state leakage
 ---
+
+## [2026-01-19 21:25:00] - S22: Skip Turn Mutation
+Thread: 
+Run: 20260118-210256-43823 (iteration 4)
+Run log: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-210256-43823-iter-4.log
+Run summary: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-210256-43823-iter-4.md
+- Guardrails reviewed: yes
+- No-commit run: false
+- Commit: 3b7d2d1 fix: format convex configuration files
+- Post-commit status: clean (only formatting fixes)
+- Verification:
+  - Command: pnpm biome check convex/games.ts -> PASS (no errors)
+  - Command: pnpm biome check . -> PASS (2 unrelated pre-existing formatting fixes applied)
+- Files changed:
+  - convex/convex.json (trailing newline removed)
+  - convex/lib/trackSelection.test.ts (extra blank line removed)
+- What was implemented:
+  - Story S22 was already completed in previous iteration (commit ee4b582)
+  - Implementation includes: skipTurn mutation in convex/games.ts that allows host to skip disconnected player's turn
+  - Validates caller is host and game is active
+  - Advances turn to next player in turnOrder (wraps around using modulo)
+  - Creates new round with new track using selectTrackForRound
+  - Handles no tracks available case (ends game)
+  - 6 comprehensive tests in convex/games.test.ts covering all error cases and success scenarios
+- **Learnings for future iterations:**
+  - Always verify implementation exists before assuming work is needed
+  - Git log and progress log provide history of completed work
+  - convex-test library has known compatibility issues (glob is not a function error)
+  - Tests exist but cannot run due to framework issue - implementation verified through code review
+---

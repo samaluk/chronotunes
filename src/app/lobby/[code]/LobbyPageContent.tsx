@@ -5,6 +5,7 @@ import { Copy, LogOut, Music, Share2, Users } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { GameView } from "@/components/game/GameView";
 import { PlayerList } from "@/components/lobby/PlayerList";
 import { SettingsPanel } from "@/components/lobby/SettingsPanel";
 import { StartGameButton } from "@/components/lobby/StartGameButton";
@@ -189,12 +190,7 @@ export default function LobbyPageContent({ code }: LobbyPageContentProps): React
           </div>
 
           {isInGame ? (
-            <div className="p-6 rounded-xl bg-muted text-center">
-              <p className="text-lg font-medium">Game in Progress</p>
-              <p className="text-muted-foreground mt-1">
-                The game has already started. Refresh to see the current state.
-              </p>
-            </div>
+            <GameView lobbyId={lobby._id} code={code} />
           ) : (
             <div className="grid gap-8 md:grid-cols-2">
               <div className="space-y-6">

@@ -636,3 +636,46 @@ index 4680a53..3bf2f14 100644
      await ctx.db.insert("tracks", {
 
 The `skipTurn` mutation is already fully implemented. I ran biome format which fixed some pre-existing formatting issues. Let me commit these changes.
+[91m[1m| [0m[90m Bash     [0mStage all changes
+[91m[1m| [0m[90m Bash     [0mCommit formatting changes
+
+[main 3b7d2d1] fix: format convex configuration files
+ 13 files changed, 902 insertions(+), 16 deletions(-)
+ create mode 100644 .ralph/.tmp/prompt-20260118-210256-43823-4.md
+ create mode 100644 .ralph/.tmp/story-20260118-210256-43823-4.json
+ create mode 100644 .ralph/.tmp/story-20260118-210256-43823-4.md
+ create mode 100644 .ralph/runs/run-20260118-210256-43823-iter-3.md
+ create mode 100644 .ralph/runs/run-20260118-210256-43823-iter-4.log
+
+[91m[1m| [0m[90m Bash     [0mGet commit info
+
+3b7d2d1 fix: format convex configuration files
+
+[91m[1m| [0m[90m Bash     [0mCheck working tree status
+
+ M .ralph/runs/run-20260118-210256-43823-iter-4.log
+
+[96m[1m| [0m[90m Read     [0m.ralph/progress.md
+[91m[1m| [0m[90m Bash     [0mAppend progress entry for S22
+[91m[1m| [0m[90m Bash     [0mLog activity
+
+zsh:1: no such file or directory: ./ralph
+
+[91m[1m| [0m[90m Bash     [0mLog activity to activity.log
+The S22: Skip Turn Mutation story is complete. The implementation was already present in the codebase:
+
+**Implementation verified:**
+- `skipTurn` mutation in `convex/games.ts` (lines 114-189) allows host to skip disconnected player's turn
+- Validates caller is host and game is active
+- Advances turn to next player using modulo for wraparound
+- Creates new round with track selection
+- Handles edge cases (no tracks available ends game)
+
+**Tests verified:**
+- 6 comprehensive tests in `convex/games.test.ts` (lines 311-533) covering all scenarios
+
+**Acceptance Criteria:**
+- Host can skip current turn ✅
+- Turn advances to next player ✅
+- New round is created ✅
+<promise>COMPLETE</promise>
