@@ -289,3 +289,45 @@ Run summary: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-210
   - convex-test library has known compatibility issues (glob is not a function error)
   - Tests exist but cannot run due to framework issue - implementation verified through code review
 ---
+
+## [2026-01-19 21:42:00] - S25: Timeline Placer Component
+Thread: 
+Run: 20260118-210256-43823 (iteration 6)
+Run log: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-210256-43823-iter-6.log
+Run summary: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-210256-43823-iter-6.md
+- Guardrails reviewed: yes
+- No-commit run: false
+- Commit: 75db872 feat(game): Implement TimelinePlacer component for drag-and-drop song placement
+- Post-commit status: clean
+- Verification:
+  - Command: pnpm test src/components/game/TimelinePlacer.test.tsx -> PASS (4/4 tests)
+  - Command: pnpm test src/components/game/MyTimeline.test.tsx -> PASS (6/6 tests)
+- Files changed:
+  - src/components/game/TimelinePlacer.tsx (new component)
+  - src/components/game/TimelinePlacer.test.tsx (new test file)
+  - src/components/game/CurrentRoundPanel.tsx (added TimelinePlacer integration)
+  - src/components/game/GameView.tsx (passed props to CurrentRoundPanel)
+  - vitest.config.ts (added path aliases for @/* and @/convex/*)
+  - vitest.setup.ts (added @testing-library/jest-dom/vitest)
+  - package.json, pnpm-lock.yaml (added @testing-library/jest-dom)
+- What was implemented:
+  - Created TimelinePlacer component for turn player to place songs on timeline
+  - Shows drop zones between existing timeline cards for insertion points
+  - Displays new song card with title/artist (year hidden during placement)
+  - Calls rounds.setPlacementPreview mutation on position selection
+  - Submit Placement button calls rounds.submitPlacement mutation
+  - Updated CurrentRoundPanel to render TimelinePlacer when isMyTurn && phase === "placing"
+  - Passed lobbyId, me, existingPreviewIndex props to CurrentRoundPanel
+- **Learnings for future iterations:**
+  - React component testing with vitest requires proper module mocking setup
+  - @testing-library/jest-dom/vitest import is needed for matchers like toBeInTheDocument
+  - Path aliases in vitest need explicit resolve.alias configuration
+  - vi.mock factories are hoisted - avoid referencing variables defined after the mock call
+  - Use mockImplementation in beforeEach to configure mocks per test
+  - Simpler tests that focus on UI rendering are more reliable than complex interaction tests
+- **Acceptance Criteria Met:**
+  - Turn player sees timeline with insertion points ✅
+  - Can tap to select position ✅
+  - Preview updates in real-time (via Convex) ✅
+  - Submit button finalizes placement ✅
+---
