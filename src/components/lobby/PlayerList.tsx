@@ -3,6 +3,7 @@
 import { useQuery } from "convex/react";
 import type { GenericId } from "convex/values";
 import { Crown, User } from "lucide-react";
+import { SkeletonPlayerList } from "@/components/ui/skeletons";
 import { api } from "@/convex/_generated/api.js";
 
 interface PlayerListProps {
@@ -24,11 +25,7 @@ export function PlayerList({ lobbyId, currentSessionId }: PlayerListProps): Reac
   const players = useQuery(api.players.list, { lobbyId });
 
   if (players === undefined) {
-    return (
-      <div className="flex items-center justify-center py-8">
-        <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
-      </div>
-    );
+    return <SkeletonPlayerList count={4} />;
   }
 
   if (players.length === 0) {

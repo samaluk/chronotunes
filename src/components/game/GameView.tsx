@@ -3,6 +3,13 @@
 import { useQuery } from "convex/react";
 import type { GenericId } from "convex/values";
 import { useEffect, useState } from "react";
+import { ErrorBoundary } from "@/components/ui/error-boundary";
+import {
+  SkeletonGameHeader,
+  SkeletonPlayersBar,
+  SkeletonRoundPanel,
+  SkeletonTimeline,
+} from "@/components/ui/skeletons";
 import { api } from "@/convex/_generated/api.js";
 import { useSessionId } from "@/lib/hooks/use-session-id";
 import { CurrentRoundPanel, type RoundPhase } from "./CurrentRoundPanel";
@@ -53,11 +60,10 @@ export function GameView({ lobbyId, code }: GameViewProps): React.ReactNode {
 
   if (!mounted) {
     return (
-      <div className="flex min-h-[400px] items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
-          <p className="mt-4 text-muted-foreground">Loading game...</p>
-        </div>
+      <div className="w-full space-y-6">
+        <SkeletonPlayersBar count={4} />
+        <SkeletonGameHeader />
+        <SkeletonRoundPanel />
       </div>
     );
   }
@@ -69,11 +75,10 @@ export function GameView({ lobbyId, code }: GameViewProps): React.ReactNode {
     currentRound === undefined
   ) {
     return (
-      <div className="flex min-h-[400px] items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
-          <p className="mt-4 text-muted-foreground">Loading game state...</p>
-        </div>
+      <div className="w-full space-y-6">
+        <SkeletonPlayersBar count={players?.length || 4} />
+        <SkeletonGameHeader />
+        <SkeletonRoundPanel />
       </div>
     );
   }
@@ -116,48 +121,58 @@ export function GameView({ lobbyId, code }: GameViewProps): React.ReactNode {
   return (
     <div className="w-full space-y-6">
       {isGameFinished ? (
-        <GameResults lobbyId={lobbyId} code={code} />
+        <ErrorBoundary>
+          <GameResults lobbyId={lobbyId} code={code} />
+        </ErrorBoundary>
       ) : (
         <>
-          <PlayersBar
-            lobbyId={lobbyId}
-            currentSessionId={sessionId}
-            highlightPlayerId={currentRound?.turnPlayerId ?? null}
-          />
+          <ErrorBoundary>
+            <PlayersBar
+              lobbyId={lobbyId}
+              currentSessionId={sessionId}
+              highlightPlayerId={currentRound?.turnPlayerId ?? null}
+            />
+          </ErrorBoundary>
 
           {me && me.timeline.length > 0 && (
             <div className="max-w-md">
-              <MyTimeline player={me} />
+              <ErrorBoundary>
+                <MyTimeline player={me} />
+              </ErrorBoundary>
             </div>
           )}
 
-          <GameHeader
-            roundNumber={game.currentRoundNumber ?? 1}
-            turnPlayer={
-              turnPlayer
-                ? {
-                    _id: turnPlayer._id,
-                    displayName: turnPlayer.displayName,
-                  }
-                : null
-            }
-            isMyTurn={isMyTurn}
-            turnSeconds={lobby?.settings?.turnSeconds}
-            startedAt={currentRound?.startedAt}
-          />
+          <ErrorBoundary>
+            <GameHeader
+              roundNumber={game.currentRoundNumber ?? 1}
+              turnPlayer={
+                turnPlayer
+                  ? {
+                      _id: turnPlayer._id,
+                      displayName: turnPlayer.displayName,
+                    }
+                  : null
+              }
+              isMyTurn={isMyTurn}
+              turnSeconds={lobby?.settings?.turnSeconds}
+              startedAt={currentRound?.startedAt}
+            />
+          </ErrorBoundary>
 
-          <CurrentRoundPanel
-            phase={roundPhase}
-            isMyTurn={isMyTurn}
-            lobbyId={lobbyId}
-            me={me ?? null}
-            players={players ?? null}
-            track={trackInfo}
-            existingPreviewIndex={currentRound?.placementPreview?.proposedIndex ?? null}
-            turnPlayerTimeline={turnPlayer?.timeline ?? []}
-            turnPlayerTimelineSize={turnPlayer?.timelineSize ?? 0}
-            resolution={currentRound?.resolution ?? null}
-          />
+          <ErrorBoundary>
+            <CurrentRoundPanel
+              phase={roundPhase}
+              isMyTurn={isMyTurn}
+              lobbyId={lobbyId}
+              me={me ?? null}
+              players={players ?? null}
+              track={trackInfo}
+              existingPreviewIndex={currentRound?.placementPreview?.proposedIndex ?? null}
+              turnPlayerTimeline={turnPlayer?.timeline ?? []}
+              turnPlayerTimelineSize={turnPlayer?.timelineSize ?? 0}
+              resolution={currentRound?.resolution ?? null}
+            />
+          </ErrorBoundary>
         </>
       )}
     </div>

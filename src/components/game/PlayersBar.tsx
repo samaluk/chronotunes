@@ -3,6 +3,7 @@
 import { useQuery } from "convex/react";
 import type { GenericId } from "convex/values";
 import { User } from "lucide-react";
+import { SkeletonPlayersBar } from "@/components/ui/skeletons";
 import { api } from "@/convex/_generated/api.js";
 
 interface PlayerStats {
@@ -28,11 +29,7 @@ export function PlayersBar({
   const players = useQuery(api.players.list, { lobbyId });
 
   if (players === undefined) {
-    return (
-      <div className="flex items-center justify-center py-3">
-        <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-primary"></div>
-      </div>
-    );
+    return <SkeletonPlayersBar count={4} />;
   }
 
   if (players.length === 0) {

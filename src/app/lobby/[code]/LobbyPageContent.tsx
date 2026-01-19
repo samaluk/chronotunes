@@ -9,6 +9,8 @@ import { GameView } from "@/components/game/GameView";
 import { PlayerList } from "@/components/lobby/PlayerList";
 import { SettingsPanel } from "@/components/lobby/SettingsPanel";
 import { StartGameButton } from "@/components/lobby/StartGameButton";
+import { ErrorBoundary } from "@/components/ui/error-boundary";
+import { SkeletonLobbyCode, SkeletonPage, SkeletonPlayerList } from "@/components/ui/skeletons";
 import { api } from "@/convex/_generated/api.js";
 import { useSessionId } from "@/lib/hooks/use-session-id";
 
@@ -79,14 +81,7 @@ export default function LobbyPageContent({ code }: LobbyPageContentProps): React
   };
 
   if (!mounted) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-background">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
-          <p className="mt-4 text-muted-foreground">Loading...</p>
-        </div>
-      </div>
-    );
+    return <SkeletonPage />;
   }
 
   if (!code) {
@@ -101,11 +96,28 @@ export default function LobbyPageContent({ code }: LobbyPageContentProps): React
 
   if (lobby === undefined || players === undefined) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-background">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
-          <p className="mt-4 text-muted-foreground">Loading lobby...</p>
-        </div>
+      <div className="flex min-h-screen flex-col bg-background">
+        <header className="border-b bg-card">
+          <div className="container mx-auto px-4 py-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
+                  <Music className="h-5 w-5 text-primary" />
+                </div>
+                <div>
+                  <h1 className="text-xl font-bold">ChronoTunes</h1>
+                  <p className="text-sm text-muted-foreground">Music Timeline Game</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </header>
+        <main className="flex-1 container mx-auto px-4 py-8">
+          <div className="max-w-4xl mx-auto space-y-8">
+            <SkeletonLobbyCode />
+            <SkeletonPlayerList count={4} />
+          </div>
+        </main>
       </div>
     );
   }
@@ -190,11 +202,15 @@ export default function LobbyPageContent({ code }: LobbyPageContentProps): React
           </div>
 
           {isInGame ? (
-            <GameView lobbyId={lobby._id} code={code} />
+            <ErrorBoundary>
+              <GameView lobbyId={lobby._id} code={code} />
+            </ErrorBoundary>
           ) : (
             <div className="grid gap-8 md:grid-cols-2">
               <div className="space-y-6">
-                <PlayerList lobbyId={lobby._id} currentSessionId={sessionId} />
+                <ErrorBoundary>
+                  <PlayerList lobbyId={lobby._id} currentSessionId={sessionId} />
+                </ErrorBoundary>
                 <StartGameButton lobbyId={lobby._id} isHost={isHost} playerCount={players.length} />
               </div>
               <div className="space-y-6">
