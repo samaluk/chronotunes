@@ -155,10 +155,8 @@ import { expect, test } from "vitest";
 import { api } from "./_generated/api";
 import schema from "./schema";
 
-const modules = import.meta.glob("./**/*.ts");
-
 test("create lobby generates 6-char code", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema);
   const result = await t.mutation(api.lobbies.create, { displayName: "Host" });
   expect(result.code).toHaveLength(6);
 });

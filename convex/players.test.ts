@@ -4,7 +4,7 @@ import { api } from "./_generated/api";
 import schema from "./schema";
 
 test("list returns all players in lobby", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema);
 
   const { code } = await t.mutation(api.lobbies.create, {
     sessionId: "list-host-session",
@@ -32,7 +32,7 @@ test("list returns all players in lobby", async () => {
 });
 
 test("list returns empty array for lobby with no players", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema);
 
   const { code } = await t.mutation(api.lobbies.create, {
     sessionId: "list-empty-host",
@@ -46,7 +46,7 @@ test("list returns empty array for lobby with no players", async () => {
 });
 
 test("list returns players with correct properties", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema);
 
   const { code } = await t.mutation(api.lobbies.create, {
     sessionId: "list-props-host",
@@ -80,7 +80,7 @@ test("list returns players with correct properties", async () => {
 });
 
 test("getMe returns current player by sessionId", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema);
 
   const { code } = await t.mutation(api.lobbies.create, {
     sessionId: "me-host-session",
@@ -107,7 +107,7 @@ test("getMe returns current player by sessionId", async () => {
 });
 
 test("getMe returns host player", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema);
 
   const { code } = await t.mutation(api.lobbies.create, {
     sessionId: "me-real-host-session",
@@ -127,7 +127,7 @@ test("getMe returns host player", async () => {
 });
 
 test("getMe returns null when session not in lobby", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema);
 
   const { code } = await t.mutation(api.lobbies.create, {
     sessionId: "me-not-in-session",
@@ -143,5 +143,3 @@ test("getMe returns null when session not in lobby", async () => {
 
   expect(me).toBeNull();
 });
-
-const modules = import.meta.glob("./**/*.ts");

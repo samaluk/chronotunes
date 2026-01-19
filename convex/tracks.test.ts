@@ -3,10 +3,8 @@ import { expect, test } from "vitest";
 import { api } from "./_generated/api";
 import schema from "./schema";
 
-const modules = import.meta.glob("./**/*.ts");
-
 test("get returns track by ID", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema);
 
   const trackId = await t.run(async (ctx) => {
     return await ctx.db.insert("tracks", {
@@ -30,7 +28,7 @@ test("get returns track by ID", async () => {
 });
 
 test("get returns multiple tracks by ID", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema);
 
   const trackId1 = await t.run(async (ctx) => {
     return await ctx.db.insert("tracks", {
@@ -79,7 +77,7 @@ test("get returns multiple tracks by ID", async () => {
 });
 
 test("get returns empty array for empty input", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema);
 
   const tracks = await t.query(api.tracks.get, { trackIds: [] });
 

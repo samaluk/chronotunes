@@ -4,7 +4,6 @@ import { api } from "../_generated/api";
 import type { Id } from "../_generated/dataModel";
 import schema from "../schema";
 
-const modules = import.meta.glob("../**/*.ts");
 
 async function seedTracks(t: ReturnType<typeof convexTest>) {
   await t.run(async (ctx) => {

@@ -28,7 +28,7 @@ async function seedTestData(t: ReturnType<typeof convexTest>) {
 }
 
 test("preview creates unlocked bet for non-turn player", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema);
 
   await seedTestData(t);
 
@@ -121,7 +121,7 @@ test("preview creates unlocked bet for non-turn player", async () => {
 });
 
 test("preview deducts 1 coin from player", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema);
 
   await seedTestData(t);
 
@@ -204,7 +204,7 @@ test("preview deducts 1 coin from player", async () => {
 });
 
 test("preview fails for turn player", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema);
 
   await seedTestData(t);
 
@@ -258,7 +258,7 @@ test("preview fails for turn player", async () => {
 });
 
 test("preview fails when player has no coins", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema);
 
   await seedTestData(t);
 
@@ -332,7 +332,7 @@ test("preview fails when player has no coins", async () => {
 });
 
 test("preview fails for negative index", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema);
 
   await seedTestData(t);
 
@@ -396,7 +396,7 @@ test("preview fails for negative index", async () => {
 });
 
 test("preview updates existing unlocked bet", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema);
 
   await seedTestData(t);
 
@@ -474,7 +474,7 @@ test("preview updates existing unlocked bet", async () => {
 });
 
 test("preview fails when bet is already locked in", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema);
 
   await seedTestData(t);
 
@@ -543,7 +543,7 @@ test("preview fails when bet is already locked in", async () => {
 });
 
 test("lockIn sets lockedIn to true", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema);
 
   await seedTestData(t);
 
@@ -622,7 +622,7 @@ test("lockIn sets lockedIn to true", async () => {
 });
 
 test("lockIn fails when no bet exists", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema);
 
   await seedTestData(t);
 
@@ -659,7 +659,7 @@ test("lockIn fails when no bet exists", async () => {
 });
 
 test("lockIn fails when bet is already locked", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema);
 
   await seedTestData(t);
 
@@ -727,7 +727,7 @@ test("lockIn fails when bet is already locked", async () => {
 });
 
 test("lockIn fails after round is resolved", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema);
 
   await seedTestData(t);
 
@@ -804,7 +804,7 @@ test("lockIn fails after round is resolved", async () => {
 });
 
 test("cancel deletes bet and refunds coin", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema);
 
   await seedTestData(t);
 
@@ -910,7 +910,7 @@ test("cancel deletes bet and refunds coin", async () => {
 });
 
 test("cancel fails when no bet exists", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema);
 
   await seedTestData(t);
 
@@ -947,7 +947,7 @@ test("cancel fails when no bet exists", async () => {
 });
 
 test("cancel fails when bet is locked in", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema);
 
   await seedTestData(t);
 
@@ -1015,7 +1015,7 @@ test("cancel fails when bet is locked in", async () => {
 });
 
 test("cancel fails after round is resolved", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema);
 
   await seedTestData(t);
 
@@ -1092,7 +1092,7 @@ test("cancel fails after round is resolved", async () => {
 });
 
 test("preview works during betting phase", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema);
 
   await seedTestData(t);
 
@@ -1163,7 +1163,7 @@ test("preview works during betting phase", async () => {
 });
 
 test("preview works during placing phase", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema);
 
   await seedTestData(t);
 
@@ -1225,10 +1225,8 @@ test("preview works during placing phase", async () => {
   }
 });
 
-const modules = import.meta.glob("./**/*.ts");
-
 test("listForRound returns all bets when showLiveBets is true", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema);
 
   await seedTestData(t);
 
@@ -1299,7 +1297,7 @@ test("listForRound returns all bets when showLiveBets is true", async () => {
 });
 
 test("listForRound returns only locked bets when showLiveBets is false", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema);
 
   await seedTestData(t);
 
@@ -1401,7 +1399,7 @@ test("listForRound returns only locked bets when showLiveBets is false", async (
 });
 
 test("listForRound returns empty array when no bets exist", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema);
 
   await seedTestData(t);
 
@@ -1429,7 +1427,7 @@ test("listForRound returns empty array when no bets exist", async () => {
 });
 
 test("listForRound returns empty array when no active game", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema);
 
   const { code } = await t.mutation(api.lobbies.create, {
     sessionId: "host-session-nogame",

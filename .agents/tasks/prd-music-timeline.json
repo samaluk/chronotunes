@@ -1095,7 +1095,11 @@
         "Same-year songs can be in any order",
         "Empty timeline allows index 0",
         "All tests pass including edge cases"
-      ]
+      ],
+      "status": "done",
+      "startedAt": "2026-01-19T00:15:10.694125+00:00",
+      "completedAt": "2026-01-19T00:17:53.191254+00:00",
+      "updatedAt": "2026-01-19T00:17:53.190835+00:00"
     },
     {
       "id": "S21",
@@ -1118,7 +1122,11 @@
         "Game ends if win condition met",
         "Next round created if game continues",
         "All tests pass"
-      ]
+      ],
+      "status": "in_progress",
+      "startedAt": "2026-01-19T00:17:55.269596+00:00",
+      "completedAt": null,
+      "updatedAt": "2026-01-19T00:17:55.269816+00:00"
     },
     {
       "id": "S22",
@@ -1171,7 +1179,11 @@
         "Cards are sorted by year ascending",
         "Card details are visible",
         "Earned-by indicator shows correctly"
-      ]
+      ],
+      "status": "done",
+      "updatedAt": "2026-01-19T00:15:08.611384+00:00",
+      "completedAt": "2026-01-19T00:15:08.611850+00:00",
+      "startedAt": "2026-01-19T00:15:08.611852+00:00"
     },
     {
       "id": "S25",

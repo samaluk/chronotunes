@@ -163,3 +163,69 @@ Run summary: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-200
   - Debug output is crucial for understanding complex state transitions
   - Test setup order matters: seed tracks BEFORE game creation to ensure availability
 ---
+
+## [2026-01-19 21:17:07] - S20: Placement Validation Logic
+Thread:
+Run: 20260118-210256-43823 (iteration 2)
+Run log: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-210256-43823-iter-2.log
+Run summary: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-210256-43823-iter-2.md
+- Guardrails reviewed: yes
+- No-commit run: false
+- Commit: none - story was already completed in previous iteration (f8f02f7)
+- Post-commit status: clean (no changes needed)
+- Verification:
+  - Command: pnpm test convex/lib/gameLogic.test.ts -> PASS (23/23 tests)
+  - Command: pnpm biome check convex/lib/gameLogic.ts convex/lib/gameLogic.test.ts -> PASS
+- Files changed:
+  - none - implementation already exists
+- What was implemented:
+  - Story S20 was already completed in iteration 1 (commit f8f02f7)
+  - Implementation includes: computeValidIndexRange, isPlacementCorrect, TimelineEntry interface, ValidRange interface
+  - 23 comprehensive tests covering all edge cases
+- **Learnings for future iterations:**
+  - Always check git log first to see if story was already implemented
+  - The implementation in convex/lib/gameLogic.ts correctly handles:
+    - Empty timeline (returns {min: 0, max: 0})
+    - Same-year songs (any position among existing same-year songs is valid)
+    - Single item timeline (same year returns [0, 1], different year returns boundary)
+    - Multiple same-year groups
+    - Boundary conditions for placement
+---
+
+Thread: 
+Run: 20260118-210256-43823 (iteration 1)
+Run log: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-210256-43823-iter-1.log
+Run summary: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-210256-43823-iter-1.md
+- Guardrails reviewed: yes
+- No-commit run: false
+- Commit: 1fcb4e9 feat: Implement My Timeline component (S24)
+- Post-commit status: clean
+- Verification:
+  - Command: pnpm test src/components/game/MyTimeline.test.tsx -> PASS (6/6 tests)
+  - Command: pnpm test convex/tracks.test.ts -> PASS (3/3 tests)
+  - Command: pnpm biome check . -> PASS (1 warning in vitest.config.ts unrelated to changes)
+  - Command: pnpm build -> PASS
+- Files changed:
+  - convex/tracks.ts (new query for fetching tracks by IDs)
+  - convex/tracks.test.ts (tests for tracks query)
+  - src/components/game/MyTimeline.tsx (new component showing player's timeline)
+  - src/components/game/MyTimeline.test.tsx (6 component tests)
+  - src/components/game/GameView.tsx (modified to use MyTimeline)
+  - vitest.config.ts (added path alias for test imports)
+  - package.json, pnpm-lock.yaml (added @testing-library/jest-dom)
+- What was implemented:
+  - Created tracks.get query to fetch track details by array of IDs
+  - Created MyTimeline component that displays player's timeline cards
+  - Cards are sorted by year ascending
+  - Shows song title, artist, year for each card
+  - Indicates how each card was earned (placement vs bet) with visual indicators
+  - Empty state message when timeline is empty
+  - Integrated MyTimeline into GameView below PlayersBar
+  - Added @testing-library/jest-dom for vitest matchers
+- **Learnings for future iterations:**
+  - Path aliases in vitest require explicit resolve.alias configuration
+  - Mock useState to return [true, vi.fn()] for mounted state in tests
+  - Use getAllByText instead of queryByText when multiple matching elements exist
+  - Tracks table requires createdAt field when inserting in tests
+  - Component tests need proper mock reset between tests to avoid state leakage
+---

@@ -4,8 +4,6 @@ import { api } from "./_generated/api";
 import type { TimelineEntry } from "./lib/gameLogic";
 import schema from "./schema";
 
-const modules = import.meta.glob("./**/*.ts");
-
 async function seedTestTracks(t: ReturnType<typeof convexTest>) {
   await t.run(async (ctx) => {
     await ctx.db.insert("tracks", {
@@ -39,7 +37,7 @@ async function seedTestTracks(t: ReturnType<typeof convexTest>) {
 }
 
 test("start creates game with active status", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema);
 
   await seedTestTracks(t);
 
@@ -70,7 +68,7 @@ test("start creates game with active status", async () => {
 });
 
 test("start randomizes turn order", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema);
 
   await seedTestTracks(t);
 
@@ -112,7 +110,7 @@ test("start randomizes turn order", async () => {
 });
 
 test("start rejects when less than 2 players", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema);
 
   await seedTestTracks(t);
 
@@ -132,7 +130,7 @@ test("start rejects when less than 2 players", async () => {
 });
 
 test("start rejects when caller is not host", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema);
 
   await seedTestTracks(t);
 
@@ -158,7 +156,7 @@ test("start rejects when caller is not host", async () => {
 });
 
 test("start rejects when game already started", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema);
 
   await seedTestTracks(t);
 
@@ -189,7 +187,7 @@ test("start rejects when game already started", async () => {
 });
 
 test("start creates first round with phase placing", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema);
 
   await seedTestTracks(t);
 
@@ -228,7 +226,7 @@ test("start creates first round with phase placing", async () => {
 });
 
 test("start sets turnPlayerId correctly", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema);
 
   await seedTestTracks(t);
 
@@ -257,7 +255,7 @@ test("start sets turnPlayerId correctly", async () => {
 });
 
 test("start creates game with correct structure", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema);
 
   await seedTestTracks(t);
 
@@ -311,7 +309,7 @@ async function seedMoreTestTracks(t: ReturnType<typeof convexTest>, count: numbe
 }
 
 test("skipTurn rejects when caller is not host", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema);
 
   await seedMoreTestTracks(t, 10);
 
@@ -342,7 +340,7 @@ test("skipTurn rejects when caller is not host", async () => {
 });
 
 test("skipTurn rejects when no active game", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema);
 
   const { code } = await t.mutation(api.lobbies.create, {
     sessionId: "host-skip-game",
@@ -360,7 +358,7 @@ test("skipTurn rejects when no active game", async () => {
 });
 
 test("skipTurn rejects when game is not active", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema);
 
   await seedTestTracks(t);
 
@@ -397,7 +395,7 @@ test("skipTurn rejects when game is not active", async () => {
 });
 
 test("skipTurn advances to next player", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema);
 
   await seedMoreTestTracks(t, 10);
 
@@ -445,7 +443,7 @@ test("skipTurn advances to next player", async () => {
 });
 
 test("skipTurn creates new round", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema);
 
   await seedMoreTestTracks(t, 10);
 
@@ -489,7 +487,7 @@ test("skipTurn creates new round", async () => {
 });
 
 test("skipTurn handles end of turn order", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema);
 
   await seedMoreTestTracks(t, 10);
 
@@ -565,7 +563,7 @@ async function setupGameForResolve(t: ReturnType<typeof convexTest>) {
 }
 
 test("resolveAndNext rejects when caller is not host", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema);
 
   await seedMoreTestTracks(t, 10);
 
@@ -580,7 +578,7 @@ test("resolveAndNext rejects when caller is not host", async () => {
 });
 
 test("resolveAndNext rejects when no active game", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema);
 
   const { code: code2 } = await t.mutation(api.lobbies.create, {
     sessionId: "host-resolve-game",
@@ -598,7 +596,7 @@ test("resolveAndNext rejects when no active game", async () => {
 });
 
 test("resolveAndNext rejects when game is not active", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema);
 
   await seedMoreTestTracks(t, 10);
 
@@ -619,7 +617,7 @@ test("resolveAndNext rejects when game is not active", async () => {
 });
 
 test("resolveAndNext rejects when round is not in betting phase", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema);
 
   await seedMoreTestTracks(t, 10);
 
@@ -634,7 +632,7 @@ test("resolveAndNext rejects when round is not in betting phase", async () => {
 });
 
 test("resolveAndNext rejects when placement not submitted", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema);
 
   await seedMoreTestTracks(t, 10);
 
@@ -656,7 +654,7 @@ test("resolveAndNext rejects when placement not submitted", async () => {
 });
 
 test("resolveAndNext adds card to turn player when correct", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema);
 
   await seedMoreTestTracks(t, 10);
 
@@ -705,7 +703,7 @@ test("resolveAndNext adds card to turn player when correct", async () => {
 });
 
 test("resolveAndNext discards card when turn player wrong", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema);
 
   await seedMoreTestTracks(t, 10);
 
@@ -739,7 +737,7 @@ test("resolveAndNext discards card when turn player wrong", async () => {
 });
 
 test("resolveAndNext ends game when win condition met", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema);
 
   await seedMoreTestTracks(t, 20);
 
@@ -810,7 +808,7 @@ test("resolveAndNext ends game when win condition met", async () => {
 });
 
 test("resolveAndNext creates next round after resolution", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema);
 
   await seedMoreTestTracks(t, 20);
 
@@ -856,7 +854,7 @@ test("resolveAndNext creates next round after resolution", async () => {
 });
 
 test("resolveAndNext handles betting outcomes correctly", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema);
 
   await seedMoreTestTracks(t, 10);
 
@@ -927,7 +925,7 @@ test("resolveAndNext handles betting outcomes correctly", async () => {
 });
 
 test("resolveAndNext awards card to bettor when turn player wrong and bettor correct", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema);
 
   await seedMoreTestTracks(t, 10);
 
@@ -996,7 +994,7 @@ test("resolveAndNext awards card to bettor when turn player wrong and bettor cor
 });
 
 test("resolveAndNext sets round phase to resolved", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema);
 
   await seedMoreTestTracks(t, 10);
 
@@ -1027,7 +1025,7 @@ test("resolveAndNext sets round phase to resolved", async () => {
 });
 
 test("resolveAndNext handles empty betting phase", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema);
 
   await seedMoreTestTracks(t, 10);
 
@@ -1053,7 +1051,7 @@ test("resolveAndNext handles empty betting phase", async () => {
 });
 
 test("resolveAndNext handles no tracks available", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema);
 
   await t.run(async (ctx) => {
     await ctx.db.insert("tracks", {

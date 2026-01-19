@@ -4,7 +4,7 @@ import { api } from "./_generated/api";
 import schema from "./schema";
 
 test("create lobby generates 6-char code", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema);
   const result = await t.mutation(api.lobbies.create, {
     sessionId: "test-session-123",
     displayName: "TestHost",
@@ -13,7 +13,7 @@ test("create lobby generates 6-char code", async () => {
 });
 
 test("create lobby returns alphanumeric code only", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema);
   const result = await t.mutation(api.lobbies.create, {
     sessionId: "test-session-456",
     displayName: "AnotherHost",
@@ -22,7 +22,7 @@ test("create lobby returns alphanumeric code only", async () => {
 });
 
 test("create lobby creates lobby with status lobby", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema);
   await t.mutation(api.lobbies.create, {
     sessionId: "test-session-789",
     displayName: "StatusHost",
@@ -37,7 +37,7 @@ test("create lobby creates lobby with status lobby", async () => {
 });
 
 test("create lobby creates host player with isHost true", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema);
   await t.mutation(api.lobbies.create, {
     sessionId: "test-session-host",
     displayName: "HostPlayer",
@@ -53,7 +53,7 @@ test("create lobby creates host player with isHost true", async () => {
 });
 
 test("create lobby creates host with default starting coins", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema);
   await t.mutation(api.lobbies.create, {
     sessionId: "test-session-coins",
     displayName: "CoinsHost",
@@ -67,7 +67,7 @@ test("create lobby creates host with default starting coins", async () => {
 });
 
 test("create lobby rejects empty display name", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema);
   await expect(
     t.mutation(api.lobbies.create, {
       sessionId: "test-session-empty",
@@ -77,7 +77,7 @@ test("create lobby rejects empty display name", async () => {
 });
 
 test("create lobby rejects display name too long", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema);
   await expect(
     t.mutation(api.lobbies.create, {
       sessionId: "test-session-long",
@@ -87,7 +87,7 @@ test("create lobby rejects display name too long", async () => {
 });
 
 test("create lobby generates unique codes", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema);
   const codes = new Set<string>();
 
   for (let i = 0; i < 10; i++) {
@@ -102,7 +102,7 @@ test("create lobby generates unique codes", async () => {
 });
 
 test("join lobby adds player to existing lobby", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema);
 
   const { code } = await t.mutation(api.lobbies.create, {
     sessionId: "host-session",
@@ -129,7 +129,7 @@ test("join lobby adds player to existing lobby", async () => {
 });
 
 test("join lobby returns lobby id", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema);
 
   const { code } = await t.mutation(api.lobbies.create, {
     sessionId: "host-session-return",
@@ -146,7 +146,7 @@ test("join lobby returns lobby id", async () => {
 });
 
 test("join lobby rejects invalid code", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema);
 
   await expect(
     t.mutation(api.lobbies.join, {
@@ -158,7 +158,7 @@ test("join lobby rejects invalid code", async () => {
 });
 
 test("join lobby rejects empty display name", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema);
 
   const { code } = await t.mutation(api.lobbies.create, {
     sessionId: "host-session-empty",
@@ -175,7 +175,7 @@ test("join lobby rejects empty display name", async () => {
 });
 
 test("join lobby rejects display name too long", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema);
 
   const { code } = await t.mutation(api.lobbies.create, {
     sessionId: "host-session-long",
@@ -192,7 +192,7 @@ test("join lobby rejects display name too long", async () => {
 });
 
 test("join lobby rejects when session already in lobby", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema);
 
   const { code } = await t.mutation(api.lobbies.create, {
     sessionId: "host-session-dup",
@@ -215,7 +215,7 @@ test("join lobby rejects when session already in lobby", async () => {
 });
 
 test("join lobby rejects when lobby status is in_game", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema);
 
   const { code } = await t.mutation(api.lobbies.create, {
     sessionId: "host-session-game",
@@ -239,7 +239,7 @@ test("join lobby rejects when lobby status is in_game", async () => {
 });
 
 test("join lobby is case insensitive for code", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema);
 
   const { code } = await t.mutation(api.lobbies.create, {
     sessionId: "host-session-case",
@@ -263,7 +263,7 @@ test("join lobby is case insensitive for code", async () => {
 });
 
 test("join lobby uses lobby's starting coins setting", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema);
 
   const { code } = await t.mutation(api.lobbies.create, {
     sessionId: "host-session-coins",
@@ -293,7 +293,7 @@ test("join lobby uses lobby's starting coins setting", async () => {
 });
 
 test("leave lobby removes player from lobby", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema);
 
   const { code } = await t.mutation(api.lobbies.create, {
     sessionId: "host-session-leave",
@@ -326,7 +326,7 @@ test("leave lobby removes player from lobby", async () => {
 });
 
 test("leave lobby rejects when player not in lobby", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema);
 
   const { code } = await t.mutation(api.lobbies.create, {
     sessionId: "host-session-not-in",
@@ -342,7 +342,7 @@ test("leave lobby rejects when player not in lobby", async () => {
 });
 
 test("leave lobby rejects when lobby not found", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema);
 
   await expect(
     t.mutation(api.lobbies.leave, {
@@ -353,7 +353,7 @@ test("leave lobby rejects when lobby not found", async () => {
 });
 
 test("leave lobby transfers host when host leaves and players remain", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema);
 
   const { code } = await t.mutation(api.lobbies.create, {
     sessionId: "host-session-transfer",
@@ -387,7 +387,7 @@ test("leave lobby transfers host when host leaves and players remain", async () 
 });
 
 test("leave lobby deletes lobby when last player leaves", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema);
 
   const { code } = await t.mutation(api.lobbies.create, {
     sessionId: "host-session-delete",
@@ -413,7 +413,7 @@ test("leave lobby deletes lobby when last player leaves", async () => {
 });
 
 test("leave lobby is case insensitive for code", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema);
 
   const { code } = await t.mutation(api.lobbies.create, {
     sessionId: "host-session-case-leave",
@@ -439,7 +439,7 @@ test("leave lobby is case insensitive for code", async () => {
 });
 
 test("leave lobby works when non-host leaves", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema);
 
   const { code } = await t.mutation(api.lobbies.create, {
     sessionId: "host-session-nonhost",
@@ -473,7 +473,7 @@ test("leave lobby works when non-host leaves", async () => {
 });
 
 test("get lobby returns lobby by code", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema);
 
   const { code } = await t.mutation(api.lobbies.create, {
     sessionId: "get-session-host",
@@ -489,7 +489,7 @@ test("get lobby returns lobby by code", async () => {
 });
 
 test("get lobby returns null for invalid code", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema);
 
   const lobby = await t.query(api.lobbies.get, { code: "INVALID" });
 
@@ -497,7 +497,7 @@ test("get lobby returns null for invalid code", async () => {
 });
 
 test("get lobby is case insensitive for code", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema);
 
   const { code } = await t.mutation(api.lobbies.create, {
     sessionId: "get-case-session-host",
@@ -513,7 +513,7 @@ test("get lobby is case insensitive for code", async () => {
 });
 
 test("get lobby returns lobby with settings", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema);
 
   const { code } = await t.mutation(api.lobbies.create, {
     sessionId: "get-settings-host",
@@ -531,7 +531,7 @@ test("get lobby returns lobby with settings", async () => {
 });
 
 test("updateSettings allows host to update targetTimelineSize", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema);
 
   const { code } = await t.mutation(api.lobbies.create, {
     sessionId: "host-session-update",
@@ -559,7 +559,7 @@ test("updateSettings allows host to update targetTimelineSize", async () => {
 });
 
 test("updateSettings allows host to update startingCoins", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema);
 
   const { code } = await t.mutation(api.lobbies.create, {
     sessionId: "host-session-coins",
@@ -587,7 +587,7 @@ test("updateSettings allows host to update startingCoins", async () => {
 });
 
 test("updateSettings allows host to update turnSeconds", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema);
 
   const { code } = await t.mutation(api.lobbies.create, {
     sessionId: "host-session-turn",
@@ -615,7 +615,7 @@ test("updateSettings allows host to update turnSeconds", async () => {
 });
 
 test("updateSettings allows host to update year range", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema);
 
   const { code } = await t.mutation(api.lobbies.create, {
     sessionId: "host-session-years",
@@ -644,7 +644,7 @@ test("updateSettings allows host to update year range", async () => {
 });
 
 test("updateSettings rejects non-host", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema);
 
   const { code } = await t.mutation(api.lobbies.create, {
     sessionId: "host-session-reject",
@@ -677,7 +677,7 @@ test("updateSettings rejects non-host", async () => {
 });
 
 test("updateSettings rejects targetTimelineSize below 5", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema);
 
   const { code } = await t.mutation(api.lobbies.create, {
     sessionId: "host-session-min",
@@ -704,7 +704,7 @@ test("updateSettings rejects targetTimelineSize below 5", async () => {
 });
 
 test("updateSettings rejects targetTimelineSize above 15", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema);
 
   const { code } = await t.mutation(api.lobbies.create, {
     sessionId: "host-session-max",
@@ -731,7 +731,7 @@ test("updateSettings rejects targetTimelineSize above 15", async () => {
 });
 
 test("updateSettings rejects startingCoins below 1", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema);
 
   const { code } = await t.mutation(api.lobbies.create, {
     sessionId: "host-session-coins-min",
@@ -758,7 +758,7 @@ test("updateSettings rejects startingCoins below 1", async () => {
 });
 
 test("updateSettings rejects startingCoins above 10", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema);
 
   const { code } = await t.mutation(api.lobbies.create, {
     sessionId: "host-session-coins-max",
@@ -785,7 +785,7 @@ test("updateSettings rejects startingCoins above 10", async () => {
 });
 
 test("updateSettings rejects turnSeconds below 15", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema);
 
   const { code } = await t.mutation(api.lobbies.create, {
     sessionId: "host-session-turn-min",
@@ -812,7 +812,7 @@ test("updateSettings rejects turnSeconds below 15", async () => {
 });
 
 test("updateSettings rejects turnSeconds above 120", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema);
 
   const { code } = await t.mutation(api.lobbies.create, {
     sessionId: "host-session-turn-max",
@@ -839,7 +839,7 @@ test("updateSettings rejects turnSeconds above 120", async () => {
 });
 
 test("updateSettings rejects bettingWindowSeconds below 5", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema);
 
   const { code } = await t.mutation(api.lobbies.create, {
     sessionId: "host-session-bet-min",
@@ -866,7 +866,7 @@ test("updateSettings rejects bettingWindowSeconds below 5", async () => {
 });
 
 test("updateSettings rejects bettingWindowSeconds above 60", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema);
 
   const { code } = await t.mutation(api.lobbies.create, {
     sessionId: "host-session-bet-max",
@@ -893,7 +893,7 @@ test("updateSettings rejects bettingWindowSeconds above 60", async () => {
 });
 
 test("updateSettings rejects minYear below 1900", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema);
 
   const { code } = await t.mutation(api.lobbies.create, {
     sessionId: "host-session-year-min",
@@ -920,7 +920,7 @@ test("updateSettings rejects minYear below 1900", async () => {
 });
 
 test("updateSettings rejects minYear above maxYear", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema);
 
   const { code } = await t.mutation(api.lobbies.create, {
     sessionId: "host-session-year-range",
@@ -947,7 +947,7 @@ test("updateSettings rejects minYear above maxYear", async () => {
 });
 
 test("updateSettings rejects maxYear below minYear", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema);
 
   const { code } = await t.mutation(api.lobbies.create, {
     sessionId: "host-session-max-min",
@@ -974,7 +974,7 @@ test("updateSettings rejects maxYear below minYear", async () => {
 });
 
 test("updateSettings rejects maxYear above 2030", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema);
 
   const { code } = await t.mutation(api.lobbies.create, {
     sessionId: "host-session-max-future",
@@ -1001,7 +1001,7 @@ test("updateSettings rejects maxYear above 2030", async () => {
 });
 
 test("updateSettings rejects when lobby not found", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema);
 
   await expect(
     t.mutation(api.lobbies.updateSettings, {
@@ -1023,7 +1023,7 @@ test("updateSettings rejects when lobby not found", async () => {
 });
 
 test("updateSettings rejects when lobby status is in_game", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema);
 
   const { code } = await t.mutation(api.lobbies.create, {
     sessionId: "host-session-game",
@@ -1057,7 +1057,7 @@ test("updateSettings rejects when lobby status is in_game", async () => {
 });
 
 test("updateSettings is case insensitive for code", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema);
 
   const { code } = await t.mutation(api.lobbies.create, {
     sessionId: "host-session-case",
@@ -1085,7 +1085,7 @@ test("updateSettings is case insensitive for code", async () => {
 });
 
 test("updateSettings allows host to toggle boolean settings", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema);
 
   const { code } = await t.mutation(api.lobbies.create, {
     sessionId: "host-session-bool",
@@ -1113,5 +1113,3 @@ test("updateSettings allows host to toggle boolean settings", async () => {
   expect(lobby?.settings.showLiveBets).toBe(false);
   expect(lobby?.settings.allowBetRetraction).toBe(false);
 });
-
-const modules = import.meta.glob("./**/*.ts");

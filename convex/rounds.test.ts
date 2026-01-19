@@ -28,7 +28,7 @@ async function seedTestData(t: ReturnType<typeof convexTest>) {
 }
 
 test("getCurrent returns null when no active game", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema);
 
   await seedTestData(t);
 
@@ -48,7 +48,7 @@ test("getCurrent returns null when no active game", async () => {
 });
 
 test("getCurrent returns current round for active game", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema);
 
   await seedTestData(t);
 
@@ -83,7 +83,7 @@ test("getCurrent returns current round for active game", async () => {
 });
 
 test("getCurrent hides track details during placing phase for non-host", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema);
 
   await seedTestData(t);
 
@@ -121,7 +121,7 @@ test("getCurrent hides track details during placing phase for non-host", async (
 });
 
 test("getCurrent shows track details during placing phase for host", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema);
 
   await seedTestData(t);
 
@@ -159,7 +159,7 @@ test("getCurrent shows track details during placing phase for host", async () =>
 });
 
 test("getCurrent includes placementPreview", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema);
 
   await seedTestData(t);
 
@@ -204,7 +204,7 @@ test("getCurrent includes placementPreview", async () => {
 });
 
 test("setPlacementPreview allows turn player to preview placement", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema);
 
   await seedTestData(t);
 
@@ -261,7 +261,7 @@ test("setPlacementPreview allows turn player to preview placement", async () => 
 });
 
 test("setPlacementPreview fails for non-turn player", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema);
 
   await seedTestData(t);
 
@@ -332,7 +332,7 @@ test("setPlacementPreview fails for non-turn player", async () => {
 });
 
 test("setPlacementPreview fails for negative index", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema);
 
   await seedTestData(t);
 
@@ -380,7 +380,7 @@ test("setPlacementPreview fails for negative index", async () => {
 });
 
 test("setPlacementPreview fails when not in placing phase", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema);
 
   await seedTestData(t);
 
@@ -420,7 +420,7 @@ test("setPlacementPreview fails when not in placing phase", async () => {
 });
 
 test("setPlacementPreview updates existing preview", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema);
 
   await seedTestData(t);
 
@@ -479,7 +479,7 @@ test("setPlacementPreview updates existing preview", async () => {
 });
 
 test("submitPlacement allows turn player to finalize placement", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema);
 
   await seedTestData(t);
 
@@ -542,7 +542,7 @@ test("submitPlacement allows turn player to finalize placement", async () => {
 });
 
 test("submitPlacement fails for non-turn player", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema);
 
   await seedTestData(t);
 
@@ -611,7 +611,7 @@ test("submitPlacement fails for non-turn player", async () => {
 });
 
 test("submitPlacement fails when not in placing phase", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema);
 
   await seedTestData(t);
 
@@ -666,7 +666,7 @@ test("submitPlacement fails when not in placing phase", async () => {
 });
 
 test("submitPlacement fails when already submitted", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema);
 
   await seedTestData(t);
 
@@ -724,7 +724,7 @@ test("submitPlacement fails when already submitted", async () => {
 });
 
 test("submitPlacement fails without preview", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema);
 
   await seedTestData(t);
 
@@ -769,5 +769,3 @@ test("submitPlacement fails without preview", async () => {
     }),
   ).rejects.toThrow("Please preview your placement first");
 });
-
-const modules = import.meta.glob("./**/*.ts");
