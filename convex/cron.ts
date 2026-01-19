@@ -9,4 +9,6 @@ crons.interval(
   internal.hostDisconnect.checkHostDisconnect,
 );
 
+crons.interval("check host transfer", { seconds: 10 }, internal.hostDisconnect.checkHostTransfer);
+
 export default crons;
