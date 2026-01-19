@@ -192,6 +192,36 @@ Run summary: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-210
     - Boundary conditions for placement
 ---
 
+## [2026-01-19 02:02:00] - S21: Round Resolution Mutation
+Thread:
+Run: 20260118-210256-43823 (iteration 3)
+Run log: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-210256-43823-iter-3.log
+Run summary: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-210256-43823-iter-3.md
+- Guardrails reviewed: yes
+- No-commit run: false
+- Commit: 830b8a5 S21: Implement games.resolveAndNext mutation for round resolution (from previous iteration)
+- Post-commit status: clean
+- Verification:
+  - Command: pnpm biome check convex/games.ts -> PASS
+  - Command: grep -n "export const resolveAndNext" convex/games.ts -> PASS (line 191)
+  - Command: grep -c "turnPlayerWasCorrect" convex/games.ts -> PASS (4 occurrences)
+- Files changed:
+  - none - implementation already exists
+- What was implemented:
+  - Story S21 was already completed in previous iteration (commit 830b8a5)
+  - Implementation includes: resolveAndNext mutation for resolving rounds and advancing game
+  - Full betting outcome logic: turn correct=card to turn player, bettors lose coins
+  - Turn wrong + bettor correct = bettor wins card, keeps coin
+  - Turn wrong + bettor wrong = bettor loses coin
+  - Win condition check and next round creation
+  - 13 comprehensive tests in convex/games.test.ts
+- **Learnings for future iterations:**
+  - Always check git log first to verify if story is already implemented
+  - The resolveAndNext mutation is ~180 lines in convex/games.ts
+  - Tests use seedMoreTestTracks helper for track availability in multi-round scenarios
+  - convex-test library has known compatibility issues (glob is not a function error)
+---
+
 Thread: 
 Run: 20260118-210256-43823 (iteration 1)
 Run log: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-210256-43823-iter-1.log
