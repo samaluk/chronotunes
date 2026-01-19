@@ -2,28 +2,59 @@
 
 import type { GenericId } from "convex/values";
 import { Music } from "lucide-react";
+import { TimelinePlacer } from "./TimelinePlacer";
 
 export type RoundPhase = "placing" | "betting" | "resolved";
+
+interface TimelineEntry {
+  trackId: GenericId<"tracks">;
+  year: number;
+  earnedAtRoundNumber: number;
+  earnedBy: "placement" | "bet";
+}
+
+interface Player {
+  _id: GenericId<"players">;
+  displayName: string;
+  timeline: TimelineEntry[];
+  timelineSize: number;
+}
 
 interface CurrentRoundPanelProps {
   phase: RoundPhase;
   isMyTurn: boolean;
+  lobbyId?: GenericId<"lobbies">;
+  me?: Player | null;
   track?: {
     _id: GenericId<"tracks">;
     title: string;
     artist: string;
     year: number;
   } | null;
+  existingPreviewIndex?: number | null;
 }
 
 export function CurrentRoundPanel({
   phase,
   isMyTurn,
+  lobbyId,
+  me,
   track,
+  existingPreviewIndex,
 }: CurrentRoundPanelProps): React.ReactNode {
   const renderPhaseContent = (): React.ReactNode => {
     switch (phase) {
       case "placing":
+        if (isMyTurn && lobbyId && me && track) {
+          return (
+            <TimelinePlacer
+              lobbyId={lobbyId}
+              player={me}
+              currentTrack={track}
+              existingPreviewIndex={existingPreviewIndex ?? null}
+            />
+          );
+        }
         return (
           <div className="flex flex-col items-center justify-center py-12 space-y-4">
             <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
@@ -39,12 +70,6 @@ export function CurrentRoundPanel({
                   : "Wait for the player to finish placing"}
               </p>
             </div>
-            {track && (
-              <div className="mt-4 p-4 rounded-lg bg-muted border max-w-md w-full">
-                <p className="text-sm text-muted-foreground">Current song</p>
-                <p className="text-lg font-semibold mt-1">??? - ??? (????)</p>
-              </div>
-            )}
           </div>
         );
 
@@ -60,12 +85,6 @@ export function CurrentRoundPanel({
                 Where should the song go on the timeline?
               </p>
             </div>
-            {track && (
-              <div className="mt-4 p-4 rounded-lg bg-muted border max-w-md w-full">
-                <p className="text-sm text-muted-foreground">Current song</p>
-                <p className="text-lg font-semibold mt-1">??? - ??? (????)</p>
-              </div>
-            )}
           </div>
         );
 

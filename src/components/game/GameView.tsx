@@ -139,7 +139,14 @@ export function GameView({ lobbyId, code }: GameViewProps): React.ReactNode {
         startedAt={currentRound?.startedAt}
       />
 
-      <CurrentRoundPanel phase={roundPhase} isMyTurn={isMyTurn} track={trackInfo} />
+      <CurrentRoundPanel
+        phase={roundPhase}
+        isMyTurn={isMyTurn}
+        lobbyId={lobbyId}
+        me={me}
+        track={trackInfo}
+        existingPreviewIndex={currentRound?.placementPreview?.proposedIndex ?? null}
+      />
     </div>
   );
 }
