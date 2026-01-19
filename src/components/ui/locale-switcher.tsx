@@ -1,34 +1,33 @@
 "use client";
 
 import { Globe } from "lucide-react";
-import { usePathname, useRouter } from "next/navigation";
-import { useLocale, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
+import { useLocaleContext } from "@/lib/hooks/useLocale";
+import { cn } from "@/lib/utils";
 
-const locales = [
-  { code: "en", name: "English" },
-  { code: "es", name: "Español" },
-  { code: "fr", name: "Français" },
-  { code: "de", name: "Deutsch" },
-  { code: "pt", name: "Português" },
-  { code: "ja", name: "日本語" },
-];
+const localeNames: Record<string, string> = {
+  en: "English",
+  es: "Español",
+  fr: "Français",
+  de: "Deutsch",
+  pt: "Português",
+  ja: "日本語",
+};
 
 export function LocaleSwitcher(): React.ReactNode {
-  const locale = useLocale();
-  const router = useRouter();
-  const pathname = usePathname();
+  const { locale, setLocale, availableLocales } = useLocaleContext();
   const t = useTranslations("locale");
   const [isOpen, setIsOpen] = useState(false);
 
   const handleLocaleChange = (newLocale: string): void => {
     setIsOpen(false);
     if (newLocale === locale) return;
-    const newPath = pathname.replace(`/${locale}`, `/${newLocale}`);
-    router.push(newPath);
+    setLocale(newLocale);
+    window.location.reload();
   };
 
-  const currentLocale = locales.find((l) => l.code === locale) || locales[0];
+  const currentLocaleName = localeNames[locale] || localeNames.en;
 
   return (
     <div className="relative">
@@ -39,7 +38,7 @@ export function LocaleSwitcher(): React.ReactNode {
         aria-label={t("selectLanguage")}
       >
         <Globe className="h-5 w-5 mr-1" />
-        <span className="hidden sm:inline">{currentLocale.name}</span>
+        <span className="hidden sm:inline">{currentLocaleName}</span>
       </button>
 
       {isOpen && (
@@ -50,21 +49,21 @@ export function LocaleSwitcher(): React.ReactNode {
               {t("selectLanguage")}
             </div>
             <div className="space-y-1">
-              {locales.map((loc) => (
+              {availableLocales.map((loc) => (
                 <button
-                  key={loc.code}
+                  key={loc}
                   type="button"
-                  onClick={() => handleLocaleChange(loc.code)}
+                  onClick={() => handleLocaleChange(loc)}
                   className={cn(
                     "flex w-full items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors",
-                    loc.code === locale
+                    loc === locale
                       ? "bg-accent text-accent-foreground font-medium"
                       : "hover:bg-accent hover:text-accent-foreground",
                   )}
                 >
-                  {loc.code === locale && <span className="mr-2 text-primary">✓</span>}
-                  {loc.code !== locale && <span className="w-5" />}
-                  {loc.name}
+                  {loc === locale && <span className="mr-2 text-primary">✓</span>}
+                  {loc !== locale && <span className="w-5" />}
+                  {localeNames[loc]}
                 </button>
               ))}
             </div>
@@ -74,5 +73,3 @@ export function LocaleSwitcher(): React.ReactNode {
     </div>
   );
 }
-
-import { cn } from "@/lib/utils";
