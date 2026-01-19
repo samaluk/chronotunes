@@ -2,6 +2,7 @@
 
 import type { GenericId } from "convex/values";
 import { Music } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { BettingPanel } from "./BettingPanel";
 import { RoundResults } from "./RoundResults";
 import { TimelinePlacer } from "./TimelinePlacer";
@@ -65,6 +66,11 @@ export function CurrentRoundPanel({
   turnPlayerTimelineSize,
   resolution,
 }: CurrentRoundPanelProps): React.ReactNode {
+  const t = useTranslations("roundPhase");
+  const tPlacing = useTranslations("placing");
+  const tBetting = useTranslations("betting");
+  const tResults = useTranslations("results");
+
   const renderPhaseContent = (): React.ReactNode => {
     switch (phase) {
       case "placing":
@@ -85,12 +91,10 @@ export function CurrentRoundPanel({
             </div>
             <div className="text-center space-y-2">
               <p className="text-lg font-medium">
-                {isMyTurn ? "Place the song on your timeline" : "Player is placing the song..."}
+                {isMyTurn ? tPlacing("placeSong") : tPlacing("playerPlacing")}
               </p>
               <p className="text-sm text-muted-foreground">
-                {isMyTurn
-                  ? "Drag and drop the song card to the correct position"
-                  : "Wait for the player to finish placing"}
+                {isMyTurn ? tPlacing("dragDrop") : tPlacing("waitForPlayer")}
               </p>
             </div>
           </div>
@@ -114,10 +118,8 @@ export function CurrentRoundPanel({
               <Music className="h-8 w-8 text-amber-600 dark:text-amber-400" />
             </div>
             <div className="text-center space-y-2">
-              <p className="text-lg font-medium">Place your bet!</p>
-              <p className="text-sm text-muted-foreground">
-                Where should the song go on the timeline?
-              </p>
+              <p className="text-lg font-medium">{tBetting("placeYourBet")}</p>
+              <p className="text-sm text-muted-foreground">{tBetting("placeBetDescription")}</p>
             </div>
           </div>
         );
@@ -154,14 +156,12 @@ export function CurrentRoundPanel({
               <Music className="h-8 w-8 text-green-600 dark:text-green-400" />
             </div>
             <div className="text-center space-y-2">
-              <p className="text-lg font-medium">Round Results</p>
-              <p className="text-sm text-muted-foreground">
-                The song has been revealed and results are in!
-              </p>
+              <p className="text-lg font-medium">{tResults("roundResults")}</p>
+              <p className="text-sm text-muted-foreground">{tResults("songRevealed")}</p>
             </div>
             {track && (
               <div className="mt-4 p-4 rounded-lg bg-card border max-w-md w-full text-center">
-                <p className="text-sm text-muted-foreground">The song was</p>
+                <p className="text-sm text-muted-foreground">{tResults("songWas")}</p>
                 <p className="text-xl font-bold mt-1">
                   {track.title} - {track.artist} ({track.year})
                 </p>
@@ -184,7 +184,7 @@ export function CurrentRoundPanel({
       <div className="rounded-xl bg-card border overflow-hidden">
         <div className="px-4 py-3 border-b bg-muted/50">
           <div className="flex items-center justify-between">
-            <span className="text-sm font-medium">Current Round</span>
+            <span className="text-sm font-medium">{t("placingTitle")}</span>
             <span
               className={`
                 inline-flex items-center px-2 py-1 rounded-full text-xs font-medium
@@ -197,7 +197,7 @@ export function CurrentRoundPanel({
                 }
               `}
             >
-              {phase.charAt(0).toUpperCase() + phase.slice(1)}
+              {t(phase)}
             </span>
           </div>
         </div>

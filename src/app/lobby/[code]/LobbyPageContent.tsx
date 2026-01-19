@@ -3,6 +3,7 @@
 import { useMutation, useQuery } from "convex/react";
 import { Copy, LogOut, Music, Share2, Users } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { GameView } from "@/components/game/GameView";
@@ -10,6 +11,7 @@ import { PlayerList } from "@/components/lobby/PlayerList";
 import { SettingsPanel } from "@/components/lobby/SettingsPanel";
 import { StartGameButton } from "@/components/lobby/StartGameButton";
 import { ErrorBoundary } from "@/components/ui/error-boundary";
+import { LocaleSwitcher } from "@/components/ui/locale-switcher";
 import { SkeletonLobbyCode, SkeletonPage, SkeletonPlayerList } from "@/components/ui/skeletons";
 import { api } from "@/convex/_generated/api.js";
 import { useSessionId } from "@/lib/hooks/use-session-id";
@@ -19,6 +21,9 @@ interface LobbyPageContentProps {
 }
 
 export default function LobbyPageContent({ code }: LobbyPageContentProps): React.ReactNode {
+  const t = useTranslations("lobby");
+  const tCommon = useTranslations("common");
+
   const router = useRouter();
   const sessionId = useSessionId();
   const [mounted, setMounted] = useState(false);
@@ -40,22 +45,22 @@ export default function LobbyPageContent({ code }: LobbyPageContentProps): React
 
   useEffect(() => {
     if (mounted && lobby === null && code) {
-      toast.error("Lobby not found");
-      router.push("/");
+      toast.error(t("lobbyNotFound"));
+      router.push("/en");
     }
-  }, [mounted, lobby, code, router]);
+  }, [mounted, lobby, code, router, t]);
 
   const handleCopyCode = (): void => {
     navigator.clipboard.writeText(code);
-    toast.success("Lobby code copied to clipboard");
+    toast.success(tCommon("copied"), { description: t("copiedToClipboard") });
   };
 
   const handleShare = async (): Promise<void> => {
     if (navigator.share) {
       try {
         await navigator.share({
-          title: "ChronoTunes Game",
-          text: `Join my ChronoTunes game with code: ${code}`,
+          title: t("title"),
+          text: `${t("title")}: ${t("shareCode")} ${code}`,
           url: window.location.href,
         });
       } catch (error) {
@@ -72,10 +77,10 @@ export default function LobbyPageContent({ code }: LobbyPageContentProps): React
     if (!sessionId) return;
     try {
       await leaveLobby({ code, sessionId });
-      toast.success("Left lobby");
-      router.push("/");
+      toast.success(t("leftLobby"));
+      router.push("/en");
     } catch (error) {
-      const message = error instanceof Error ? error.message : "Failed to leave lobby";
+      const message = error instanceof Error ? error.message : t("failedToLeave");
       toast.error(message);
     }
   };
@@ -88,7 +93,7 @@ export default function LobbyPageContent({ code }: LobbyPageContentProps): React
     return (
       <div className="flex min-h-screen items-center justify-center bg-background">
         <div className="text-center">
-          <p className="text-destructive">Invalid lobby code</p>
+          <p className="text-destructive">{t("invalidLobbyCode")}</p>
         </div>
       </div>
     );
@@ -105,8 +110,8 @@ export default function LobbyPageContent({ code }: LobbyPageContentProps): React
                   <Music className="h-5 w-5 text-primary" />
                 </div>
                 <div>
-                  <h1 className="text-xl font-bold">ChronoTunes</h1>
-                  <p className="text-sm text-muted-foreground">Music Timeline Game</p>
+                  <h1 className="text-xl font-bold">{t("title")}</h1>
+                  <p className="text-sm text-muted-foreground">{t("subtitle")}</p>
                 </div>
               </div>
             </div>
@@ -126,13 +131,13 @@ export default function LobbyPageContent({ code }: LobbyPageContentProps): React
     return (
       <div className="flex min-h-screen items-center justify-center bg-background">
         <div className="text-center">
-          <p className="text-destructive">Lobby not found</p>
+          <p className="text-destructive">{t("lobbyNotFound")}</p>
           <button
             type="button"
-            onClick={() => router.push("/")}
+            onClick={() => router.push("/en")}
             className="mt-4 inline-flex items-center justify-center h-10 px-4 rounded-md bg-primary text-primary-foreground font-medium transition-colors hover:bg-primary/90"
           >
-            Return Home
+            {t("returnHome")}
           </button>
         </div>
       </div>
@@ -152,18 +157,19 @@ export default function LobbyPageContent({ code }: LobbyPageContentProps): React
                 <Music className="h-5 w-5 text-primary" />
               </div>
               <div>
-                <h1 className="text-xl font-bold">ChronoTunes</h1>
-                <p className="text-sm text-muted-foreground">Music Timeline Game</p>
+                <h1 className="text-xl font-bold">{t("title")}</h1>
+                <p className="text-sm text-muted-foreground">{t("subtitle")}</p>
               </div>
             </div>
             <div className="flex items-center gap-2">
+              <LocaleSwitcher />
               <button
                 type="button"
                 onClick={handleShare}
                 className="inline-flex items-center justify-center h-9 px-3 rounded-md border border-input bg-background font-medium transition-colors hover:bg-accent"
               >
                 <Share2 className="h-4 w-4 mr-2" />
-                Share
+                {t("share")}
               </button>
               <button
                 type="button"
@@ -171,7 +177,7 @@ export default function LobbyPageContent({ code }: LobbyPageContentProps): React
                 className="inline-flex items-center justify-center h-9 px-3 rounded-md border border-input bg-background font-medium text-destructive transition-colors hover:bg-accent hover:text-destructive"
               >
                 <LogOut className="h-4 w-4 mr-2" />
-                Leave
+                {t("leave")}
               </button>
             </div>
           </div>
@@ -183,7 +189,7 @@ export default function LobbyPageContent({ code }: LobbyPageContentProps): React
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-6 rounded-xl bg-primary/5 border">
             <div>
               <p className="text-sm font-medium text-muted-foreground uppercase tracking-wider">
-                Lobby Code
+                {t("lobbyCode")}
               </p>
               <div className="flex items-center gap-3 mt-1">
                 <code className="text-4xl font-mono font-bold tracking-widest">{code}</code>
@@ -196,7 +202,7 @@ export default function LobbyPageContent({ code }: LobbyPageContentProps): React
                 className="inline-flex items-center justify-center h-10 px-4 rounded-md bg-secondary font-medium transition-colors hover:bg-secondary/80"
               >
                 <Copy className="h-4 w-4 mr-2" />
-                Copy Code
+                {t("copyCode")}
               </button>
             </div>
           </div>
@@ -225,9 +231,7 @@ export default function LobbyPageContent({ code }: LobbyPageContentProps): React
 
           <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
             <Users className="h-4 w-4" />
-            <span>
-              {players.length} {players.length === 1 ? "player" : "players"} in lobby
-            </span>
+            <span>{t("playersInLobby", { count: players.length })}</span>
           </div>
         </div>
       </main>

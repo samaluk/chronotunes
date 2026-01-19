@@ -4,6 +4,7 @@ import { useMutation } from "convex/react";
 import type { GenericId } from "convex/values";
 import { Play, Users } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { api } from "@/convex/_generated/api.js";
 import { getSessionId } from "@/lib/session";
@@ -19,6 +20,8 @@ export function StartGameButton({
   isHost,
   playerCount,
 }: StartGameButtonProps): React.ReactNode {
+  const t = useTranslations("startGame");
+
   const router = useRouter();
   const startGame = useMutation(api.games.start);
 
@@ -26,10 +29,10 @@ export function StartGameButton({
     try {
       const sessionId = getSessionId();
       const _result = await startGame({ lobbyId, sessionId });
-      toast.success("Game started!");
+      toast.success(t("gameStarted"));
       router.refresh();
     } catch (error) {
-      const message = error instanceof Error ? error.message : "Failed to start game";
+      const message = error instanceof Error ? error.message : t("failedToStart");
       toast.error(message);
     }
   };
@@ -37,7 +40,7 @@ export function StartGameButton({
   if (!isHost) {
     return (
       <div className="p-4 rounded-lg bg-muted text-center">
-        <p className="text-muted-foreground">Waiting for host to start the game...</p>
+        <p className="text-muted-foreground">{t("waitingForHost")}</p>
       </div>
     );
   }
@@ -53,17 +56,17 @@ export function StartGameButton({
         className="w-full inline-flex items-center justify-center gap-2 h-12 px-6 rounded-full bg-primary text-primary-foreground font-medium text-lg transition-colors hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed"
       >
         <Play className="h-5 w-5" />
-        Start Game
+        {t("startGame")}
       </button>
       {!canStart && (
         <p className="text-sm text-muted-foreground text-center flex items-center justify-center gap-1">
           <Users className="h-4 w-4" />
-          Need at least 2 players to start
+          {t("needMorePlayers")}
         </p>
       )}
       {canStart && (
         <p className="text-sm text-muted-foreground text-center">
-          {playerCount} {playerCount === 1 ? "player" : "players"} ready
+          {t("playersReady", { count: playerCount })}
         </p>
       )}
     </div>

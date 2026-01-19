@@ -90,7 +90,7 @@ export function AsyncErrorBoundary({
   children,
   fallback,
   className,
-}: AsyncErrorBoundaryProps): ReactNode {
+}: AsyncErrorBoundaryProps): React.ReactNode {
   const [state, setState] = React.useState<AsyncErrorBoundaryState>({
     hasError: false,
     error: null,

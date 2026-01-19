@@ -2,6 +2,7 @@
 
 import type { GenericId } from "convex/values";
 import { Timer } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 interface TurnPlayer {
   _id: GenericId<"players">;
@@ -23,6 +24,9 @@ export function GameHeader({
   turnSeconds,
   startedAt,
 }: GameHeaderProps): React.ReactNode {
+  const t = useTranslations("game");
+  const tCommon = useTranslations("common");
+
   const getTimeRemaining = (): number | null => {
     if (!startedAt || !turnSeconds) return null;
     const elapsed = (Date.now() - startedAt) / 1000;
@@ -45,17 +49,17 @@ export function GameHeader({
         <div className="flex items-center gap-3">
           <div className="flex flex-col">
             <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-              Round {roundNumber}
+              {t("round", { number: roundNumber })}
             </span>
             <div className="flex items-center gap-2 mt-1">
               {turnPlayer && (
                 <>
                   <span className="text-lg font-semibold">
-                    {isMyTurn ? "Your Turn" : `${turnPlayer.displayName}'s Turn`}
+                    {isMyTurn ? t("yourTurn") : t("playersTurn", { name: turnPlayer.displayName })}
                   </span>
                   {isMyTurn && (
                     <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-primary/20 text-primary text-xs font-medium animate-pulse">
-                      ACTIVE
+                      {tCommon("active")}
                     </span>
                   )}
                 </>

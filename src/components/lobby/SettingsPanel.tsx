@@ -3,6 +3,7 @@
 import { useMutation } from "convex/react";
 import type { GenericId } from "convex/values";
 import { ChevronDown, ChevronUp, Settings2 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { toast } from "sonner";
 import { api } from "@/convex/_generated/api.js";
@@ -40,6 +41,9 @@ export function SettingsPanel({
   isHost,
   currentSettings,
 }: SettingsPanelProps): React.ReactNode {
+  const t = useTranslations("settings");
+  const tCommon = useTranslations("common");
+
   const [isExpanded, setIsExpanded] = useState(false);
   const [settings, setSettings] = useState<LobbySettings>(currentSettings);
   const [hasChanges, setHasChanges] = useState(false);
@@ -70,10 +74,10 @@ export function SettingsPanel({
           maxYear: settings.maxYear,
         },
       });
-      toast.success("Settings saved");
+      toast.success(t("settingsSaved"));
       setHasChanges(false);
     } catch (error) {
-      const message = error instanceof Error ? error.message : "Failed to save settings";
+      const message = error instanceof Error ? error.message : t("failedToSave");
       toast.error(message);
     }
   };
@@ -88,29 +92,35 @@ export function SettingsPanel({
       <div className="space-y-3">
         <h3 className="text-lg font-semibold flex items-center gap-2">
           <Settings2 className="h-5 w-5" />
-          Game Settings
+          {t("title")}
         </h3>
         <div className="p-4 rounded-lg bg-muted text-sm space-y-2">
           <div className="flex justify-between">
-            <span className="text-muted-foreground">Target Timeline Size</span>
-            <span className="font-medium">{currentSettings.targetTimelineSize} cards</span>
+            <span className="text-muted-foreground">{t("targetTimelineSize")}</span>
+            <span className="font-medium">
+              {t("targetCards", { count: currentSettings.targetTimelineSize })}
+            </span>
           </div>
           <div className="flex justify-between">
-            <span className="text-muted-foreground">Starting Coins</span>
+            <span className="text-muted-foreground">{t("startingCoins")}</span>
             <span className="font-medium">{currentSettings.startingCoins}</span>
           </div>
           <div className="flex justify-between">
-            <span className="text-muted-foreground">Turn Duration</span>
-            <span className="font-medium">{currentSettings.turnSeconds}s</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-muted-foreground">Betting Window</span>
-            <span className="font-medium">{currentSettings.bettingWindowSeconds}s</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-muted-foreground">Year Range</span>
+            <span className="text-muted-foreground">{t("turnDuration")}</span>
             <span className="font-medium">
-              {currentSettings.minYear} - {currentSettings.maxYear}
+              {t("turnSeconds", { count: currentSettings.turnSeconds })}
+            </span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-muted-foreground">{t("bettingWindow")}</span>
+            <span className="font-medium">
+              {t("bettingWindowSeconds", { count: currentSettings.bettingWindowSeconds })}
+            </span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-muted-foreground">{t("yearRange")}</span>
+            <span className="font-medium">
+              {t("yearRangeValue", { min: currentSettings.minYear, max: currentSettings.maxYear })}
             </span>
           </div>
         </div>
@@ -127,7 +137,7 @@ export function SettingsPanel({
       >
         <h3 className="text-lg font-semibold flex items-center gap-2">
           <Settings2 className="h-5 w-5" />
-          Game Settings
+          {t("title")}
         </h3>
         {isExpanded ? (
           <ChevronUp className="h-5 w-5 text-muted-foreground" />
@@ -140,76 +150,81 @@ export function SettingsPanel({
         <div className="p-4 rounded-lg bg-card border space-y-4">
           <div className="grid gap-4 sm:grid-cols-2">
             <SettingSlider
-              label="Target Timeline Size"
+              label={t("targetTimelineSize")}
               value={settings.targetTimelineSize}
               min={5}
               max={15}
               step={1}
               onChange={(value) => handleSettingChange("targetTimelineSize", value)}
               unit="cards"
+              t={t}
             />
 
             <SettingSlider
-              label="Starting Coins"
+              label={t("startingCoins")}
               value={settings.startingCoins}
               min={1}
               max={10}
               step={1}
               onChange={(value) => handleSettingChange("startingCoins", value)}
               unit="coins"
+              t={t}
             />
 
             <SettingSlider
-              label="Turn Duration"
+              label={t("turnDuration")}
               value={settings.turnSeconds}
               min={15}
               max={120}
               step={5}
               onChange={(value) => handleSettingChange("turnSeconds", value)}
               unit="seconds"
+              t={t}
             />
 
             <SettingSlider
-              label="Betting Window"
+              label={t("bettingWindow")}
               value={settings.bettingWindowSeconds}
               min={5}
               max={60}
               step={5}
               onChange={(value) => handleSettingChange("bettingWindowSeconds", value)}
               unit="seconds"
+              t={t}
             />
 
             <div className="sm:col-span-2">
               <SettingRange
-                label="Year Range"
+                label={t("yearRange")}
                 minValue={settings.minYear}
                 maxValue={settings.maxYear}
                 minRange={1950}
                 maxRange={2025}
                 onMinChange={(value) => handleSettingChange("minYear", value)}
                 onMaxChange={(value) => handleSettingChange("maxYear", value)}
+                t={t}
               />
             </div>
           </div>
 
           <div className="space-y-3 pt-2 border-t">
             <ToggleSetting
-              label="Allow Guess Title/Artist"
-              description="Award bonus coins for guessing song details"
+              label={t("allowGuessTitleArtist")}
+              description={t("allowGuessTitleArtistDesc")}
               enabled={settings.allowGuessTitleArtist}
               onChange={(value) => handleSettingChange("allowGuessTitleArtist", value)}
             />
 
             <ToggleSetting
-              label="Show Live Bets"
-              description="Display other players bets during betting phase"
+              label={t("showLiveBets")}
+              description={t("showLiveBetsDesc")}
               enabled={settings.showLiveBets}
               onChange={(value) => handleSettingChange("showLiveBets", value)}
             />
 
             <ToggleSetting
-              label="Allow Bet Retraction"
-              description="Allow canceling unlocked bets before confirmation"
+              label={t("allowBetRetraction")}
+              description={t("allowBetRetractionDesc")}
               enabled={settings.allowBetRetraction}
               onChange={(value) => handleSettingChange("allowBetRetraction", value)}
             />
@@ -222,14 +237,14 @@ export function SettingsPanel({
                 onClick={handleSave}
                 className="flex-1 inline-flex items-center justify-center h-10 px-4 rounded-md bg-primary text-primary-foreground font-medium transition-colors hover:bg-primary/90"
               >
-                Save Changes
+                {tCommon("saveChanges")}
               </button>
               <button
                 type="button"
                 onClick={handleReset}
                 className="flex-1 inline-flex items-center justify-center h-10 px-4 rounded-md border border-input bg-background font-medium transition-colors hover:bg-accent"
               >
-                Cancel
+                {tCommon("cancel")}
               </button>
             </div>
           )}
@@ -247,6 +262,7 @@ interface SettingSliderProps {
   step: number;
   onChange: (value: number) => void;
   unit: string;
+  t: ReturnType<typeof useTranslations>;
 }
 
 function SettingSlider({
@@ -257,17 +273,22 @@ function SettingSlider({
   step,
   onChange,
   unit,
+  t,
 }: SettingSliderProps): React.ReactNode {
   const sliderId = `slider-${label.replace(/\s+/g, "-").toLowerCase()}`;
+  const unitLabel =
+    unit === "seconds"
+      ? t("turnSeconds", { count: value })
+      : unit === "cards"
+        ? t("targetCards", { count: value })
+        : `${value} ${unit}`;
   return (
     <div className="space-y-2">
       <div className="flex justify-between text-sm">
         <label htmlFor={sliderId} className="font-medium cursor-pointer">
           {label}
         </label>
-        <span className="text-muted-foreground">
-          {value} {unit}
-        </span>
+        <span className="text-muted-foreground">{unitLabel}</span>
       </div>
       <input
         id={sliderId}
@@ -291,6 +312,7 @@ interface SettingRangeProps {
   maxRange: number;
   onMinChange: (value: number) => void;
   onMaxChange: (value: number) => void;
+  t: ReturnType<typeof useTranslations>;
 }
 
 function SettingRange({
@@ -301,6 +323,7 @@ function SettingRange({
   maxRange,
   onMinChange,
   onMaxChange,
+  t,
 }: SettingRangeProps): React.ReactNode {
   const minInputId = `min-${label.replace(/\s+/g, "-").toLowerCase()}`;
   const maxInputId = `max-${label.replace(/\s+/g, "-").toLowerCase()}`;
@@ -311,7 +334,7 @@ function SettingRange({
           {label}
         </label>
         <span className="text-muted-foreground">
-          {minValue} - {maxValue}
+          {t("yearRangeValue", { min: minValue, max: maxValue })}
         </span>
       </div>
       <div className="flex items-center gap-4">

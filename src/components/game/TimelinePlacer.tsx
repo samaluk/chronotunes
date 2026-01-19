@@ -3,6 +3,7 @@
 import { useMutation } from "convex/react";
 import type { GenericId } from "convex/values";
 import { Check, GripVertical, Loader2, Music } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useCallback, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { api } from "@/convex/_generated/api";
@@ -45,6 +46,8 @@ function TimelineCard({
   track: { title: string; artist: string; year: number };
   isPreview?: boolean;
 }): React.ReactNode {
+  const tCommon = useTranslations("common");
+
   return (
     <div
       className={cn(
@@ -77,10 +80,12 @@ function DropZone({
   isActive,
   isPreview,
   onClick,
+  t,
 }: {
   isActive: boolean;
   isPreview: boolean;
   onClick: () => void;
+  t: ReturnType<typeof useTranslations>;
 }): React.ReactNode {
   return (
     <button
@@ -96,7 +101,7 @@ function DropZone({
     >
       <div className="flex items-center gap-1 text-xs text-muted-foreground">
         <GripVertical className="h-3 w-3" />
-        <span>Drop here</span>
+        <span>{t("dropHere")}</span>
       </div>
     </button>
   );
@@ -108,6 +113,9 @@ export function TimelinePlacer({
   currentTrack,
   existingPreviewIndex,
 }: TimelinePlacerProps): React.ReactNode {
+  const t = useTranslations("placing");
+  const tCommon = useTranslations("common");
+
   const sessionId = useSessionId();
   const [selectedIndex, setSelectedIndex] = useState<number | null>(existingPreviewIndex ?? null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -151,7 +159,7 @@ export function TimelinePlacer({
     return (
       <div className="flex flex-col items-center justify-center py-8">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
-        <p className="mt-4 text-muted-foreground">Loading track...</p>
+        <p className="mt-4 text-muted-foreground">{t("loadingTrack")}</p>
       </div>
     );
   }
@@ -161,9 +169,9 @@ export function TimelinePlacer({
   return (
     <div className="w-full space-y-4">
       <div className="flex items-center justify-between">
-        <h3 className="text-sm font-medium text-muted-foreground">Place the Song</h3>
+        <h3 className="text-sm font-medium text-muted-foreground">{t("placeTheSong")}</h3>
         <span className="text-xs text-muted-foreground">
-          {player.timelineSize} {player.timelineSize === 1 ? "card" : "cards"} in timeline
+          {t("timelineCards", { count: player.timelineSize })}
         </span>
       </div>
 
@@ -174,6 +182,7 @@ export function TimelinePlacer({
               isActive={selectedIndex === 0}
               isPreview={selectedIndex === 0}
               onClick={() => handlePositionSelect(0)}
+              t={t}
             />
             <div className="pl-4">
               <TimelineCard
@@ -199,12 +208,13 @@ export function TimelinePlacer({
                       isActive={true}
                       isPreview={true}
                       onClick={() => handlePositionSelect(idx)}
+                      t={t}
                     />
                   )}
                   <div className={cn(isAfterPreview && "pl-4")}>
                     <TimelineCard
                       track={{
-                        title: "Known Track",
+                        title: tCommon("knownTrack"),
                         artist: "Artist",
                         year: entry.year,
                       }}
@@ -215,6 +225,7 @@ export function TimelinePlacer({
                       isActive={true}
                       isPreview={true}
                       onClick={() => handlePositionSelect(idx + 1)}
+                      t={t}
                     />
                   )}
                 </div>
@@ -226,6 +237,7 @@ export function TimelinePlacer({
                 isActive={true}
                 isPreview={true}
                 onClick={() => handlePositionSelect(sortedTimeline.length)}
+                t={t}
               />
             )}
 
@@ -235,11 +247,12 @@ export function TimelinePlacer({
                   isActive={false}
                   isPreview={false}
                   onClick={() => handlePositionSelect(0)}
+                  t={t}
                 />
                 <div className="pl-4">
                   <TimelineCard
                     track={{
-                      title: "Known Track",
+                      title: tCommon("knownTrack"),
                       artist: "Artist",
                       year: sortedTimeline[0].year,
                     }}
@@ -251,11 +264,12 @@ export function TimelinePlacer({
                       isActive={false}
                       isPreview={false}
                       onClick={() => handlePositionSelect(idx + 1)}
+                      t={t}
                     />
                     <div className="pl-4">
                       <TimelineCard
                         track={{
-                          title: "Known Track",
+                          title: tCommon("knownTrack"),
                           artist: "Artist",
                           year: entry.year,
                         }}
@@ -267,6 +281,7 @@ export function TimelinePlacer({
                   isActive={false}
                   isPreview={false}
                   onClick={() => handlePositionSelect(sortedTimeline.length)}
+                  t={t}
                 />
               </>
             )}
@@ -292,17 +307,20 @@ export function TimelinePlacer({
         <div className="text-sm">
           {selectedIndex !== null ? (
             <p className="text-muted-foreground">
-              Placement:{" "}
+              {t("selectPosition")}{" "}
               <span className="font-medium text-foreground">
                 {selectedIndex === 0
-                  ? "First position"
+                  ? t("firstPosition")
                   : selectedIndex === sortedTimeline.length
-                    ? "Last position"
-                    : `After ${sortedTimeline[selectedIndex - 1]?.year ?? `position ${selectedIndex}`}`}
+                    ? t("lastPosition")
+                    : t("afterPosition", {
+                        year:
+                          sortedTimeline[selectedIndex - 1]?.year ?? `position ${selectedIndex}`,
+                      })}
               </span>
             </p>
           ) : (
-            <p className="text-muted-foreground">Select a position to place the song</p>
+            <p className="text-muted-foreground">{t("selectPosition")}</p>
           )}
         </div>
 
@@ -310,12 +328,12 @@ export function TimelinePlacer({
           {isSubmitting ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Submitting...
+              {tCommon("submitting")}
             </>
           ) : (
             <>
               <Check className="mr-2 h-4 w-4" />
-              Confirm Placement
+              {t("confirmPlacement")}
             </>
           )}
         </Button>

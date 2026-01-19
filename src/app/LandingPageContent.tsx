@@ -2,8 +2,10 @@
 
 import { useMutation } from "convex/react";
 import { Music } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { LocaleSwitcher } from "@/components/ui/locale-switcher";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { api } from "@/convex/_generated/api.js";
 import { useSessionId } from "@/lib/hooks/use-session-id";
@@ -28,6 +30,9 @@ function saveDisplayName(name: string): void {
 }
 
 export default function LandingPageContent(): React.ReactNode {
+  const t = useTranslations("landing");
+  const tCommon = useTranslations("common");
+
   const sessionId = useSessionId();
   const createLobby = useMutation(api.lobbies.create);
   const joinLobby = useMutation(api.lobbies.join);
@@ -48,16 +53,16 @@ export default function LandingPageContent(): React.ReactNode {
   const handleCreateGame = async (): Promise<void> => {
     const name = displayName.trim();
     if (!name) {
-      toast.error("Please enter your display name");
+      toast.error(t("displayNameRequired"));
       return;
     }
     if (name.length < 1 || name.length > 20) {
-      toast.error("Display name must be between 1 and 20 characters");
+      toast.error(t("displayNameLength"));
       return;
     }
 
     if (!sessionId) {
-      toast.error("Session not initialized");
+      toast.error(t("sessionError"));
       return;
     }
 
@@ -65,10 +70,10 @@ export default function LandingPageContent(): React.ReactNode {
     try {
       saveDisplayName(name);
       const result = await createLobby({ sessionId, displayName: name });
-      toast.success("Game created!", { description: `Share code: ${result.code}` });
+      toast.success(t("gameCreated"), { description: t("shareCode", { code: result.code }) });
       window.location.href = `/lobby/${result.code}`;
     } catch (error) {
-      const message = error instanceof Error ? error.message : "Failed to create game";
+      const message = error instanceof Error ? error.message : t("failedToCreate");
       toast.error(message);
     } finally {
       setIsCreating(false);
@@ -78,22 +83,22 @@ export default function LandingPageContent(): React.ReactNode {
   const handleJoinGame = async (): Promise<void> => {
     const name = displayName.trim();
     if (!name) {
-      toast.error("Please enter your display name");
+      toast.error(t("displayNameRequired"));
       return;
     }
     if (name.length < 1 || name.length > 20) {
-      toast.error("Display name must be between 1 and 20 characters");
+      toast.error(t("displayNameLength"));
       return;
     }
 
     const cleanedCode = joinCode.toUpperCase().replace(/[^A-Z23456789]/g, "");
     if (!validateLobbyCode(cleanedCode)) {
-      toast.error(`Invalid lobby code. Please enter a ${LOBBY_CODE_LENGTH}-character code.`);
+      toast.error(t("invalidLobbyCode", { length: LOBBY_CODE_LENGTH }));
       return;
     }
 
     if (!sessionId) {
-      toast.error("Session not initialized");
+      toast.error(t("sessionError"));
       return;
     }
 
@@ -101,10 +106,10 @@ export default function LandingPageContent(): React.ReactNode {
     try {
       saveDisplayName(name);
       await joinLobby({ code: cleanedCode, sessionId, displayName: name });
-      toast.success("Joined game!");
+      toast.success(t("joinedGame"));
       window.location.href = `/lobby/${cleanedCode}`;
     } catch (error) {
-      const message = error instanceof Error ? error.message : "Failed to join game";
+      const message = error instanceof Error ? error.message : t("failedToJoin");
       toast.error(message);
     } finally {
       setIsJoining(false);
@@ -117,32 +122,34 @@ export default function LandingPageContent(): React.ReactNode {
         <div className="flex w-full items-center justify-between">
           <div className="flex items-center gap-2">
             <Music className="h-8 w-8 text-primary" />
-            <span className="text-2xl font-bold text-foreground">ChronoTunes</span>
+            <span className="text-2xl font-bold text-foreground">{t("title")}</span>
           </div>
-          <ThemeToggle />
+          <div className="flex items-center gap-2">
+            <LocaleSwitcher />
+            <ThemeToggle />
+          </div>
         </div>
 
         <div className="flex flex-col items-center gap-6 text-center">
           <h1 className="fl-text-2xl/4xl max-w-md font-semibold leading-tight tracking-tight text-foreground">
-            Music Timeline Game
+            {t("tagline")}
           </h1>
           <p className="fl-text-base/lg max-w-md leading-relaxed text-muted-foreground">
-            Test your music knowledge by placing songs in chronological order. Compete with friends
-            and bet on outcomes!
+            {t("description")}
           </p>
         </div>
 
         <div className="flex w-full max-w-sm flex-col gap-4">
           <div className="flex flex-col gap-2">
             <label htmlFor="displayName" className="text-sm font-medium text-foreground">
-              Display Name
+              {t("displayNameLabel")}
             </label>
             <input
               id="displayName"
               type="text"
               value={displayName}
               onChange={(e) => setDisplayNameState(e.target.value)}
-              placeholder="Enter your name"
+              placeholder={t("displayNamePlaceholder")}
               maxLength={20}
               className="flex h-12 w-full rounded-full border border-input bg-background px-4 py-2 text-base ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
             />
@@ -156,28 +163,28 @@ export default function LandingPageContent(): React.ReactNode {
                 disabled={isCreating || !sessionId}
                 className="inline-flex h-12 items-center justify-center gap-2 rounded-full bg-primary px-6 text-base font-medium text-primary-foreground transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
               >
-                {isCreating ? "Creating..." : "Create Game"}
+                {isCreating ? t("createGameLoading") : t("createGame")}
               </button>
               <button
                 type="button"
                 onClick={() => setShowJoinForm(true)}
                 className="inline-flex h-12 items-center justify-center rounded-full border border-input bg-background px-6 text-base font-medium text-foreground transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
               >
-                Join Game
+                {t("joinGame")}
               </button>
             </div>
           ) : (
             <div className="flex flex-col gap-4">
               <div className="flex flex-col gap-2">
                 <label htmlFor="joinCode" className="text-sm font-medium text-foreground">
-                  Lobby Code
+                  {t("lobbyCodeLabel")}
                 </label>
                 <input
                   id="joinCode"
                   type="text"
                   value={joinCode}
                   onChange={(e) => setJoinCode(e.target.value.toUpperCase())}
-                  placeholder={`Enter ${LOBBY_CODE_LENGTH}-character code`}
+                  placeholder={t("lobbyCodePlaceholder", { length: LOBBY_CODE_LENGTH })}
                   maxLength={LOBBY_CODE_LENGTH}
                   className="flex h-12 w-full rounded-full border border-input bg-background px-4 py-2 text-center text-2xl tracking-widest uppercase ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                 />
@@ -189,7 +196,7 @@ export default function LandingPageContent(): React.ReactNode {
                   disabled={isJoining || !sessionId}
                   className="inline-flex h-12 flex-1 items-center justify-center gap-2 rounded-full bg-primary px-6 text-base font-medium text-primary-foreground transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                 >
-                  {isJoining ? "Joining..." : "Join"}
+                  {isJoining ? t("joinGameLoading") : t("joinGame")}
                 </button>
                 <button
                   type="button"
@@ -199,7 +206,7 @@ export default function LandingPageContent(): React.ReactNode {
                   }}
                   className="inline-flex h-12 flex-1 items-center justify-center rounded-full border border-input bg-background px-6 text-base font-medium text-foreground transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                 >
-                  Cancel
+                  {tCommon("cancel")}
                 </button>
               </div>
             </div>

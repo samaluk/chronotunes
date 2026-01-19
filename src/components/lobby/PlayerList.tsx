@@ -3,6 +3,7 @@
 import { useQuery } from "convex/react";
 import type { GenericId } from "convex/values";
 import { Crown, User } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { SkeletonPlayerList } from "@/components/ui/skeletons";
 import { api } from "@/convex/_generated/api.js";
 
@@ -22,6 +23,9 @@ interface Player {
 }
 
 export function PlayerList({ lobbyId, currentSessionId }: PlayerListProps): React.ReactNode {
+  const t = useTranslations("players");
+  const tCommon = useTranslations("common");
+
   const players = useQuery(api.players.list, { lobbyId });
 
   if (players === undefined) {
@@ -29,12 +33,14 @@ export function PlayerList({ lobbyId, currentSessionId }: PlayerListProps): Reac
   }
 
   if (players.length === 0) {
-    return <div className="text-center py-8 text-muted-foreground">No players in lobby yet</div>;
+    return <div className="text-center py-8 text-muted-foreground">{t("noPlayers")}</div>;
   }
 
   return (
     <div className="space-y-3">
-      <h3 className="text-lg font-semibold">Players ({players.length})</h3>
+      <h3 className="text-lg font-semibold">
+        {t("title")} ({players.length})
+      </h3>
       <div className="grid gap-2">
         {players.map((player: Player) => {
           const isCurrentUser = player.sessionId === currentSessionId;
@@ -57,18 +63,18 @@ export function PlayerList({ lobbyId, currentSessionId }: PlayerListProps): Reac
                   <span className="font-medium truncate">
                     {player.displayName}
                     {isCurrentUser && (
-                      <span className="ml-2 text-xs text-muted-foreground">(You)</span>
+                      <span className="ml-2 text-xs text-muted-foreground">{tCommon("you")}</span>
                     )}
                   </span>
                   {player.isHost && (
                     <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 text-xs font-medium">
                       <Crown className="h-3 w-3" />
-                      Host
+                      {t("host")}
                     </span>
                   )}
                 </div>
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <span>{player.coins} coins</span>
+                  <span>{t("coins", { count: player.coins })}</span>
                 </div>
               </div>
             </div>
