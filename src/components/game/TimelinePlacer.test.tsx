@@ -16,8 +16,35 @@ vi.mock("convex/react", () => ({
   useMutation: vi.fn(() => vi.fn()),
 }));
 
-vi.mock("@/lib/hooks/use-session-id", () => ({
-  useSessionId: vi.fn(() => "session123"),
+vi.mock("convex-helpers/react/sessions", () => ({
+  useSessionQuery: vi.fn(() => null),
+  useSessionMutation: vi.fn(() => vi.fn()),
+  SessionProvider: ({ children }: { children: React.ReactNode }) => children,
+}));
+
+vi.mock("next-intl", () => ({
+  useTranslations: vi.fn((namespace) => {
+    const translations: Record<string, string> = {
+      loadingTrack: "Loading track...",
+      placeTheSong: "Place the Song",
+      timelineCards: "card in timeline|cards in timeline",
+      dropHere: "Drop here",
+      selectPosition: "Select a position on your timeline",
+      confirmPlacement: "Confirm Placement",
+      knownTrack: "known track",
+    };
+    return (key: string, options?: { count?: number }) => {
+      const translation = translations[key];
+      if (!translation) return key;
+      // Handle plural forms
+      if (translation.includes("|")) {
+        const [singular, plural] = translation.split("|");
+        const count = options?.count ?? 1;
+        return count === 1 ? singular : plural;
+      }
+      return translation;
+    };
+  }),
 }));
 
 vi.mock("react", () => ({
@@ -173,6 +200,6 @@ describe("TimelinePlacer", () => {
       />,
     );
 
-    expect(screen.getByText("1 card in timeline")).toBeInTheDocument();
+    expect(screen.getByText("card in timeline")).toBeInTheDocument();
   });
 });

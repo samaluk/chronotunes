@@ -8,8 +8,10 @@ vi.mock("convex/react", () => ({
   useQuery: vi.fn(() => []),
 }));
 
-vi.mock("@/lib/hooks/use-session-id", () => ({
-  useSessionId: vi.fn(() => "session123"),
+vi.mock("convex-helpers/react/sessions", () => ({
+  useSessionQuery: vi.fn(() => null),
+  useSessionMutation: vi.fn(() => vi.fn()),
+  SessionProvider: ({ children }: { children: React.ReactNode }) => children,
 }));
 
 vi.mock("react", () => ({
@@ -33,6 +35,13 @@ const createMockPlayer = (overrides = {}) => ({
   ...overrides,
 });
 
+const mockTrack = {
+  _id: "track123" as GenericId<"tracks">,
+  title: "Test Song",
+  artist: "Test Artist",
+  year: 1990,
+};
+
 describe("BettingPanel", () => {
   it("shows coin balance in header", () => {
     const player = createMockPlayer({ coins: 5 });
@@ -41,7 +50,7 @@ describe("BettingPanel", () => {
       <BettingPanel
         lobbyId={"lobby123" as GenericId<"lobbies">}
         me={player}
-        track={null}
+        track={mockTrack}
         turnPlayerTimeline={[]}
         turnPlayerTimelineSize={0}
       />,
@@ -57,7 +66,7 @@ describe("BettingPanel", () => {
       <BettingPanel
         lobbyId={"lobby123" as GenericId<"lobbies">}
         me={player}
-        track={null}
+        track={mockTrack}
         turnPlayerTimeline={[]}
         turnPlayerTimelineSize={0}
       />,
@@ -89,7 +98,7 @@ describe("BettingPanel", () => {
       <BettingPanel
         lobbyId={"lobby123" as GenericId<"lobbies">}
         me={player}
-        track={null}
+        track={mockTrack}
         turnPlayerTimeline={[]}
         turnPlayerTimelineSize={0}
       />,

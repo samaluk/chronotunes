@@ -10,8 +10,10 @@ vi.mock("convex/react", () => ({
   useQuery: vi.fn(() => null),
 }));
 
-vi.mock("@/lib/hooks/use-session-id", () => ({
-  useSessionId: vi.fn(() => "session123"),
+vi.mock("convex-helpers/react/sessions", () => ({
+  useSessionQuery: vi.fn(() => null),
+  useSessionMutation: vi.fn(() => vi.fn()),
+  SessionProvider: ({ children }: { children: React.ReactNode }) => children,
 }));
 
 vi.mock("react", () => ({
