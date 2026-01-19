@@ -652,3 +652,40 @@ A  .ralph/runs/run-20260118-210256-43823-iter-3.log
 M  AGENTS.md
 M  convex/bets.test.ts
 
+[91m[1m| [0m[90m Bash     [0mCommit all changes
+
+[main 72a22a1] S21: Complete round resolution with betting outcomes
+ 32 files changed, 4694 insertions(+), 141 deletions(-)
+ create mode 100644 .ralph/.tmp/prompt-20260118-210256-43823-1.md
+ create mode 100644 .ralph/.tmp/prompt-20260118-210256-43823-2.md
+ create mode 100644 .ralph/.tmp/prompt-20260118-210256-43823-3.md
+ create mode 100644 .ralph/.tmp/story-20260118-210256-43823-1.json
+ create mode 100644 .ralph/.tmp/story-20260118-210256-43823-1.md
+ create mode 100644 .ralph/.tmp/story-20260118-210256-43823-2.json
+ create mode 100644 .ralph/.tmp/story-20260118-210256-43823-2.md
+ create mode 100644 .ralph/.tmp/story-20260118-210256-43823-3.json
+ create mode 100644 .ralph/.tmp/story-20260118-210256-43823-3.md
+ create mode 100644 .ralph/runs/run-20260118-210256-43823-iter-1.log
+ create mode 100644 .ralph/runs/run-20260118-210256-43823-iter-1.md
+ create mode 100644 .ralph/runs/run-20260118-210256-43823-iter-2.log
+ create mode 100644 .ralph/runs/run-20260118-210256-43823-iter-2.md
+ create mode 100644 .ralph/runs/run-20260118-210256-43823-iter-3.log
+ create mode 100644 convex/convex.json
+ create mode 100644 src/components/game/CurrentRoundPanel.tsx
+ create mode 100644 src/components/game/GameHeader.tsx
+ create mode 100644 src/components/game/PlayersBar.tsx
+
+[91m[1m| [0m[90m Bash     [0mGet commit hash and subject
+
+72a22a1 S21: Complete round resolution with betting outcomes
+
+[91m[1m| [0m[90m Bash     [0mCheck for clean working tree
+
+ M .ralph/runs/run-20260118-210256-43823-iter-3.log
+ M convex/lib/trackSelection.test.ts
+
+[91m[1m| [0m[90m Bash     [0mStage remaining files
+
+M  .ralph/runs/run-20260118-210256-43823-iter-3.log
+M  convex/lib/trackSelection.test.ts
+

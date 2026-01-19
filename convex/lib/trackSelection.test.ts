@@ -108,7 +108,7 @@ async function createGameWithPlayers(
 }
 
 test("selectTrackForRound returns track within year range", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema);
 
   await seedTracks(t);
 
@@ -129,7 +129,7 @@ test("selectTrackForRound returns track within year range", async () => {
 });
 
 test("selectTrackForRound never returns track already used in game", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema);
 
   await seedTracks(t);
 
@@ -194,7 +194,7 @@ test("selectTrackForRound never returns track already used in game", async () =>
 });
 
 test("selectTrackForRound returns null if no tracks available", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema);
 
   await t.run(async (ctx) => {
     await ctx.db.insert("tracks", {
@@ -254,7 +254,7 @@ test("selectTrackForRound returns null if no tracks available", async () => {
 });
 
 test("selectTrackForRound respects year range boundaries", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema);
 
   await seedTracks(t);
 
