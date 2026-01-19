@@ -395,3 +395,34 @@ Run summary: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-210
   - Preview updates in real-time (via Convex) ✅
   - Submit button finalizes placement ✅
 ---
+
+## [2026-01-19 22:14:00] - S25: Timeline Placer Component
+Thread: 
+Run: 20260118-210256-43823 (iteration 9)
+Run log: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-210256-43823-iter-9.log
+Run summary: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-210256-43823-iter-9.md
+- Guardrails reviewed: yes
+- No-commit run: false
+- Commit: 75bd82d chore: update run log
+- Post-commit status: clean
+- Verification:
+  - Command: pnpm test src/components/game/TimelinePlacer.test.tsx -> PASS (4/4 tests)
+  - Command: pnpm biome check src/components/game/TimelinePlacer.tsx -> PASS (no warnings)
+  - Command: pnpm test src/components/game/ -> PASS (10/14 tests, 4 unrelated BettingPanel tests fail)
+- Files changed:
+  - none - implementation was already complete from previous iterations
+- What was implemented:
+  - Story S25 was already fully implemented in iteration 6 (commit 75db872)
+  - TimelinePlacer component provides drag-and-drop song placement for turn player
+  - Shows drop zones between existing timeline cards for insertion points
+  - Displays new song card with title/artist (year hidden during placement)
+  - Calls rounds.setPlacementPreview mutation on position selection
+  - Submit Placement button calls rounds.submitPlacement mutation
+  - All 4 TimelinePlacer tests pass
+  - Component integrated into CurrentRoundPanel and GameView
+- **Acceptance Criteria Met:**
+  - Turn player sees timeline with insertion points ✅
+  - Can tap to select position ✅
+  - Preview updates in real-time (via Convex) ✅
+  - Submit button finalizes placement ✅
+---
