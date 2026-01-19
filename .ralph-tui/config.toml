@@ -1,0 +1,13 @@
+configVersion = "2.1"
+maxIterations = 0
+agent = "opencode"
+tracker = "beads-bv"
+autoCommit = true
+
+[agentOptions]
+[trackerOptions]
+beadsDir = ".beads"
+labels = "ralph"
+
+[notifications]
+sound = "ralph"
