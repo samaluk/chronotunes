@@ -146,6 +146,8 @@ export function GameView({ lobbyId, code }: GameViewProps): React.ReactNode {
         me={me}
         track={trackInfo}
         existingPreviewIndex={currentRound?.placementPreview?.proposedIndex ?? null}
+        turnPlayerTimeline={turnPlayer?.timeline ?? []}
+        turnPlayerTimelineSize={turnPlayer?.timelineSize ?? 0}
       />
     </div>
   );

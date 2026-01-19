@@ -2,6 +2,7 @@
 
 import type { GenericId } from "convex/values";
 import { Music } from "lucide-react";
+import { BettingPanel } from "./BettingPanel";
 import { TimelinePlacer } from "./TimelinePlacer";
 
 export type RoundPhase = "placing" | "betting" | "resolved";
@@ -18,6 +19,7 @@ interface Player {
   displayName: string;
   timeline: TimelineEntry[];
   timelineSize: number;
+  coins: number;
 }
 
 interface CurrentRoundPanelProps {
@@ -32,6 +34,8 @@ interface CurrentRoundPanelProps {
     year: number;
   } | null;
   existingPreviewIndex?: number | null;
+  turnPlayerTimeline?: TimelineEntry[];
+  turnPlayerTimelineSize?: number;
 }
 
 export function CurrentRoundPanel({
@@ -41,6 +45,8 @@ export function CurrentRoundPanel({
   me,
   track,
   existingPreviewIndex,
+  turnPlayerTimeline,
+  turnPlayerTimelineSize,
 }: CurrentRoundPanelProps): React.ReactNode {
   const renderPhaseContent = (): React.ReactNode => {
     switch (phase) {
@@ -74,6 +80,17 @@ export function CurrentRoundPanel({
         );
 
       case "betting":
+        if (lobbyId && me && track && !isMyTurn) {
+          return (
+            <BettingPanel
+              lobbyId={lobbyId}
+              me={me}
+              track={track}
+              turnPlayerTimeline={turnPlayerTimeline ?? []}
+              turnPlayerTimelineSize={turnPlayerTimelineSize ?? 0}
+            />
+          );
+        }
         return (
           <div className="flex flex-col items-center justify-center py-12 space-y-4">
             <div className="flex h-16 w-16 items-center justify-center rounded-full bg-amber-100 dark:bg-amber-900/30">
