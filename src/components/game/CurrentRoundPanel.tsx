@@ -3,6 +3,7 @@
 import type { GenericId } from "convex/values";
 import { Music } from "lucide-react";
 import { BettingPanel } from "./BettingPanel";
+import { RoundResults } from "./RoundResults";
 import { TimelinePlacer } from "./TimelinePlacer";
 
 export type RoundPhase = "placing" | "betting" | "resolved";
@@ -20,6 +21,8 @@ interface Player {
   timeline: TimelineEntry[];
   timelineSize: number;
   coins: number;
+  isHost: boolean;
+  sessionId: string;
 }
 
 interface CurrentRoundPanelProps {
@@ -27,6 +30,7 @@ interface CurrentRoundPanelProps {
   isMyTurn: boolean;
   lobbyId?: GenericId<"lobbies">;
   me?: Player | null;
+  players?: Player[] | null;
   track?: {
     _id: GenericId<"tracks">;
     title: string;
@@ -36,6 +40,17 @@ interface CurrentRoundPanelProps {
   existingPreviewIndex?: number | null;
   turnPlayerTimeline?: TimelineEntry[];
   turnPlayerTimelineSize?: number;
+  resolution?: {
+    validIndexMin: number;
+    validIndexMax: number;
+    turnPlayerWasCorrect: boolean;
+    awardedPlayerIds: GenericId<"players">[];
+    coinDeltas: Array<{
+      playerId: GenericId<"players">;
+      delta: number;
+    }>;
+    resolvedAt: number;
+  } | null;
 }
 
 export function CurrentRoundPanel({
@@ -43,10 +58,12 @@ export function CurrentRoundPanel({
   isMyTurn,
   lobbyId,
   me,
+  players,
   track,
   existingPreviewIndex,
   turnPlayerTimeline,
   turnPlayerTimelineSize,
+  resolution,
 }: CurrentRoundPanelProps): React.ReactNode {
   const renderPhaseContent = (): React.ReactNode => {
     switch (phase) {
@@ -106,6 +123,31 @@ export function CurrentRoundPanel({
         );
 
       case "resolved":
+        if (lobbyId && track && resolution && players) {
+          const turnPlayer = players.find((p) => p._id === resolution.awardedPlayerIds[0]) ?? {
+            _id: "" as GenericId<"players">,
+            displayName: "Unknown",
+            timeline: [],
+            timelineSize: 0,
+            coins: 0,
+            isHost: false,
+            sessionId: "",
+          };
+          const _turnPlayerTimelineEntry = turnPlayerTimeline ?? [];
+          const _turnPlayerTimelineSizeValue = turnPlayerTimelineSize ?? 0;
+
+          return (
+            <RoundResults
+              lobbyId={lobbyId}
+              track={track}
+              resolution={resolution}
+              turnPlayer={turnPlayer}
+              bets={[]}
+              players={players}
+              me={me ?? null}
+            />
+          );
+        }
         return (
           <div className="flex flex-col items-center justify-center py-12 space-y-4">
             <div className="flex h-16 w-16 items-center justify-center rounded-full bg-green-100 dark:bg-green-900/30">

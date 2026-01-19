@@ -143,11 +143,13 @@ export function GameView({ lobbyId, code }: GameViewProps): React.ReactNode {
         phase={roundPhase}
         isMyTurn={isMyTurn}
         lobbyId={lobbyId}
-        me={me}
+        me={me ?? null}
+        players={players ?? null}
         track={trackInfo}
         existingPreviewIndex={currentRound?.placementPreview?.proposedIndex ?? null}
         turnPlayerTimeline={turnPlayer?.timeline ?? []}
         turnPlayerTimelineSize={turnPlayer?.timelineSize ?? 0}
+        resolution={currentRound?.resolution ?? null}
       />
     </div>
   );
