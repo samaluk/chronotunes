@@ -1,0 +1,10 @@
+{
+  "mcp": {
+    "next-devtools": {
+      "command": ["pnpx", "next-devtools-mcp@latest"],
+      "type": "local",
+    }
+  },
+  "model": "opencode/minimax-m2.1-free",
+  "$schema": "https://opencode.ai/config.json"
+}
