@@ -8,10 +8,13 @@
     "build": "next build",
     "start": "next start",
     "test": "vitest",
-    "test:integration": "INTEGRATION=true vitest run --project convex",
+    "test:once": "vitest run",
+    "test:debug": "vitest --inspect-brk --no-file-parallelism",
+    "test:coverage": "vitest run --coverage --coverage.reporter=text",
     "biome": "biome",
     "next:typegen": "tsc -p tsconfig.json --noEmit",
-    "convex:typegen": "convex codegen --url http://127.0.0.1:3210 2>/dev/null || true"
+    "convex:typegen": "convex codegen --url http://127.0.0.1:3210 2>/dev/null || true",
+    "convex:dev": "convex dev --local"
   },
   "dependencies": {
     "@base-ui/react": "^1.1.0",
@@ -34,7 +37,6 @@
     "@biomejs/biome": "^2.3.11",
     "@edge-runtime/vm": "^5.0.0",
     "@tailwindcss/postcss": "^4",
-    "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.0.0",
     "@types/node": "^20",
     "@types/react": "^19",
