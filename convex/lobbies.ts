@@ -259,3 +259,57 @@ export const updateSettings = mutation({
     await ctx.db.patch(lobby._id, { settings });
   },
 });
+
+export const transferHost = mutation({
+  args: {
+    code: v.string(),
+    sessionId: v.string(),
+    newHostSessionId: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const { code, sessionId, newHostSessionId } = args;
+
+    const lobby = await ctx.db
+      .query("lobbies")
+      .filter((q) => q.eq(q.field("code"), code.toUpperCase()))
+      .first();
+
+    if (!lobby) {
+      throw new ConvexError("Lobby not found");
+    }
+
+    if (lobby.hostSessionId !== sessionId) {
+      throw new ConvexError("Only the host can transfer host privileges");
+    }
+
+    if (sessionId === newHostSessionId) {
+      throw new ConvexError("Cannot transfer host to yourself");
+    }
+
+    const currentHostPlayer = await ctx.db
+      .query("players")
+      .filter((q) =>
+        q.and(q.eq(q.field("lobbyId"), lobby._id), q.eq(q.field("sessionId"), sessionId)),
+      )
+      .first();
+
+    if (!currentHostPlayer) {
+      throw new ConvexError("You are not in this lobby");
+    }
+
+    const newHostPlayer = await ctx.db
+      .query("players")
+      .filter((q) =>
+        q.and(q.eq(q.field("lobbyId"), lobby._id), q.eq(q.field("sessionId"), newHostSessionId)),
+      )
+      .first();
+
+    if (!newHostPlayer) {
+      throw new ConvexError("New host player is not in this lobby");
+    }
+
+    await ctx.db.patch(currentHostPlayer._id, { isHost: false });
+    await ctx.db.patch(newHostPlayer._id, { isHost: true });
+    await ctx.db.patch(lobby._id, { hostSessionId: newHostSessionId });
+  },
+});

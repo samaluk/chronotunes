@@ -1113,3 +1113,131 @@ test("updateSettings allows host to toggle boolean settings", async () => {
   expect(lobby?.settings.showLiveBets).toBe(false);
   expect(lobby?.settings.allowBetRetraction).toBe(false);
 });
+
+test("transferHost allows host to transfer to another player", async () => {
+  const t = convexTest(schema);
+
+  const { code } = await t.mutation(api.lobbies.create, {
+    sessionId: "host-session-transfer",
+    displayName: "HostTransfer",
+  });
+
+  await t.mutation(api.lobbies.join, {
+    code,
+    sessionId: "player-session-transfer",
+    displayName: "PlayerTransfer",
+  });
+
+  await t.mutation(api.lobbies.transferHost, {
+    code,
+    sessionId: "host-session-transfer",
+    newHostSessionId: "player-session-transfer",
+  });
+
+  const lobby = await t.query(api.lobbies.get, { code });
+  expect(lobby?.hostSessionId).toBe("player-session-transfer");
+
+  const players = await t.run(async (ctx) => {
+    const allPlayers = await ctx.db.query("players").collect();
+    return allPlayers;
+  });
+
+  const newHost = players.find((p) => p.sessionId === "player-session-transfer");
+  expect(newHost?.isHost).toBe(true);
+
+  const oldHost = players.find((p) => p.sessionId === "host-session-transfer");
+  expect(oldHost?.isHost).toBe(false);
+});
+
+test("transferHost rejects non-host", async () => {
+  const t = convexTest(schema);
+
+  const { code } = await t.mutation(api.lobbies.create, {
+    sessionId: "host-session-reject",
+    displayName: "HostReject",
+  });
+
+  await t.mutation(api.lobbies.join, {
+    code,
+    sessionId: "player-session-reject",
+    displayName: "PlayerReject",
+  });
+
+  await expect(
+    t.mutation(api.lobbies.transferHost, {
+      code,
+      sessionId: "player-session-reject",
+      newHostSessionId: "player-session-reject",
+    }),
+  ).rejects.toThrow("Only the host can transfer host privileges");
+});
+
+test("transferHost rejects when lobby not found", async () => {
+  const t = convexTest(schema);
+
+  await expect(
+    t.mutation(api.lobbies.transferHost, {
+      code: "NOTFOUND",
+      sessionId: "some-session",
+      newHostSessionId: "other-session",
+    }),
+  ).rejects.toThrow("Lobby not found");
+});
+
+test("transferHost rejects when new host not in lobby", async () => {
+  const t = convexTest(schema);
+
+  const { code } = await t.mutation(api.lobbies.create, {
+    sessionId: "host-session-missing",
+    displayName: "HostMissing",
+  });
+
+  await expect(
+    t.mutation(api.lobbies.transferHost, {
+      code,
+      sessionId: "host-session-missing",
+      newHostSessionId: "not-in-lobby-session",
+    }),
+  ).rejects.toThrow("New host player is not in this lobby");
+});
+
+test("transferHost rejects when transferring to yourself", async () => {
+  const t = convexTest(schema);
+
+  const { code } = await t.mutation(api.lobbies.create, {
+    sessionId: "host-session-self",
+    displayName: "HostSelf",
+  });
+
+  await expect(
+    t.mutation(api.lobbies.transferHost, {
+      code,
+      sessionId: "host-session-self",
+      newHostSessionId: "host-session-self",
+    }),
+  ).rejects.toThrow("Cannot transfer host to yourself");
+});
+
+test("transferHost is case insensitive for code", async () => {
+  const t = convexTest(schema);
+
+  const { code } = await t.mutation(api.lobbies.create, {
+    sessionId: "host-session-case",
+    displayName: "HostCase",
+  });
+
+  await t.mutation(api.lobbies.join, {
+    code,
+    sessionId: "player-session-case",
+    displayName: "PlayerCase",
+  });
+
+  await t.mutation(api.lobbies.transferHost, {
+    code: code.toLowerCase(),
+    sessionId: "host-session-case",
+    newHostSessionId: "player-session-case",
+  });
+
+  const lobby = await t.query(api.lobbies.get, { code: code.toUpperCase() });
+  expect(lobby?.hostSessionId).toBe("player-session-case");
+});
