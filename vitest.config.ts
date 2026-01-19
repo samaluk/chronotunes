@@ -1,4 +1,4 @@
-import path from "path";
+import path from "node:path";
 import { defineConfig } from "vitest/config";
 
 export default defineConfig({
@@ -28,9 +28,10 @@ export default defineConfig({
         test: {
           name: "convex",
           environment: "edge-runtime",
+          server: { deps: { inline: ["convex-test"] } },
           include: ["convex/**/*.test.ts"],
         },
       },
-    ],
+    ]
   },
 });
