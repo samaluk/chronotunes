@@ -74,12 +74,10 @@ function TimelineCard({
 }
 
 function DropZone({
-  index,
   isActive,
   isPreview,
   onClick,
 }: {
-  index: number;
   isActive: boolean;
   isPreview: boolean;
   onClick: () => void;
@@ -173,7 +171,6 @@ export function TimelinePlacer({
         {hasEmptyTimeline ? (
           <>
             <DropZone
-              index={0}
               isActive={selectedIndex === 0}
               isPreview={selectedIndex === 0}
               onClick={() => handlePositionSelect(0)}
@@ -199,7 +196,6 @@ export function TimelinePlacer({
                 <div key={`${entry.trackId}-${entry.earnedAtRoundNumber}`}>
                   {isBeforePreview && (
                     <DropZone
-                      index={idx}
                       isActive={true}
                       isPreview={true}
                       onClick={() => handlePositionSelect(idx)}
@@ -216,7 +212,6 @@ export function TimelinePlacer({
                   </div>
                   {isAfterPreview && (
                     <DropZone
-                      index={idx + 1}
                       isActive={true}
                       isPreview={true}
                       onClick={() => handlePositionSelect(idx + 1)}
@@ -228,7 +223,6 @@ export function TimelinePlacer({
 
             {selectedIndex === sortedTimeline.length && (
               <DropZone
-                index={sortedTimeline.length}
                 isActive={true}
                 isPreview={true}
                 onClick={() => handlePositionSelect(sortedTimeline.length)}
@@ -238,7 +232,6 @@ export function TimelinePlacer({
             {selectedIndex === null && (
               <>
                 <DropZone
-                  index={0}
                   isActive={false}
                   isPreview={false}
                   onClick={() => handlePositionSelect(0)}
@@ -255,7 +248,6 @@ export function TimelinePlacer({
                 {sortedTimeline.slice(1).map((entry, idx) => (
                   <div key={`${entry.trackId}-${entry.earnedAtRoundNumber}`}>
                     <DropZone
-                      index={idx + 1}
                       isActive={false}
                       isPreview={false}
                       onClick={() => handlePositionSelect(idx + 1)}
@@ -272,7 +264,6 @@ export function TimelinePlacer({
                   </div>
                 ))}
                 <DropZone
-                  index={sortedTimeline.length}
                   isActive={false}
                   isPreview={false}
                   onClick={() => handlePositionSelect(sortedTimeline.length)}
@@ -307,7 +298,7 @@ export function TimelinePlacer({
                   ? "First position"
                   : selectedIndex === sortedTimeline.length
                     ? "Last position"
-                    : `After ${sortedTimeline[selectedIndex - 1]?.year ?? "position ${selectedIndex}"}`}
+                    : `After ${sortedTimeline[selectedIndex - 1]?.year ?? `position ${selectedIndex}`}`}
               </span>
             </p>
           ) : (

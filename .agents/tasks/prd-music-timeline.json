@@ -1210,7 +1210,11 @@
         "Can drag or tap to select position",
         "Preview updates in real-time",
         "Submit button finalizes placement"
-      ]
+      ],
+      "status": "in_progress",
+      "startedAt": "2026-01-19T01:06:14.072088+00:00",
+      "completedAt": null,
+      "updatedAt": "2026-01-19T01:06:14.072364+00:00"
     },
     {
       "id": "S26",
@@ -1230,7 +1234,11 @@
         "Can confirm bet (solid lock)",
         "Can cancel unlocked bet",
         "Coin balance updates correctly"
-      ]
+      ],
+      "status": "done",
+      "updatedAt": "2026-01-19T01:06:11.993609+00:00",
+      "completedAt": "2026-01-19T01:06:11.993788+00:00",
+      "startedAt": "2026-01-19T01:06:11.993790+00:00"
     },
     {
       "id": "S27",

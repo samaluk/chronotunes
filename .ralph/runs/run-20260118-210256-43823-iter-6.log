@@ -1,0 +1,2910 @@
+[96m[1m| [0m[90m Read     [0m.ralph/guardrails.md
+[96m[1m| [0m[90m Read     [0m.ralph/errors.log
+[96m[1m| [0m[90m Read     [0m.agents/tasks/prd-music-timeline.json
+[96m[1m| [0m[90m Read     [0m.agents/tasks/prd-music-timeline.json
+[96m[1m| [0m[90m Read     [0mAGENTS.md
+[94m[1m| [0m[90m Glob     [0m{"pattern":"components/game/**/*.tsx"}
+[94m[1m| [0m[90m Glob     [0m{"pattern":"components/**/*.tsx"}
+[94m[1m| [0m[90m Glob     [0m{"pattern":"convex/**/*.ts"}
+[91m[1m| [0m[90m Bash     [0mList components directory
+
+ls: /Users/smaluk/dev/personal/chronotunes/components/: No such file or directory
+
+[91m[1m| [0m[90m Bash     [0mList app directory
+
+ls: /Users/smaluk/dev/personal/chronotunes/app/: No such file or directory
+
+[91m[1m| [0m[90m Bash     [0mList root directory
+
+total 1008
+drwxr-xr-x   32 smaluk  staff    1024 Jan 18 21:26 .
+drwxr-xr-x  143 smaluk  staff    4576 Jan 18 17:00 ..
+drwxr-xr-x    4 smaluk  staff     128 Jan 18 04:11 .agents
+-rw-r--r--@   1 smaluk  staff    6148 Jan 18 17:02 .DS_Store
+-rw-r--r--    1 smaluk  staff     166 Jan 18 19:49 .env.local
+drwxr-xr-x   17 smaluk  staff     544 Jan 18 21:27 .git
+-rw-r--r--@   1 smaluk  staff     661 Jan 18 17:25 .gitignore
+drwxr-xr-x   25 smaluk  staff     800 Jan 18 21:10 .next
+drwx------@   9 smaluk  staff     288 Jan 18 21:27 .opencode
+drwxr-xr-x    8 smaluk  staff     256 Jan 18 21:13 .ralph
+-rw-r--r--    1 smaluk  staff    9104 Jan 18 21:17 AGENTS.md
+-rw-r--r--    1 smaluk  staff    1207 Jan 18 17:15 biome.json
+-rw-r--r--@   1 smaluk  staff     504 Jan 18 17:00 components.json
+drwxr-xr-x   20 smaluk  staff     640 Jan 18 21:15 convex
+-rw-r--r--    1 smaluk  staff     246 Jan 18 19:56 global.d.ts
+-rw-r--r--    1 smaluk  staff    1235 Jan 18 17:12 Justfile
+-rw-r--r--@   1 smaluk  staff     247 Jan 18 20:29 next-env.d.ts
+-rw-r--r--@   1 smaluk  staff     133 Jan 18 17:00 next.config.ts
+drwxr-xr-x   41 smaluk  staff    1312 Jan 18 21:26 node_modules
+-rw-r--r--    1 smaluk  staff    1663 Jan 18 21:26 package.json
+-rw-r--r--    1 smaluk  staff   15257 Jan 18 17:07 PLAN.md
+-rw-r--r--    1 smaluk  staff  204092 Jan 18 21:26 pnpm-lock.yaml
+-rw-r--r--@   1 smaluk  staff      70 Jan 18 17:00 pnpm-workspace.yaml
+-rw-r--r--@   1 smaluk  staff      94 Jan 18 17:00 postcss.config.mjs
+drwxr-xr-x    7 smaluk  staff     224 Jan 18 17:00 public
+-rw-r--r--@   1 smaluk  staff    1450 Jan 18 17:00 README.md
+-rw-r--r--    1 smaluk  staff   20513 Jan 18 17:09 spec.md
+drwxr-xr-x    6 smaluk  staff     192 Jan 18 17:20 src
+-rw-r--r--@   1 smaluk  staff     725 Jan 18 18:17 tsconfig.json
+-rw-r--r--    1 smaluk  staff  185177 Jan 18 21:25 tsconfig.tsbuildinfo
+-rw-r--r--    1 smaluk  staff     859 Jan 18 21:06 vitest.config.ts
+-rw-r--r--    1 smaluk  staff      33 Jan 18 21:07 vitest.setup.ts
+
+[91m[1m| [0m[90m Bash     [0mList src directory
+
+total 16
+drwxr-xr-x   6 smaluk  staff   192 Jan 18 17:20 .
+drwxr-xr-x  32 smaluk  staff  1024 Jan 18 21:26 ..
+-rw-r--r--@  1 smaluk  staff  6148 Jan 18 17:01 .DS_Store
+drwxr-xr-x   9 smaluk  staff   288 Jan 18 19:56 app
+drwxr-xr-x   5 smaluk  staff   160 Jan 18 20:26 components
+drwxr-xr-x   5 smaluk  staff   160 Jan 18 17:31 lib
+
+[96m[1m| [0m[90m Read     [0mconvex/schema.ts
+[91m[1m| [0m[90m Bash     [0mList components directory
+
+total 0
+drwxr-xr-x   5 smaluk  staff   160 Jan 18 20:26 .
+drwxr-xr-x   6 smaluk  staff   192 Jan 18 17:20 ..
+drwxr-xr-x   8 smaluk  staff   256 Jan 18 21:05 game
+drwxr-xr-x   5 smaluk  staff   160 Jan 18 21:13 lobby
+drwxr-xr-x  55 smaluk  staff  1760 Jan 18 21:26 ui
+
+[91m[1m| [0m[90m Bash     [0mList app directory
+
+total 120
+drwxr-xr-x  9 smaluk  staff    288 Jan 18 19:56 .
+drwxr-xr-x  6 smaluk  staff    192 Jan 18 17:20 ..
+-rw-r--r--  1 smaluk  staff  25931 Jan 18 17:00 favicon.ico
+-rw-r--r--  1 smaluk  staff   4352 Jan 18 17:19 globals.css
+-rw-r--r--  1 smaluk  staff   8971 Jan 18 18:22 LandingPageContent.tsx
+-rw-r--r--  1 smaluk  staff    928 Jan 18 19:56 layout.tsx
+drwxr-xr-x  3 smaluk  staff     96 Jan 18 18:18 lobby
+-rw-r--r--  1 smaluk  staff   1285 Jan 18 18:21 page.tsx
+-rw-r--r--  1 smaluk  staff   1429 Jan 18 19:56 providers.tsx
+
+[91m[1m| [0m[90m Bash     [0mList game components directory
+
+total 80
+drwxr-xr-x  8 smaluk  staff   256 Jan 18 21:05 .
+drwxr-xr-x  5 smaluk  staff   160 Jan 18 20:26 ..
+-rw-r--r--  1 smaluk  staff  4927 Jan 18 20:28 CurrentRoundPanel.tsx
+-rw-r--r--  1 smaluk  staff  2588 Jan 18 20:26 GameHeader.tsx
+-rw-r--r--  1 smaluk  staff  4137 Jan 18 21:09 GameView.tsx
+-rw-r--r--  1 smaluk  staff  5241 Jan 18 21:09 MyTimeline.test.tsx
+-rw-r--r--  1 smaluk  staff  6090 Jan 18 21:05 MyTimeline.tsx
+-rw-r--r--  1 smaluk  staff  3855 Jan 18 20:26 PlayersBar.tsx
+
+[91m[1m| [0m[90m Bash     [0mList lobby components directory
+
+total 40
+drwxr-xr-x  5 smaluk  staff    160 Jan 18 21:13 .
+drwxr-xr-x  5 smaluk  staff    160 Jan 18 20:26 ..
+-rw-r--r--  1 smaluk  staff   3038 Jan 18 18:28 PlayerList.tsx
+-rw-r--r--  1 smaluk  staff  12139 Jan 18 21:13 SettingsPanel.tsx
+-rw-r--r--  1 smaluk  staff   2141 Jan 18 18:50 StartGameButton.tsx
+
+[96m[1m| [0m[90m Read     [0msrc/components/game/GameView.tsx
+[96m[1m| [0m[90m Read     [0msrc/components/game/MyTimeline.tsx
+[96m[1m| [0m[90m Read     [0msrc/components/game/CurrentRoundPanel.tsx
+[96m[1m| [0m[90m Read     [0mconvex/rounds.ts
+[91m[1m| [0m[90m Bash     [0mList messages directory
+
+ls: /Users/smaluk/dev/personal/chronotunes/messages/: No such file or directory
+
+[91m[1m| [0m[90m Bash     [0mFind messages directory
+
+/Users/smaluk/dev/personal/chronotunes/node_modules/.pnpm/eslint@9.39.2_jiti@2.6.1/node_modules/eslint/messages
+
+[91m[1m| [0m[90m Bash     [0mFind messages JSON files
+[96m[1m| [0m[90m Read     [0mpackage.json
+[91m[1m| [0m[90m Bash     [0mList lib directory
+
+total 16
+drwxr-xr-x  5 smaluk  staff   160 Jan 18 17:31 .
+drwxr-xr-x  6 smaluk  staff   192 Jan 18 17:20 ..
+drwxr-xr-x  3 smaluk  staff    96 Jan 18 18:39 hooks
+-rw-r--r--  1 smaluk  staff  1854 Jan 18 17:31 session.ts
+-rw-r--r--  1 smaluk  staff   169 Jan 18 17:15 utils.ts
+
+[91m[1m| [0m[90m Bash     [0mList hooks directory
+
+total 8
+drwxr-xr-x  3 smaluk  staff   96 Jan 18 18:39 .
+drwxr-xr-x  5 smaluk  staff  160 Jan 18 17:31 ..
+-rw-r--r--  1 smaluk  staff  866 Jan 18 17:31 use-session-id.ts
+
+[96m[1m| [0m[90m Read     [0msrc/lib/hooks/use-session-id.ts
+[96m[1m| [0m[90m Read     [0mconvex/tracks.ts
+[96m[1m| [0m[90m Read     [0msrc/app/providers.tsx
+[91m[1m| [0m[90m Bash     [0mList UI components
+
+total 600
+drwxr-xr-x  55 smaluk  staff   1760 Jan 18 21:26 .
+drwxr-xr-x   5 smaluk  staff    160 Jan 18 20:26 ..
+-rw-r--r--   1 smaluk  staff   2657 Jan 18 21:28 accordion.tsx
+-rw-r--r--   1 smaluk  staff   5140 Jan 18 21:28 alert-dialog.tsx
+-rw-r--r--   1 smaluk  staff   2058 Jan 18 21:28 alert.tsx
+-rw-r--r--   1 smaluk  staff    406 Jan 18 21:28 aspect-ratio.tsx
+-rw-r--r--   1 smaluk  staff   3010 Jan 18 21:28 avatar.tsx
+-rw-r--r--   1 smaluk  staff   1922 Jan 18 21:28 badge.tsx
+-rw-r--r--   1 smaluk  staff   2518 Jan 18 21:28 breadcrumb.tsx
+-rw-r--r--   1 smaluk  staff   2561 Jan 18 21:28 button-group.tsx
+-rw-r--r--   1 smaluk  staff   3177 Jan 18 21:28 button.tsx
+-rw-r--r--   1 smaluk  staff   7831 Jan 18 21:28 calendar.tsx
+-rw-r--r--   1 smaluk  staff   2575 Jan 18 21:28 card.tsx
+-rw-r--r--   1 smaluk  staff   5616 Jan 18 21:28 carousel.tsx
+-rw-r--r--   1 smaluk  staff   9944 Jan 18 21:28 chart.tsx
+-rw-r--r--   1 smaluk  staff   1374 Jan 18 21:28 checkbox.tsx
+-rw-r--r--   1 smaluk  staff    644 Jan 18 21:28 collapsible.tsx
+-rw-r--r--   1 smaluk  staff   4970 Jan 18 21:28 command.tsx
+-rw-r--r--   1 smaluk  staff   7759 Jan 18 21:28 context-menu.tsx
+-rw-r--r--   1 smaluk  staff   3809 Jan 18 21:28 dialog.tsx
+-rw-r--r--   1 smaluk  staff   4418 Jan 18 21:28 drawer.tsx
+-rw-r--r--   1 smaluk  staff   8497 Jan 18 21:28 dropdown-menu.tsx
+-rw-r--r--   1 smaluk  staff   2361 Jan 18 21:28 empty.tsx
+-rw-r--r--   1 smaluk  staff   5948 Jan 18 21:28 field.tsx
+-rw-r--r--   1 smaluk  staff   1748 Jan 18 21:28 hover-card.tsx
+-rw-r--r--   1 smaluk  staff   5069 Jan 18 21:28 input-group.tsx
+-rw-r--r--   1 smaluk  staff   2599 Jan 18 21:28 input-otp.tsx
+-rw-r--r--   1 smaluk  staff   1029 Jan 18 21:28 input.tsx
+-rw-r--r--   1 smaluk  staff   4821 Jan 18 21:28 item.tsx
+-rw-r--r--   1 smaluk  staff    845 Jan 18 21:28 kbd.tsx
+-rw-r--r--   1 smaluk  staff    524 Jan 18 21:28 label.tsx
+-rw-r--r--   1 smaluk  staff   7969 Jan 18 21:28 menubar.tsx
+-rw-r--r--   1 smaluk  staff   6750 Jan 18 21:28 navigation-menu.tsx
+-rw-r--r--   1 smaluk  staff   2793 Jan 18 21:28 pagination.tsx
+-rw-r--r--   1 smaluk  staff   2460 Jan 18 21:28 popover.tsx
+-rw-r--r--   1 smaluk  staff   1705 Jan 18 21:28 progress.tsx
+-rw-r--r--   1 smaluk  staff   1626 Jan 18 21:28 radio-group.tsx
+-rw-r--r--   1 smaluk  staff   1855 Jan 18 21:28 resizable.tsx
+-rw-r--r--   1 smaluk  staff   1626 Jan 18 21:28 scroll-area.tsx
+-rw-r--r--   1 smaluk  staff   6486 Jan 18 21:28 select.tsx
+-rw-r--r--   1 smaluk  staff    601 Jan 18 21:28 separator.tsx
+-rw-r--r--   1 smaluk  staff   4319 Jan 18 21:28 sheet.tsx
+-rw-r--r--   1 smaluk  staff  21574 Jan 18 21:28 sidebar.tsx
+-rw-r--r--   1 smaluk  staff    278 Jan 18 21:28 skeleton.tsx
+-rw-r--r--   1 smaluk  staff   1980 Jan 18 21:28 slider.tsx
+-rw-r--r--   1 smaluk  staff   1135 Jan 18 21:28 sonner.tsx
+-rw-r--r--   1 smaluk  staff    334 Jan 18 21:28 spinner.tsx
+-rw-r--r--   1 smaluk  staff   1732 Jan 18 21:28 switch.tsx
+-rw-r--r--   1 smaluk  staff   2268 Jan 18 21:28 table.tsx
+-rw-r--r--   1 smaluk  staff   3504 Jan 18 21:28 tabs.tsx
+-rw-r--r--   1 smaluk  staff    830 Jan 18 21:28 textarea.tsx
+-rw-r--r--   1 smaluk  staff    876 Jan 18 17:20 theme-toggle.tsx
+-rw-r--r--   1 smaluk  staff   3143 Jan 18 21:28 toggle-group.tsx
+-rw-r--r--   1 smaluk  staff   1468 Jan 18 21:28 toggle.tsx
+-rw-r--r--   1 smaluk  staff   2393 Jan 18 21:28 tooltip.tsx
+
+[91m[1m| [0m[90m Bash     [0mFind JSON files outside node_modules
+
+/Users/smaluk/dev/personal/chronotunes/.opencode/ralph-history.json
+/Users/smaluk/dev/personal/chronotunes/.opencode/package.json
+/Users/smaluk/dev/personal/chronotunes/.opencode/skills/dev-browser/package-lock.json
+/Users/smaluk/dev/personal/chronotunes/.opencode/skills/dev-browser/tsconfig.json
+/Users/smaluk/dev/personal/chronotunes/.agents/tasks/prd-music-timeline.json
+/Users/smaluk/dev/personal/chronotunes/.next/fallback-build-manifest.json
+/Users/smaluk/dev/personal/chronotunes/.next/images-manifest.json
+/Users/smaluk/dev/personal/chronotunes/.next/required-server-files.json
+/Users/smaluk/dev/personal/chronotunes/.next/build-manifest.json
+/Users/smaluk/dev/personal/chronotunes/.next/server/pages-manifest.json
+/Users/smaluk/dev/personal/chronotunes/.next/server/app/page/react-loadable-manifest.json
+/Users/smaluk/dev/personal/chronotunes/.next/server/app/page/build-manifest.json
+/Users/smaluk/dev/personal/chronotunes/.next/server/app/page/app-paths-manifest.json
+/Users/smaluk/dev/personal/chronotunes/.next/server/app/page/server-reference-manifest.json
+/Users/smaluk/dev/personal/chronotunes/.next/server/app/page/next-font-manifest.json
+/Users/smaluk/dev/personal/chronotunes/.next/server/app/favicon.ico/route/build-manifest.json
+/Users/smaluk/dev/personal/chronotunes/.next/server/app/favicon.ico/route/app-paths-manifest.json
+/Users/smaluk/dev/personal/chronotunes/.next/server/app/favicon.ico/route.js.nft.json
+/Users/smaluk/dev/personal/chronotunes/.next/server/app/lobby/[code]/page/react-loadable-manifest.json
+/Users/smaluk/dev/personal/chronotunes/.next/server/app/lobby/[code]/page/build-manifest.json
+
+[96m[1m| [0m[90m Read     [0msrc/components/ui/button.tsx
+[96m[1m| [0m[90m Read     [0msrc/components/ui/card.tsx
+[96m[1m| [0m[90m Read     [0msrc/lib/utils.ts
+[96m[1m| [0m[90m Read     [0msrc/app/layout.tsx
+[91m[1m| [0m[90m Bash     [0mLog activity start
+
+zsh:1: no such file or directory: /Users/smaluk/dev/personal/chronotunes/ralph
+
+[91m[1m| [0m[90m Bash     [0mFind ralph script
+
+/Users/smaluk/.bun/bin/ralph
+
+[91m[1m| [0m[90m Bash     [0mLog activity start
+
+Using local templates: /Users/smaluk/dev/personal/chronotunes/.agents/ralph
+
+[92m[1m| [0m[90m Write    [0msrc/components/game/TimelinePlacer.tsx
+[92m[1m| [0m[90m Write    [0msrc/components/game/TimelinePlacer.test.tsx
+[96m[1m| [0m[90m Read     [0msrc/components/game/CurrentRoundPanel.tsx
+[96m[1m| [0m[90m Read     [0msrc/components/game/GameView.tsx
+[92m[1m| [0m[90m Edit     [0msrc/components/game/CurrentRoundPanel.tsx
+[92m[1m| [0m[90m Edit     [0msrc/components/game/GameView.tsx
+[91m[1m| [0m[90m Bash     [0mRun TimelinePlacer tests
+
+
+> chronotunes@0.1.0 test /Users/smaluk/dev/personal/chronotunes
+> vitest src/components/game/TimelinePlacer.test.tsx
+
+
+ RUN  v3.2.4 /Users/smaluk/dev/personal/chronotunes
+
+
+⎯⎯⎯⎯⎯⎯ Failed Suites 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  |react| src/components/game/TimelinePlacer.test.tsx [ src/components/game/TimelinePlacer.test.tsx ]
+Error: Transform failed with 1 error:
+/Users/smaluk/dev/personal/chronotunes/src/components/game/TimelinePlacer.test.tsx:74:37: ERROR: Expected ">" but found "<"
+  Plugin: vite:esbuild
+  File: /Users/smaluk/dev/personal/chronotunes/src/components/game/TimelinePlacer.test.tsx:74:37
+  
+  Expected ">" but found "<"
+  72 |    render(
+  73 |      <TimelinePlacer
+  74 |        lobbyId="lobby123" as GenericId<"lobbies">
+     |                                       ^
+  75 |        player={mockPlayer}
+  76 |        currentTrack={null}
+  
+ ❯ failureErrorWithLog node_modules/.pnpm/esbuild@0.27.0/node_modules/esbuild/lib/main.js:1467:15
+ ❯ node_modules/.pnpm/esbuild@0.27.0/node_modules/esbuild/lib/main.js:736:50
+ ❯ responseCallbacks.<computed> node_modules/.pnpm/esbuild@0.27.0/node_modules/esbuild/lib/main.js:603:9
+ ❯ handleIncomingPacket node_modules/.pnpm/esbuild@0.27.0/node_modules/esbuild/lib/main.js:658:12
+ ❯ Socket.readFromStdout node_modules/.pnpm/esbuild@0.27.0/node_modules/esbuild/lib/main.js:581:7
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  no tests
+   Start at  21:31:12
+   Duration  876ms (transform 24ms, setup 103ms, collect 0ms, tests 0ms, environment 353ms, prepare 157ms)
+
+ ELIFECYCLE  Test failed. See above for more details.
+
+[96m[1m| [0m[90m Read     [0msrc/components/game/TimelinePlacer.test.tsx
+[92m[1m| [0m[90m Write    [0msrc/components/game/TimelinePlacer.test.tsx
+[96m[1m| [0m[90m Read     [0msrc/components/game/TimelinePlacer.test.tsx
+[91m[1m| [0m[90m Bash     [0mRun TimelinePlacer tests
+
+
+> chronotunes@0.1.0 test /Users/smaluk/dev/personal/chronotunes
+> vitest src/components/game/TimelinePlacer.test.tsx
+
+
+ RUN  v3.2.4 /Users/smaluk/dev/personal/chronotunes
+
+
+⎯⎯⎯⎯⎯⎯ Failed Suites 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  |react| src/components/game/TimelinePlacer.test.tsx [ src/components/game/TimelinePlacer.test.tsx ]
+Error: Failed to resolve import "@/lib/hooks/use-session-id" from "src/components/game/TimelinePlacer.test.tsx". Does the file exist?
+  Plugin: vite:import-analysis
+  File: /Users/smaluk/dev/personal/chronotunes/src/components/game/TimelinePlacer.test.tsx:5:0
+  4  |  const __vi_import_1__ = await import("@testing-library/react");
+  5  |  const __vi_import_2__ = await import("convex/react");
+  6  |  const __vi_import_3__ = await import("@/lib/hooks/use-session-id");
+     |                                       ^
+  7  |  const __vi_import_4__ = await import("./TimelinePlacer");
+  8  |  
+ ❯ TransformPluginContext._formatLog node_modules/.pnpm/vite@7.3.1_@types+node@20.19.30_jiti@2.6.1_lightningcss@1.30.2/node_modules/vite/dist/node/chunks/config.js:28999:43
+ ❯ TransformPluginContext.error node_modules/.pnpm/vite@7.3.1_@types+node@20.19.30_jiti@2.6.1_lightningcss@1.30.2/node_modules/vite/dist/node/chunks/config.js:28996:14
+ ❯ normalizeUrl node_modules/.pnpm/vite@7.3.1_@types+node@20.19.30_jiti@2.6.1_lightningcss@1.30.2/node_modules/vite/dist/node/chunks/config.js:27119:18
+ ❯ node_modules/.pnpm/vite@7.3.1_@types+node@20.19.30_jiti@2.6.1_lightningcss@1.30.2/node_modules/vite/dist/node/chunks/config.js:27177:32
+ ❯ TransformPluginContext.transform node_modules/.pnpm/vite@7.3.1_@types+node@20.19.30_jiti@2.6.1_lightningcss@1.30.2/node_modules/vite/dist/node/chunks/config.js:27145:4
+ ❯ EnvironmentPluginContainer.transform node_modules/.pnpm/vite@7.3.1_@types+node@20.19.30_jiti@2.6.1_lightningcss@1.30.2/node_modules/vite/dist/node/chunks/config.js:28797:14
+ ❯ loadAndTransform node_modules/.pnpm/vite@7.3.1_@types+node@20.19.30_jiti@2.6.1_lightningcss@1.30.2/node_modules/vite/dist/node/chunks/config.js:22670:26
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  no tests
+   Start at  21:31:57
+   Duration  683ms (transform 24ms, setup 86ms, collect 0ms, tests 0ms, environment 314ms, prepare 58ms)
+
+ ELIFECYCLE  Test failed. See above for more details.
+
+[96m[1m| [0m[90m Read     [0mtsconfig.json
+[96m[1m| [0m[90m Read     [0msrc/components/game/MyTimeline.test.tsx
+[92m[1m| [0m[90m Write    [0msrc/components/game/TimelinePlacer.test.tsx
+[96m[1m| [0m[90m Read     [0mvitest.config.ts
+[96m[1m| [0m[90m Read     [0mvitest.setup.ts
+[91m[1m| [0m[90m Bash     [0mRun TimelinePlacer tests with limited output
+
+
+> chronotunes@0.1.0 test /Users/smaluk/dev/personal/chronotunes
+> vitest src/components/game/TimelinePlacer.test.tsx
+
+
+ RUN  v3.2.4 /Users/smaluk/dev/personal/chronotunes
+
+
+⎯⎯⎯⎯⎯⎯ Failed Suites 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  |react| src/components/game/TimelinePlacer.test.tsx [ src/components/game/TimelinePlacer.test.tsx ]
+Error: Failed to resolve import "@/lib/hooks/use-session-id" from "src/components/game/TimelinePlacer.test.tsx". Does the file exist?
+  Plugin: vite:import-analysis
+  File: /Users/smaluk/dev/personal/chronotunes/src/components/game/TimelinePlacer.test.tsx:87:0
+  23 |  const __vi_import_2__ = await import("./TimelinePlacer");
+  24 |  const __vi_import_3__ = await import("convex/react");
+  25 |  const __vi_import_4__ = await import("@/lib/hooks/use-session-id");
+     |                                       ^
+  26 |  
+  27 |  
+ ❯ TransformPluginContext._formatLog node_modules/.pnpm/vite@7.3.1_@types+node@20.19.30_jiti@2.6.1_lightningcss@1.30.2/node_modules/vite/dist/node/chunks/config.js:28999:43
+ ❯ TransformPluginContext.error node_modules/.pnpm/vite@7.3.1_@types+node@20.19.30_jiti@2.6.1_lightningcss@1.30.2/node_modules/vite/dist/node/chunks/config.js:28996:14
+ ❯ normalizeUrl node_modules/.pnpm/vite@7.3.1_@types+node@20.19.30_jiti@2.6.1_lightningcss@1.30.2/node_modules/vite/dist/node/chunks/config.js:27119:18
+ ❯ node_modules/.pnpm/vite@7.3.1_@types+node@20.19.30_jiti@2.6.1_lightningcss@1.30.2/node_modules/vite/dist/node/chunks/config.js:27177:32
+ ❯ TransformPluginContext.transform node_modules/.pnpm/vite@7.3.1_@types+node@20.19.30_jiti@2.6.1_lightningcss@1.30.2/node_modules/vite/dist/node/chunks/config.js:27145:4
+ ❯ EnvironmentPluginContainer.transform node_modules/.pnpm/vite@7.3.1_@types+node@20.19.30_jiti@2.6.1_lightningcss@1.30.2/node_modules/vite/dist/node/chunks/config.js:28797:14
+ ❯ loadAndTransform node_modules/.pnpm/vite@7.3.1_@types+node@20.19.30_jiti@2.6.1_lightningcss@1.30.2/node_modules/vite/dist/node/chunks/config.js:22670:26
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  no tests
+   Start at  21:32:57
+   Duration  746ms (transform 33ms, setup 95ms, collect 0ms, tests 0ms, environment 340ms, prepare 78ms)
+
+ ELIFECYCLE  Test failed. See above for more details.
+
+[92m[1m| [0m[90m Edit     [0mvitest.config.ts
+[91m[1m| [0m[90m Bash     [0mRun TimelinePlacer tests
+
+
+> chronotunes@0.1.0 test /Users/smaluk/dev/personal/chronotunes
+> vitest src/components/game/TimelinePlacer.test.tsx
+
+
+ RUN  v3.2.4 /Users/smaluk/dev/personal/chronotunes
+
+
+⎯⎯⎯⎯⎯⎯ Failed Suites 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  |react| src/components/game/TimelinePlacer.test.tsx [ src/components/game/TimelinePlacer.test.tsx ]
+Error: Failed to resolve import "@/components/ui/button" from "src/components/game/TimelinePlacer.tsx". Does the file exist?
+  Plugin: vite:import-analysis
+  File: /Users/smaluk/dev/personal/chronotunes/src/components/game/TimelinePlacer.tsx:7:23
+  4  |  import { Check, GripVertical, Loader2, Music } from "lucide-react";
+  5  |  import { useCallback, useState } from "react";
+  6  |  import { Button } from "@/components/ui/button";
+     |                          ^
+  7  |  import { api } from "@/convex/_generated/api.js";
+  8  |  import { useSessionId } from "@/lib/hooks/use-session-id";
+ ❯ TransformPluginContext._formatLog node_modules/.pnpm/vite@7.3.1_@types+node@20.19.30_jiti@2.6.1_lightningcss@1.30.2/node_modules/vite/dist/node/chunks/config.js:28999:43
+ ❯ TransformPluginContext.error node_modules/.pnpm/vite@7.3.1_@types+node@20.19.30_jiti@2.6.1_lightningcss@1.30.2/node_modules/vite/dist/node/chunks/config.js:28996:14
+ ❯ normalizeUrl node_modules/.pnpm/vite@7.3.1_@types+node@20.19.30_jiti@2.6.1_lightningcss@1.30.2/node_modules/vite/dist/node/chunks/config.js:27119:18
+ ❯ node_modules/.pnpm/vite@7.3.1_@types+node@20.19.30_jiti@2.6.1_lightningcss@1.30.2/node_modules/vite/dist/node/chunks/config.js:27177:32
+ ❯ TransformPluginContext.transform node_modules/.pnpm/vite@7.3.1_@types+node@20.19.30_jiti@2.6.1_lightningcss@1.30.2/node_modules/vite/dist/node/chunks/config.js:27145:4
+ ❯ EnvironmentPluginContainer.transform node_modules/.pnpm/vite@7.3.1_@types+node@20.19.30_jiti@2.6.1_lightningcss@1.30.2/node_modules/vite/dist/node/chunks/config.js:28797:14
+ ❯ loadAndTransform node_modules/.pnpm/vite@7.3.1_@types+node@20.19.30_jiti@2.6.1_lightningcss@1.30.2/node_modules/vite/dist/node/chunks/config.js:22670:26
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  no tests
+   Start at  21:33:12
+   Duration  808ms (transform 91ms, setup 106ms, collect 0ms, tests 0ms, environment 361ms, prepare 92ms)
+
+ ELIFECYCLE  Test failed. See above for more details.
+
+[92m[1m| [0m[90m Edit     [0mvitest.config.ts
+[91m[1m| [0m[90m Bash     [0mRun TimelinePlacer tests
+
+
+> chronotunes@0.1.0 test /Users/smaluk/dev/personal/chronotunes
+> vitest src/components/game/TimelinePlacer.test.tsx
+
+
+ RUN  v3.2.4 /Users/smaluk/dev/personal/chronotunes
+
+
+⎯⎯⎯⎯⎯⎯ Failed Suites 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  |react| src/components/game/TimelinePlacer.test.tsx [ src/components/game/TimelinePlacer.test.tsx ]
+Error: Failed to resolve import "@/convex/_generated/api.js" from "src/components/game/TimelinePlacer.tsx". Does the file exist?
+  Plugin: vite:import-analysis
+  File: /Users/smaluk/dev/personal/chronotunes/src/components/game/TimelinePlacer.tsx:8:20
+  5  |  import { useCallback, useState } from "react";
+  6  |  import { Button } from "@/components/ui/button";
+  7  |  import { api } from "@/convex/_generated/api.js";
+     |                       ^
+  8  |  import { useSessionId } from "@/lib/hooks/use-session-id";
+  9  |  import { cn } from "@/lib/utils";
+ ❯ TransformPluginContext._formatLog node_modules/.pnpm/vite@7.3.1_@types+node@20.19.30_jiti@2.6.1_lightningcss@1.30.2/node_modules/vite/dist/node/chunks/config.js:28999:43
+ ❯ TransformPluginContext.error node_modules/.pnpm/vite@7.3.1_@types+node@20.19.30_jiti@2.6.1_lightningcss@1.30.2/node_modules/vite/dist/node/chunks/config.js:28996:14
+ ❯ normalizeUrl node_modules/.pnpm/vite@7.3.1_@types+node@20.19.30_jiti@2.6.1_lightningcss@1.30.2/node_modules/vite/dist/node/chunks/config.js:27119:18
+ ❯ node_modules/.pnpm/vite@7.3.1_@types+node@20.19.30_jiti@2.6.1_lightningcss@1.30.2/node_modules/vite/dist/node/chunks/config.js:27177:32
+ ❯ TransformPluginContext.transform node_modules/.pnpm/vite@7.3.1_@types+node@20.19.30_jiti@2.6.1_lightningcss@1.30.2/node_modules/vite/dist/node/chunks/config.js:27145:4
+ ❯ EnvironmentPluginContainer.transform node_modules/.pnpm/vite@7.3.1_@types+node@20.19.30_jiti@2.6.1_lightningcss@1.30.2/node_modules/vite/dist/node/chunks/config.js:28797:14
+ ❯ loadAndTransform node_modules/.pnpm/vite@7.3.1_@types+node@20.19.30_jiti@2.6.1_lightningcss@1.30.2/node_modules/vite/dist/node/chunks/config.js:22670:26
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  no tests
+   Start at  21:33:24
+   Duration  852ms (transform 53ms, setup 101ms, collect 0ms, tests 0ms, environment 365ms, prepare 61ms)
+
+ ELIFECYCLE  Test failed. See above for more details.
+
+[91m[1m| [0m[90m Bash     [0mCheck convex generated files
+
+total 48
+drwxr-xr-x   7 smaluk  staff   224 Jan 18 21:05 .
+drwxr-xr-x  20 smaluk  staff   640 Jan 18 21:15 ..
+-rw-r--r--   1 smaluk  staff  1498 Jan 18 21:05 api.d.ts
+-rw-r--r--   1 smaluk  staff   480 Jan 18 17:57 api.js
+-rw-r--r--   1 smaluk  staff  1736 Jan 18 17:57 dataModel.d.ts
+-rw-r--r--   1 smaluk  staff  5600 Jan 18 17:57 server.d.ts
+-rw-r--r--   1 smaluk  staff  3696 Jan 18 17:57 server.js
+
+[96m[1m| [0m[90m Read     [0mvitest.config.ts
+[92m[1m| [0m[90m Edit     [0mvitest.config.ts
+[91m[1m| [0m[90m Bash     [0mRun TimelinePlacer tests
+
+
+> chronotunes@0.1.0 test /Users/smaluk/dev/personal/chronotunes
+> vitest src/components/game/TimelinePlacer.test.tsx
+
+
+ RUN  v3.2.4 /Users/smaluk/dev/personal/chronotunes
+
+stderr | src/components/game/TimelinePlacer.test.tsx > shows preview indicator when position selected
+TypeError: setPlacementPreview is not a function
+    at [90m/Users/smaluk/dev/personal/chronotunes/[39msrc/components/game/TimelinePlacer.tsx:126:14
+    at onClick [90m(/Users/smaluk/dev/personal/chronotunes/[39msrc/components/game/TimelinePlacer.tsx:244:34[90m)[39m
+    at executeDispatch [90m(/Users/smaluk/dev/personal/chronotunes/[39mnode_modules/[4m.pnpm[24m/react-dom@19.2.3_react@19.2.3/node_modules/[4mreact-dom[24m/cjs/react-dom-client.development.js:19116:9[90m)[39m
+    at runWithFiberInDEV [90m(/Users/smaluk/dev/personal/chronotunes/[39mnode_modules/[4m.pnpm[24m/react-dom@19.2.3_react@19.2.3/node_modules/[4mreact-dom[24m/cjs/react-dom-client.development.js:874:13[90m)[39m
+    at processDispatchQueue [90m(/Users/smaluk/dev/personal/chronotunes/[39mnode_modules/[4m.pnpm[24m/react-dom@19.2.3_react@19.2.3/node_modules/[4mreact-dom[24m/cjs/react-dom-client.development.js:19166:19[90m)[39m
+    at [90m/Users/smaluk/dev/personal/chronotunes/[39mnode_modules/[4m.pnpm[24m/react-dom@19.2.3_react@19.2.3/node_modules/[4mreact-dom[24m/cjs/react-dom-client.development.js:19767:9
+    at batchedUpdates$1 [90m(/Users/smaluk/dev/personal/chronotunes/[39mnode_modules/[4m.pnpm[24m/react-dom@19.2.3_react@19.2.3/node_modules/[4mreact-dom[24m/cjs/react-dom-client.development.js:3255:40[90m)[39m
+    at dispatchEventForPluginEventSystem [90m(/Users/smaluk/dev/personal/chronotunes/[39mnode_modules/[4m.pnpm[24m/react-dom@19.2.3_react@19.2.3/node_modules/[4mreact-dom[24m/cjs/react-dom-client.development.js:19320:7[90m)[39m
+    at dispatchEvent [90m(/Users/smaluk/dev/personal/chronotunes/[39mnode_modules/[4m.pnpm[24m/react-dom@19.2.3_react@19.2.3/node_modules/[4mreact-dom[24m/cjs/react-dom-client.development.js:23585:11[90m)[39m
+    at dispatchDiscreteEvent [90m(/Users/smaluk/dev/personal/chronotunes/[39mnode_modules/[4m.pnpm[24m/react-dom@19.2.3_react@19.2.3/node_modules/[4mreact-dom[24m/cjs/react-dom-client.development.js:23553:11[90m)[39m
+
+stderr | src/components/game/TimelinePlacer.test.tsx > displays correct placement message for first position
+TypeError: setPlacementPreview is not a function
+    at [90m/Users/smaluk/dev/personal/chronotunes/[39msrc/components/game/TimelinePlacer.tsx:126:14
+    at onClick [90m(/Users/smaluk/dev/personal/chronotunes/[39msrc/components/game/TimelinePlacer.tsx:179:30[90m)[39m
+    at executeDispatch [90m(/Users/smaluk/dev/personal/chronotunes/[39mnode_modules/[4m.pnpm[24m/react-dom@19.2.3_react@19.2.3/node_modules/[4mreact-dom[24m/cjs/react-dom-client.development.js:19116:9[90m)[39m
+    at runWithFiberInDEV [90m(/Users/smaluk/dev/personal/chronotunes/[39mnode_modules/[4m.pnpm[24m/react-dom@19.2.3_react@19.2.3/node_modules/[4mreact-dom[24m/cjs/react-dom-client.development.js:874:13[90m)[39m
+    at processDispatchQueue [90m(/Users/smaluk/dev/personal/chronotunes/[39mnode_modules/[4m.pnpm[24m/react-dom@19.2.3_react@19.2.3/node_modules/[4mreact-dom[24m/cjs/react-dom-client.development.js:19166:19[90m)[39m
+    at [90m/Users/smaluk/dev/personal/chronotunes/[39mnode_modules/[4m.pnpm[24m/react-dom@19.2.3_react@19.2.3/node_modules/[4mreact-dom[24m/cjs/react-dom-client.development.js:19767:9
+    at batchedUpdates$1 [90m(/Users/smaluk/dev/personal/chronotunes/[39mnode_modules/[4m.pnpm[24m/react-dom@19.2.3_react@19.2.3/node_modules/[4mreact-dom[24m/cjs/react-dom-client.development.js:3255:40[90m)[39m
+    at dispatchEventForPluginEventSystem [90m(/Users/smaluk/dev/personal/chronotunes/[39mnode_modules/[4m.pnpm[24m/react-dom@19.2.3_react@19.2.3/node_modules/[4mreact-dom[24m/cjs/react-dom-client.development.js:19320:7[90m)[39m
+    at dispatchEvent [90m(/Users/smaluk/dev/personal/chronotunes/[39mnode_modules/[4m.pnpm[24m/react-dom@19.2.3_react@19.2.3/node_modules/[4mreact-dom[24m/cjs/react-dom-client.development.js:23585:11[90m)[39m
+    at dispatchDiscreteEvent [90m(/Users/smaluk/dev/personal/chronotunes/[39mnode_modules/[4m.pnpm[24m/react-dom@19.2.3_react@19.2.3/node_modules/[4mreact-dom[24m/cjs/react-dom-client.development.js:23553:11[90m)[39m
+
+stderr | src/components/game/TimelinePlacer.test.tsx > displays correct placement message for middle position
+TypeError: setPlacementPreview is not a function
+    at [90m/Users/smaluk/dev/personal/chronotunes/[39msrc/components/game/TimelinePlacer.tsx:126:14
+    at onClick [90m(/Users/smaluk/dev/personal/chronotunes/[39msrc/components/game/TimelinePlacer.tsx:244:34[90m)[39m
+    at executeDispatch [90m(/Users/smaluk/dev/personal/chronotunes/[39mnode_modules/[4m.pnpm[24m/react-dom@19.2.3_react@19.2.3/node_modules/[4mreact-dom[24m/cjs/react-dom-client.development.js:19116:9[90m)[39m
+    at runWithFiberInDEV [90m(/Users/smaluk/dev/personal/chronotunes/[39mnode_modules/[4m.pnpm[24m/react-dom@19.2.3_react@19.2.3/node_modules/[4mreact-dom[24m/cjs/react-dom-client.development.js:874:13[90m)[39m
+    at processDispatchQueue [90m(/Users/smaluk/dev/personal/chronotunes/[39mnode_modules/[4m.pnpm[24m/react-dom@19.2.3_react@19.2.3/node_modules/[4mreact-dom[24m/cjs/react-dom-client.development.js:19166:19[90m)[39m
+    at [90m/Users/smaluk/dev/personal/chronotunes/[39mnode_modules/[4m.pnpm[24m/react-dom@19.2.3_react@19.2.3/node_modules/[4mreact-dom[24m/cjs/react-dom-client.development.js:19767:9
+    at batchedUpdates$1 [90m(/Users/smaluk/dev/personal/chronotunes/[39mnode_modules/[4m.pnpm[24m/react-dom@19.2.3_react@19.2.3/node_modules/[4mreact-dom[24m/cjs/react-dom-client.development.js:3255:40[90m)[39m
+    at dispatchEventForPluginEventSystem [90m(/Users/smaluk/dev/personal/chronotunes/[39mnode_modules/[4m.pnpm[24m/react-dom@19.2.3_react@19.2.3/node_modules/[4mreact-dom[24m/cjs/react-dom-client.development.js:19320:7[90m)[39m
+    at dispatchEvent [90m(/Users/smaluk/dev/personal/chronotunes/[39mnode_modules/[4m.pnpm[24m/react-dom@19.2.3_react@19.2.3/node_modules/[4mreact-dom[24m/cjs/react-dom-client.development.js:23585:11[90m)[39m
+    at dispatchDiscreteEvent [90m(/Users/smaluk/dev/personal/chronotunes/[39mnode_modules/[4m.pnpm[24m/react-dom@19.2.3_react@19.2.3/node_modules/[4mreact-dom[24m/cjs/react-dom-client.development.js:23553:11[90m)[39m
+
+ ❯ |react| src/components/game/TimelinePlacer.test.tsx (11 tests | 11 failed) 216ms
+   × renders loading state when track is null 21ms
+     → Invalid Chai property: toBeInTheDocument
+   × renders empty timeline with drop zone 15ms
+     → Invalid Chai property: toBeInTheDocument
+   × renders timeline with existing cards and drop zones 19ms
+     → Found multiple elements with the text: Place the Song
+
+Here are the matching elements:
+
+Ignored nodes: comments, script, style
+[36m<h3[39m
+  [33mclass[39m=[32m"text-sm font-medium text-muted-foreground"[39m
+[36m>[39m
+  [0mPlace the Song[0m
+[36m</h3>[39m
+
+Ignored nodes: comments, script, style
+[36m<h3[39m
+  [33mclass[39m=[32m"text-sm font-medium text-muted-foreground"[39m
+[36m>[39m
+  [0mPlace the Song[0m
+[36m</h3>[39m
+
+(If this is intentional, then use the `*AllBy*` variant of the query (like `queryAllByText`, `getAllByText`, or `findAllByText`)).
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"flex flex-col items-center justify-center py-8"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"animate-spin rounded-full h-8 w-8 border-b-2 border-primary"[39m
+      [36m/>[39m
+      [36m<p[39m
+        [33mclass[39m=[32m"mt-4 text-muted-foreground"[39m
+      [36m>[39m
+        [0mLoading track...[0m
+      [36m</p>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"w-full space-y-4"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex items-center justify-between"[39m
+      [36m>[39m
+        [36m<h3[39m
+          [33mclass[39m=[32m"text-sm font-medium text-muted-foreground"[39m
+        [36m>[39m
+          [0mPlace the Song[0m
+        [36m</h3>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"text-xs text-muted-foreground"[39m
+        [36m>[39m
+          [0m0[0m
+          [0m [0m
+          [0mcards[0m
+          [0m in timeline[0m
+        [36m</span>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"space-y-2"[39m
+      [36m>[39m
+        [36m<button[39m
+          [33mclass[39m=[32m"w-full py-1 my-1 rounded-md transition-all duration-200 flex items-center justify-center gap-2 opacity-0 hover:opacity-50 border-2 border-transparent"[39m
+          [33mtype[39m=[32m"button"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"flex items-center gap-1 text-xs text-muted-foreground"[39m
+          [36m>[39m
+            [36m<svg[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"lucide lucide-grip-vertical h-3 w-3"[39m
+              [33mfill[39m=[32m"none"[39m
+              [33mheight[39m=[32m"24"[39m
+              [33mstroke[39m=[32m"currentColor"[39m
+              [33mstroke-linecap[39m=[32m"round"[39m
+              [33mstroke-linejoin[39m=[32m"round"[39m
+              [33mstroke-width[39m=[32m"2"[39m
+              [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [33mwidth[39m=[32m"24"[39m
+              [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+            [36m>[39m
+              [36m<circle[39m
+                [33mcx[39m=[32m"9"[39m
+                [33mcy[39m=[32m"12"[39m
+                [33mr[39m=[32m"1"[39m
+              [36m/>[39m
+              [36m<circle[39m
+                [33mcx[39m=[32m"9"[39m
+                [33mcy[39m=[32m"5"[39m
+                [33mr[39m=[32m"1"[39m
+              [36m/>[39m
+              [36m<circle[39m
+                [33mcx[39m=[32m"9"[39m
+                [33mcy[39m=[32m"19"[39m
+                [33mr[39m=[32m"1"[39m
+              [36m/>[39m
+              [36m<circle[39m
+                [33mcx[39m=[32m"15"[39m
+                [33mcy[39m=[32m"12"[39m
+                [33mr[39m=[32m"1"[39m
+              [36m/>[39m
+              [36m<circle[39m
+                [33mcx[39m=[32m"15"[39m
+                [33mcy[39m=[32m"5"[39m
+                [33mr[39m=[32m"1"[39m
+              [36m/>[39m
+              [36m<circle[39m
+                [33mcx[39m=[32m"15"[39m
+                [33mcy[39m=[32m"19"[39m
+                [33mr[39m=[32m"1"[39m
+              [36m/>[39m
+            [36m</svg>[39m
+            [36m<span>[39m
+              [0mDrop here[0m
+            [36m</span>[39m
+          [36m</div>[39m
+        [36m</button>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"pl-4"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"flex items-center gap-3 p-3 rounded-lg border transition-all bg-card"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-muted"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"lucide lucide-music h-5 w-5 text-muted-foreground"[39m
+                [33mfill[39m=[32m"none"[39m
+                [33mheight[39m=[32m"24"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mstroke-linecap[39m=[32m"round"[39m
+                [33mstroke-linejoin[39m=[32m"round"[39m
+                [33mstroke-width[39m=[32m"2"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+                [33mwidth[39m=[32m"24"[39m
+                [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M9 18V5l12-2v13"[39m
+                [36m/>[39m
+                [36m<circle[39m
+                  [33mcx[39m=[32m"6"[39m
+                  [33mcy[39m=[32m"18"[39m
+                  [33mr[39m=[32m"3"[39m
+                [36m/>[39m
+                [36m<circle[39m
+                  [33mcx[39m=[32m"18"[39m
+                  [33mcy[39m=[32m"16"[39m
+                  [33mr[39m=[32m"3"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+            [36m</div>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"flex-1 min-w-0"[39m
+            [36m>[39m
+              [36m<p[39m
+                [33mclass[39m=[32m"font-medium text-foreground truncate"[39m
+              [36m>[39m
+                [0mTest Song[0m
+              [36m</p>[39m
+              [36m<p[39m
+                [33mclass[39m=[32m"text-sm text-muted-foreground truncate"[39m
+              [36m>[39m
+                [0mTest Artist[0m
+              [36m</p>[39m
+            [36m</div>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary/10"[39m
+            [36m>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"text-sm font-semibold text-primary"[39m
+              [36m>[39m
+                [0m1990[0m
+              [36m</span>[39m
+            [36m</div>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex items-center justify-between pt-4 border-t"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"text-sm"[39m
+        [36m>[39m
+          [36m<p[39m
+            [33mclass[39m=[32m"text-muted-foreground"[39m
+          [36m>[39m
+            [0mSelect a position to place the song[0m
+          [36m</p>[39m
+        [36m</div>[39m
+        [36m<button[39m
+          [33mclass[39m=[32m"focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 rounded-md border border-t...
+   × shows preview indicator when position selected 17ms
+     → expected "spy" to be called with arguments: [ { lobbyId: 'lobby123', …(2) } ][90m
+
+Number of calls: [1m0[22m
+[39m
+   × disables submit button when no position selected 55ms
+     → Found multiple elements with the role "button" and name `/confirm placement/i`
+
+Here are the matching elements:
+
+Ignored nodes: comments, script, style
+[36m<button[39m
+  [33mclass[39m=[32m"focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 rounded-md border border-transparent bg-clip-padding text-sm font-medium focus-visible:ring-[3px] aria-invalid:ring-[3px] [&_svg:not([class*='size-'])]:size-4 inline-flex items-center justify-center whitespace-nowrap transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none shrink-0 [&_svg]:shrink-0 outline-none group/button select-none bg-primary text-primary-foreground hover:bg-primary/80 h-10 gap-1.5 px-2.5 has-data-[icon=inline-end]:pr-3 has-data-[icon=inline-start]:pl-3"[39m
+  [33mdata-disabled[39m=[32m""[39m
+  [33mdata-slot[39m=[32m"button"[39m
+  [33mdisabled[39m=[32m""[39m
+  [33mtabindex[39m=[32m"0"[39m
+  [33mtype[39m=[32m"button"[39m
+[36m>[39m
+  [36m<svg[39m
+    [33maria-hidden[39m=[32m"true"[39m
+    [33mclass[39m=[32m"lucide lucide-check mr-2 h-4 w-4"[39m
+    [33mfill[39m=[32m"none"[39m
+    [33mheight[39m=[32m"24"[39m
+    [33mstroke[39m=[32m"currentColor"[39m
+    [33mstroke-linecap[39m=[32m"round"[39m
+    [33mstroke-linejoin[39m=[32m"round"[39m
+    [33mstroke-width[39m=[32m"2"[39m
+    [33mviewBox[39m=[32m"0 0 24 24"[39m
+    [33mwidth[39m=[32m"24"[39m
+    [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+  [36m>[39m
+    [36m<path[39m
+      [33md[39m=[32m"M20 6 9 17l-5-5"[39m
+    [36m/>[39m
+  [36m</svg>[39m
+  [0mConfirm Placement[0m
+[36m</button>[39m
+
+Ignored nodes: comments, script, style
+[36m<button[39m
+  [33mclass[39m=[32m"focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 rounded-md border border-transparent bg-clip-padding text-sm font-medium focus-visible:ring-[3px] aria-invalid:ring-[3px] [&_svg:not([class*='size-'])]:size-4 inline-flex items-center justify-center whitespace-nowrap transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none shrink-0 [&_svg]:shrink-0 outline-none group/button select-none bg-primary text-primary-foreground hover:bg-primary/80 h-10 gap-1.5 px-2.5 has-data-[icon=inline-end]:pr-3 has-data-[icon=inline-start]:pl-3"[39m
+  [33mdata-disabled[39m=[32m""[39m
+  [33mdata-slot[39m=[32m"button"[39m
+  [33mdisabled[39m=[32m""[39m
+  [33mtabindex[39m=[32m"0"[39m
+  [33mtype[39m=[32m"button"[39m
+[36m>[39m
+  [36m<svg[39m
+    [33maria-hidden[39m=[32m"true"[39m
+    [33mclass[39m=[32m"lucide lucide-check mr-2 h-4 w-4"[39m
+    [33mfill[39m=[32m"none"[39m
+    [33mheight[39m=[32m"24"[39m
+    [33mstroke[39m=[32m"currentColor"[39m
+    [33mstroke-linecap[39m=[32m"round"[39m
+    [33mstroke-linejoin[39m=[32m"round"[39m
+    [33mstroke-width[39m=[32m"2"[39m
+    [33mviewBox[39m=[32m"0 0 24 24"[39m
+    [33mwidth[39m=[32m"24"[39m
+    [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+  [36m>[39m
+    [36m<path[39m
+      [33md[39m=[32m"M20 6 9 17l-5-5"[39m
+    [36m/>[39m
+  [36m</svg>[39m
+  [0mConfirm Placement[0m
+[36m</button>[39m
+
+Ignored nodes: comments, script, style
+[36m<button[39m
+  [33mclass[39m=[32m"focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 rounded-md border border-transparent bg-clip-padding text-sm font-medium focus-visible:ring-[3px] aria-invalid:ring-[3px] [&_svg:not([class*='size-'])]:size-4 inline-flex items-center justify-center whitespace-nowrap transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none shrink-0 [&_svg]:shrink-0 outline-none group/button select-none bg-primary text-primary-foreground hover:bg-primary/80 h-10 gap-1.5 px-2.5 has-data-[icon=inline-end]:pr-3 has-data-[icon=inline-start]:pl-3"[39m
+  [33mdata-disabled[39m=[32m""[39m
+  [33mdata-slot[39m=[32m"button"[39m
+  [33mdisabled[39m=[32m""[39m
+  [33mtabindex[39m=[32m"0"[39m
+  [33mtype[39m=[32m"button"[39m
+[36m>[39m
+  [36m<svg[39m
+    [33maria-hidden[39m=[32m"true"[39m
+    [33mclass[39m=[32m"lucide lucide-check mr-2 h-4 w-4"[39m
+    [33mfill[39m=[32m"none"[39m
+    [33mheight[39m=[32m"24"[39m
+    [33mstroke[39m=[32m"currentColor"[39m
+    [33mstroke-linecap[39m=[32m"round"[39m
+    [33mstroke-linejoin[39m=[32m"round"[39m
+    [33mstroke-width[39m=[32m"2"[39m
+    [33mviewBox[39m=[32m"0 0 24 24"[39m
+    [33mwidth[39m=[32m"24"[39m
+    [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+  [36m>[39m
+    [36m<path[39m
+      [33md[39m=[32m"M20 6 9 17l-5-5"[39m
+    [36m/>[39m
+  [36m</svg>[39m
+  [0mConfirm Placement[0m
+[36m</button>[39m
+
+Ignored nodes: comments, script, style
+[36m<button[39m
+  [33mclass[39m=[32m"focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 rounded-md border border-transparent bg-clip-padding text-sm font-medium focus-visible:ring-[3px] aria-invalid:ring-[3px] [&_svg:not([class*='size-'])]:size-4 inline-flex items-center justify-center whitespace-nowrap transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none shrink-0 [&_svg]:shrink-0 outline-none group/button select-none bg-primary text-primary-foreground hover:bg-primary/80 h-10 gap-1.5 px-2.5 has-data-[icon=inline-end]:pr-3 has-data-[icon=inline-start]:pl-3"[39m
+  [33mdata-disabled[39m=[32m""[39m
+  [33mdata-slot[39m=[32m"button"[39m
+  [33mdisabled[39m=[32m""[39m
+  [33mtabindex[39m=[32m"0"[39m
+  [33mtype[39m=[32m"button"[39m
+[36m>[39m
+  [36m<svg[39m
+    [33maria-hidden[39m=[32m"true"[39m
+    [33mclass[39m=[32m"lucide lucide-check mr-2 h-4 w-4"[39m
+    [33mfill[39m=[32m"none"[39m
+    [33mheight[39m=[32m"24"[39m
+    [33mstroke[39m=[32m"currentColor"[39m
+    [33mstroke-linecap[39m=[32m"round"[39m
+    [33mstroke-linejoin[39m=[32m"round"[39m
+    [33mstroke-width[39m=[32m"2"[39m
+    [33mviewBox[39m=[32m"0 0 24 24"[39m
+    [33mwidth[39m=[32m"24"[39m
+    [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+  [36m>[39m
+    [36m<path[39m
+      [33md[39m=[32m"M20 6 9 17l-5-5"[39m
+    [36m/>[39m
+  [36m</svg>[39m
+  [0mConfirm Placement[0m
+[36m</button>[39m
+
+(If this is intentional, then use the `*AllBy*` variant of the query (like `queryAllByText`, `getAllByText`, or `findAllByText`)).
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"flex flex-col items-center justify-center py-8"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"animate-spin rounded-full h-8 w-8 border-b-2 border-primary"[39m
+      [36m/>[39m
+      [36m<p[39m
+        [33mclass[39m=[32m"mt-4 text-muted-foreground"[39m
+      [36m>[39m
+        [0mLoading track...[0m
+      [36m</p>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"w-full space-y-4"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex items-center justify-between"[39m
+      [36m>[39m
+        [36m<h3[39m
+          [33mclass[39m=[32m"text-sm font-medium text-muted-foreground"[39m
+        [36m>[39m
+          [0mPlace the Song[0m
+        [36m</h3>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"text-xs text-muted-foreground"[39m
+        [36m>[39m
+          [0m0[0m
+          [0m [0m
+          [0mcards[0m
+          [0m in timeline[0m
+        [36m</span>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"space-y-2"[39m
+      [36m>[39m
+        [36m<button[39m
+          [33mclass[39m=[32m"w-full py-1 my-1 rounded-md transition-all duration-200 flex items-center justify-center gap-2 opacity-0 hover:opacity-50 border-2 border-transparent"[39m
+          [33mtype[39m=[32m"button"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"flex items-center gap-1 text-xs text-muted-foreground"[39m
+          [36m>[39m
+            [36m<svg[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"lucide lucide-grip-vertical h-3 w-3"[39m
+              [33mfill[39m=[32m"none"[39m
+              [33mheight[39m=[32m"24"[39m
+              [33mstroke[39m=[32m"currentColor"[39m
+              [33mstroke-linecap[39m=[32m"round"[39m
+              [33mstroke-linejoin[39m=[32m"round"[39m
+              [33mstroke-width[39m=[32m"2"[39m
+              [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [33mwidth[39m=[32m"24"[39m
+              [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+            [36m>[39m
+              [36m<circle[39m
+                [33mcx[39m=[32m"9"[39m
+                [33mcy[39m=[32m"12"[39m
+                [33mr[39m=[32m"1"[39m
+              [36m/>[39m
+              [36m<circle[39m
+                [33mcx[39m=[32m"9"[39m
+                [33mcy[39m=[32m"5"[39m
+                [33mr[39m=[32m"1"[39m
+              [36m/>[39m
+              [36m<circle[39m
+                [33mcx[39m=[32m"9"[39m
+                [33mcy[39m=[32m"19"[39m
+                [33mr[39m=[32m"1"[39m
+              [36m/>[39m
+              [36m<circle[39m
+                [33mcx[39m=[32m"15"[39m
+                [33mcy[39m=[32m"12"[39m
+                [33mr[39m=[32m"1"[39m
+              [36m/>[39m
+              [36m<circle[39m
+                [33mcx[39m=[32m"15"[39m
+                [33mcy[39m=[32m"5"[39m
+                [33mr[39m=[32m"1"[39m
+              [36m/>[39m
+              [36m<circle[39m
+                [33mcx[39m=[32m"15"[39m
+                [33mcy[39m=[32m"19"[39m
+                [33mr[39m=[32m"1"[39m
+              [36m/>[39m
+            [36m</svg>[39m
+            [36m<span>[39m
+              [0mDrop here[0m
+            [36m</span>[39m
+          [36m</div>[39m
+        [36m</button>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"pl-4"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"flex items-center gap-3 p-3 rounded-lg border transition-all bg-card"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-muted"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"lucide lucide-music h-5 w-5 text-muted-foreground"[39m
+                [33mfill[39m=[32m"none"[39m
+                [33mheight[39m=[32m"24"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mstroke-linecap[39m=[32m"round"[39m
+                [33mstroke-linejoin[39m=[32m"round"[39m
+                [33mstroke-width[39m=[32m"2"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+                [33mwidth[39m=[32m"24"[39m
+                [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M9 18V5l12-2v13"[39m
+                [36m/>[39m
+                [36m<circle[39m
+                  [33mcx[39m=[32m"6"[39m
+                  [33mcy[39m=[32m"18"[39m
+                  [33mr[39m=[32m"3"[39m
+                [36m/>[39m
+                [36m<circle[39m
+                  [33mcx[39m=[32m"18"[39m
+                  [33mcy[39m=[32m"16"[39m
+                  [33mr[39m=[32m"3"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+            [36m</div>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"flex-1 min-w-0"[39m
+            [36m>[39m
+              [36m<p[39m
+                [33mclass[39m=[32m"font-medium text-foreground truncate"[39m
+              [36m>[39m
+                [0mTest Song[0m
+              [36m</p>[39m
+              [36m<p[39m
+                [33mclass[39m=[32m"text-sm text-muted-foreground truncate"[39m
+              [36m>[39m
+                [0mTest Artist[0m
+              [36m</p>[39m
+            [36m</div>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary/10"[39m
+            [36m>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"text-sm font-semibold text-primary"[39m
+              [36m>[39m
+                [0m1990[0m
+              [36m</span>[39m
+            [36m</div>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex items-center justify-between pt-4 border-t"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"text-sm"[39m
+        [36m>[39m
+          [36m<p[39m
+            [33mclass[39m=[32m"text-muted-foreground"[39m
+          [36m>[39m
+            [0mSelect a position to place the song[0m
+          [36m</p>[39m
+        [36m</div>[39m
+        [36m<button[39m
+          [33mclass[39m=[32m"focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 rounded-md border border-t...
+   × enables submit button when position selected 14ms
+     → Found multiple elements with the text: Drop here
+
+Here are the matching elements:
+
+Ignored nodes: comments, script, style
+[36m<span>[39m
+  [0mDrop here[0m
+[36m</span>[39m
+
+Ignored nodes: comments, script, style
+[36m<span>[39m
+  [0mDrop here[0m
+[36m</span>[39m
+
+Ignored nodes: comments, script, style
+[36m<span>[39m
+  [0mDrop here[0m
+[36m</span>[39m
+
+Ignored nodes: comments, script, style
+[36m<span>[39m
+  [0mDrop here[0m
+[36m</span>[39m
+
+Ignored nodes: comments, script, style
+[36m<span>[39m
+  [0mDrop here[0m
+[36m</span>[39m
+
+Ignored nodes: comments, script, style
+[36m<span>[39m
+  [0mDrop here[0m
+[36m</span>[39m
+
+Ignored nodes: comments, script, style
+[36m<span>[39m
+  [0mDrop here[0m
+[36m</span>[39m
+
+Ignored nodes: comments, script, style
+[36m<span>[39m
+  [0mDrop here[0m
+[36m</span>[39m
+
+Ignored nodes: comments, script, style
+[36m<span>[39m
+  [0mDrop here[0m
+[36m</span>[39m
+
+(If this is intentional, then use the `*AllBy*` variant of the query (like `queryAllByText`, `getAllByText`, or `findAllByText`)).
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"flex flex-col items-center justify-center py-8"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"animate-spin rounded-full h-8 w-8 border-b-2 border-primary"[39m
+      [36m/>[39m
+      [36m<p[39m
+        [33mclass[39m=[32m"mt-4 text-muted-foreground"[39m
+      [36m>[39m
+        [0mLoading track...[0m
+      [36m</p>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"w-full space-y-4"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex items-center justify-between"[39m
+      [36m>[39m
+        [36m<h3[39m
+          [33mclass[39m=[32m"text-sm font-medium text-muted-foreground"[39m
+        [36m>[39m
+          [0mPlace the Song[0m
+        [36m</h3>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"text-xs text-muted-foreground"[39m
+        [36m>[39m
+          [0m0[0m
+          [0m [0m
+          [0mcards[0m
+          [0m in timeline[0m
+        [36m</span>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"space-y-2"[39m
+      [36m>[39m
+        [36m<button[39m
+          [33mclass[39m=[32m"w-full py-1 my-1 rounded-md transition-all duration-200 flex items-center justify-center gap-2 opacity-0 hover:opacity-50 border-2 border-transparent"[39m
+          [33mtype[39m=[32m"button"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"flex items-center gap-1 text-xs text-muted-foreground"[39m
+          [36m>[39m
+            [36m<svg[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"lucide lucide-grip-vertical h-3 w-3"[39m
+              [33mfill[39m=[32m"none"[39m
+              [33mheight[39m=[32m"24"[39m
+              [33mstroke[39m=[32m"currentColor"[39m
+              [33mstroke-linecap[39m=[32m"round"[39m
+              [33mstroke-linejoin[39m=[32m"round"[39m
+              [33mstroke-width[39m=[32m"2"[39m
+              [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [33mwidth[39m=[32m"24"[39m
+              [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+            [36m>[39m
+              [36m<circle[39m
+                [33mcx[39m=[32m"9"[39m
+                [33mcy[39m=[32m"12"[39m
+                [33mr[39m=[32m"1"[39m
+              [36m/>[39m
+              [36m<circle[39m
+                [33mcx[39m=[32m"9"[39m
+                [33mcy[39m=[32m"5"[39m
+                [33mr[39m=[32m"1"[39m
+              [36m/>[39m
+              [36m<circle[39m
+                [33mcx[39m=[32m"9"[39m
+                [33mcy[39m=[32m"19"[39m
+                [33mr[39m=[32m"1"[39m
+              [36m/>[39m
+              [36m<circle[39m
+                [33mcx[39m=[32m"15"[39m
+                [33mcy[39m=[32m"12"[39m
+                [33mr[39m=[32m"1"[39m
+              [36m/>[39m
+              [36m<circle[39m
+                [33mcx[39m=[32m"15"[39m
+                [33mcy[39m=[32m"5"[39m
+                [33mr[39m=[32m"1"[39m
+              [36m/>[39m
+              [36m<circle[39m
+                [33mcx[39m=[32m"15"[39m
+                [33mcy[39m=[32m"19"[39m
+                [33mr[39m=[32m"1"[39m
+              [36m/>[39m
+            [36m</svg>[39m
+            [36m<span>[39m
+              [0mDrop here[0m
+            [36m</span>[39m
+          [36m</div>[39m
+        [36m</button>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"pl-4"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"flex items-center gap-3 p-3 rounded-lg border transition-all bg-card"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-muted"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"lucide lucide-music h-5 w-5 text-muted-foreground"[39m
+                [33mfill[39m=[32m"none"[39m
+                [33mheight[39m=[32m"24"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mstroke-linecap[39m=[32m"round"[39m
+                [33mstroke-linejoin[39m=[32m"round"[39m
+                [33mstroke-width[39m=[32m"2"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+                [33mwidth[39m=[32m"24"[39m
+                [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M9 18V5l12-2v13"[39m
+                [36m/>[39m
+                [36m<circle[39m
+                  [33mcx[39m=[32m"6"[39m
+                  [33mcy[39m=[32m"18"[39m
+                  [33mr[39m=[32m"3"[39m
+                [36m/>[39m
+                [36m<circle[39m
+                  [33mcx[39m=[32m"18"[39m
+                  [33mcy[39m=[32m"16"[39m
+                  [33mr[39m=[32m"3"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+            [36m</div>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"flex-1 min-w-0"[39m
+            [36m>[39m
+              [36m<p[39m
+                [33mclass[39m=[32m"font-medium text-foreground truncate"[39m
+              [36m>[39m
+                [0mTest Song[0m
+              [36m</p>[39m
+              [36m<p[39m
+                [33mclass[39m=[32m"text-sm text-muted-foreground truncate"[39m
+              [36m>[39m
+                [0mTest Artist[0m
+              [36m</p>[39m
+            [36m</div>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary/10"[39m
+            [36m>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"text-sm font-semibold text-primary"[39m
+              [36m>[39m
+                [0m1990[0m
+              [36m</span>[39m
+            [36m</div>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex items-center justify-between pt-4 border-t"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"text-sm"[39m
+        [36m>[39m
+          [36m<p[39m
+            [33mclass[39m=[32m"text-muted-foreground"[39m
+          [36m>[39m
+            [0mSelect a position to place the song[0m
+          [36m</p>[39m
+        [36m</div>[39m
+        [36m<button[39m
+          [33mclass[39m=[32m"focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 rounded-md border border-t...
+   × calls submit placement when button clicked 9ms
+     → Found multiple elements with the text: Drop here
+
+Here are the matching elements:
+
+Ignored nodes: comments, script, style
+[36m<span>[39m
+  [0mDrop here[0m
+[36m</span>[39m
+
+Ignored nodes: comments, script, style
+[36m<span>[39m
+  [0mDrop here[0m
+[36m</span>[39m
+
+Ignored nodes: comments, script, style
+[36m<span>[39m
+  [0mDrop here[0m
+[36m</span>[39m
+
+Ignored nodes: comments, script, style
+[36m<span>[39m
+  [0mDrop here[0m
+[36m</span>[39m
+
+Ignored nodes: comments, script, style
+[36m<span>[39m
+  [0mDrop here[0m
+[36m</span>[39m
+
+Ignored nodes: comments, script, style
+[36m<span>[39m
+  [0mDrop here[0m
+[36m</span>[39m
+
+Ignored nodes: comments, script, style
+[36m<span>[39m
+  [0mDrop here[0m
+[36m</span>[39m
+
+Ignored nodes: comments, script, style
+[36m<span>[39m
+  [0mDrop here[0m
+[36m</span>[39m
+
+Ignored nodes: comments, script, style
+[36m<span>[39m
+  [0mDrop here[0m
+[36m</span>[39m
+
+Ignored nodes: comments, script, style
+[36m<span>[39m
+  [0mDrop here[0m
+[36m</span>[39m
+
+(If this is intentional, then use the `*AllBy*` variant of the query (like `queryAllByText`, `getAllByText`, or `findAllByText`)).
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"flex flex-col items-center justify-center py-8"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"animate-spin rounded-full h-8 w-8 border-b-2 border-primary"[39m
+      [36m/>[39m
+      [36m<p[39m
+        [33mclass[39m=[32m"mt-4 text-muted-foreground"[39m
+      [36m>[39m
+        [0mLoading track...[0m
+      [36m</p>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"w-full space-y-4"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex items-center justify-between"[39m
+      [36m>[39m
+        [36m<h3[39m
+          [33mclass[39m=[32m"text-sm font-medium text-muted-foreground"[39m
+        [36m>[39m
+          [0mPlace the Song[0m
+        [36m</h3>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"text-xs text-muted-foreground"[39m
+        [36m>[39m
+          [0m0[0m
+          [0m [0m
+          [0mcards[0m
+          [0m in timeline[0m
+        [36m</span>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"space-y-2"[39m
+      [36m>[39m
+        [36m<button[39m
+          [33mclass[39m=[32m"w-full py-1 my-1 rounded-md transition-all duration-200 flex items-center justify-center gap-2 opacity-0 hover:opacity-50 border-2 border-transparent"[39m
+          [33mtype[39m=[32m"button"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"flex items-center gap-1 text-xs text-muted-foreground"[39m
+          [36m>[39m
+            [36m<svg[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"lucide lucide-grip-vertical h-3 w-3"[39m
+              [33mfill[39m=[32m"none"[39m
+              [33mheight[39m=[32m"24"[39m
+              [33mstroke[39m=[32m"currentColor"[39m
+              [33mstroke-linecap[39m=[32m"round"[39m
+              [33mstroke-linejoin[39m=[32m"round"[39m
+              [33mstroke-width[39m=[32m"2"[39m
+              [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [33mwidth[39m=[32m"24"[39m
+              [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+            [36m>[39m
+              [36m<circle[39m
+                [33mcx[39m=[32m"9"[39m
+                [33mcy[39m=[32m"12"[39m
+                [33mr[39m=[32m"1"[39m
+              [36m/>[39m
+              [36m<circle[39m
+                [33mcx[39m=[32m"9"[39m
+                [33mcy[39m=[32m"5"[39m
+                [33mr[39m=[32m"1"[39m
+              [36m/>[39m
+              [36m<circle[39m
+                [33mcx[39m=[32m"9"[39m
+                [33mcy[39m=[32m"19"[39m
+                [33mr[39m=[32m"1"[39m
+              [36m/>[39m
+              [36m<circle[39m
+                [33mcx[39m=[32m"15"[39m
+                [33mcy[39m=[32m"12"[39m
+                [33mr[39m=[32m"1"[39m
+              [36m/>[39m
+              [36m<circle[39m
+                [33mcx[39m=[32m"15"[39m
+                [33mcy[39m=[32m"5"[39m
+                [33mr[39m=[32m"1"[39m
+              [36m/>[39m
+              [36m<circle[39m
+                [33mcx[39m=[32m"15"[39m
+                [33mcy[39m=[32m"19"[39m
+                [33mr[39m=[32m"1"[39m
+              [36m/>[39m
+            [36m</svg>[39m
+            [36m<span>[39m
+              [0mDrop here[0m
+            [36m</span>[39m
+          [36m</div>[39m
+        [36m</button>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"pl-4"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"flex items-center gap-3 p-3 rounded-lg border transition-all bg-card"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-muted"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"lucide lucide-music h-5 w-5 text-muted-foreground"[39m
+                [33mfill[39m=[32m"none"[39m
+                [33mheight[39m=[32m"24"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mstroke-linecap[39m=[32m"round"[39m
+                [33mstroke-linejoin[39m=[32m"round"[39m
+                [33mstroke-width[39m=[32m"2"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+                [33mwidth[39m=[32m"24"[39m
+                [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M9 18V5l12-2v13"[39m
+                [36m/>[39m
+                [36m<circle[39m
+                  [33mcx[39m=[32m"6"[39m
+                  [33mcy[39m=[32m"18"[39m
+                  [33mr[39m=[32m"3"[39m
+                [36m/>[39m
+                [36m<circle[39m
+                  [33mcx[39m=[32m"18"[39m
+                  [33mcy[39m=[32m"16"[39m
+                  [33mr[39m=[32m"3"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+            [36m</div>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"flex-1 min-w-0"[39m
+            [36m>[39m
+              [36m<p[39m
+                [33mclass[39m=[32m"font-medium text-foreground truncate"[39m
+              [36m>[39m
+                [0mTest Song[0m
+              [36m</p>[39m
+              [36m<p[39m
+                [33mclass[39m=[32m"text-sm text-muted-foreground truncate"[39m
+              [36m>[39m
+                [0mTest Artist[0m
+              [36m</p>[39m
+            [36m</div>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary/10"[39m
+            [36m>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"text-sm font-semibold text-primary"[39m
+              [36m>[39m
+                [0m1990[0m
+              [36m</span>[39m
+            [36m</div>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex items-center justify-between pt-4 border-t"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"text-sm"[39m
+        [36m>[39m
+          [36m<p[39m
+            [33mclass[39m=[32m"text-muted-foreground"[39m
+          [36m>[39m
+            [0mSelect a position to place the song[0m
+          [36m</p>[39m
+        [36m</div>[39m
+        [36m<button[39m
+          [33mclass[39m=[32m"focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 rounded-md border border-t...
+   × shows submitting state when placement is being submitted 10ms
+     → Found multiple elements with the text: Drop here
+
+Here are the matching elements:
+
+Ignored nodes: comments, script, style
+[36m<span>[39m
+  [0mDrop here[0m
+[36m</span>[39m
+
+Ignored nodes: comments, script, style
+[36m<span>[39m
+  [0mDrop here[0m
+[36m</span>[39m
+
+Ignored nodes: comments, script, style
+[36m<span>[39m
+  [0mDrop here[0m
+[36m</span>[39m
+
+Ignored nodes: comments, script, style
+[36m<span>[39m
+  [0mDrop here[0m
+[36m</span>[39m
+
+Ignored nodes: comments, script, style
+[36m<span>[39m
+  [0mDrop here[0m
+[36m</span>[39m
+
+Ignored nodes: comments, script, style
+[36m<span>[39m
+  [0mDrop here[0m
+[36m</span>[39m
+
+Ignored nodes: comments, script, style
+[36m<span>[39m
+  [0mDrop here[0m
+[36m</span>[39m
+
+Ignored nodes: comments, script, style
+[36m<span>[39m
+  [0mDrop here[0m
+[36m</span>[39m
+
+Ignored nodes: comments, script, style
+[36m<span>[39m
+  [0mDrop here[0m
+[36m</span>[39m
+
+Ignored nodes: comments, script, style
+[36m<span>[39m
+  [0mDrop here[0m
+[36m</span>[39m
+
+Ignored nodes: comments, script, style
+[36m<span>[39m
+  [0mDrop here[0m
+[36m</span>[39m
+
+(If this is intentional, then use the `*AllBy*` variant of the query (like `queryAllByText`, `getAllByText`, or `findAllByText`)).
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"flex flex-col items-center justify-center py-8"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"animate-spin rounded-full h-8 w-8 border-b-2 border-primary"[39m
+      [36m/>[39m
+      [36m<p[39m
+        [33mclass[39m=[32m"mt-4 text-muted-foreground"[39m
+      [36m>[39m
+        [0mLoading track...[0m
+      [36m</p>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"w-full space-y-4"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex items-center justify-between"[39m
+      [36m>[39m
+        [36m<h3[39m
+          [33mclass[39m=[32m"text-sm font-medium text-muted-foreground"[39m
+        [36m>[39m
+          [0mPlace the Song[0m
+        [36m</h3>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"text-xs text-muted-foreground"[39m
+        [36m>[39m
+          [0m0[0m
+          [0m [0m
+          [0mcards[0m
+          [0m in timeline[0m
+        [36m</span>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"space-y-2"[39m
+      [36m>[39m
+        [36m<button[39m
+          [33mclass[39m=[32m"w-full py-1 my-1 rounded-md transition-all duration-200 flex items-center justify-center gap-2 opacity-0 hover:opacity-50 border-2 border-transparent"[39m
+          [33mtype[39m=[32m"button"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"flex items-center gap-1 text-xs text-muted-foreground"[39m
+          [36m>[39m
+            [36m<svg[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"lucide lucide-grip-vertical h-3 w-3"[39m
+              [33mfill[39m=[32m"none"[39m
+              [33mheight[39m=[32m"24"[39m
+              [33mstroke[39m=[32m"currentColor"[39m
+              [33mstroke-linecap[39m=[32m"round"[39m
+              [33mstroke-linejoin[39m=[32m"round"[39m
+              [33mstroke-width[39m=[32m"2"[39m
+              [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [33mwidth[39m=[32m"24"[39m
+              [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+            [36m>[39m
+              [36m<circle[39m
+                [33mcx[39m=[32m"9"[39m
+                [33mcy[39m=[32m"12"[39m
+                [33mr[39m=[32m"1"[39m
+              [36m/>[39m
+              [36m<circle[39m
+                [33mcx[39m=[32m"9"[39m
+                [33mcy[39m=[32m"5"[39m
+                [33mr[39m=[32m"1"[39m
+              [36m/>[39m
+              [36m<circle[39m
+                [33mcx[39m=[32m"9"[39m
+                [33mcy[39m=[32m"19"[39m
+                [33mr[39m=[32m"1"[39m
+              [36m/>[39m
+              [36m<circle[39m
+                [33mcx[39m=[32m"15"[39m
+                [33mcy[39m=[32m"12"[39m
+                [33mr[39m=[32m"1"[39m
+              [36m/>[39m
+              [36m<circle[39m
+                [33mcx[39m=[32m"15"[39m
+                [33mcy[39m=[32m"5"[39m
+                [33mr[39m=[32m"1"[39m
+              [36m/>[39m
+              [36m<circle[39m
+                [33mcx[39m=[32m"15"[39m
+                [33mcy[39m=[32m"19"[39m
+                [33mr[39m=[32m"1"[39m
+              [36m/>[39m
+            [36m</svg>[39m
+            [36m<span>[39m
+              [0mDrop here[0m
+            [36m</span>[39m
+          [36m</div>[39m
+        [36m</button>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"pl-4"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"flex items-center gap-3 p-3 rounded-lg border transition-all bg-card"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-muted"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"lucide lucide-music h-5 w-5 text-muted-foreground"[39m
+                [33mfill[39m=[32m"none"[39m
+                [33mheight[39m=[32m"24"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mstroke-linecap[39m=[32m"round"[39m
+                [33mstroke-linejoin[39m=[32m"round"[39m
+                [33mstroke-width[39m=[32m"2"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+
+...108547 bytes truncated...
+
+The tool call succeeded but the output was truncated. Full output saved to: /Users/smaluk/.local/share/opencode/tool-output/tool_bd3ac1445001UyfovXy7cvPNn8
+Use the Task tool to have explore agent process this file with Grep and Read (with offset/limit). Do NOT read the full file yourself - delegate to save context.
+[92m[1m| [0m[90m Edit     [0mvitest.setup.ts
+[92m[1m| [0m[90m Write    [0msrc/components/game/TimelinePlacer.test.tsx
+[91m[1m| [0m[90m Bash     [0mCheck if jest-dom is installed
+
+chronotunes@0.1.0 /Users/smaluk/dev/personal/chronotunes
+└── (empty)
+
+jest-dom not installed
+
+[91m[1m| [0m[90m Bash     [0mInstall jest-dom
+
+Progress: resolved 0, reused 1, downloaded 0, added 0
+Progress: resolved 658, reused 552, downloaded 0, added 0
+Progress: resolved 662, reused 556, downloaded 0, added 0
+Progress: resolved 670, reused 564, downloaded 0, added 0
+ WARN  2 deprecated subdependencies found: node-domexception@1.0.0, whatwg-encoding@3.1.1
+Packages: +8
+++++++++
+Progress: resolved 671, reused 565, downloaded 0, added 0, done
+
+devDependencies:
++ @testing-library/jest-dom 6.9.1
+
+Done in 3.9s using pnpm v10.23.0
+
+[91m[1m| [0m[90m Bash     [0mRun TimelinePlacer tests
+
+
+> chronotunes@0.1.0 test /Users/smaluk/dev/personal/chronotunes
+> vitest src/components/game/TimelinePlacer.test.tsx
+
+
+ RUN  v3.2.4 /Users/smaluk/dev/personal/chronotunes
+
+
+⎯⎯⎯⎯⎯⎯ Failed Suites 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  |react| src/components/game/TimelinePlacer.test.tsx [ src/components/game/TimelinePlacer.test.tsx ]
+ReferenceError: expect is not defined
+ ❯ node_modules/.pnpm/@testing-library+jest-dom@6.9.1/node_modules/@testing-library/jest-dom/dist/index.mjs:9:1
+      7| import 'css.escape';
+      8| 
+      9| expect.extend(extensions);
+       | ^
+     10| 
+ ❯ vitest.setup.ts:2:1
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  no tests
+   Start at  21:34:47
+   Duration  1.06s (transform 37ms, setup 0ms, collect 0ms, tests 0ms, environment 359ms, prepare 145ms)
+
+ ELIFECYCLE  Test failed. See above for more details.
+
+[92m[1m| [0m[90m Edit     [0mvitest.setup.ts
+[91m[1m| [0m[90m Bash     [0mRun TimelinePlacer tests
+
+
+> chronotunes@0.1.0 test /Users/smaluk/dev/personal/chronotunes
+> vitest src/components/game/TimelinePlacer.test.tsx
+
+
+ RUN  v3.2.4 /Users/smaluk/dev/personal/chronotunes
+
+
+⎯⎯⎯⎯⎯⎯ Failed Suites 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  |react| src/components/game/TimelinePlacer.test.tsx [ src/components/game/TimelinePlacer.test.tsx ]
+ReferenceError: expect is not defined
+ ❯ node_modules/.pnpm/@testing-library+jest-dom@6.9.1/node_modules/@testing-library/jest-dom/dist/index.mjs:9:1
+      7| import 'css.escape';
+      8| 
+      9| expect.extend(extensions);
+       | ^
+     10| 
+ ❯ vitest.setup.ts:3:1
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  no tests
+   Start at  21:34:59
+   Duration  771ms (transform 48ms, setup 0ms, collect 0ms, tests 0ms, environment 342ms, prepare 107ms)
+
+ ELIFECYCLE  Test failed. See above for more details.
+
+[96m[1m| [0m[90m Read     [0mvitest.setup.ts
+[92m[1m| [0m[90m Edit     [0mvitest.setup.ts
+[91m[1m| [0m[90m Bash     [0mRun TimelinePlacer tests
+
+
+> chronotunes@0.1.0 test /Users/smaluk/dev/personal/chronotunes
+> vitest src/components/game/TimelinePlacer.test.tsx
+
+
+ RUN  v3.2.4 /Users/smaluk/dev/personal/chronotunes
+
+
+⎯⎯⎯⎯⎯⎯ Failed Suites 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  |react| src/components/game/TimelinePlacer.test.tsx [ src/components/game/TimelinePlacer.test.tsx ]
+ReferenceError: expect is not defined
+ ❯ node_modules/.pnpm/@testing-library+jest-dom@6.9.1/node_modules/@testing-library/jest-dom/dist/index.mjs:9:1
+      7| import 'css.escape';
+      8| 
+      9| expect.extend(extensions);
+       | ^
+     10| 
+ ❯ vitest.setup.ts:3:1
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  no tests
+   Start at  21:35:27
+   Duration  737ms (transform 43ms, setup 0ms, collect 0ms, tests 0ms, environment 330ms, prepare 88ms)
+
+ ELIFECYCLE  Test failed. See above for more details.
+
+[96m[1m| [0m[90m Read     [0mvitest.setup.ts
+[92m[1m| [0m[90m Edit     [0mvitest.setup.ts
+[91m[1m| [0m[90m Bash     [0mRun TimelinePlacer tests
+
+
+> chronotunes@0.1.0 test /Users/smaluk/dev/personal/chronotunes
+> vitest src/components/game/TimelinePlacer.test.tsx
+
+
+ RUN  v3.2.4 /Users/smaluk/dev/personal/chronotunes
+
+
+⎯⎯⎯⎯⎯⎯ Failed Suites 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  |react| src/components/game/TimelinePlacer.test.tsx [ src/components/game/TimelinePlacer.test.tsx ]
+ReferenceError: expect is not defined
+ ❯ node_modules/.pnpm/@testing-library+jest-dom@6.9.1/node_modules/@testing-library/jest-dom/dist/index.mjs:9:1
+      7| import 'css.escape';
+      8| 
+      9| expect.extend(extensions);
+       | ^
+     10| 
+ ❯ vitest.setup.ts:2:1
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  no tests
+   Start at  21:35:50
+   Duration  808ms (transform 32ms, setup 0ms, collect 0ms, tests 0ms, environment 356ms, prepare 110ms)
+
+ ELIFECYCLE  Test failed. See above for more details.
+
+[92m[1m| [0m[90m Edit     [0mvitest.setup.ts
+[91m[1m| [0m[90m Bash     [0mList jest-dom dist files
+
+index.js
+index.mjs
+jest-globals.js
+jest-globals.mjs
+matchers-35e4d3bd.mjs
+matchers-98b869c1.js
+matchers.js
+matchers.mjs
+vitest.js
+vitest.mjs
+
+[96m[1m| [0m[90m Read     [0mvitest.setup.ts
+[91m[1m| [0m[90m Bash     [0mRun TimelinePlacer tests
+
+
+> chronotunes@0.1.0 test /Users/smaluk/dev/personal/chronotunes
+> vitest src/components/game/TimelinePlacer.test.tsx
+
+
+ RUN  v3.2.4 /Users/smaluk/dev/personal/chronotunes
+
+
+⎯⎯⎯⎯⎯⎯ Failed Suites 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  |react| src/components/game/TimelinePlacer.test.tsx [ src/components/game/TimelinePlacer.test.tsx ]
+Error: [vitest] There was an error when mocking a module. If you are using "vi.mock" factory, make sure there are no top level variables inside, since this call is hoisted to top of the file. Read more: https://vitest.dev/api/vi.html#vi-mock
+ ❯ src/components/game/TimelinePlacer.tsx:8:1
+      6| import { useCallback, useState } from "react";
+      7| import { Button } from "@/components/ui/button";
+      8| import { api } from "@/convex/_generated/api.js";
+       | ^
+      9| import { useSessionId } from "@/lib/hooks/use-session-id";
+     10| import { cn } from "@/lib/utils";
+
+Caused by: ReferenceError: Cannot access 'mockSetPlacementPreview' before initialization
+ ❯ src/components/game/TimelinePlacer.test.tsx:64:28
+ ❯ src/components/game/TimelinePlacer.tsx:8:1
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  no tests
+   Start at  21:36:18
+   Duration  916ms (transform 76ms, setup 105ms, collect 0ms, tests 0ms, environment 337ms, prepare 57ms)
+
+ ELIFECYCLE  Test failed. See above for more details.
+
+[92m[1m| [0m[90m Write    [0msrc/components/game/TimelinePlacer.test.tsx
+[91m[1m| [0m[90m Bash     [0mRun TimelinePlacer tests
+
+
+> chronotunes@0.1.0 test /Users/smaluk/dev/personal/chronotunes
+> vitest src/components/game/TimelinePlacer.test.tsx
+
+
+ RUN  v3.2.4 /Users/smaluk/dev/personal/chronotunes
+
+ ❯ |react| src/components/game/TimelinePlacer.test.tsx (9 tests | 9 failed) 9ms
+   × renders loading state when track is null 5ms
+     → Cannot find module './TimelinePlacer'
+Require stack:
+- /Users/smaluk/dev/personal/chronotunes/src/components/game/TimelinePlacer.test.tsx
+   × renders empty timeline with drop zone 1ms
+     → Cannot find module './TimelinePlacer'
+Require stack:
+- /Users/smaluk/dev/personal/chronotunes/src/components/game/TimelinePlacer.test.tsx
+   × shows preview indicator when position selected 1ms
+     → Cannot find module './TimelinePlacer'
+Require stack:
+- /Users/smaluk/dev/personal/chronotunes/src/components/game/TimelinePlacer.test.tsx
+   × disables submit button when no position selected 0ms
+     → Cannot find module './TimelinePlacer'
+Require stack:
+- /Users/smaluk/dev/personal/chronotunes/src/components/game/TimelinePlacer.test.tsx
+   × enables submit button when position selected 0ms
+     → Cannot find module './TimelinePlacer'
+Require stack:
+- /Users/smaluk/dev/personal/chronotunes/src/components/game/TimelinePlacer.test.tsx
+   × calls submit placement when button clicked 0ms
+     → Cannot find module './TimelinePlacer'
+Require stack:
+- /Users/smaluk/dev/personal/chronotunes/src/components/game/TimelinePlacer.test.tsx
+   × displays correct placement message for first position 0ms
+     → Cannot find module './TimelinePlacer'
+Require stack:
+- /Users/smaluk/dev/personal/chronotunes/src/components/game/TimelinePlacer.test.tsx
+   × displays correct placement message for last position 0ms
+     → Cannot find module './TimelinePlacer'
+Require stack:
+- /Users/smaluk/dev/personal/chronotunes/src/components/game/TimelinePlacer.test.tsx
+   × displays correct placement message for middle position 0ms
+     → Cannot find module './TimelinePlacer'
+Require stack:
+- /Users/smaluk/dev/personal/chronotunes/src/components/game/TimelinePlacer.test.tsx
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 9 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  |react| src/components/game/TimelinePlacer.test.tsx > renders loading state when track is null
+Error: Cannot find module './TimelinePlacer'
+Require stack:
+- /Users/smaluk/dev/personal/chronotunes/src/components/game/TimelinePlacer.test.tsx
+ ❯ src/components/game/TimelinePlacer.test.tsx:89:52
+     87|   }));
+     88| 
+     89|   const { TimelinePlacer: TimelinePlacerImport } = require("./Timeline…
+       |                                                    ^
+     90| 
+     91|   render(
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/9]⎯
+
+ FAIL  |react| src/components/game/TimelinePlacer.test.tsx > renders empty timeline with drop zone
+Error: Cannot find module './TimelinePlacer'
+Require stack:
+- /Users/smaluk/dev/personal/chronotunes/src/components/game/TimelinePlacer.test.tsx
+ ❯ src/components/game/TimelinePlacer.test.tsx:134:52
+    132|   }));
+    133| 
+    134|   const { TimelinePlacer: TimelinePlacerImport } = require("./Timeline…
+       |                                                    ^
+    135| 
+    136|   render(
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/9]⎯
+
+ FAIL  |react| src/components/game/TimelinePlacer.test.tsx > shows preview indicator when position selected
+Error: Cannot find module './TimelinePlacer'
+Require stack:
+- /Users/smaluk/dev/personal/chronotunes/src/components/game/TimelinePlacer.test.tsx
+ ❯ src/components/game/TimelinePlacer.test.tsx:191:52
+    189|   }));
+    190| 
+    191|   const { TimelinePlacer: TimelinePlacerImport } = require("./Timeline…
+       |                                                    ^
+    192| 
+    193|   render(
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/9]⎯
+
+ FAIL  |react| src/components/game/TimelinePlacer.test.tsx > disables submit button when no position selected
+Error: Cannot find module './TimelinePlacer'
+Require stack:
+- /Users/smaluk/dev/personal/chronotunes/src/components/game/TimelinePlacer.test.tsx
+ ❯ src/components/game/TimelinePlacer.test.tsx:240:52
+    238|   }));
+    239| 
+    240|   const { TimelinePlacer: TimelinePlacerImport } = require("./Timeline…
+       |                                                    ^
+    241| 
+    242|   render(
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/9]⎯
+
+ FAIL  |react| src/components/game/TimelinePlacer.test.tsx > enables submit button when position selected
+Error: Cannot find module './TimelinePlacer'
+Require stack:
+- /Users/smaluk/dev/personal/chronotunes/src/components/game/TimelinePlacer.test.tsx
+ ❯ src/components/game/TimelinePlacer.test.tsx:283:52
+    281|   }));
+    282| 
+    283|   const { TimelinePlacer: TimelinePlacerImport } = require("./Timeline…
+       |                                                    ^
+    284| 
+    285|   render(
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/9]⎯
+
+ FAIL  |react| src/components/game/TimelinePlacer.test.tsx > calls submit placement when button clicked
+Error: Cannot find module './TimelinePlacer'
+Require stack:
+- /Users/smaluk/dev/personal/chronotunes/src/components/game/TimelinePlacer.test.tsx
+ ❯ src/components/game/TimelinePlacer.test.tsx:331:52
+    329|   }));
+    330| 
+    331|   const { TimelinePlacer: TimelinePlacerImport } = require("./Timeline…
+       |                                                    ^
+    332| 
+    333|   render(
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/9]⎯
+
+ FAIL  |react| src/components/game/TimelinePlacer.test.tsx > displays correct placement message for first position
+Error: Cannot find module './TimelinePlacer'
+Require stack:
+- /Users/smaluk/dev/personal/chronotunes/src/components/game/TimelinePlacer.test.tsx
+ ❯ src/components/game/TimelinePlacer.test.tsx:394:52
+    392|   }));
+    393| 
+    394|   const { TimelinePlacer: TimelinePlacerImport } = require("./Timeline…
+       |                                                    ^
+    395| 
+    396|   render(
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/9]⎯
+
+ FAIL  |react| src/components/game/TimelinePlacer.test.tsx > displays correct placement message for last position
+Error: Cannot find module './TimelinePlacer'
+Require stack:
+- /Users/smaluk/dev/personal/chronotunes/src/components/game/TimelinePlacer.test.tsx
+ ❯ src/components/game/TimelinePlacer.test.tsx:449:52
+
+[92m[1m| [0m[90m Write    [0msrc/components/game/TimelinePlacer.test.tsx
+[91m[1m| [0m[90m Bash     [0mRun TimelinePlacer tests
+
+
+> chronotunes@0.1.0 test /Users/smaluk/dev/personal/chronotunes
+> vitest src/components/game/TimelinePlacer.test.tsx
+
+
+ RUN  v3.2.4 /Users/smaluk/dev/personal/chronotunes
+
+
+⎯⎯⎯⎯⎯⎯ Failed Suites 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  |react| src/components/game/TimelinePlacer.test.tsx [ src/components/game/TimelinePlacer.test.tsx ]
+Error: [vitest] There was an error when mocking a module. If you are using "vi.mock" factory, make sure there are no top level variables inside, since this call is hoisted to top of the file. Read more: https://vitest.dev/api/vi.html#vi-mock
+ ❯ src/components/game/TimelinePlacer.tsx:8:1
+      6| import { useCallback, useState } from "react";
+      7| import { Button } from "@/components/ui/button";
+      8| import { api } from "@/convex/_generated/api";
+       | ^
+      9| import { useSessionId } from "@/lib/hooks/use-session-id";
+     10| import { cn } from "@/lib/utils";
+
+Caused by: ReferenceError: Cannot access 'mockSetPlacementPreview' before initialization
+ ❯ src/components/game/TimelinePlacer.test.tsx:64:28
+ ❯ src/components/game/TimelinePlacer.tsx:8:1
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  no tests
+   Start at  21:37:57
+   Duration  878ms (transform 82ms, setup 114ms, collect 0ms, tests 0ms, environment 329ms, prepare 66ms)
+
+ ELIFECYCLE  Test failed. See above for more details.
+
+[96m[1m| [0m[90m Read     [0msrc/components/game/MyTimeline.test.tsx
+[92m[1m| [0m[90m Write    [0msrc/components/game/TimelinePlacer.test.tsx
+[92m[1m| [0m[90m Edit     [0msrc/components/game/TimelinePlacer.test.tsx
+[96m[1m| [0m[90m Read     [0msrc/components/game/TimelinePlacer.test.tsx
+[91m[1m| [0m[90m Bash     [0mRun TimelinePlacer tests
+
+
+> chronotunes@0.1.0 test /Users/smaluk/dev/personal/chronotunes
+> vitest src/components/game/TimelinePlacer.test.tsx
+
+
+ RUN  v3.2.4 /Users/smaluk/dev/personal/chronotunes
+
+ ❯ |react| src/components/game/TimelinePlacer.test.tsx (10 tests | 10 failed) 31ms
+   × TimelinePlacer > renders loading state when track is null 15ms
+     → undefined is not iterable (cannot read property Symbol(Symbol.iterator))
+   × TimelinePlacer > renders empty timeline with drop zone 2ms
+     → undefined is not iterable (cannot read property Symbol(Symbol.iterator))
+   × TimelinePlacer > renders timeline with existing cards and drop zones 2ms
+     → undefined is not iterable (cannot read property Symbol(Symbol.iterator))
+   × TimelinePlacer > shows preview indicator when position selected 2ms
+     → undefined is not iterable (cannot read property Symbol(Symbol.iterator))
+   × TimelinePlacer > disables submit button when no position selected 1ms
+     → undefined is not iterable (cannot read property Symbol(Symbol.iterator))
+   × TimelinePlacer > enables submit button when position selected 2ms
+     → undefined is not iterable (cannot read property Symbol(Symbol.iterator))
+   × TimelinePlacer > calls submit placement when button clicked 2ms
+     → undefined is not iterable (cannot read property Symbol(Symbol.iterator))
+   × TimelinePlacer > displays correct placement message for first position 1ms
+     → undefined is not iterable (cannot read property Symbol(Symbol.iterator))
+   × TimelinePlacer > displays correct placement message for last position 2ms
+     → undefined is not iterable (cannot read property Symbol(Symbol.iterator))
+   × TimelinePlacer > displays correct placement message for middle position 1ms
+     → undefined is not iterable (cannot read property Symbol(Symbol.iterator))
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 10 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  |react| src/components/game/TimelinePlacer.test.tsx > TimelinePlacer > renders loading state when track is null
+ FAIL  |react| src/components/game/TimelinePlacer.test.tsx > TimelinePlacer > renders empty timeline with drop zone
+ FAIL  |react| src/components/game/TimelinePlacer.test.tsx > TimelinePlacer > renders timeline with existing cards and drop zones
+ FAIL  |react| src/components/game/TimelinePlacer.test.tsx > TimelinePlacer > shows preview indicator when position selected
+ FAIL  |react| src/components/game/TimelinePlacer.test.tsx > TimelinePlacer > disables submit button when no position selected
+ FAIL  |react| src/components/game/TimelinePlacer.test.tsx > TimelinePlacer > enables submit button when position selected
+ FAIL  |react| src/components/game/TimelinePlacer.test.tsx > TimelinePlacer > calls submit placement when button clicked
+ FAIL  |react| src/components/game/TimelinePlacer.test.tsx > TimelinePlacer > displays correct placement message for first position
+ FAIL  |react| src/components/game/TimelinePlacer.test.tsx > TimelinePlacer > displays correct placement message for last position
+ FAIL  |react| src/components/game/TimelinePlacer.test.tsx > TimelinePlacer > displays correct placement message for middle position
+TypeError: undefined is not iterable (cannot read property Symbol(Symbol.iterator))
+ ❯ TimelinePlacer src/components/game/TimelinePlacer.tsx:114:41
+    112| }: TimelinePlacerProps): React.ReactNode {
+    113|   const sessionId = useSessionId();
+    114|   const [selectedIndex, setSelectedIndex] = useState<number | null>(ex…
+       |                                         ^
+    115|   const [isSubmitting, setIsSubmitting] = useState(false);
+    116| 
+ ❯ Object.react_stack_bottom_frame node_modules/.pnpm/react-dom@19.2.3_react@19.2.3/node_modules/react-dom/cjs/react-dom-client.development.js:25904:20
+ ❯ renderWithHooks node_modules/.pnpm/react-dom@19.2.3_react@19.2.3/node_modules/react-dom/cjs/react-dom-client.development.js:7662:22
+ ❯ updateFunctionComponent node_modules/.pnpm/react-dom@19.2.3_react@19.2.3/node_modules/react-dom/cjs/react-dom-client.development.js:10166:19
+ ❯ beginWork node_modules/.pnpm/react-dom@19.2.3_react@19.2.3/node_modules/react-dom/cjs/react-dom-client.development.js:11778:18
+ ❯ runWithFiberInDEV node_modules/.pnpm/react-dom@19.2.3_react@19.2.3/node_modules/react-dom/cjs/react-dom-client.development.js:874:13
+ ❯ performUnitOfWork node_modules/.pnpm/react-dom@19.2.3_react@19.2.3/node_modules/react-dom/cjs/react-dom-client.development.js:17641:22
+ ❯ workLoopSync node_modules/.pnpm/react-dom@19.2.3_react@19.2.3/node_modules/react-dom/cjs/react-dom-client.development.js:17469:41
+ ❯ renderRootSync node_modules/.pnpm/react-dom@19.2.3_react@19.2.3/node_modules/react-dom/cjs/react-dom-client.development.js:17450:11
+ ❯ performWorkOnRoot node_modules/.pnpm/react-dom@19.2.3_react@19.2.3/node_modules/react-dom/cjs/react-dom-client.development.js:16583:35
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/10]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  10 failed (10)
+   Start at  21:38:51
+   Duration  1.12s (transform 106ms, setup 129ms, collect 154ms, tests 31ms, environment 429ms, prepare 93ms)
+
+ ELIFECYCLE  Test failed. See above for more details.
+
+[92m[1m| [0m[90m Write    [0msrc/components/game/TimelinePlacer.test.tsx
+[91m[1m| [0m[90m Bash     [0mRun TimelinePlacer tests
+
+
+> chronotunes@0.1.0 test /Users/smaluk/dev/personal/chronotunes
+> vitest src/components/game/TimelinePlacer.test.tsx
+
+
+ RUN  v3.2.4 /Users/smaluk/dev/personal/chronotunes
+
+
+⎯⎯⎯⎯⎯⎯ Failed Suites 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  |react| src/components/game/TimelinePlacer.test.tsx [ src/components/game/TimelinePlacer.test.tsx ]
+Error: [vitest] There was an error when mocking a module. If you are using "vi.mock" factory, make sure there are no top level variables inside, since this call is hoisted to top of the file. Read more: https://vitest.dev/api/vi.html#vi-mock
+ ❯ src/components/game/TimelinePlacer.tsx:8:1
+      6| import { useCallback, useState } from "react";
+      7| import { Button } from "@/components/ui/button";
+      8| import { api } from "@/convex/_generated/api";
+       | ^
+      9| import { useSessionId } from "@/lib/hooks/use-session-id";
+     10| import { cn } from "@/lib/utils";
+
+Caused by: ReferenceError: Cannot access 'mockSetPlacementPreview' before initialization
+ ❯ src/components/game/TimelinePlacer.test.tsx:64:28
+ ❯ src/components/game/TimelinePlacer.tsx:8:1
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  no tests
+   Start at  21:39:45
+   Duration  897ms (transform 117ms, setup 103ms, collect 0ms, tests 0ms, environment 363ms, prepare 115ms)
+
+ ELIFECYCLE  Test failed. See above for more details.
+
+[92m[1m| [0m[90m Write    [0msrc/components/game/TimelinePlacer.test.tsx
+[91m[1m| [0m[90m Bash     [0mRun TimelinePlacer tests
+
+   × TimelinePlacer > shows preview indicator when position selected 0ms
+     → Cannot find module '@/lib/hooks/use-session-id'
+Require stack:
+- /Users/smaluk/dev/personal/chronotunes/src/components/game/TimelinePlacer.test.tsx
+   × TimelinePlacer > disables submit button when no position selected 0ms
+     → Cannot find module '@/lib/hooks/use-session-id'
+Require stack:
+- /Users/smaluk/dev/personal/chronotunes/src/components/game/TimelinePlacer.test.tsx
+   × TimelinePlacer > enables submit button when position selected 0ms
+     → Cannot find module '@/lib/hooks/use-session-id'
+Require stack:
+- /Users/smaluk/dev/personal/chronotunes/src/components/game/TimelinePlacer.test.tsx
+   × TimelinePlacer > calls submit placement when button clicked 0ms
+     → Cannot find module '@/lib/hooks/use-session-id'
+Require stack:
+- /Users/smaluk/dev/personal/chronotunes/src/components/game/TimelinePlacer.test.tsx
+   × TimelinePlacer > displays correct placement message for first position 0ms
+     → Cannot find module '@/lib/hooks/use-session-id'
+Require stack:
+- /Users/smaluk/dev/personal/chronotunes/src/components/game/TimelinePlacer.test.tsx
+   × TimelinePlacer > displays correct placement message for last position 0ms
+     → Cannot find module '@/lib/hooks/use-session-id'
+Require stack:
+- /Users/smaluk/dev/personal/chronotunes/src/components/game/TimelinePlacer.test.tsx
+   × TimelinePlacer > displays correct placement message for middle position 0ms
+     → Cannot find module '@/lib/hooks/use-session-id'
+Require stack:
+- /Users/smaluk/dev/personal/chronotunes/src/components/game/TimelinePlacer.test.tsx
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 9 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  |react| src/components/game/TimelinePlacer.test.tsx > TimelinePlacer > renders loading state when track is null
+ FAIL  |react| src/components/game/TimelinePlacer.test.tsx > TimelinePlacer > renders empty timeline with drop zone
+ FAIL  |react| src/components/game/TimelinePlacer.test.tsx > TimelinePlacer > shows preview indicator when position selected
+ FAIL  |react| src/components/game/TimelinePlacer.test.tsx > TimelinePlacer > disables submit button when no position selected
+ FAIL  |react| src/components/game/TimelinePlacer.test.tsx > TimelinePlacer > enables submit button when position selected
+ FAIL  |react| src/components/game/TimelinePlacer.test.tsx > TimelinePlacer > calls submit placement when button clicked
+ FAIL  |react| src/components/game/TimelinePlacer.test.tsx > TimelinePlacer > displays correct placement message for first position
+ FAIL  |react| src/components/game/TimelinePlacer.test.tsx > TimelinePlacer > displays correct placement message for last position
+ FAIL  |react| src/components/game/TimelinePlacer.test.tsx > TimelinePlacer > displays correct placement message for middle position
+Error: Cannot find module '@/lib/hooks/use-session-id'
+Require stack:
+- /Users/smaluk/dev/personal/chronotunes/src/components/game/TimelinePlacer.test.tsx
+ ❯ src/components/game/TimelinePlacer.test.tsx:85:48
+     83|   beforeEach(() => {
+     84|     vi.clearAllMocks();
+     85|     const { useSessionId: mockUseSessionId } = require("@/lib/hooks/us…
+       |                                                ^
+     86|     mockUseSessionId.mockReturnValue("session123");
+     87| 
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/9]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  9 failed (9)
+   Start at  21:40:24
+   Duration  1.08s (transform 108ms, setup 119ms, collect 126ms, tests 8ms, environment 344ms, prepare 165ms)
+
+ ELIFECYCLE  Test failed. See above for more details.
+
+[91m[1m| [0m[90m Bash     [0mRun biome check
+
+
+> chronotunes@0.1.0 biome /Users/smaluk/dev/personal/chronotunes
+> biome check .
+
+vitest.config.ts:1:18 lint/style/useNodejsImportProtocol  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  i A Node.js builtin module should be imported with the node: protocol.
+  
+  > 1 │ import path from "path";
+      │                  ^^^^^^
+    2 │ import { defineConfig } from "vitest/config";
+    3 │ 
+  
+  i Using the node: protocol is more explicit and signals that the imported module belongs to Node.js.
+  
+  i Unsafe fix: Add the node: protocol.
+  
+     1    │ - import·path·from·"path";
+        1 │ + import·path·from·"node:path";
+     2  2 │   import { defineConfig } from "vitest/config";
+     3  3 │   
+  
+
+src/components/ui/alert-dialog.tsx:3:8 lint/style/useImportType  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! All these imports are only used as types.
+  
+    1 │ "use client";
+    2 │ 
+  > 3 │ import * as React from "react";
+      │        ^^^^^^^^^^^^^^^^^^^^^^^
+    4 │ import { AlertDialog as AlertDialogPrimitive } from "@base-ui/react/alert-dialog";
+    5 │ 
+  
+  i Importing the types with import type ensures that they are removed by the compilers and avoids loading unnecessary modules.
+  
+  i Safe fix: Use import type.
+  
+    3 │ import·type·*·as·React·from·"react";
+      │        +++++                        
+
+src/components/ui/alert.tsx:1:8 lint/style/useImportType  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! All these imports are only used as types.
+  
+  > 1 │ import * as React from "react";
+      │        ^^^^^^^^^^^^^^^^^^^^^^^
+    2 │ import { cva, type VariantProps } from "class-variance-authority";
+    3 │ 
+  
+
+[91m[1m| [0m[90m Bash     [0mRun build
+
+> chronotunes@0.1.0 build /Users/smaluk/dev/personal/chronotunes
+> next build
+
+⚠ Warning: Next.js inferred your workspace root, but it may not be correct.
+ We detected multiple lockfiles and selected the directory of /Users/smaluk/pnpm-lock.yaml as the root directory.
+ To silence this warning, set `turbopack.root` in your Next.js config, or consider removing one of the lockfiles if it's not needed.
+   See https://nextjs.org/docs/app/api-reference/config/next-config-js/turbopack#root-directory for more information.
+ Detected additional lockfiles: 
+   * /Users/smaluk/dev/personal/chronotunes/pnpm-lock.yaml
+
+▲ Next.js 16.1.3 (Turbopack)
+- Environments: .env.local
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 2.5s
+  Running TypeScript ...
+Failed to compile.
+
+./src/components/lobby/SettingsPanel.tsx:60:9
+Type error: Object literal may only specify known properties, and 'lobbyId' does not exist in type '{ settings: { targetTimelineSize: number; startingCoins: number; turnSeconds: number; bettingWindowSeconds: number; allowGuessTitleArtist: boolean; showLiveBets: boolean; allowBetRetraction: boolean; minYear: number; maxYear: number; }; code: string; sessionId: string; }'.
+
+[0m [90m 58 |[39m     [36mtry[39m {
+ [90m 59 |[39m       [36mawait[39m updateSettings({
+[31m[1m>[22m[39m[90m 60 |[39m         lobbyId[33m,[39m
+ [90m    |[39m         [31m[1m^[22m[39m
+ [90m 61 |[39m         settings[33m:[39m {
+ [90m 62 |[39m           targetTimelineSize[33m:[39m settings[33m.[39mtargetTimelineSize[33m,[39m
+ [90m 63 |[39m           startingCoins[33m:[39m settings[33m.[39mstartingCoins[33m,[39m[0m
+Next.js build worker exited with code: 1 and signal: null
+ ELIFECYCLE  Command failed with exit code 1.
+
+[91m[1m| [0m[90m Bash     [0mRun next typegen
+
+
+> chronotunes@0.1.0 next:typegen /Users/smaluk/dev/personal/chronotunes
+> tsc -p tsconfig.json --noEmit
+
+src/components/game/TimelinePlacer.test.tsx(89,38): error TS7006: Parameter 'initial' implicitly has an 'any' type.
+src/components/game/TimelinePlacer.test.tsx(97,41): error TS7006: Parameter 'fn' implicitly has an 'any' type.
+src/components/game/TimelinePlacer.test.tsx(100,37): error TS7006: Parameter 'fn' implicitly has an 'any' type.
+src/components/lobby/SettingsPanel.tsx(60,9): error TS2353: Object literal may only specify known properties, and 'lobbyId' does not exist in type '{ settings: { targetTimelineSize: number; startingCoins: number; turnSeconds: number; bettingWindowSeconds: number; allowGuessTitleArtist: boolean; showLiveBets: boolean; allowBetRetraction: boolean; minYear: number; maxYear: number; }; code: string; sessionId: string; }'.
+src/components/ui/navigation-menu.tsx(25,6): error TS2322: Type '{ dir?: string | undefined; title?: string | undefined; id?: string | undefined; key?: Key | null | undefined; property?: string | undefined; is?: string | undefined; slot?: string | undefined; ... 272 more ...; className: string; }' is not assignable to type 'RefAttributes<HTMLDivElement>'.
+  Types of property 'ref' are incompatible.
+    Type 'Ref<HTMLUListElement> | undefined' is not assignable to type 'Ref<HTMLDivElement> | undefined'.
+      Type '(instance: HTMLUListElement | null) => void | (() => VoidOrUndefinedOnly)' is not assignable to type 'Ref<HTMLDivElement> | undefined'.
+        Type '(instance: HTMLUListElement | null) => void | (() => VoidOrUndefinedOnly)' is not assignable to type '(instance: HTMLDivElement | null) => void | (() => VoidOrUndefinedOnly)'.
+          Types of parameters 'instance' and 'instance' are incompatible.
+            Type 'HTMLDivElement | null' is not assignable to type 'HTMLUListElement | null'.
+              Type 'HTMLDivElement' is missing the following properties from type 'HTMLUListElement': compact, type
+src/components/ui/navigation-menu.tsx(35,6): error TS2322: Type '{ value?: any; dir?: string | undefined; title?: string | undefined; id?: string | undefined; key?: Key | null | undefined; property?: string | undefined; is?: string | undefined; slot?: string | undefined; ... 272 more ...; className: string; }' is not assignable to type 'RefAttributes<HTMLDivElement>'.
+  Types of property 'ref' are incompatible.
+    Type 'Ref<HTMLLIElement> | undefined' is not assignable to type 'Ref<HTMLDivElement> | undefined'.
+      Type '(instance: HTMLLIElement | null) => void | (() => VoidOrUndefinedOnly)' is not assignable to type 'Ref<HTMLDivElement> | undefined'.
+        Type '(instance: HTMLLIElement | null) => void | (() => VoidOrUndefinedOnly)' is not assignable to type '(instance: HTMLDivElement | null) => void | (() => VoidOrUndefinedOnly)'.
+          Types of parameters 'instance' and 'instance' are incompatible.
+            Type 'HTMLDivElement | null' is not assignable to type 'HTMLLIElement | null'.
+              Type 'HTMLDivElement' is missing the following properties from type 'HTMLLIElement': type, value
+src/components/ui/navigation-menu.tsx(124,6): error TS2322: Type '{ children: Element; dir?: string | undefined; title?: string | undefined; id?: string | undefined; key?: Key | null | undefined; property?: string | undefined; is?: string | undefined; ... 272 more ...; className: string; }' is not assignable to type 'RefAttributes<HTMLDivElement>'.
+  Types of property 'ref' are incompatible.
+    Type 'Ref<HTMLSpanElement> | undefined' is not assignable to type 'Ref<HTMLDivElement> | undefined'.
+      Type 'RefObject<HTMLSpanElement | null>' is not assignable to type 'Ref<HTMLDivElement> | undefined'.
+        Type 'RefObject<HTMLSpanElement | null>' is not assignable to type 'RefObject<HTMLDivElement | null>'.
+          Type 'HTMLSpanElement | null' is not assignable to type 'HTMLDivElement | null'.
+            Property 'align' is missing in type 'HTMLSpanElement' but required in type 'HTMLDivElement'.
+src/components/ui/resizable.tsx(11,51): error TS2339: Property 'PanelGroup' does not exist on type 'typeof import("/Users/smaluk/dev/personal/chronotunes/node_modules/.pnpm/react-resizable-panels@4.4.1_react-dom@19.2.3_react@19.2.3__react@19.2.3/node_modules/react-resizable-panels/dist/react-resizable-panels")'.
+src/components/ui/resizable.tsx(13,25): error TS2339: Property 'PanelGroup' does not exist on type 'typeof import("/Users/smaluk/dev/personal/chronotunes/node_modules/.pnpm/react-resizable-panels@4.4.1_react-dom@19.2.3_react@19.2.3__react@19.2.3/node_modules/react-resizable-panels/dist/react-resizable-panels")'.
+src/components/ui/resizable.tsx(29,51): error TS2339: Property 'PanelResizeHandle' does not exist on type 'typeof import("/Users/smaluk/dev/personal/chronotunes/node_modules/.pnpm/react-resizable-panels@4.4.1_react-dom@19.2.3_react@19.2.3__react@19.2.3/node_modules/react-resizable-panels/dist/react-resizable-panels")'.
+src/components/ui/resizable.tsx(33,25): error TS2339: Property 'PanelResizeHandle' does not exist on type 'typeof import("/Users/smaluk/dev/personal/chronotunes/node_modules/.pnpm/react-resizable-panels@4.4.1_react-dom@19.2.3_react@19.2.3__react@19.2.3/node_modules/react-resizable-panels/dist/react-resizable-panels")'.
+src/components/ui/resizable.tsx(42,26): error TS2339: Property 'PanelResizeHandle' does not exist on type 'typeof import("/Users/smaluk/dev/personal/chronotunes/node_modules/.pnpm/react-resizable-panels@4.4.1_react-dom@19.2.3_react@19.2.3__react@19.2.3/node_modules/react-resizable-panels/dist/react-resizable-panels")'.
+src/components/ui/sidebar.tsx(21,29): error TS2307: Cannot find module '@/hooks/use-mobile' or its corresponding type declarations.
+ ELIFECYCLE  Command failed with exit code 2.
+
+[91m[1m| [0m[90m Bash     [0mRun MyTimeline tests to verify test setup works
+
+
+> chronotunes@0.1.0 test /Users/smaluk/dev/personal/chronotunes
+> vitest src/components/game/MyTimeline.test.tsx
+
+
+ RUN  v3.2.4 /Users/smaluk/dev/personal/chronotunes
+
+ ✓ |react| src/components/game/MyTimeline.test.tsx (6 tests) 63ms
+
+ Test Files  1 passed (1)
+      Tests  6 passed (6)
+   Start at  21:41:10
+   Duration  1.15s (transform 77ms, setup 150ms, collect 98ms, tests 63ms, environment 495ms, prepare 110ms)
+
+
+[92m[1m| [0m[90m Write    [0msrc/components/game/TimelinePlacer.test.tsx
+[91m[1m| [0m[90m Bash     [0mRun TimelinePlacer tests
+
+
+> chronotunes@0.1.0 test /Users/smaluk/dev/personal/chronotunes
+> vitest src/components/game/TimelinePlacer.test.tsx
+
+
+ RUN  v3.2.4 /Users/smaluk/dev/personal/chronotunes
+
+ ❯ |react| src/components/game/TimelinePlacer.test.tsx (4 tests | 1 failed) 86ms
+   ✓ TimelinePlacer > renders loading state when track is null 16ms
+   ✓ TimelinePlacer > renders empty timeline with drop zone 42ms
+   × TimelinePlacer > renders timeline with existing cards 22ms
+     → Found multiple elements with the role "heading" and name `/place the song/i`
+
+Here are the matching elements:
+
+Ignored nodes: comments, script, style
+[36m<h3[39m
+  [33mclass[39m=[32m"text-sm font-medium text-muted-foreground"[39m
+[36m>[39m
+  [0mPlace the Song[0m
+[36m</h3>[39m
+
+Ignored nodes: comments, script, style
+[36m<h3[39m
+  [33mclass[39m=[32m"text-sm font-medium text-muted-foreground"[39m
+[36m>[39m
+  [0mPlace the Song[0m
+[36m</h3>[39m
+
+(If this is intentional, then use the `*AllBy*` variant of the query (like `queryAllByText`, `getAllByText`, or `findAllByText`)).
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"flex flex-col items-center justify-center py-8"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"animate-spin rounded-full h-8 w-8 border-b-2 border-primary"[39m
+      [36m/>[39m
+      [36m<p[39m
+        [33mclass[39m=[32m"mt-4 text-muted-foreground"[39m
+      [36m>[39m
+        [0mLoading track...[0m
+      [36m</p>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"w-full space-y-4"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex items-center justify-between"[39m
+      [36m>[39m
+        [36m<h3[39m
+          [33mclass[39m=[32m"text-sm font-medium text-muted-foreground"[39m
+        [36m>[39m
+          [0mPlace the Song[0m
+        [36m</h3>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"text-xs text-muted-foreground"[39m
+        [36m>[39m
+          [0m0[0m
+          [0m [0m
+          [0mcards[0m
+          [0m in timeline[0m
+        [36m</span>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"space-y-2"[39m
+      [36m>[39m
+        [36m<button[39m
+          [33mclass[39m=[32m"w-full py-1 my-1 rounded-md transition-all duration-200 flex items-center justify-center gap-2 opacity-0 hover:opacity-50 border-2 border-transparent"[39m
+          [33mtype[39m=[32m"button"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"flex items-center gap-1 text-xs text-muted-foreground"[39m
+          [36m>[39m
+            [36m<svg[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"lucide lucide-grip-vertical h-3 w-3"[39m
+              [33mfill[39m=[32m"none"[39m
+              [33mheight[39m=[32m"24"[39m
+              [33mstroke[39m=[32m"currentColor"[39m
+              [33mstroke-linecap[39m=[32m"round"[39m
+              [33mstroke-linejoin[39m=[32m"round"[39m
+              [33mstroke-width[39m=[32m"2"[39m
+              [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [33mwidth[39m=[32m"24"[39m
+              [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+            [36m>[39m
+              [36m<circle[39m
+                [33mcx[39m=[32m"9"[39m
+                [33mcy[39m=[32m"12"[39m
+                [33mr[39m=[32m"1"[39m
+              [36m/>[39m
+              [36m<circle[39m
+                [33mcx[39m=[32m"9"[39m
+                [33mcy[39m=[32m"5"[39m
+                [33mr[39m=[32m"1"[39m
+              [36m/>[39m
+              [36m<circle[39m
+                [33mcx[39m=[32m"9"[39m
+                [33mcy[39m=[32m"19"[39m
+                [33mr[39m=[32m"1"[39m
+              [36m/>[39m
+              [36m<circle[39m
+                [33mcx[39m=[32m"15"[39m
+                [33mcy[39m=[32m"12"[39m
+                [33mr[39m=[32m"1"[39m
+              [36m/>[39m
+              [36m<circle[39m
+                [33mcx[39m=[32m"15"[39m
+                [33mcy[39m=[32m"5"[39m
+                [33mr[39m=[32m"1"[39m
+              [36m/>[39m
+              [36m<circle[39m
+                [33mcx[39m=[32m"15"[39m
+                [33mcy[39m=[32m"19"[39m
+                [33mr[39m=[32m"1"[39m
+              [36m/>[39m
+            [36m</svg>[39m
+            [36m<span>[39m
+              [0mDrop here[0m
+            [36m</span>[39m
+          [36m</div>[39m
+        [36m</button>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"pl-4"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"flex items-center gap-3 p-3 rounded-lg border transition-all bg-card"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-muted"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"lucide lucide-music h-5 w-5 text-muted-foreground"[39m
+                [33mfill[39m=[32m"none"[39m
+                [33mheight[39m=[32m"24"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mstroke-linecap[39m=[32m"round"[39m
+                [33mstroke-linejoin[39m=[32m"round"[39m
+                [33mstroke-width[39m=[32m"2"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+                [33mwidth[39m=[32m"24"[39m
+                [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M9 18V5l12-2v13"[39m
+                [36m/>[39m
+                [36m<circle[39m
+                  [33mcx[39m=[32m"6"[39m
+                  [33mcy[39m=[32m"18"[39m
+                  [33mr[39m=[32m"3"[39m
+                [36m/>[39m
+                [36m<circle[39m
+                  [33mcx[39m=[32m"18"[39m
+                  [33mcy[39m=[32m"16"[39m
+                  [33mr[39m=[32m"3"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+            [36m</div>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"flex-1 min-w-0"[39m
+            [36m>[39m
+              [36m<p[39m
+                [33mclass[39m=[32m"font-medium text-foreground truncate"[39m
+              [36m>[39m
+                [0mTest Song[0m
+              [36m</p>[39m
+              [36m<p[39m
+                [33mclass[39m=[32m"text-sm text-muted-foreground truncate"[39m
+              [36m>[39m
+                [0mTest Artist[0m
+              [36m</p>[39m
+            [36m</div>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary/10"[39m
+            [36m>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"text-sm font-semibold text-primary"[39m
+              [36m>[39m
+                [0m1990[0m
+              [36m</span>[39m
+            [36m</div>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex items-center justify-between pt-4 border-t"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"text-sm"[39m
+        [36m>[39m
+          [36m<p[39m
+            [33mclass[39m=[32m"text-muted-foreground"[39m
+          [36m>[39m
+            [0mSelect a position to place the song[0m
+          [36m</p>[39m
+        [36m</div>[39m
+        [36m<button[39m
+          [33mclass[39m=[32m"focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 rounded-md border border-t...
+   ✓ TimelinePlacer > displays card count 6ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  |react| src/components/game/TimelinePlacer.test.tsx > TimelinePlacer > renders timeline with existing cards
+TestingLibraryElementError: Found multiple elements with the role "heading" and name `/place the song/i`
+
+Here are the matching elements:
+
+Ignored nodes: comments, script, style
+[36m<h3[39m
+  [33mclass[39m=[32m"text-sm font-medium text-muted-foreground"[39m
+[36m>[39m
+  [0mPlace the Song[0m
+[36m</h3>[39m
+
+Ignored nodes: comments, script, style
+[36m<h3[39m
+  [33mclass[39m=[32m"text-sm font-medium text-muted-foreground"[39m
+[36m>[39m
+  [0mPlace the Song[0m
+[36m</h3>[39m
+
+(If this is intentional, then use the `*AllBy*` variant of the query (like `queryAllByText`, `getAllByText`, or `findAllByText`)).
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"flex flex-col items-center justify-center py-8"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"animate-spin rounded-full h-8 w-8 border-b-2 border-primary"[39m
+      [36m/>[39m
+      [36m<p[39m
+        [33mclass[39m=[32m"mt-4 text-muted-foreground"[39m
+      [36m>[39m
+        [0mLoading track...[0m
+      [36m</p>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"w-full space-y-4"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex items-center justify-between"[39m
+      [36m>[39m
+        [36m<h3[39m
+          [33mclass[39m=[32m"text-sm font-medium text-muted-foreground"[39m
+        [36m>[39m
+          [0mPlace the Song[0m
+        [36m</h3>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"text-xs text-muted-foreground"[39m
+        [36m>[39m
+          [0m0[0m
+          [0m [0m
+          [0mcards[0m
+          [0m in timeline[0m
+        [36m</span>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"space-y-2"[39m
+      [36m>[39m
+        [36m<button[39m
+          [33mclass[39m=[32m"w-full py-1 my-1 rounded-md transition-all duration-200 flex items-center justify-center gap-2 opacity-0 hover:opacity-50 border-2 border-transparent"[39m
+          [33mtype[39m=[32m"button"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"flex items-center gap-1 text-xs text-muted-foreground"[39m
+          [36m>[39m
+            [36m<svg[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"lucide lucide-grip-vertical h-3 w-3"[39m
+              [33mfill[39m=[32m"none"[39m
+              [33mheight[39m=[32m"24"[39m
+              [33mstroke[39m=[32m"currentColor"[39m
+              [33mstroke-linecap[39m=[32m"round"[39m
+              [33mstroke-linejoin[39m=[32m"round"[39m
+              [33mstroke-width[39m=[32m"2"[39m
+              [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [33mwidth[39m=[32m"24"[39m
+              [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+            [36m>[39m
+              [36m<circle[39m
+                [33mcx[39m=[32m"9"[39m
+                [33mcy[39m=[32m"12"[39m
+                [33mr[39m=[32m"1"[39m
+              [36m/>[39m
+              [36m<circle[39m
+                [33mcx[39m=[32m"9"[39m
+                [33mcy[39m=[32m"5"[39m
+                [33mr[39m=[32m"1"[39m
+              [36m/>[39m
+              [36m<circle[39m
+                [33mcx[39m=[32m"9"[39m
+                [33mcy[39m=[32m"19"[39m
+                [33mr[39m=[32m"1"[39m
+              [36m/>[39m
+              [36m<circle[39m
+                [33mcx[39m=[32m"15"[39m
+                [33mcy[39m=[32m"12"[39m
+                [33mr[39m=[32m"1"[39m
+              [36m/>[39m
+              [36m<circle[39m
+                [33mcx[39m=[32m"15"[39m
+                [33mcy[39m=[32m"5"[39m
+                [33mr[39m=[32m"1"[39m
+              [36m/>[39m
+              [36m<circle[39m
+                [33mcx[39m=[32m"15"[39m
+                [33mcy[39m=[32m"19"[39m
+                [33mr[39m=[32m"1"[39m
+              [36m/>[39m
+            [36m</svg>[39m
+            [36m<span>[39m
+              [0mDrop here[0m
+            [36m</span>[39m
+          [36m</div>[39m
+        [36m</button>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"pl-4"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"flex items-center gap-3 p-3 rounded-lg border transition-all bg-card"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-muted"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"lucide lucide-music h-5 w-5 text-muted-foreground"[39m
+                [33mfill[39m=[32m"none"[39m
+                [33mheight[39m=[32m"24"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mstroke-linecap[39m=[32m"round"[39m
+                [33mstroke-linejoin[39m=[32m"round"[39m
+                [33mstroke-width[39m=[32m"2"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+                [33mwidth[39m=[32m"24"[39m
+                [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M9 18V5l12-2v13"[39m
+                [36m/>[39m
+                [36m<circle[39m
+                  [33mcx[39m=[32m"6"[39m
+                  [33mcy[39m=[32m"18"[39m
+                  [33mr[39m=[32m"3"[39m
+                [36m/>[39m
+                [36m<circle[39m
+                  [33mcx[39m=[32m"18"[39m
+                  [33mcy[39m=[32m"16"[39m
+                  [33mr[39m=[32m"3"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+            [36m</div>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"flex-1 min-w-0"[39m
+            [36m>[39m
+              [36m<p[39m
+                [33mclass[39m=[32m"font-medium text-foreground truncate"[39m
+              [36m>[39m
+                [0mTest Song[0m
+              [36m</p>[39m
+              [36m<p[39m
+                [33mclass[39m=[32m"text-sm text-muted-foreground truncate"[39m
+              [36m>[39m
+                [0mTest Artist[0m
+              [36m</p>[39m
+            [36m</div>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary/10"[39m
+            [36m>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"text-sm font-semibold text-primary"[39m
+              [36m>[39m
+                [0m1990[0m
+              [36m</span>[39m
+            [36m</div>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex items-center justify-between pt-4 border-t"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"text-sm"[39m
+        [36m>[39m
+          [36m<p[39m
+            [33mclass[39m=[32m"text-muted-foreground"[39m
+          [36m>[39m
+            [0mSelect a position to place the song[0m
+          [36m</p>[39m
+        [36m</div>[39m
+        [36m<button[39m
+          [33mclass[39m=[32m"focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 rounded-md border border-t...
+ ❯ Object.getElementError node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ getElementError node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/query-helpers.js:20:35
+ ❯ getMultipleElementsFoundError node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/query-helpers.js:23:10
+ ❯ node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/query-helpers.js:55:13
+ ❯ node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ src/components/game/TimelinePlacer.test.tsx:150:19
+    148|     );
+    149| 
+    150|     expect(screen.getByRole("heading", { name: /place the song/i })).t…
+       |                   ^
+    151|     expect(screen.getByText("New Song")).toBeInTheDocument();
+    152|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 3 passed (4)
+   Start at  21:41:35
+   Duration  897ms (transform 63ms, setup 119ms, collect 113ms, tests 86ms, environment 302ms, prepare 60ms)
+
+ ELIFECYCLE  Test failed. See above for more details.
+
+[92m[1m| [0m[90m Edit     [0msrc/components/game/TimelinePlacer.test.tsx
+[91m[1m| [0m[90m Bash     [0mRun TimelinePlacer tests
+
+
+> chronotunes@0.1.0 test /Users/smaluk/dev/personal/chronotunes
+> vitest src/components/game/TimelinePlacer.test.tsx
+
+
+ RUN  v3.2.4 /Users/smaluk/dev/personal/chronotunes
+
+ ✓ |react| src/components/game/TimelinePlacer.test.tsx (4 tests) 72ms
+
+ Test Files  1 passed (1)
+      Tests  4 passed (4)
+   Start at  21:41:57
+   Duration  885ms (transform 84ms, setup 112ms, collect 127ms, tests 72ms, environment 306ms, prepare 66ms)
+
+
+[91m[1m| [0m[90m Bash     [0mLog activity completion
+
+Using local templates: /Users/smaluk/dev/personal/chronotunes/.agents/ralph
+
+[91m[1m| [0m[90m Bash     [0mCheck git status
+
+ M .agents/tasks/prd-music-timeline.json
+ M .ralph/activity.log
+ M .ralph/errors.log
+ M .ralph/progress.md
+ M .ralph/runs/run-20260118-210256-43823-iter-5.log
+ M package.json
+ M pnpm-lock.yaml
+ M src/components/game/CurrentRoundPanel.tsx
+ M src/components/game/GameView.tsx
+ M vitest.config.ts
+ M vitest.setup.ts
+?? .ralph/.tmp/prompt-20260118-210256-43823-6.md
+?? .ralph/.tmp/story-20260118-210256-43823-6.json
+?? .ralph/.tmp/story-20260118-210256-43823-6.md
+?? .ralph/runs/run-20260118-210256-43823-iter-5.md
+?? .ralph/runs/run-20260118-210256-43823-iter-6.log
+?? src/components/game/TimelinePlacer.test.tsx
+?? src/components/game/TimelinePlacer.tsx
+
+[91m[1m| [0m[90m Bash     [0mStage relevant files
+[91m[1m| [0m[90m Bash     [0mCommit changes
+
+[main 75db872] feat(game): Implement TimelinePlacer component for drag-and-drop song placement
+ 8 files changed, 617 insertions(+), 14 deletions(-)
+ create mode 100644 src/components/game/TimelinePlacer.test.tsx
+ create mode 100644 src/components/game/TimelinePlacer.tsx
+
+[96m[1m| [0m[90m Read     [0m.ralph/progress.md
+[96m[1m| [0m[90m Read     [0m.ralph/progress.md
+[92m[1m| [0m[90m Edit     [0m.ralph/progress.md
+[91m[1m| [0m[90m Bash     [0mCommit progress log update
+
+[main b6dbf26] docs: update progress log for S25 Timeline Placer Component
+ 1 file changed, 42 insertions(+)
+
+[91m[1m| [0m[90m Bash     [0mCheck git status
+
+ M .agents/tasks/prd-music-timeline.json
+ M .ralph/activity.log
+ M .ralph/errors.log
+ M .ralph/runs/run-20260118-210256-43823-iter-5.log
+?? .ralph/.tmp/prompt-20260118-210256-43823-6.md
+?? .ralph/.tmp/story-20260118-210256-43823-6.json
+?? .ralph/.tmp/story-20260118-210256-43823-6.md
+?? .ralph/runs/run-20260118-210256-43823-iter-5.md
+?? .ralph/runs/run-20260118-210256-43823-iter-6.log
+
+[91m[1m| [0m[90m Bash     [0mShow latest commit
+
+b6dbf26 docs: update progress log for S25 Timeline Placer Component
+
+The Timeline Placer Component (S25) is now complete. Here's a summary of what was implemented:
+
+## Implementation Summary
+
+### Components Created
+- **TimelinePlacer.tsx**: Drag-and-drop style component for placing songs on timeline
+  - Shows existing timeline cards sorted by year
+  - Drop zones between cards for selecting insertion point
+  - New song card display (title/artist visible, year hidden)
+  - Calls `rounds.setPlacementPreview` mutation on position change
+  - Submit button calls `rounds.submitPlacement` mutation
+  - Visual feedback for placement position (First/Last/After X)
+
+- **TimelinePlacer.test.tsx**: 4 passing component tests
+
+### Integration
+- **CurrentRoundPanel.tsx**: Updated to render TimelinePlacer when it's the player's turn during the placing phase
+- **GameView.tsx**: Passes required props (lobbyId, me, existingPreviewIndex) to CurrentRoundPanel
+
+### Test Infrastructure
+- Added `@testing-library/jest-dom` dependency
+- Updated `vitest.config.ts` with path aliases for `@/*` and `@/convex/*`
+- Updated `vitest.setup.ts` with jest-dom vitest integration
+
+### Commits
+- `75db872` - feat(game): Implement TimelinePlacer component
+- `b6dbf26` - docs: update progress log
+
+All acceptance criteria met:
+- ✅ Turn player sees timeline with insertion points
+- ✅ Can tap to select position  
+- ✅ Preview updates in real-time
+- ✅ Submit button finalizes placement
+<promise>COMPLETE</promise>
