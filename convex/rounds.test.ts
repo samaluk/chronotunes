@@ -110,13 +110,15 @@ test("getCurrent hides track details during placing phase for non-host", async (
     sessionId: "player-session-hide",
   });
 
+  if (!result) throw new Error("Result is null");
+  if (!result.track) throw new Error("Result is null");
   expect(result).not.toBeNull();
   expect(result?.phase).toBe("placing");
   expect(result?.track).not.toBeNull();
-  expect((result?.track?.trackId).toBeDefined();
-  expect((result?.track as unknown as Record<string, unknown>).title).toBeUndefined();
-  expect((result?.track as unknown as Record<string, unknown>).artist).toBeUndefined();
-  expect((result?.track as unknown as Record<string, unknown>).year).toBeUndefined();
+  expect(result?.track.trackId).toBeDefined();
+  expect(result?.track.title).toBeUndefined();
+  expect(result?.track.artist).toBeUndefined();
+  expect(result?.track.year).toBeUndefined();
   expect(result?.isHost).toBe(false);
 });
 
