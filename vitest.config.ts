@@ -1,3 +1,4 @@
+import path from "path";
 import { defineConfig } from "vitest/config";
 
 export default defineConfig({
@@ -11,6 +12,11 @@ export default defineConfig({
           environment: "jsdom",
           include: ["src/**/*.test.{ts,tsx}", "components/**/*.test.{ts,tsx}"],
           setupFiles: ["./vitest.setup.ts"],
+        },
+        resolve: {
+          alias: {
+            "@/convex/_generated/api.js": path.resolve(__dirname, "convex/_generated/api.js"),
+          },
         },
       },
       // Project for Convex function tests (edge-runtime environment)
