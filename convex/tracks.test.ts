@@ -1,6 +1,7 @@
 import { convexTest } from "convex-test";
 import { expect, test } from "vitest";
 import { api } from "./_generated/api";
+import type { Id } from "./_generated/dataModel";
 import schema from "./schema";
 
 test("get returns track by ID", async () => {
@@ -223,4 +224,285 @@ test("importTracks trims whitespace from strings", async () => {
   const allTracks = await t.query(api.tracks.list);
   expect(allTracks[0]?.title).toBe("Song Title");
   expect(allTracks[0]?.artist).toBe("Artist Name");
+});
+
+async function seedRoundTestData(t: ReturnType<typeof convexTest>) {
+  await t.run(async (ctx) => {
+    const trackId = await ctx.db.insert("tracks", {
+      title: "Round Song",
+      artist: "Round Artist",
+      year: 1985,
+      externalIds: { youtubeVideoId: "video123" },
+      links: { youtubeUrl: "https://youtube.com/watch?v=video123" },
+      createdAt: Date.now(),
+      source: "test",
+      durationMs: 210000,
+      mbid: "test-mbid-123",
+    });
+
+    const lobbyId = await ctx.db.insert("lobbies", {
+      code: "TEST123",
+      hostSessionId: "host-session",
+      status: "in_game",
+      settings: {
+        targetTimelineSize: 6,
+        startingCoins: 10,
+        turnSeconds: 30,
+        bettingWindowSeconds: 10,
+        allowGuessTitleArtist: true,
+        showLiveBets: true,
+        allowBetRetraction: true,
+        minYear: 1900,
+        maxYear: 2030,
+      },
+    });
+
+    await ctx.db.insert("players", {
+      lobbyId,
+      sessionId: "host-session",
+      displayName: "Host",
+      isHost: true,
+      coins: 10,
+      timeline: [],
+      timelineSize: 0,
+      createdAt: Date.now(),
+    });
+
+    await ctx.db.insert("players", {
+      lobbyId,
+      sessionId: "player-session",
+      displayName: "Player",
+      isHost: false,
+      coins: 10,
+      timeline: [],
+      timelineSize: 0,
+      createdAt: Date.now(),
+    });
+
+    const gameId = await ctx.db.insert("games", {
+      lobbyId,
+      status: "active",
+      startedAt: Date.now(),
+      currentRoundNumber: 1,
+      turnOrder: [],
+    });
+
+    const player = await ctx.db
+      .query("players")
+      .filter((q) => q.eq(q.field("sessionId"), "host-session"))
+      .first();
+
+    if (player) {
+      const roundId = await ctx.db.insert("rounds", {
+        gameId,
+        roundNumber: 1,
+        turnPlayerId: player._id,
+        trackId,
+        phase: "placing",
+        startedAt: Date.now(),
+      });
+
+      await ctx.db.patch(gameId, {
+        currentRoundId: roundId,
+        turnOrder: [player._id],
+      });
+    }
+
+    return trackId;
+  });
+}
+
+test("getForRound returns full track info for host", async () => {
+  const t = convexTest(schema);
+
+  await seedRoundTestData(t);
+
+  const lobby = await t.run(async (ctx) => {
+    return await ctx.db.query("lobbies").first();
+  });
+
+  expect(lobby).not.toBeNull();
+
+  const result = await t.query(api.tracks.getForRound, {
+    lobbyId: lobby!._id,
+    sessionId: "host-session",
+  });
+
+  expect(result).not.toBeNull();
+  expect(result?.title).toBe("Round Song");
+  expect(result?.artist).toBe("Round Artist");
+  expect(result?.year).toBe(1985);
+  expect(result?.durationMs).toBe(210000);
+  expect(result?.mbid).toBe("test-mbid-123");
+  expect(result?.externalIds.youtubeVideoId).toBe("video123");
+  expect(result?.links.youtubeUrl).toBe("https://youtube.com/watch?v=video123");
+});
+
+test("getForRound returns null for non-host", async () => {
+  const t = convexTest(schema);
+
+  await seedRoundTestData(t);
+
+  const lobby = await t.run(async (ctx) => {
+    return await ctx.db.query("lobbies").first();
+  });
+
+  expect(lobby).not.toBeNull();
+
+  const result = await t.query(api.tracks.getForRound, {
+    lobbyId: lobby!._id,
+    sessionId: "player-session",
+  });
+
+  expect(result).toBeNull();
+});
+
+test("getForRound returns null when no active game", async () => {
+  const t = convexTest(schema);
+
+  await seedRoundTestData(t);
+
+  const lobby = await t.run(async (ctx) => {
+    const l = await ctx.db.query("lobbies").first();
+    if (l) {
+      await ctx.db.patch(l._id, { activeGameId: undefined });
+    }
+    return l;
+  });
+
+  expect(lobby).not.toBeNull();
+
+  const result = await t.query(api.tracks.getForRound, {
+    lobbyId: lobby!._id,
+    sessionId: "host-session",
+  });
+
+  expect(result).toBeNull();
+});
+
+test("getPublic returns track info when round is resolved", async () => {
+  const t = convexTest(schema);
+
+  await seedRoundTestData(t);
+
+  let roundId: Id<"rounds"> | null = null;
+  await t.run(async (ctx) => {
+    const game = await ctx.db.query("games").first();
+    if (game?.currentRoundId) {
+      await ctx.db.patch(game.currentRoundId, { phase: "resolved" });
+      roundId = game.currentRoundId;
+    }
+  });
+
+  expect(roundId).not.toBeNull();
+
+  const result = await t.query(api.tracks.getPublic, { roundId: roundId! });
+
+  expect(result).not.toBeNull();
+  expect(result?.title).toBe("Round Song");
+  expect(result?.artist).toBe("Round Artist");
+  expect(result?.year).toBe(1985);
+  expect(result?.youtubeVideoId).toBe("video123");
+});
+
+test("getPublic returns null when round is not resolved", async () => {
+  const t = convexTest(schema);
+
+  await seedRoundTestData(t);
+
+  const round = await t.run(async (ctx) => {
+    return await ctx.db.query("rounds").first();
+  });
+
+  expect(round).not.toBeNull();
+
+  const result = await t.query(api.tracks.getPublic, { roundId: round!._id });
+
+  expect(result).toBeNull();
+});
+
+test("getPublic returns null for non-existent round", async () => {
+  const t = convexTest(schema);
+
+  const result = await t.query(api.tracks.getPublic, {
+    roundId: "non-existent" as Id<"rounds">,
+  });
+
+  expect(result).toBeNull();
+});
+
+test("getPublic returns null youtubeVideoId when not set", async () => {
+  const t = convexTest(schema);
+
+  const trackId = await t.run(async (ctx) => {
+    return await ctx.db.insert("tracks", {
+      title: "No Video Song",
+      artist: "Unknown Artist",
+      year: 2000,
+      externalIds: {},
+      links: {},
+      createdAt: Date.now(),
+      source: "test",
+    });
+  });
+
+  const lobbyId = await t.run(async (ctx) => {
+    return await ctx.db.insert("lobbies", {
+      code: "NOVIDEO",
+      hostSessionId: "host2",
+      status: "lobby",
+      settings: {
+        targetTimelineSize: 6,
+        startingCoins: 10,
+        turnSeconds: 30,
+        bettingWindowSeconds: 10,
+        allowGuessTitleArtist: true,
+        showLiveBets: true,
+        allowBetRetraction: true,
+        minYear: 1900,
+        maxYear: 2030,
+      },
+    });
+  });
+
+  const gameId = await t.run(async (ctx) => {
+    return await ctx.db.insert("games", {
+      lobbyId,
+      status: "active",
+      startedAt: Date.now(),
+      currentRoundNumber: 1,
+      turnOrder: [],
+    });
+  });
+
+  const player = await t.run(async (ctx) => {
+    return await ctx.db.insert("players", {
+      lobbyId,
+      sessionId: "host2",
+      displayName: "Host2",
+      isHost: true,
+      coins: 10,
+      timeline: [],
+      timelineSize: 0,
+      createdAt: Date.now(),
+    });
+  });
+
+  const roundId = await t.run(async (ctx) => {
+    const rid = await ctx.db.insert("rounds", {
+      gameId,
+      roundNumber: 1,
+      turnPlayerId: player,
+      trackId,
+      phase: "resolved",
+      startedAt: Date.now(),
+    });
+    await ctx.db.patch(gameId, { currentRoundId: rid, turnOrder: [player] });
+    return rid;
+  });
+
+  const result = await t.query(api.tracks.getPublic, { roundId });
+
+  expect(result).not.toBeNull();
+  expect(result?.youtubeVideoId).toBeNull();
 });

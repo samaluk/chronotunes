@@ -23,6 +23,90 @@ export const list = query({
   },
 });
 
+export const getForRound = query({
+  args: { lobbyId: v.id("lobbies"), sessionId: v.string() },
+  handler: async (ctx, args) => {
+    const { lobbyId, sessionId } = args;
+
+    const lobby = await ctx.db.get(lobbyId);
+
+    if (!lobby) {
+      return null;
+    }
+
+    const isHost = lobby.hostSessionId === sessionId;
+
+    if (!isHost) {
+      return null;
+    }
+
+    if (!lobby.activeGameId) {
+      return null;
+    }
+
+    const game = await ctx.db.get(lobby.activeGameId);
+
+    if (!game || !game.currentRoundId) {
+      return null;
+    }
+
+    const round = await ctx.db.get(game.currentRoundId);
+
+    if (!round) {
+      return null;
+    }
+
+    const track = await ctx.db.get(round.trackId);
+
+    if (!track) {
+      return null;
+    }
+
+    return {
+      trackId: track._id,
+      title: track.title,
+      artist: track.artist,
+      year: track.year,
+      durationMs: track.durationMs,
+      mbid: track.mbid,
+      externalIds: track.externalIds,
+      links: track.links,
+      source: track.source,
+    };
+  },
+});
+
+export const getPublic = query({
+  args: { roundId: v.id("rounds") },
+  handler: async (ctx, args) => {
+    const { roundId } = args;
+
+    const round = await ctx.db.get(roundId);
+
+    if (!round) {
+      return null;
+    }
+
+    if (round.phase !== "resolved") {
+      return null;
+    }
+
+    const track = await ctx.db.get(round.trackId);
+
+    if (!track) {
+      return null;
+    }
+
+    return {
+      trackId: track._id,
+      title: track.title,
+      artist: track.artist,
+      year: track.year,
+      youtubeVideoId: track.externalIds.youtubeVideoId ?? null,
+    };
+  },
+});
+
 const trackImportItem = v.object({
   title: v.string(),
   artist: v.string(),
