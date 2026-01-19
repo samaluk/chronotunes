@@ -7,6 +7,7 @@ import { api } from "@/convex/_generated/api.js";
 import { useSessionId } from "@/lib/hooks/use-session-id";
 import { CurrentRoundPanel, type RoundPhase } from "./CurrentRoundPanel";
 import { GameHeader } from "./GameHeader";
+import { GameResults } from "./GameResults";
 import { MyTimeline } from "./MyTimeline";
 import { PlayersBar } from "./PlayersBar";
 
@@ -110,47 +111,55 @@ export function GameView({ lobbyId, code }: GameViewProps): React.ReactNode {
     return null;
   })();
 
+  const isGameFinished = game?.status === "finished";
+
   return (
     <div className="w-full space-y-6">
-      <PlayersBar
-        lobbyId={lobbyId}
-        currentSessionId={sessionId}
-        highlightPlayerId={currentRound?.turnPlayerId ?? null}
-      />
+      {isGameFinished ? (
+        <GameResults lobbyId={lobbyId} code={code} />
+      ) : (
+        <>
+          <PlayersBar
+            lobbyId={lobbyId}
+            currentSessionId={sessionId}
+            highlightPlayerId={currentRound?.turnPlayerId ?? null}
+          />
 
-      {me && me.timeline.length > 0 && (
-        <div className="max-w-md">
-          <MyTimeline player={me} />
-        </div>
+          {me && me.timeline.length > 0 && (
+            <div className="max-w-md">
+              <MyTimeline player={me} />
+            </div>
+          )}
+
+          <GameHeader
+            roundNumber={game.currentRoundNumber ?? 1}
+            turnPlayer={
+              turnPlayer
+                ? {
+                    _id: turnPlayer._id,
+                    displayName: turnPlayer.displayName,
+                  }
+                : null
+            }
+            isMyTurn={isMyTurn}
+            turnSeconds={lobby?.settings?.turnSeconds}
+            startedAt={currentRound?.startedAt}
+          />
+
+          <CurrentRoundPanel
+            phase={roundPhase}
+            isMyTurn={isMyTurn}
+            lobbyId={lobbyId}
+            me={me ?? null}
+            players={players ?? null}
+            track={trackInfo}
+            existingPreviewIndex={currentRound?.placementPreview?.proposedIndex ?? null}
+            turnPlayerTimeline={turnPlayer?.timeline ?? []}
+            turnPlayerTimelineSize={turnPlayer?.timelineSize ?? 0}
+            resolution={currentRound?.resolution ?? null}
+          />
+        </>
       )}
-
-      <GameHeader
-        roundNumber={game.currentRoundNumber ?? 1}
-        turnPlayer={
-          turnPlayer
-            ? {
-                _id: turnPlayer._id,
-                displayName: turnPlayer.displayName,
-              }
-            : null
-        }
-        isMyTurn={isMyTurn}
-        turnSeconds={lobby?.settings?.turnSeconds}
-        startedAt={currentRound?.startedAt}
-      />
-
-      <CurrentRoundPanel
-        phase={roundPhase}
-        isMyTurn={isMyTurn}
-        lobbyId={lobbyId}
-        me={me ?? null}
-        players={players ?? null}
-        track={trackInfo}
-        existingPreviewIndex={currentRound?.placementPreview?.proposedIndex ?? null}
-        turnPlayerTimeline={turnPlayer?.timeline ?? []}
-        turnPlayerTimelineSize={turnPlayer?.timelineSize ?? 0}
-        resolution={currentRound?.resolution ?? null}
-      />
     </div>
   );
 }

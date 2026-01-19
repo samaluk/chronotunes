@@ -414,3 +414,125 @@ export const resolveAndNext = mutation({
     };
   },
 });
+
+export const getResults = query({
+  args: { lobbyId: v.id("lobbies") },
+  handler: async (ctx, args) => {
+    const { lobbyId } = args;
+
+    const lobby = await ctx.db.get(lobbyId);
+
+    if (!lobby || !lobby.activeGameId) {
+      return null;
+    }
+
+    const game = await ctx.db.get(lobby.activeGameId);
+
+    if (!game) {
+      return null;
+    }
+
+    const players = await ctx.db
+      .query("players")
+      .filter((q) => q.eq(q.field("lobbyId"), lobbyId))
+      .collect();
+
+    const rounds = await ctx.db
+      .query("rounds")
+      .withIndex("by_game", (q) => q.eq("gameId", game._id))
+      .collect();
+
+    const roundsWithTracks = await Promise.all(
+      rounds.map(async (round) => {
+        const track = await ctx.db.get(round.trackId);
+        return {
+          ...round,
+          track: track
+            ? {
+                _id: track._id,
+                title: track.title,
+                artist: track.artist,
+                year: track.year,
+              }
+            : null,
+        };
+      }),
+    );
+
+    return {
+      game: {
+        _id: game._id,
+        status: game.status,
+        startedAt: game.startedAt,
+        endedAt: game.endedAt,
+        currentRoundNumber: game.currentRoundNumber,
+        winnerPlayerId: game.winnerPlayerId,
+      },
+      players: players.map((p) => ({
+        _id: p._id,
+        displayName: p.displayName,
+        timelineSize: p.timelineSize,
+        timeline: p.timeline,
+        coins: p.coins,
+        isHost: p.isHost,
+      })),
+      rounds: roundsWithTracks,
+    };
+  },
+});
+
+export const playAgain = mutation({
+  args: { lobbyId: v.id("lobbies"), sessionId: v.string() },
+  handler: async (ctx, args) => {
+    const { lobbyId, sessionId } = args;
+
+    const lobby = await ctx.db.get(lobbyId);
+
+    if (!lobby) {
+      throw new ConvexError("Lobby not found");
+    }
+
+    if (lobby.hostSessionId !== sessionId) {
+      throw new ConvexError("Only the host can restart the game");
+    }
+
+    if (lobby.status !== "finished") {
+      throw new ConvexError("Game is not finished");
+    }
+
+    await ctx.db.patch(lobbyId, {
+      status: "lobby",
+      activeGameId: undefined,
+    });
+
+    const players = await ctx.db
+      .query("players")
+      .filter((q) => q.eq(q.field("lobbyId"), lobbyId))
+      .collect();
+
+    for (const player of players) {
+      await ctx.db.patch(player._id, {
+        coins: lobby.settings.startingCoins,
+        timeline: [],
+        timelineSize: 0,
+      });
+    }
+
+    const rounds = await ctx.db
+      .query("rounds")
+      .filter((q) =>
+        q.or(
+          ...players.flatMap(() =>
+            lobby.activeGameId ? [q.eq(q.field("gameId"), lobby.activeGameId)] : [],
+          ),
+        ),
+      )
+      .collect();
+
+    for (const round of rounds) {
+      await ctx.db.delete(round._id);
+    }
+
+    return { success: true };
+  },
+});
