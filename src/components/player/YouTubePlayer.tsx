@@ -1,8 +1,9 @@
 "use client";
 
-import { AlertTriangle, Pause, Play } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
-import { Button } from "@/components/ui/button";
+import { AlertTriangle, Volume2, VolumeX } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import ReactPlayer from "react-player";
+import type { Config } from "react-player/types";
 import { cn } from "@/lib/utils";
 
 interface YouTubePlayerProps {
@@ -10,46 +11,28 @@ interface YouTubePlayerProps {
   className?: string;
 }
 
-declare global {
-  interface Window {
-    YT: {
-      Player: new (
-        element: HTMLElement,
-        config: {
-          videoId: string;
-          playerVars?: Record<string, number | string>;
-          events?: {
-            onReady?: () => void;
-            onStateChange?: (event: { data: number }) => void;
-            onError?: () => void;
-          };
-        },
-      ) => {
-        playVideo: () => void;
-        pauseVideo: () => void;
-        destroy: () => void;
-      };
-      PlayerState: {
-        PLAYING: number;
-        PAUSED: number;
-        ENDED: number;
-      };
-    };
-    onYouTubeIframeAPIReady: () => void;
-  }
-}
-
 export function YouTubePlayer({ youtubeVideoId, className }: YouTubePlayerProps): React.ReactNode {
   const [isReady, setIsReady] = useState(false);
-  const [isPlaying, setIsPlaying] = useState(false);
   const [hasError, setHasError] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const playerRef = useRef<HTMLDivElement>(null);
-  const ytPlayerRef = useRef<{
-    playVideo: () => void;
-    pauseVideo: () => void;
-    destroy: () => void;
-  } | null>(null);
+  const [volume, setVolume] = useState(80);
+  const [isMuted, setIsMuted] = useState(false);
+
+  const playerConfig: Config = useMemo(
+    () => ({
+      youtube: {
+        autoplay: 1,
+        controls: 0,
+        disablekb: 1,
+        modestbranding: 1,
+        rel: 0,
+        fs: 0,
+        playsinline: 1,
+      },
+      file: { attributes: { disablepictureinpicture: 'true' } }
+    }),
+    [],
+  );
 
   useEffect(() => {
     if (!youtubeVideoId) {
@@ -58,92 +41,22 @@ export function YouTubePlayer({ youtubeVideoId, className }: YouTubePlayerProps)
       return;
     }
 
-    const loadYouTubeAPI = (): Promise<void> => {
-      return new Promise((resolve) => {
-        if (window.YT?.Player) {
-          resolve();
-          return;
-        }
-
-        const existingScript = document.querySelector(
-          'script[src="https://www.youtube.com/iframe_api"]',
-        );
-        if (existingScript) {
-          if (window.YT?.Player) {
-            resolve();
-          }
-          return;
-        }
-
-        const tag = document.createElement("script");
-        tag.src = "https://www.youtube.com/iframe_api";
-        const firstScriptTag = document.getElementsByTagName("script")[0];
-        firstScriptTag.parentNode?.insertBefore(tag, firstScriptTag);
-
-        window.onYouTubeIframeAPIReady = () => {
-          resolve();
-        };
-      });
-    };
-
-    loadYouTubeAPI().then(() => {
-      if (playerRef.current && !ytPlayerRef.current && window.YT) {
-        ytPlayerRef.current = new window.YT.Player(playerRef.current, {
-          videoId: youtubeVideoId,
-          playerVars: {
-            autoplay: 0,
-            controls: 0,
-            disablekb: 1,
-            modestbranding: 1,
-            rel: 0,
-            showinfo: 0,
-            fs: 0,
-            playsinline: 1,
-          },
-          events: {
-            onReady: () => {
-              setIsReady(true);
-              setIsLoading(false);
-            },
-            onStateChange: (event: { data: number }) => {
-              if (event.data === 1) {
-                setIsPlaying(true);
-                setHasError(false);
-              } else if (event.data === 2) {
-                setIsPlaying(false);
-              } else if (event.data === 0) {
-                setIsPlaying(false);
-              }
-            },
-            onError: () => {
-              setHasError(true);
-              setIsPlaying(false);
-              setIsLoading(false);
-            },
-          },
-        });
-      }
-    });
-
-    return () => {
-      if (ytPlayerRef.current) {
-        ytPlayerRef.current.destroy();
-        ytPlayerRef.current = null;
-      }
-    };
+    setHasError(false);
+    setIsReady(false);
+    setIsLoading(true);
   }, [youtubeVideoId]);
 
-  const handlePlayPause = (): void => {
-    if (!ytPlayerRef.current || !isReady) return;
-
-    if (isPlaying) {
-      ytPlayerRef.current.pauseVideo();
-    } else {
-      ytPlayerRef.current.playVideo();
-    }
+  const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
+    const newVolume = Number(e.target.value);
+    setVolume(newVolume);
+    setIsMuted(newVolume === 0);
   };
 
-  if (hasError) {
+  const toggleMute = (): void => {
+    setIsMuted((prev) => !prev);
+  };
+
+  if (hasError || !youtubeVideoId) {
     return (
       <div
         className={cn(
@@ -169,34 +82,56 @@ export function YouTubePlayer({ youtubeVideoId, className }: YouTubePlayerProps)
         aria-hidden="true"
         data-testid="hidden-youtube-player"
       >
-        <div ref={playerRef} className="w-[1px] h-[1px]" />
+        <ReactPlayer
+          key={youtubeVideoId}
+          src={`https://www.youtube.com/watch?v=${youtubeVideoId}`}
+          playing={true}
+          controls={false}
+          width="1px"
+          height="1px"
+          volume={isMuted ? 0 : volume / 100}
+          muted={isMuted}
+          onReady={() => {
+            setIsReady(true);
+            setIsLoading(false);
+          }}
+          onError={() => {
+            setHasError(true);
+            setIsLoading(false);
+          }}
+          config={playerConfig}
+        />
       </div>
 
-      <div className="flex items-center gap-2">
-        <Button
+      <div className="flex items-center gap-3">
+        <button
           type="button"
-          size="icon-xs"
-          variant="outline"
-          onClick={handlePlayPause}
-          disabled={!isReady || isLoading}
-          className="shrink-0"
-          aria-label={isPlaying ? "Pause audio" : "Play audio"}
+          onClick={toggleMute}
+          className="shrink-0 p-2 rounded-md hover:bg-muted transition-colors"
+          aria-label={isMuted ? "Unmute" : "Mute"}
         >
-          {isPlaying ? (
-            <Pause className="h-3 w-3" aria-hidden="true" data-testid="pause-icon" />
+          {isMuted ? (
+            <VolumeX className="h-4 w-4 text-muted-foreground" />
           ) : (
-            <Play className="h-3 w-3" aria-hidden="true" data-testid="play-icon" />
+            <Volume2 className="h-4 w-4 text-foreground" />
           )}
-        </Button>
-        {isLoading && <span className="text-xs text-muted-foreground">Loading audio...</span>}
-        {isReady && !isLoading && (
-          <span
-            className={cn(
-              "text-xs font-medium",
-              isPlaying ? "text-green-600 dark:text-green-400" : "text-muted-foreground",
-            )}
-          >
-            {isPlaying ? "Playing" : "Paused"}
+        </button>
+
+        <input
+          type="range"
+          min="0"
+          max="100"
+          value={isMuted ? 0 : volume}
+          onChange={handleVolumeChange}
+          className="flex-1 h-2 bg-muted rounded-full appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-primary"
+          aria-label="Volume"
+        />
+
+        {isLoading ? (
+          <span className="text-xs text-muted-foreground">Loading...</span>
+        ) : (
+          <span className="text-xs text-green-600 dark:text-green-400 font-medium">
+            {isReady ? "Playing" : "Ready"}
           </span>
         )}
       </div>

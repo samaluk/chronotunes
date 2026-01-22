@@ -47,7 +47,6 @@ export const checkHostDisconnect = internalMutation({
 });
 
 export const checkHostTransfer = internalMutation({
-  args: {},
   handler: async (ctx) => {
     const now = Date.now();
 

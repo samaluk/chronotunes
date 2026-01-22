@@ -1,11 +1,11 @@
 import { ConvexError, v } from "convex/values";
 import type { Id } from "./_generated/dataModel";
-import { mutation, query } from "./_generated/server";
+import { mutationWithSession, queryWithSession } from "./lib/sessions";
 
-export const getCurrent = query({
-  args: { lobbyId: v.id("lobbies"), sessionId: v.string() },
+export const getCurrent = queryWithSession({
+  args: { lobbyId: v.id("lobbies") },
   handler: async (ctx, args) => {
-    const { lobbyId, sessionId } = args;
+    const { lobbyId } = args;
 
     const lobby = await ctx.db.get(lobbyId);
 
@@ -25,33 +25,35 @@ export const getCurrent = query({
       return null;
     }
 
-    const isHost = lobby.hostSessionId === sessionId;
-    const canSeeTrack = round.phase === "resolved" || isHost;
+    const canSeeTrack = round.phase === "resolved";
 
     let trackInfo:
-      | { trackId: Id<"tracks"> }
+      | { trackId: Id<"tracks">; youtubeVideoId?: string }
       | {
           trackId: Id<"tracks">;
           title: string;
           artist: string;
           year: number;
-          youtubeVideoId: string;
+          youtubeVideoId?: string;
         }
       | null = null;
 
-    if (canSeeTrack) {
-      const track = await ctx.db.get(round.trackId);
-      if (track) {
+    const track = await ctx.db.get(round.trackId);
+    if (track) {
+      if (canSeeTrack) {
         trackInfo = {
           trackId: track._id,
           title: track.title,
           artist: track.artist,
           year: track.year,
-          youtubeVideoId: track.externalIds.youtubeVideoId ?? "",
+          youtubeVideoId: track.externalIds.youtubeVideoId ?? undefined,
+        };
+      } else {
+        trackInfo = {
+          trackId: track._id,
+          youtubeVideoId: track.externalIds.youtubeVideoId ?? undefined,
         };
       }
-    } else {
-      trackInfo = { trackId: round.trackId };
     }
 
     return {
@@ -67,15 +69,15 @@ export const getCurrent = query({
       guess: round.guess,
       resolution: round.resolution,
       track: trackInfo,
-      isHost,
     };
   },
 });
 
-export const setPlacementPreview = mutation({
-  args: { lobbyId: v.id("lobbies"), sessionId: v.string(), proposedIndex: v.number() },
+export const setPlacementPreview = mutationWithSession({
+  args: { lobbyId: v.id("lobbies"), proposedIndex: v.number() },
   handler: async (ctx, args) => {
-    const { lobbyId, sessionId, proposedIndex } = args;
+    const { lobbyId, proposedIndex } = args;
+    const { sessionId } = ctx;
 
     const lobby = await ctx.db.get(lobbyId);
 
@@ -109,10 +111,8 @@ export const setPlacementPreview = mutation({
 
     const player = await ctx.db
       .query("players")
-      .filter((q) =>
-        q.and(q.eq(q.field("lobbyId"), lobbyId), q.eq(q.field("sessionId"), sessionId)),
-      )
-      .first();
+      .withIndex("by_lobby_and_session", (q) => q.eq("lobbyId", lobbyId).eq("sessionId", sessionId))
+      .unique();
 
     if (!player) {
       throw new ConvexError("Player not found in this lobby");
@@ -135,10 +135,11 @@ export const setPlacementPreview = mutation({
   },
 });
 
-export const submitPlacement = mutation({
-  args: { lobbyId: v.id("lobbies"), sessionId: v.string() },
+export const submitPlacement = mutationWithSession({
+  args: { lobbyId: v.id("lobbies") },
   handler: async (ctx, args) => {
-    const { lobbyId, sessionId } = args;
+    const { lobbyId } = args;
+    const { sessionId } = ctx;
 
     const lobby = await ctx.db.get(lobbyId);
 
@@ -172,10 +173,8 @@ export const submitPlacement = mutation({
 
     const player = await ctx.db
       .query("players")
-      .filter((q) =>
-        q.and(q.eq(q.field("lobbyId"), lobbyId), q.eq(q.field("sessionId"), sessionId)),
-      )
-      .first();
+      .withIndex("by_lobby_and_session", (q) => q.eq("lobbyId", lobbyId).eq("sessionId", sessionId))
+      .unique();
 
     if (!player) {
       throw new ConvexError("Player not found in this lobby");

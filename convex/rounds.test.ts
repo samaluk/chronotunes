@@ -2,7 +2,9 @@ import { convexTest } from "convex-test";
 import { expect, test } from "vitest";
 import { api } from "./_generated/api";
 import type { Id } from "./_generated/dataModel";
+import { asSessionId, type SessionId } from "./lib/sessions";
 import schema from "./schema";
+import { modules } from "./test.setup";
 
 async function seedTestData(t: ReturnType<typeof convexTest>) {
   await t.run(async (ctx) => {
@@ -28,12 +30,12 @@ async function seedTestData(t: ReturnType<typeof convexTest>) {
 }
 
 test("getCurrent returns null when no active game", async () => {
-  const t = convexTest(schema);
+  const t = convexTest(schema, modules);
 
   await seedTestData(t);
 
   const { code } = await t.mutation(api.lobbies.create, {
-    sessionId: "host-session-empty",
+    sessionId: asSessionId("host-session-empty"),
     displayName: "HostEmpty",
   });
 
@@ -41,25 +43,25 @@ test("getCurrent returns null when no active game", async () => {
 
   const result = await t.query(api.rounds.getCurrent, {
     lobbyId: lobby!._id,
-    sessionId: "host-session-empty",
+    sessionId: asSessionId("host-session-empty"),
   });
 
   expect(result).toBeNull();
 });
 
 test("getCurrent returns current round for active game", async () => {
-  const t = convexTest(schema);
+  const t = convexTest(schema, modules);
 
   await seedTestData(t);
 
   const { code } = await t.mutation(api.lobbies.create, {
-    sessionId: "host-session-current",
+    sessionId: asSessionId("host-session-current"),
     displayName: "HostCurrent",
   });
 
   await t.mutation(api.lobbies.join, {
     code,
-    sessionId: "player-session-current",
+    sessionId: asSessionId("player-session-current"),
     displayName: "PlayerCurrent",
   });
 
@@ -67,12 +69,12 @@ test("getCurrent returns current round for active game", async () => {
 
   await t.mutation(api.games.start, {
     lobbyId: lobby!._id,
-    sessionId: "host-session-current",
+    sessionId: asSessionId("host-session-current"),
   });
 
   const result = await t.query(api.rounds.getCurrent, {
     lobbyId: lobby!._id,
-    sessionId: "host-session-current",
+    sessionId: asSessionId("host-session-current"),
   });
 
   expect(result).not.toBeNull();
@@ -83,18 +85,18 @@ test("getCurrent returns current round for active game", async () => {
 });
 
 test("getCurrent hides track details during placing phase for non-host", async () => {
-  const t = convexTest(schema);
+  const t = convexTest(schema, modules);
 
   await seedTestData(t);
 
   const { code } = await t.mutation(api.lobbies.create, {
-    sessionId: "host-session-hide",
+    sessionId: asSessionId("host-session-hide"),
     displayName: "HostHide",
   });
 
   await t.mutation(api.lobbies.join, {
     code,
-    sessionId: "player-session-hide",
+    sessionId: asSessionId("player-session-hide"),
     displayName: "PlayerHide",
   });
 
@@ -102,12 +104,12 @@ test("getCurrent hides track details during placing phase for non-host", async (
 
   await t.mutation(api.games.start, {
     lobbyId: lobby!._id,
-    sessionId: "host-session-hide",
+    sessionId: asSessionId("host-session-hide"),
   });
 
   const result = await t.query(api.rounds.getCurrent, {
     lobbyId: lobby!._id,
-    sessionId: "player-session-hide",
+    sessionId: asSessionId("player-session-hide"),
   });
 
   if (!result) throw new Error("Result is null");
@@ -120,18 +122,18 @@ test("getCurrent hides track details during placing phase for non-host", async (
 });
 
 test("getCurrent shows track details during placing phase for host", async () => {
-  const t = convexTest(schema);
+  const t = convexTest(schema, modules);
 
   await seedTestData(t);
 
   const { code } = await t.mutation(api.lobbies.create, {
-    sessionId: "host-session-show",
+    sessionId: asSessionId("host-session-show"),
     displayName: "HostShow",
   });
 
   await t.mutation(api.lobbies.join, {
     code,
-    sessionId: "player-session-show",
+    sessionId: asSessionId("player-session-show"),
     displayName: "PlayerShow",
   });
 
@@ -139,12 +141,12 @@ test("getCurrent shows track details during placing phase for host", async () =>
 
   await t.mutation(api.games.start, {
     lobbyId: lobby!._id,
-    sessionId: "host-session-show",
+    sessionId: asSessionId("host-session-show"),
   });
 
   const result = await t.query(api.rounds.getCurrent, {
     lobbyId: lobby!._id,
-    sessionId: "host-session-show",
+    sessionId: asSessionId("host-session-show"),
   });
 
   expect(result).not.toBeNull();
@@ -154,18 +156,18 @@ test("getCurrent shows track details during placing phase for host", async () =>
 });
 
 test("getCurrent includes placementPreview", async () => {
-  const t = convexTest(schema);
+  const t = convexTest(schema, modules);
 
   await seedTestData(t);
 
   const { code } = await t.mutation(api.lobbies.create, {
-    sessionId: "host-session-preview",
+    sessionId: asSessionId("host-session-preview"),
     displayName: "HostPreview",
   });
 
   await t.mutation(api.lobbies.join, {
     code,
-    sessionId: "player-session-preview",
+    sessionId: asSessionId("player-session-preview"),
     displayName: "PlayerPreview",
   });
 
@@ -173,7 +175,7 @@ test("getCurrent includes placementPreview", async () => {
 
   await t.mutation(api.games.start, {
     lobbyId: lobby!._id,
-    sessionId: "host-session-preview",
+    sessionId: asSessionId("host-session-preview"),
   });
 
   const game = await t.query(api.games.getCurrent, { lobbyId: lobby!._id });
@@ -190,7 +192,7 @@ test("getCurrent includes placementPreview", async () => {
 
   const result = await t.query(api.rounds.getCurrent, {
     lobbyId: lobby!._id,
-    sessionId: "host-session-preview",
+    sessionId: asSessionId("host-session-preview"),
   });
 
   expect(result).not.toBeNull();
@@ -199,18 +201,18 @@ test("getCurrent includes placementPreview", async () => {
 });
 
 test("setPlacementPreview allows turn player to preview placement", async () => {
-  const t = convexTest(schema);
+  const t = convexTest(schema, modules);
 
   await seedTestData(t);
 
   const { code } = await t.mutation(api.lobbies.create, {
-    sessionId: "host-session-preview",
+    sessionId: asSessionId("host-session-preview"),
     displayName: "HostPreview",
   });
 
   await t.mutation(api.lobbies.join, {
     code,
-    sessionId: "player-session-preview",
+    sessionId: asSessionId("player-session-preview"),
     displayName: "PlayerPreview",
   });
 
@@ -218,10 +220,10 @@ test("setPlacementPreview allows turn player to preview placement", async () => 
 
   await t.mutation(api.games.start, {
     lobbyId: lobby!._id,
-    sessionId: "host-session-preview",
+    sessionId: asSessionId("host-session-preview"),
   });
 
-  let turnPlayerSessionId: string | null = null;
+  let turnPlayerSessionId: SessionId | null = null;
   await t.run(async (ctx) => {
     const game = await ctx.db.query("games").first();
     if (game?.currentRoundId) {
@@ -229,7 +231,7 @@ test("setPlacementPreview allows turn player to preview placement", async () => 
       if (round) {
         const player = await ctx.db.get(round.turnPlayerId);
         if (player) {
-          turnPlayerSessionId = player.sessionId;
+          turnPlayerSessionId = player.sessionId as SessionId;
         }
       }
     }
@@ -247,7 +249,7 @@ test("setPlacementPreview allows turn player to preview placement", async () => 
 
   const round = await t.query(api.rounds.getCurrent, {
     lobbyId: lobby!._id,
-    sessionId: "host-session-preview",
+    sessionId: asSessionId("host-session-preview"),
   });
 
   expect(round?.placementPreview).not.toBeNull();
@@ -256,18 +258,18 @@ test("setPlacementPreview allows turn player to preview placement", async () => 
 });
 
 test("setPlacementPreview fails for non-turn player", async () => {
-  const t = convexTest(schema);
+  const t = convexTest(schema, modules);
 
   await seedTestData(t);
 
   const { code } = await t.mutation(api.lobbies.create, {
-    sessionId: "host-session-notturn",
+    sessionId: asSessionId("host-session-notturn"),
     displayName: "HostNotTurn",
   });
 
   await t.mutation(api.lobbies.join, {
     code,
-    sessionId: "player-session-notturn",
+    sessionId: asSessionId("player-session-notturn"),
     displayName: "PlayerNotTurn",
   });
 
@@ -275,7 +277,7 @@ test("setPlacementPreview fails for non-turn player", async () => {
 
   await t.mutation(api.games.start, {
     lobbyId: lobby!._id,
-    sessionId: "host-session-notturn",
+    sessionId: asSessionId("host-session-notturn"),
   });
 
   let roundId: Id<"rounds"> | null = null;
@@ -299,7 +301,7 @@ test("setPlacementPreview fails for non-turn player", async () => {
   await t.run(async (ctx) => {
     const player = await ctx.db
       .query("players")
-      .filter((q) => q.eq(q.field("sessionId"), "player-session-notturn"))
+      .filter((q) => q.eq(q.field("sessionId"), asSessionId("player-session-notturn")))
       .first();
     if (player) {
       playerId = player._id;
@@ -312,14 +314,14 @@ test("setPlacementPreview fails for non-turn player", async () => {
     await expect(
       t.mutation(api.rounds.setPlacementPreview, {
         lobbyId: lobby!._id,
-        sessionId: "player-session-notturn",
+        sessionId: asSessionId("player-session-notturn"),
         proposedIndex: 0,
       }),
     ).rejects.toThrow("Only the turn player can preview placement");
   } else {
     const result = await t.mutation(api.rounds.setPlacementPreview, {
       lobbyId: lobby!._id,
-      sessionId: "player-session-notturn",
+      sessionId: asSessionId("player-session-notturn"),
       proposedIndex: 0,
     });
     expect(result).toBeNull();
@@ -327,18 +329,18 @@ test("setPlacementPreview fails for non-turn player", async () => {
 });
 
 test("setPlacementPreview fails for negative index", async () => {
-  const t = convexTest(schema);
+  const t = convexTest(schema, modules);
 
   await seedTestData(t);
 
   const { code } = await t.mutation(api.lobbies.create, {
-    sessionId: "host-session-neg",
+    sessionId: asSessionId("host-session-neg"),
     displayName: "HostNeg",
   });
 
   await t.mutation(api.lobbies.join, {
     code,
-    sessionId: "player-session-neg",
+    sessionId: asSessionId("player-session-neg"),
     displayName: "PlayerNeg",
   });
 
@@ -346,10 +348,10 @@ test("setPlacementPreview fails for negative index", async () => {
 
   await t.mutation(api.games.start, {
     lobbyId: lobby!._id,
-    sessionId: "host-session-neg",
+    sessionId: asSessionId("host-session-neg"),
   });
 
-  let turnPlayerSessionId: string | null = null;
+  let turnPlayerSessionId: SessionId | null = null;
   await t.run(async (ctx) => {
     const game = await ctx.db.query("games").first();
     if (game?.currentRoundId) {
@@ -357,7 +359,7 @@ test("setPlacementPreview fails for negative index", async () => {
       if (round) {
         const player = await ctx.db.get(round.turnPlayerId);
         if (player) {
-          turnPlayerSessionId = player.sessionId;
+          turnPlayerSessionId = player.sessionId as SessionId;
         }
       }
     }
@@ -375,18 +377,18 @@ test("setPlacementPreview fails for negative index", async () => {
 });
 
 test("setPlacementPreview fails when not in placing phase", async () => {
-  const t = convexTest(schema);
+  const t = convexTest(schema, modules);
 
   await seedTestData(t);
 
   const { code } = await t.mutation(api.lobbies.create, {
-    sessionId: "host-session-wrong-phase",
+    sessionId: asSessionId("host-session-wrong-phase"),
     displayName: "HostWrongPhase",
   });
 
   await t.mutation(api.lobbies.join, {
     code,
-    sessionId: "player-session-wrong-phase",
+    sessionId: asSessionId("player-session-wrong-phase"),
     displayName: "PlayerWrongPhase",
   });
 
@@ -394,7 +396,7 @@ test("setPlacementPreview fails when not in placing phase", async () => {
 
   await t.mutation(api.games.start, {
     lobbyId: lobby!._id,
-    sessionId: "host-session-wrong-phase",
+    sessionId: asSessionId("host-session-wrong-phase"),
   });
 
   const game = await t.query(api.games.getCurrent, { lobbyId: lobby!._id });
@@ -408,25 +410,25 @@ test("setPlacementPreview fails when not in placing phase", async () => {
   await expect(
     t.mutation(api.rounds.setPlacementPreview, {
       lobbyId: lobby!._id,
-      sessionId: "host-session-wrong-phase",
+      sessionId: asSessionId("host-session-wrong-phase"),
       proposedIndex: 0,
     }),
   ).rejects.toThrow("Can only preview placement during placing phase");
 });
 
 test("setPlacementPreview updates existing preview", async () => {
-  const t = convexTest(schema);
+  const t = convexTest(schema, modules);
 
   await seedTestData(t);
 
   const { code } = await t.mutation(api.lobbies.create, {
-    sessionId: "host-session-upd",
+    sessionId: asSessionId("host-session-upd"),
     displayName: "HostUpd",
   });
 
   await t.mutation(api.lobbies.join, {
     code,
-    sessionId: "player-session-upd",
+    sessionId: asSessionId("player-session-upd"),
     displayName: "PlayerUpd",
   });
 
@@ -434,10 +436,10 @@ test("setPlacementPreview updates existing preview", async () => {
 
   await t.mutation(api.games.start, {
     lobbyId: lobby!._id,
-    sessionId: "host-session-upd",
+    sessionId: asSessionId("host-session-upd"),
   });
 
-  let turnPlayerSessionId: string | null = null;
+  let turnPlayerSessionId: SessionId | null = null;
   await t.run(async (ctx) => {
     const game = await ctx.db.query("games").first();
     if (game?.currentRoundId) {
@@ -445,7 +447,7 @@ test("setPlacementPreview updates existing preview", async () => {
       if (round) {
         const player = await ctx.db.get(round.turnPlayerId);
         if (player) {
-          turnPlayerSessionId = player.sessionId;
+          turnPlayerSessionId = player.sessionId as SessionId;
         }
       }
     }
@@ -467,25 +469,25 @@ test("setPlacementPreview updates existing preview", async () => {
 
   const updatedRound = await t.query(api.rounds.getCurrent, {
     lobbyId: lobby!._id,
-    sessionId: "host-session-upd",
+    sessionId: asSessionId("host-session-upd"),
   });
 
   expect(updatedRound?.placementPreview?.proposedIndex).toBe(2);
 });
 
 test("submitPlacement allows turn player to finalize placement", async () => {
-  const t = convexTest(schema);
+  const t = convexTest(schema, modules);
 
   await seedTestData(t);
 
   const { code } = await t.mutation(api.lobbies.create, {
-    sessionId: "host-session-submit",
+    sessionId: asSessionId("host-session-submit"),
     displayName: "HostSubmit",
   });
 
   await t.mutation(api.lobbies.join, {
     code,
-    sessionId: "player-session-submit",
+    sessionId: asSessionId("player-session-submit"),
     displayName: "PlayerSubmit",
   });
 
@@ -493,10 +495,10 @@ test("submitPlacement allows turn player to finalize placement", async () => {
 
   await t.mutation(api.games.start, {
     lobbyId: lobby!._id,
-    sessionId: "host-session-submit",
+    sessionId: asSessionId("host-session-submit"),
   });
 
-  let turnPlayerSessionId: string | null = null;
+  let turnPlayerSessionId: SessionId | null = null;
   await t.run(async (ctx) => {
     const game = await ctx.db.query("games").first();
     if (game?.currentRoundId) {
@@ -504,7 +506,7 @@ test("submitPlacement allows turn player to finalize placement", async () => {
       if (round) {
         const player = await ctx.db.get(round.turnPlayerId);
         if (player) {
-          turnPlayerSessionId = player.sessionId;
+          turnPlayerSessionId = player.sessionId as SessionId;
         }
       }
     }
@@ -527,7 +529,7 @@ test("submitPlacement allows turn player to finalize placement", async () => {
 
   const round = await t.query(api.rounds.getCurrent, {
     lobbyId: lobby!._id,
-    sessionId: "host-session-submit",
+    sessionId: asSessionId("host-session-submit"),
   });
 
   expect(round?.placement).not.toBeNull();
@@ -537,18 +539,24 @@ test("submitPlacement allows turn player to finalize placement", async () => {
 });
 
 test("submitPlacement fails for non-turn player", async () => {
-  const t = convexTest(schema);
+  const t = convexTest(schema, modules);
 
   await seedTestData(t);
 
   const { code } = await t.mutation(api.lobbies.create, {
-    sessionId: "host-session-notturn",
+    sessionId: asSessionId("host-session-notturn"),
     displayName: "HostNotTurn",
   });
 
   await t.mutation(api.lobbies.join, {
     code,
-    sessionId: "player-session-notturn",
+    sessionId: asSessionId("player-session-turn"),
+    displayName: "PlayerTurn",
+  });
+
+  await t.mutation(api.lobbies.join, {
+    code,
+    sessionId: asSessionId("player-session-notturn"),
     displayName: "PlayerNotTurn",
   });
 
@@ -556,7 +564,7 @@ test("submitPlacement fails for non-turn player", async () => {
 
   await t.mutation(api.games.start, {
     lobbyId: lobby!._id,
-    sessionId: "host-session-notturn",
+    sessionId: asSessionId("host-session-notturn"),
   });
 
   let roundId: Id<"rounds"> | null = null;
@@ -576,48 +584,41 @@ test("submitPlacement fails for non-turn player", async () => {
   expect(roundId).not.toBeNull();
   expect(turnPlayerId).not.toBeNull();
 
-  let playerId: Id<"players"> | null = null;
+  let nonTurnPlayerId: Id<"players"> | null = null;
   await t.run(async (ctx) => {
     const player = await ctx.db
       .query("players")
-      .filter((q) => q.eq(q.field("sessionId"), "player-session-notturn"))
+      .filter((q) => q.eq(q.field("sessionId"), asSessionId("player-session-notturn")))
       .first();
     if (player) {
-      playerId = player._id;
+      nonTurnPlayerId = player._id;
     }
   });
 
-  expect(playerId).not.toBeNull();
+  expect(nonTurnPlayerId).not.toBeNull();
+  expect(nonTurnPlayerId).not.toBe(turnPlayerId);
 
-  if (playerId !== turnPlayerId) {
-    await expect(
-      t.mutation(api.rounds.submitPlacement, {
-        lobbyId: lobby!._id,
-        sessionId: "player-session-notturn",
-      }),
-    ).rejects.toThrow("Only the turn player can submit placement");
-  } else {
-    const result = await t.mutation(api.rounds.submitPlacement, {
+  await expect(
+    t.mutation(api.rounds.submitPlacement, {
       lobbyId: lobby!._id,
-      sessionId: "player-session-notturn",
-    });
-    expect(result).toBeNull();
-  }
+      sessionId: asSessionId("player-session-notturn"),
+    }),
+  ).rejects.toThrow("Only the turn player can submit placement");
 });
 
 test("submitPlacement fails when not in placing phase", async () => {
-  const t = convexTest(schema);
+  const t = convexTest(schema, modules);
 
   await seedTestData(t);
 
   const { code } = await t.mutation(api.lobbies.create, {
-    sessionId: "host-session-wrong-phase",
+    sessionId: asSessionId("host-session-wrong-phase"),
     displayName: "HostWrongPhase",
   });
 
   await t.mutation(api.lobbies.join, {
     code,
-    sessionId: "player-session-wrong-phase",
+    sessionId: asSessionId("player-session-wrong-phase"),
     displayName: "PlayerWrongPhase",
   });
 
@@ -625,7 +626,7 @@ test("submitPlacement fails when not in placing phase", async () => {
 
   await t.mutation(api.games.start, {
     lobbyId: lobby!._id,
-    sessionId: "host-session-wrong-phase",
+    sessionId: asSessionId("host-session-wrong-phase"),
   });
 
   const game = await t.query(api.games.getCurrent, { lobbyId: lobby!._id });
@@ -636,7 +637,7 @@ test("submitPlacement fails when not in placing phase", async () => {
     }
   });
 
-  let turnPlayerSessionId: string | null = null;
+  let turnPlayerSessionId: SessionId | null = null;
   await t.run(async (ctx) => {
     const game = await ctx.db.query("games").first();
     if (game?.currentRoundId) {
@@ -644,7 +645,7 @@ test("submitPlacement fails when not in placing phase", async () => {
       if (round) {
         const player = await ctx.db.get(round.turnPlayerId);
         if (player) {
-          turnPlayerSessionId = player.sessionId;
+          turnPlayerSessionId = player.sessionId as SessionId;
         }
       }
     }
@@ -661,18 +662,18 @@ test("submitPlacement fails when not in placing phase", async () => {
 });
 
 test("submitPlacement fails when already submitted", async () => {
-  const t = convexTest(schema);
+  const t = convexTest(schema, modules);
 
   await seedTestData(t);
 
   const { code } = await t.mutation(api.lobbies.create, {
-    sessionId: "host-session-already",
+    sessionId: asSessionId("host-session-already"),
     displayName: "HostAlready",
   });
 
   await t.mutation(api.lobbies.join, {
     code,
-    sessionId: "player-session-already",
+    sessionId: asSessionId("player-session-already"),
     displayName: "PlayerAlready",
   });
 
@@ -680,10 +681,10 @@ test("submitPlacement fails when already submitted", async () => {
 
   await t.mutation(api.games.start, {
     lobbyId: lobby!._id,
-    sessionId: "host-session-already",
+    sessionId: asSessionId("host-session-already"),
   });
 
-  let turnPlayerSessionId: string | null = null;
+  let turnPlayerSessionId: SessionId | null = null;
   await t.run(async (ctx) => {
     const game = await ctx.db.query("games").first();
     if (game?.currentRoundId) {
@@ -691,7 +692,7 @@ test("submitPlacement fails when already submitted", async () => {
       if (round) {
         const player = await ctx.db.get(round.turnPlayerId);
         if (player) {
-          turnPlayerSessionId = player.sessionId;
+          turnPlayerSessionId = player.sessionId as SessionId;
         }
       }
     }
@@ -719,18 +720,18 @@ test("submitPlacement fails when already submitted", async () => {
 });
 
 test("submitPlacement fails without preview", async () => {
-  const t = convexTest(schema);
+  const t = convexTest(schema, modules);
 
   await seedTestData(t);
 
   const { code } = await t.mutation(api.lobbies.create, {
-    sessionId: "host-session-nopreview",
+    sessionId: asSessionId("host-session-nopreview"),
     displayName: "HostNoPreview",
   });
 
   await t.mutation(api.lobbies.join, {
     code,
-    sessionId: "player-session-nopreview",
+    sessionId: asSessionId("player-session-nopreview"),
     displayName: "PlayerNoPreview",
   });
 
@@ -738,10 +739,10 @@ test("submitPlacement fails without preview", async () => {
 
   await t.mutation(api.games.start, {
     lobbyId: lobby!._id,
-    sessionId: "host-session-nopreview",
+    sessionId: asSessionId("host-session-nopreview"),
   });
 
-  let turnPlayerSessionId: string | null = null;
+  let turnPlayerSessionId: SessionId | null = null;
   await t.run(async (ctx) => {
     const game = await ctx.db.query("games").first();
     if (game?.currentRoundId) {
@@ -749,7 +750,7 @@ test("submitPlacement fails without preview", async () => {
       if (round) {
         const player = await ctx.db.get(round.turnPlayerId);
         if (player) {
-          turnPlayerSessionId = player.sessionId;
+          turnPlayerSessionId = player.sessionId as SessionId;
         }
       }
     }

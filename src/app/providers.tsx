@@ -1,53 +1,30 @@
 "use client";
 
 import { ConvexProvider, ConvexReactClient } from "convex/react";
+import { SessionProvider } from "convex-helpers/react/sessions";
 import { ThemeProvider } from "next-themes";
 import type { ReactNode } from "react";
 import { Toaster } from "sonner";
+import { useLocalStorage } from "usehooks-ts";
 import { ConnectionBanner } from "@/components/ui/network-status";
 
-let convexClient: ConvexReactClient | null = null;
+const convex = new ConvexReactClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
 
-function getConvexClient(): ConvexReactClient | null {
-  const url = process.env.NEXT_PUBLIC_CONVEX_URL;
-  if (!url) {
-    return null;
-  }
-  if (!convexClient) {
-    convexClient = new ConvexReactClient(url, {
-      onWillRefreshAuthTokens: () => {
-        return Promise.resolve();
-      },
-    });
-  }
-  return convexClient;
-}
-
-function useConvexClient(): ConvexReactClient | null {
-  if (typeof window !== "undefined" && !convexClient) {
-    convexClient = getConvexClient();
-  }
-  return convexClient;
-}
-
-interface ProvidersProps {
-  children: ReactNode;
-}
-
-export function Providers({ children }: ProvidersProps): ReactNode {
-  const client = useConvexClient();
-
-  const content = (
-    <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
-      {children}
-      <ConnectionBanner />
-      <Toaster richColors closeButton position="bottom-right" />
-    </ThemeProvider>
+export function Providers({ children }: { children: ReactNode }): ReactNode {
+  return (
+    <ConvexProvider client={convex}>
+      <SessionProvider useStorage={useLocalStorage} storageKey="chronotunes-session-id" ssrFriendly>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          {children}
+          <ConnectionBanner />
+          <Toaster richColors closeButton position="bottom-right" />
+        </ThemeProvider>
+      </SessionProvider>
+    </ConvexProvider>
   );
-
-  if (client) {
-    return <ConvexProvider client={client}>{content}</ConvexProvider>;
-  }
-
-  return content;
 }

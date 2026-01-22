@@ -10,7 +10,7 @@ interface TimelineEntry {
   trackId: GenericId<"tracks">;
   year: number;
   earnedAtRoundNumber: number;
-  earnedBy: "placement" | "bet";
+  earnedBy: "placement" | "bet" | "initial";
 }
 
 interface Player {
@@ -36,7 +36,7 @@ function TimelineCard({
   earnedBy,
 }: {
   track: Track;
-  earnedBy: "placement" | "bet";
+  earnedBy: "placement" | "bet" | "initial";
 }): React.ReactNode {
   const isPlacement = earnedBy === "placement";
 
@@ -169,7 +169,13 @@ export function MyTimeline({ player }: MyTimelineProps): React.ReactNode {
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium text-muted-foreground">Track {entry.year}</p>
                     <p className="text-xs text-muted-foreground">
-                      {entry.earnedBy === "placement" ? "Placed yourself" : "Won from bet"}
+                      {entry.earnedBy === "placement"
+                        ? "Placed yourself"
+                        : entry.earnedBy === "bet"
+                          ? "Won from bet"
+                          : entry.earnedBy === "initial"
+                            ? "Initial placement"
+                            : "Unknown"}
                     </p>
                   </div>
                 </div>

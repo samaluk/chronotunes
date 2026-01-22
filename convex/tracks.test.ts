@@ -2,10 +2,12 @@ import { convexTest } from "convex-test";
 import { expect, test } from "vitest";
 import { api } from "./_generated/api";
 import type { Id } from "./_generated/dataModel";
+import { asSessionId } from "./lib/sessions";
 import schema from "./schema";
+import { modules } from "./test.setup";
 
 test("get returns track by ID", async () => {
-  const t = convexTest(schema);
+  const t = convexTest(schema, modules);
 
   const trackId = await t.run(async (ctx) => {
     return await ctx.db.insert("tracks", {
@@ -29,7 +31,7 @@ test("get returns track by ID", async () => {
 });
 
 test("get returns multiple tracks by ID", async () => {
-  const t = convexTest(schema);
+  const t = convexTest(schema, modules);
 
   const trackId1 = await t.run(async (ctx) => {
     return await ctx.db.insert("tracks", {
@@ -78,7 +80,7 @@ test("get returns multiple tracks by ID", async () => {
 });
 
 test("get returns empty array for empty input", async () => {
-  const t = convexTest(schema);
+  const t = convexTest(schema, modules);
 
   const tracks = await t.query(api.tracks.get, { trackIds: [] });
 
@@ -86,7 +88,7 @@ test("get returns empty array for empty input", async () => {
 });
 
 test("importTracks creates tracks from array", async () => {
-  const t = convexTest(schema);
+  const t = convexTest(schema, modules);
 
   const tracks = [
     { title: "Test Song 1", artist: "Artist 1", year: 1990, youtubeVideoId: "abc123" },
@@ -104,7 +106,7 @@ test("importTracks creates tracks from array", async () => {
 });
 
 test("importTracks validates required title", async () => {
-  const t = convexTest(schema);
+  const t = convexTest(schema, modules);
 
   const tracks = [{ title: "", artist: "Artist", year: 1990 }];
 
@@ -114,7 +116,7 @@ test("importTracks validates required title", async () => {
 });
 
 test("importTracks validates required artist", async () => {
-  const t = convexTest(schema);
+  const t = convexTest(schema, modules);
 
   const tracks = [{ title: "Song", artist: "", year: 1990 }];
 
@@ -124,7 +126,7 @@ test("importTracks validates required artist", async () => {
 });
 
 test("importTracks validates year range", async () => {
-  const t = convexTest(schema);
+  const t = convexTest(schema, modules);
 
   const tracksTooEarly = [{ title: "Song", artist: "Artist", year: 1800 }];
   const tracksTooLate = [{ title: "Song", artist: "Artist", year: 2050 }];
@@ -138,7 +140,7 @@ test("importTracks validates year range", async () => {
 });
 
 test("importTracks validates empty array", async () => {
-  const t = convexTest(schema);
+  const t = convexTest(schema, modules);
 
   await expect(t.mutation(api.tracks.importTracks, { tracks: [] })).rejects.toThrow(
     "At least one track must be provided",
@@ -146,7 +148,7 @@ test("importTracks validates empty array", async () => {
 });
 
 test("importTracks validates max batch size", async () => {
-  const t = convexTest(schema);
+  const t = convexTest(schema, modules);
 
   const tracks = Array.from({ length: 1001 }, (_, i) => ({
     title: `Song ${i}`,
@@ -160,7 +162,7 @@ test("importTracks validates max batch size", async () => {
 });
 
 test("importTracks validates empty youtubeVideoId", async () => {
-  const t = convexTest(schema);
+  const t = convexTest(schema, modules);
 
   const tracks = [{ title: "Song", artist: "Artist", year: 1990, youtubeVideoId: "   " }];
 
@@ -170,7 +172,7 @@ test("importTracks validates empty youtubeVideoId", async () => {
 });
 
 test("importTracks validates negative durationMs", async () => {
-  const t = convexTest(schema);
+  const t = convexTest(schema, modules);
 
   const tracks = [{ title: "Song", artist: "Artist", year: 1990, durationMs: -100 }];
 
@@ -180,7 +182,7 @@ test("importTracks validates negative durationMs", async () => {
 });
 
 test("importTracks with optional mbid", async () => {
-  const t = convexTest(schema);
+  const t = convexTest(schema, modules);
 
   const tracks = [
     {
@@ -200,7 +202,7 @@ test("importTracks with optional mbid", async () => {
 });
 
 test("importTracks with optional durationMs", async () => {
-  const t = convexTest(schema);
+  const t = convexTest(schema, modules);
 
   const tracks = [{ title: "Song", artist: "Artist", year: 1990, durationMs: 180000 }];
 
@@ -213,7 +215,7 @@ test("importTracks with optional durationMs", async () => {
 });
 
 test("importTracks trims whitespace from strings", async () => {
-  const t = convexTest(schema);
+  const t = convexTest(schema, modules);
 
   const tracks = [{ title: "  Song Title  ", artist: "  Artist Name  ", year: 1990 }];
 
@@ -259,7 +261,7 @@ async function seedRoundTestData(t: ReturnType<typeof convexTest>) {
 
     await ctx.db.insert("players", {
       lobbyId,
-      sessionId: "host-session",
+      sessionId: asSessionId("host-session"),
       displayName: "Host",
       isHost: true,
       coins: 10,
@@ -270,7 +272,7 @@ async function seedRoundTestData(t: ReturnType<typeof convexTest>) {
 
     await ctx.db.insert("players", {
       lobbyId,
-      sessionId: "player-session",
+      sessionId: asSessionId("player-session"),
       displayName: "Player",
       isHost: false,
       coins: 10,
@@ -286,6 +288,8 @@ async function seedRoundTestData(t: ReturnType<typeof convexTest>) {
       currentRoundNumber: 1,
       turnOrder: [],
     });
+
+    await ctx.db.patch(lobbyId, { activeGameId: gameId });
 
     const player = await ctx.db
       .query("players")
@@ -313,7 +317,7 @@ async function seedRoundTestData(t: ReturnType<typeof convexTest>) {
 }
 
 test("getForRound returns full track info for host", async () => {
-  const t = convexTest(schema);
+  const t = convexTest(schema, modules);
 
   await seedRoundTestData(t);
 
@@ -325,7 +329,7 @@ test("getForRound returns full track info for host", async () => {
 
   const result = await t.query(api.tracks.getForRound, {
     lobbyId: lobby!._id,
-    sessionId: "host-session",
+    sessionId: asSessionId("host-session"),
   });
 
   expect(result).not.toBeNull();
@@ -339,7 +343,7 @@ test("getForRound returns full track info for host", async () => {
 });
 
 test("getForRound returns null for non-host", async () => {
-  const t = convexTest(schema);
+  const t = convexTest(schema, modules);
 
   await seedRoundTestData(t);
 
@@ -351,14 +355,14 @@ test("getForRound returns null for non-host", async () => {
 
   const result = await t.query(api.tracks.getForRound, {
     lobbyId: lobby!._id,
-    sessionId: "player-session",
+    sessionId: asSessionId("player-session"),
   });
 
   expect(result).toBeNull();
 });
 
 test("getForRound returns null when no active game", async () => {
-  const t = convexTest(schema);
+  const t = convexTest(schema, modules);
 
   await seedRoundTestData(t);
 
@@ -374,14 +378,14 @@ test("getForRound returns null when no active game", async () => {
 
   const result = await t.query(api.tracks.getForRound, {
     lobbyId: lobby!._id,
-    sessionId: "host-session",
+    sessionId: asSessionId("host-session"),
   });
 
   expect(result).toBeNull();
 });
 
 test("getPublic returns track info when round is resolved", async () => {
-  const t = convexTest(schema);
+  const t = convexTest(schema, modules);
 
   await seedRoundTestData(t);
 
@@ -406,7 +410,7 @@ test("getPublic returns track info when round is resolved", async () => {
 });
 
 test("getPublic returns null when round is not resolved", async () => {
-  const t = convexTest(schema);
+  const t = convexTest(schema, modules);
 
   await seedRoundTestData(t);
 
@@ -422,17 +426,17 @@ test("getPublic returns null when round is not resolved", async () => {
 });
 
 test("getPublic returns null for non-existent round", async () => {
-  const t = convexTest(schema);
+  const t = convexTest(schema, modules);
 
   const result = await t.query(api.tracks.getPublic, {
-    roundId: "non-existent" as Id<"rounds">,
+    roundId: "1234567890;rounds" as Id<"rounds">,
   });
 
   expect(result).toBeNull();
 });
 
 test("getPublic returns null youtubeVideoId when not set", async () => {
-  const t = convexTest(schema);
+  const t = convexTest(schema, modules);
 
   const trackId = await t.run(async (ctx) => {
     return await ctx.db.insert("tracks", {
@@ -449,7 +453,7 @@ test("getPublic returns null youtubeVideoId when not set", async () => {
   const lobbyId = await t.run(async (ctx) => {
     return await ctx.db.insert("lobbies", {
       code: "NOVIDEO",
-      hostSessionId: "host2",
+      hostSessionId: asSessionId("host2"),
       status: "lobby",
       settings: {
         targetTimelineSize: 6,
@@ -478,7 +482,7 @@ test("getPublic returns null youtubeVideoId when not set", async () => {
   const player = await t.run(async (ctx) => {
     return await ctx.db.insert("players", {
       lobbyId,
-      sessionId: "host2",
+      sessionId: asSessionId("host2"),
       displayName: "Host2",
       isHost: true,
       coins: 10,

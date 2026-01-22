@@ -1,11 +1,13 @@
 import { ConvexError, v } from "convex/values";
 import type { Id } from "./_generated/dataModel";
-import { mutation, query } from "./_generated/server";
+import { query } from "./_generated/server";
+import { mutationWithSession } from "./lib/sessions";
 
-export const preview = mutation({
-  args: { lobbyId: v.id("lobbies"), sessionId: v.string(), proposedIndex: v.number() },
+export const preview = mutationWithSession({
+  args: { lobbyId: v.id("lobbies"), proposedIndex: v.number() },
   handler: async (ctx, args) => {
-    const { lobbyId, sessionId, proposedIndex } = args;
+    const { lobbyId, proposedIndex } = args;
+    const { sessionId } = ctx;
 
     const lobby = await ctx.db.get(lobbyId);
 
@@ -33,16 +35,14 @@ export const preview = mutation({
       throw new ConvexError("Round not found");
     }
 
-    if (round.phase === "resolved") {
-      throw new ConvexError("Cannot place bets after round is resolved");
+    if (round.phase !== "betting") {
+      throw new ConvexError("Can only place bets after placement is locked in");
     }
 
     const player = await ctx.db
       .query("players")
-      .filter((q) =>
-        q.and(q.eq(q.field("lobbyId"), lobbyId), q.eq(q.field("sessionId"), sessionId)),
-      )
-      .first();
+      .withIndex("by_lobby_and_session", (q) => q.eq("lobbyId", lobbyId).eq("sessionId", sessionId))
+      .unique();
 
     if (!player) {
       throw new ConvexError("Player not found in this lobby");
@@ -60,6 +60,16 @@ export const preview = mutation({
       throw new ConvexError("Proposed index cannot be negative");
     }
 
+    const turnPlayer = await ctx.db.get(round.turnPlayerId);
+
+    if (!turnPlayer) {
+      throw new ConvexError("Turn player not found");
+    }
+
+    if (proposedIndex > turnPlayer.timeline.length) {
+      throw new ConvexError("Proposed index is out of range");
+    }
+
     const existingBet = await ctx.db
       .query("roundBets")
       .filter((q) =>
@@ -69,6 +79,16 @@ export const preview = mutation({
 
     if (existingBet?.lockedIn) {
       throw new ConvexError("Cannot change a locked bet");
+    }
+
+    const slotBet = await ctx.db
+      .query("roundBets")
+      .withIndex("by_round", (q) => q.eq("roundId", round._id))
+      .filter((q) => q.eq(q.field("proposedIndex"), proposedIndex))
+      .first();
+
+    if (slotBet && slotBet.playerId !== player._id) {
+      throw new ConvexError("That placement slot is already taken");
     }
 
     if (existingBet) {
@@ -93,10 +113,11 @@ export const preview = mutation({
   },
 });
 
-export const lockIn = mutation({
-  args: { lobbyId: v.id("lobbies"), sessionId: v.string() },
+export const lockIn = mutationWithSession({
+  args: { lobbyId: v.id("lobbies") },
   handler: async (ctx, args) => {
-    const { lobbyId, sessionId } = args;
+    const { lobbyId } = args;
+    const { sessionId } = ctx;
 
     const lobby = await ctx.db.get(lobbyId);
 
@@ -124,16 +145,14 @@ export const lockIn = mutation({
       throw new ConvexError("Round not found");
     }
 
-    if (round.phase === "resolved") {
-      throw new ConvexError("Cannot lock in bet after round is resolved");
+    if (round.phase !== "betting") {
+      throw new ConvexError("Can only lock in bets during betting phase");
     }
 
     const player = await ctx.db
       .query("players")
-      .filter((q) =>
-        q.and(q.eq(q.field("lobbyId"), lobbyId), q.eq(q.field("sessionId"), sessionId)),
-      )
-      .first();
+      .withIndex("by_lobby_and_session", (q) => q.eq("lobbyId", lobbyId).eq("sessionId", sessionId))
+      .unique();
 
     if (!player) {
       throw new ConvexError("Player not found in this lobby");
@@ -160,10 +179,11 @@ export const lockIn = mutation({
   },
 });
 
-export const cancel = mutation({
-  args: { lobbyId: v.id("lobbies"), sessionId: v.string() },
+export const cancel = mutationWithSession({
+  args: { lobbyId: v.id("lobbies") },
   handler: async (ctx, args) => {
-    const { lobbyId, sessionId } = args;
+    const { lobbyId } = args;
+    const { sessionId } = ctx;
 
     const lobby = await ctx.db.get(lobbyId);
 
@@ -191,16 +211,14 @@ export const cancel = mutation({
       throw new ConvexError("Round not found");
     }
 
-    if (round.phase === "resolved") {
-      throw new ConvexError("Cannot cancel bet after round is resolved");
+    if (round.phase !== "betting") {
+      throw new ConvexError("Can only cancel bets during betting phase");
     }
 
     const player = await ctx.db
       .query("players")
-      .filter((q) =>
-        q.and(q.eq(q.field("lobbyId"), lobbyId), q.eq(q.field("sessionId"), sessionId)),
-      )
-      .first();
+      .withIndex("by_lobby_and_session", (q) => q.eq("lobbyId", lobbyId).eq("sessionId", sessionId))
+      .unique();
 
     if (!player) {
       throw new ConvexError("Player not found in this lobby");

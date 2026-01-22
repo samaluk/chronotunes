@@ -2,17 +2,12 @@
 
 import { useQuery } from "convex/react";
 import type { GenericId } from "convex/values";
-import { useEffect, useState } from "react";
+import { useSessionId, useSessionQuery } from "convex-helpers/react/sessions";
+import { useEffect, useMemo, useState } from "react";
 import { ErrorBoundary } from "@/components/ui/error-boundary";
-import {
-  SkeletonGameHeader,
-  SkeletonPlayersBar,
-  SkeletonRoundPanel,
-  SkeletonTimeline,
-} from "@/components/ui/skeletons";
 import { api } from "@/convex/_generated/api.js";
-import { useSessionId } from "@/lib/hooks/use-session-id";
-import { CurrentRoundPanel, type RoundPhase } from "./CurrentRoundPanel";
+import type { Id } from "@/convex/_generated/dataModel";
+import { CurrentRoundPanel } from "./CurrentRoundPanel";
 import { GameHeader } from "./GameHeader";
 import { GameResults } from "./GameResults";
 import { MyTimeline } from "./MyTimeline";
@@ -23,23 +18,8 @@ interface GameViewProps {
   code: string;
 }
 
-interface Player {
-  _id: GenericId<"players">;
-  displayName: string;
-  isHost: boolean;
-  coins: number;
-  timelineSize: number;
-  sessionId: string;
-  timeline: Array<{
-    trackId: GenericId<"tracks">;
-    year: number;
-    earnedAtRoundNumber: number;
-    earnedBy: "placement" | "bet";
-  }>;
-}
-
 export function GameView({ lobbyId, code }: GameViewProps): React.ReactNode {
-  const sessionId = useSessionId();
+  const [sessionId] = useSessionId();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -48,22 +28,31 @@ export function GameView({ lobbyId, code }: GameViewProps): React.ReactNode {
 
   const lobby = useQuery(api.lobbies.get, mounted && code ? { code } : "skip");
   const players = useQuery(api.players.list, mounted && lobbyId ? { lobbyId } : "skip");
-  const me = useQuery(
-    api.players.getMe,
-    mounted && lobbyId && sessionId ? { lobbyId, sessionId } : "skip",
-  );
+  const me = useSessionQuery(api.players.getMe, mounted && lobbyId ? { lobbyId } : "skip");
   const game = useQuery(api.games.getCurrent, mounted && lobbyId ? { lobbyId } : "skip");
-  const currentRound = useQuery(
+  const currentRound = useSessionQuery(
     api.rounds.getCurrent,
-    mounted && lobbyId && sessionId ? { lobbyId, sessionId } : "skip",
+    mounted && lobbyId ? { lobbyId } : "skip",
+  );
+
+  const turnPlayer = players?.find((p) => p._id === currentRound?.turnPlayerId);
+
+  const turnPlayerTrackIds = useMemo((): Id<"tracks">[] => {
+    if (!turnPlayer?.timeline) return [];
+    return turnPlayer.timeline.map((t) => t.trackId);
+  }, [turnPlayer]);
+
+  const revealedTracks = useQuery(
+    api.tracks.getPublicByIds,
+    turnPlayerTrackIds.length > 0 ? { trackIds: turnPlayerTrackIds } : "skip",
   );
 
   if (!mounted) {
     return (
       <div className="w-full space-y-6">
-        <SkeletonPlayersBar count={4} />
-        <SkeletonGameHeader />
-        <SkeletonRoundPanel />
+        <div className="h-16 bg-muted animate-pulse rounded-lg" />
+        <div className="h-12 bg-muted animate-pulse rounded-lg" />
+        <div className="h-64 bg-muted animate-pulse rounded-lg" />
       </div>
     );
   }
@@ -76,9 +65,9 @@ export function GameView({ lobbyId, code }: GameViewProps): React.ReactNode {
   ) {
     return (
       <div className="w-full space-y-6">
-        <SkeletonPlayersBar count={players?.length || 4} />
-        <SkeletonGameHeader />
-        <SkeletonRoundPanel />
+        <div className="h-16 bg-muted animate-pulse rounded-lg" />
+        <div className="h-12 bg-muted animate-pulse rounded-lg" />
+        <div className="h-64 bg-muted animate-pulse rounded-lg" />
       </div>
     );
   }
@@ -94,26 +83,28 @@ export function GameView({ lobbyId, code }: GameViewProps): React.ReactNode {
   }
 
   const isMyTurn = currentRound?.turnPlayerId === me?._id;
-  const turnPlayer = players?.find((p: Player) => p._id === currentRound?.turnPlayerId);
-  const roundPhase = (currentRound?.phase ?? "placing") as RoundPhase;
+  const roundPhase = (currentRound?.phase ?? "placing") as "placing" | "betting" | "resolved";
 
   const trackInfo = ((): {
     _id: GenericId<"tracks">;
-    title: string;
-    artist: string;
-    year: number;
+    title?: string;
+    artist?: string;
+    year?: number;
+    youtubeVideoId?: string;
   } | null => {
     if (!currentRound?.track) return null;
     const track = currentRound.track;
-    if ("title" in track) {
-      return {
-        _id: track.trackId as GenericId<"tracks">,
-        title: track.title,
-        artist: track.artist,
-        year: track.year,
-      };
-    }
-    return null;
+    return {
+      _id: track.trackId as GenericId<"tracks">,
+      youtubeVideoId: "youtubeVideoId" in track ? track.youtubeVideoId : undefined,
+      ...("title" in track
+        ? {
+            title: track.title,
+            artist: track.artist,
+            year: track.year,
+          }
+        : {}),
+    };
   })();
 
   const isGameFinished = game?.status === "finished";
@@ -129,7 +120,7 @@ export function GameView({ lobbyId, code }: GameViewProps): React.ReactNode {
           <ErrorBoundary>
             <PlayersBar
               lobbyId={lobbyId}
-              currentSessionId={sessionId}
+              currentSessionId={sessionId ?? null}
               highlightPlayerId={currentRound?.turnPlayerId ?? null}
             />
           </ErrorBoundary>
@@ -168,8 +159,10 @@ export function GameView({ lobbyId, code }: GameViewProps): React.ReactNode {
               players={players ?? null}
               track={trackInfo}
               existingPreviewIndex={currentRound?.placementPreview?.proposedIndex ?? null}
+              turnPlayerId={currentRound?.turnPlayerId ?? null}
               turnPlayerTimeline={turnPlayer?.timeline ?? []}
               turnPlayerTimelineSize={turnPlayer?.timelineSize ?? 0}
+              revealedTracks={revealedTracks ?? []}
               resolution={currentRound?.resolution ?? null}
             />
           </ErrorBoundary>

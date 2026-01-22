@@ -122,6 +122,7 @@
   "betting": {
     "placeYourBet": "¡Haz tu apuesta!",
     "placeBetDescription": "Adivina dónde pertenece la canción en la línea temporal",
+    "nowPlaying": "Reproduciendo",
     "betCoins": "{count} {count, plural, =1 {moneda} other {monedas}}",
     "bet1": "Apostar 1",
     "confirm": "Confirmar",
@@ -191,10 +192,6 @@
   "locale": {
     "selectLanguage": "Seleccionar idioma",
     "english": "Inglés",
-    "spanish": "Español",
-    "french": "Francés",
-    "german": "Alemán",
-    "portuguese": "Portugués",
-    "japanese": "Japonés"
+    "spanish": "Español"
   }
 }

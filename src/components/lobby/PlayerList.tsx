@@ -2,6 +2,7 @@
 
 import { useQuery } from "convex/react";
 import type { GenericId } from "convex/values";
+import { useSessionId } from "convex-helpers/react/sessions";
 import { Crown, User } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { SkeletonPlayerList } from "@/components/ui/skeletons";
@@ -9,7 +10,6 @@ import { api } from "@/convex/_generated/api.js";
 
 interface PlayerListProps {
   lobbyId: GenericId<"lobbies">;
-  currentSessionId: string | null;
 }
 
 interface Player {
@@ -22,9 +22,10 @@ interface Player {
   lobbyId: GenericId<"lobbies">;
 }
 
-export function PlayerList({ lobbyId, currentSessionId }: PlayerListProps): React.ReactNode {
+export function PlayerList({ lobbyId }: PlayerListProps): React.ReactNode {
   const t = useTranslations("players");
   const tCommon = useTranslations("common");
+  const [currentSessionId] = useSessionId();
 
   const players = useQuery(api.players.list, { lobbyId });
 

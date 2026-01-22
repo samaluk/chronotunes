@@ -3,6 +3,10 @@
     "next-devtools": {
       "command": ["pnpx", "next-devtools-mcp@latest"],
       "type": "local",
+    },
+    "convex": {
+      "command": ["pnpx", "convex@latest", "mcp", "start"],
+      "type": "local",
     }
   },
   "model": "opencode/minimax-m2.1-free",

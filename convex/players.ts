@@ -1,5 +1,6 @@
 import { v } from "convex/values";
 import { query } from "./_generated/server";
+import { queryWithSession } from "./lib/sessions";
 
 export const list = query({
   args: { lobbyId: v.id("lobbies") },
@@ -15,17 +16,16 @@ export const list = query({
   },
 });
 
-export const getMe = query({
-  args: { lobbyId: v.id("lobbies"), sessionId: v.string() },
+export const getMe = queryWithSession({
+  args: { lobbyId: v.id("lobbies") },
   handler: async (ctx, args) => {
-    const { lobbyId, sessionId } = args;
+    const { lobbyId } = args;
+    const { sessionId } = ctx;
 
     const player = await ctx.db
       .query("players")
-      .filter((q) =>
-        q.and(q.eq(q.field("lobbyId"), lobbyId), q.eq(q.field("sessionId"), sessionId)),
-      )
-      .first();
+      .withIndex("by_lobby_and_session", (q) => q.eq("lobbyId", lobbyId).eq("sessionId", sessionId))
+      .unique();
 
     return player;
   },

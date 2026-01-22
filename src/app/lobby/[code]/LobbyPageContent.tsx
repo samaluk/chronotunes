@@ -1,6 +1,7 @@
 "use client";
 
-import { useMutation, useQuery } from "convex/react";
+import { useQuery } from "convex/react";
+import { useSessionId, useSessionMutation } from "convex-helpers/react/sessions";
 import { Copy, LogOut, Music, Share2, Users } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
@@ -14,18 +15,17 @@ import { ErrorBoundary } from "@/components/ui/error-boundary";
 import { LocaleSwitcher } from "@/components/ui/locale-switcher";
 import { SkeletonLobbyCode, SkeletonPage, SkeletonPlayerList } from "@/components/ui/skeletons";
 import { api } from "@/convex/_generated/api.js";
-import { useSessionId } from "@/lib/hooks/use-session-id";
 
 interface LobbyPageContentProps {
   code: string;
 }
 
-export default function LobbyPageContent({ code }: LobbyPageContentProps): React.ReactNode {
+export function LobbyPageContent({ code }: LobbyPageContentProps): React.ReactNode {
   const t = useTranslations("lobby");
   const tCommon = useTranslations("common");
 
   const router = useRouter();
-  const sessionId = useSessionId();
+  const [sessionId] = useSessionId();
   const [mounted, setMounted] = useState(false);
 
   const lobby = useQuery(api.lobbies.get, mounted && code ? { code } : "skip");
@@ -37,7 +37,7 @@ export default function LobbyPageContent({ code }: LobbyPageContentProps): React
     api.players.getMe,
     mounted && lobby?._id && sessionId ? { lobbyId: lobby._id, sessionId } : "skip",
   );
-  const leaveLobby = useMutation(api.lobbies.leave);
+  const leaveLobby = useSessionMutation(api.lobbies.leave);
 
   useEffect(() => {
     setMounted(true);
@@ -46,7 +46,7 @@ export default function LobbyPageContent({ code }: LobbyPageContentProps): React
   useEffect(() => {
     if (mounted && lobby === null && code) {
       toast.error(t("lobbyNotFound"));
-      router.push("/en");
+      router.push("/");
     }
   }, [mounted, lobby, code, router, t]);
 
@@ -76,9 +76,9 @@ export default function LobbyPageContent({ code }: LobbyPageContentProps): React
   const handleLeaveLobby = async (): Promise<void> => {
     if (!sessionId) return;
     try {
-      await leaveLobby({ code, sessionId });
+      await leaveLobby({ code });
       toast.success(t("leftLobby"));
-      router.push("/en");
+      router.push("/");
     } catch (error) {
       const message = error instanceof Error ? error.message : t("failedToLeave");
       toast.error(message);
@@ -134,7 +134,7 @@ export default function LobbyPageContent({ code }: LobbyPageContentProps): React
           <p className="text-destructive">{t("lobbyNotFound")}</p>
           <button
             type="button"
-            onClick={() => router.push("/en")}
+            onClick={() => router.push("/")}
             className="mt-4 inline-flex items-center justify-center h-10 px-4 rounded-md bg-primary text-primary-foreground font-medium transition-colors hover:bg-primary/90"
           >
             {t("returnHome")}
@@ -215,16 +215,12 @@ export default function LobbyPageContent({ code }: LobbyPageContentProps): React
             <div className="grid gap-8 md:grid-cols-2">
               <div className="space-y-6">
                 <ErrorBoundary>
-                  <PlayerList lobbyId={lobby._id} currentSessionId={sessionId} />
+                  <PlayerList lobbyId={lobby._id} />
                 </ErrorBoundary>
                 <StartGameButton lobbyId={lobby._id} isHost={isHost} playerCount={players.length} />
               </div>
               <div className="space-y-6">
-                <SettingsPanel
-                  lobbyId={lobby._id}
-                  isHost={isHost}
-                  currentSettings={lobby.settings}
-                />
+                <SettingsPanel code={code} isHost={isHost} currentSettings={lobby.settings} />
               </div>
             </div>
           )}

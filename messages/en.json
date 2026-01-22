@@ -116,12 +116,14 @@
     "lastPosition": "Last position",
     "afterPosition": "After {year}",
     "confirmPlacement": "Confirm Placement",
+    "submitting": "Submitting...",
     "dropHere": "Drop here",
     "loadingTrack": "Loading track..."
   },
   "betting": {
     "placeYourBet": "Place Your Bet",
-    "placeBetDescription": "Guess where the song belongs on the timeline",
+    "placeBetDescription": "Choose an open placement slot for the song",
+    "nowPlaying": "Now Playing",
     "betCoins": "{count} {count, plural, =1 {coin} other {coins}}",
     "bet1": "Bet 1",
     "confirm": "Confirm",
@@ -191,10 +193,6 @@
   "locale": {
     "selectLanguage": "Select Language",
     "english": "English",
-    "spanish": "Spanish",
-    "french": "French",
-    "german": "German",
-    "portuguese": "Portuguese",
-    "japanese": "Japanese"
+    "spanish": "Spanish"
   }
 }

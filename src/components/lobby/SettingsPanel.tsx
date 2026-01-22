@@ -1,15 +1,16 @@
 "use client";
 
 import { useMutation } from "convex/react";
-import type { GenericId } from "convex/values";
-import { ChevronDown, ChevronUp, Settings2 } from "lucide-react";
+import { useSessionId } from "convex-helpers/react/sessions";
+import { Check, ChevronDown, ChevronUp, Settings2, X } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { Slider } from "@/components/ui/slider";
 import { api } from "@/convex/_generated/api.js";
 
 interface SettingsPanelProps {
-  lobbyId: GenericId<"lobbies">;
+  code: string;
   isHost: boolean;
   currentSettings: {
     targetTimelineSize: number;
@@ -36,17 +37,17 @@ interface LobbySettings {
   maxYear: number;
 }
 
-export function SettingsPanel({
-  lobbyId,
-  isHost,
-  currentSettings,
-}: SettingsPanelProps): React.ReactNode {
+export function SettingsPanel({ code, isHost, currentSettings }: SettingsPanelProps) {
   const t = useTranslations("settings");
-  const tCommon = useTranslations("common");
+  const _tCommon = useTranslations("common");
 
+  const [sessionId] = useSessionId();
   const [isExpanded, setIsExpanded] = useState(false);
-  const [settings, setSettings] = useState<LobbySettings>(currentSettings);
-  const [hasChanges, setHasChanges] = useState(false);
+  const [optimisticSettings, setOptimisticSettings] = useState(currentSettings);
+
+  useEffect(() => {
+    setOptimisticSettings(currentSettings);
+  }, [currentSettings]);
 
   const updateSettings = useMutation(api.lobbies.updateSettings);
 
@@ -54,37 +55,21 @@ export function SettingsPanel({
     key: K,
     value: LobbySettings[K],
   ): void => {
-    setSettings((prev) => ({ ...prev, [key]: value }));
-    setHasChanges(true);
+    setOptimisticSettings((prev) => ({ ...prev, [key]: value }));
   };
 
-  const handleSave = async (): Promise<void> => {
+  const handleCommit = async <K extends keyof LobbySettings>(
+    key: K,
+    value: LobbySettings[K],
+  ): Promise<void> => {
+    if (!sessionId) return;
     try {
-      await updateSettings({
-        lobbyId,
-        settings: {
-          targetTimelineSize: settings.targetTimelineSize,
-          startingCoins: settings.startingCoins,
-          turnSeconds: settings.turnSeconds,
-          bettingWindowSeconds: settings.bettingWindowSeconds,
-          allowGuessTitleArtist: settings.allowGuessTitleArtist,
-          showLiveBets: settings.showLiveBets,
-          allowBetRetraction: settings.allowBetRetraction,
-          minYear: settings.minYear,
-          maxYear: settings.maxYear,
-        },
-      });
-      toast.success(t("settingsSaved"));
-      setHasChanges(false);
+      await updateSettings({ code, settings: { [key]: value }, sessionId });
     } catch (error) {
       const message = error instanceof Error ? error.message : t("failedToSave");
       toast.error(message);
+      setOptimisticSettings(currentSettings);
     }
-  };
-
-  const handleReset = (): void => {
-    setSettings(currentSettings);
-    setHasChanges(false);
   };
 
   if (!isHost) {
@@ -98,29 +83,50 @@ export function SettingsPanel({
           <div className="flex justify-between">
             <span className="text-muted-foreground">{t("targetTimelineSize")}</span>
             <span className="font-medium">
-              {t("targetCards", { count: currentSettings.targetTimelineSize })}
+              {t("targetCards", { count: optimisticSettings.targetTimelineSize })}
             </span>
           </div>
           <div className="flex justify-between">
             <span className="text-muted-foreground">{t("startingCoins")}</span>
-            <span className="font-medium">{currentSettings.startingCoins}</span>
+            <span className="font-medium">{optimisticSettings.startingCoins}</span>
           </div>
           <div className="flex justify-between">
             <span className="text-muted-foreground">{t("turnDuration")}</span>
             <span className="font-medium">
-              {t("turnSeconds", { count: currentSettings.turnSeconds })}
+              {t("turnSeconds", { count: optimisticSettings.turnSeconds })}
             </span>
           </div>
           <div className="flex justify-between">
             <span className="text-muted-foreground">{t("bettingWindow")}</span>
             <span className="font-medium">
-              {t("bettingWindowSeconds", { count: currentSettings.bettingWindowSeconds })}
+              {t("bettingWindowSeconds", { count: optimisticSettings.bettingWindowSeconds })}
             </span>
           </div>
           <div className="flex justify-between">
             <span className="text-muted-foreground">{t("yearRange")}</span>
             <span className="font-medium">
-              {t("yearRangeValue", { min: currentSettings.minYear, max: currentSettings.maxYear })}
+              {t("yearRangeValue", {
+                min: optimisticSettings.minYear,
+                max: optimisticSettings.maxYear,
+              })}
+            </span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-muted-foreground">{t("allowGuessTitleArtist")}</span>
+            <span className="font-medium">
+              {optimisticSettings.allowGuessTitleArtist ? <Check /> : <X />}
+            </span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-muted-foreground">{t("showLiveBets")}</span>
+            <span className="font-medium">
+              {optimisticSettings.showLiveBets ? <Check /> : <X />}
+            </span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-muted-foreground">{t("allowBetRetraction")}</span>
+            <span className="font-medium">
+              {optimisticSettings.allowBetRetraction ? <Check /> : <X />}
             </span>
           </div>
         </div>
@@ -150,59 +156,60 @@ export function SettingsPanel({
         <div className="p-4 rounded-lg bg-card border space-y-4">
           <div className="grid gap-4 sm:grid-cols-2">
             <SettingSlider
-              label={t("targetTimelineSize")}
-              value={settings.targetTimelineSize}
+              label="targetTimelineSize"
+              value={optimisticSettings.targetTimelineSize}
               min={5}
               max={15}
               step={1}
-              onChange={(value) => handleSettingChange("targetTimelineSize", value)}
+              onChange={handleSettingChange}
+              onCommit={handleCommit}
               unit="cards"
-              t={t}
             />
 
             <SettingSlider
-              label={t("startingCoins")}
-              value={settings.startingCoins}
+              label="startingCoins"
+              value={optimisticSettings.startingCoins}
               min={1}
               max={10}
               step={1}
-              onChange={(value) => handleSettingChange("startingCoins", value)}
+              onChange={handleSettingChange}
+              onCommit={handleCommit}
               unit="coins"
-              t={t}
             />
 
             <SettingSlider
-              label={t("turnDuration")}
-              value={settings.turnSeconds}
+              label="turnSeconds"
+              value={optimisticSettings.turnSeconds}
               min={15}
               max={120}
               step={5}
-              onChange={(value) => handleSettingChange("turnSeconds", value)}
+              onChange={handleSettingChange}
+              onCommit={handleCommit}
               unit="seconds"
-              t={t}
             />
 
             <SettingSlider
-              label={t("bettingWindow")}
-              value={settings.bettingWindowSeconds}
+              label="bettingWindowSeconds"
+              value={optimisticSettings.bettingWindowSeconds}
               min={5}
               max={60}
               step={5}
-              onChange={(value) => handleSettingChange("bettingWindowSeconds", value)}
+              onChange={handleSettingChange}
+              onCommit={handleCommit}
               unit="seconds"
-              t={t}
             />
 
             <div className="sm:col-span-2">
               <SettingRange
-                label={t("yearRange")}
-                minValue={settings.minYear}
-                maxValue={settings.maxYear}
+                label="yearRange"
+                minValue={optimisticSettings.minYear}
+                maxValue={optimisticSettings.maxYear}
                 minRange={1950}
                 maxRange={2025}
-                onMinChange={(value) => handleSettingChange("minYear", value)}
-                onMaxChange={(value) => handleSettingChange("maxYear", value)}
-                t={t}
+                onMinChange={handleSettingChange}
+                onMaxChange={handleSettingChange}
+                onMinCommit={handleCommit}
+                onMaxCommit={handleCommit}
               />
             </div>
           </div>
@@ -211,43 +218,33 @@ export function SettingsPanel({
             <ToggleSetting
               label={t("allowGuessTitleArtist")}
               description={t("allowGuessTitleArtistDesc")}
-              enabled={settings.allowGuessTitleArtist}
-              onChange={(value) => handleSettingChange("allowGuessTitleArtist", value)}
+              enabled={optimisticSettings.allowGuessTitleArtist}
+              onChange={(value) => {
+                handleSettingChange("allowGuessTitleArtist", value);
+                handleCommit("allowGuessTitleArtist", value);
+              }}
             />
 
             <ToggleSetting
               label={t("showLiveBets")}
               description={t("showLiveBetsDesc")}
-              enabled={settings.showLiveBets}
-              onChange={(value) => handleSettingChange("showLiveBets", value)}
+              enabled={optimisticSettings.showLiveBets}
+              onChange={(value) => {
+                handleSettingChange("showLiveBets", value);
+                handleCommit("showLiveBets", value);
+              }}
             />
 
             <ToggleSetting
               label={t("allowBetRetraction")}
               description={t("allowBetRetractionDesc")}
-              enabled={settings.allowBetRetraction}
-              onChange={(value) => handleSettingChange("allowBetRetraction", value)}
+              enabled={optimisticSettings.allowBetRetraction}
+              onChange={(value) => {
+                handleSettingChange("allowBetRetraction", value);
+                handleCommit("allowBetRetraction", value);
+              }}
             />
           </div>
-
-          {hasChanges && (
-            <div className="flex gap-2 pt-2">
-              <button
-                type="button"
-                onClick={handleSave}
-                className="flex-1 inline-flex items-center justify-center h-10 px-4 rounded-md bg-primary text-primary-foreground font-medium transition-colors hover:bg-primary/90"
-              >
-                {tCommon("saveChanges")}
-              </button>
-              <button
-                type="button"
-                onClick={handleReset}
-                className="flex-1 inline-flex items-center justify-center h-10 px-4 rounded-md border border-input bg-background font-medium transition-colors hover:bg-accent"
-              >
-                {tCommon("cancel")}
-              </button>
-            </div>
-          )}
         </div>
       )}
     </div>
@@ -260,9 +257,9 @@ interface SettingSliderProps {
   min: number;
   max: number;
   step: number;
-  onChange: (value: number) => void;
+  onChange: <K extends keyof LobbySettings>(key: K, value: LobbySettings[K]) => void;
+  onCommit: <K extends keyof LobbySettings>(key: K, value: LobbySettings[K]) => void;
   unit: string;
-  t: ReturnType<typeof useTranslations>;
 }
 
 function SettingSlider({
@@ -272,32 +269,37 @@ function SettingSlider({
   max,
   step,
   onChange,
+  onCommit,
   unit,
-  t,
 }: SettingSliderProps): React.ReactNode {
-  const sliderId = `slider-${label.replace(/\s+/g, "-").toLowerCase()}`;
+  const t = useTranslations("settings");
+  const sliderId = `slider-${label}`;
   const unitLabel =
-    unit === "seconds"
+    label === "turnSeconds"
       ? t("turnSeconds", { count: value })
-      : unit === "cards"
+      : label === "targetCards"
         ? t("targetCards", { count: value })
-        : `${value} ${unit}`;
+        : label === "bettingWindowSeconds"
+          ? t("bettingWindowSeconds", { count: value })
+          : `${value} ${unit}`;
   return (
     <div className="space-y-2">
       <div className="flex justify-between text-sm">
-        <label htmlFor={sliderId} className="font-medium cursor-pointer">
-          {label}
+        <label htmlFor={sliderId} className="font-medium cursor-pointer whitespace-nowrap">
+          {["turnSeconds", "targetCards", "bettingWindowSeconds"].includes(label)
+            ? t(label, { count: value })
+            : t(label)}
         </label>
-        <span className="text-muted-foreground">{unitLabel}</span>
+        <span className="text-muted-foreground whitespace-nowrap">{unitLabel}</span>
       </div>
-      <input
+      <Slider
         id={sliderId}
-        type="range"
         min={min}
         max={max}
         step={step}
         value={value}
-        onChange={(e) => onChange(Number(e.target.value))}
+        onValueChange={(val) => onChange(label as keyof LobbySettings, Number(val))}
+        onValueCommitted={(val) => onCommit(label as keyof LobbySettings, Number(val))}
         className="w-full h-2 bg-secondary rounded-lg appearance-none cursor-pointer accent-primary"
       />
     </div>
@@ -310,9 +312,10 @@ interface SettingRangeProps {
   maxValue: number;
   minRange: number;
   maxRange: number;
-  onMinChange: (value: number) => void;
-  onMaxChange: (value: number) => void;
-  t: ReturnType<typeof useTranslations>;
+  onMinChange: <K extends keyof LobbySettings>(key: K, value: LobbySettings[K]) => void;
+  onMaxChange: <K extends keyof LobbySettings>(key: K, value: LobbySettings[K]) => void;
+  onMinCommit: <K extends keyof LobbySettings>(key: K, value: LobbySettings[K]) => void;
+  onMaxCommit: <K extends keyof LobbySettings>(key: K, value: LobbySettings[K]) => void;
 }
 
 function SettingRange({
@@ -323,28 +326,35 @@ function SettingRange({
   maxRange,
   onMinChange,
   onMaxChange,
-  t,
+  onMinCommit,
+  onMaxCommit,
 }: SettingRangeProps): React.ReactNode {
+  const t = useTranslations("settings");
   const minInputId = `min-${label.replace(/\s+/g, "-").toLowerCase()}`;
   const maxInputId = `max-${label.replace(/\s+/g, "-").toLowerCase()}`;
   return (
     <div className="space-y-2">
       <div className="flex justify-between text-sm">
         <label htmlFor={minInputId} className="font-medium cursor-pointer">
-          {label}
+          {t(label)}
         </label>
         <span className="text-muted-foreground">
           {t("yearRangeValue", { min: minValue, max: maxValue })}
         </span>
       </div>
       <div className="flex items-center gap-4">
-        <input
+        {/* <input
           id={minInputId}
           type="number"
           min={minRange}
           max={maxValue - 1}
           value={minValue}
-          onChange={(e) => onMinChange(Math.min(Number(e.target.value), maxValue - 1))}
+          onChange={(e) =>
+            onMinChange(
+              label as keyof LobbySettings,
+              Math.min(Number(e.target.value), maxValue - 1),
+            )
+          }
           className="w-20 h-9 px-3 rounded-md border border-input bg-background text-sm"
         />
         <span className="text-muted-foreground">-</span>
@@ -354,8 +364,34 @@ function SettingRange({
           min={minValue + 1}
           max={maxRange}
           value={maxValue}
-          onChange={(e) => onMaxChange(Math.max(Number(e.target.value), minValue + 1))}
+          onChange={(e) =>
+            onMaxChange(
+              label as keyof LobbySettings,
+              Math.max(Number(e.target.value), minValue + 1),
+            )
+          }
           className="w-20 h-9 px-3 rounded-md border border-input bg-background text-sm"
+        /> */}
+
+        <Slider
+          id={`${minInputId}-slider-${maxInputId}`}
+          min={minRange}
+          max={maxRange}
+          step={1}
+          value={[minValue, maxValue]}
+          onValueChange={(val) => {
+            const values = Array.isArray(val) ? val : [val, val];
+            const sortedValues = [...values].sort((a, b) => a - b);
+            onMinChange("minYear", sortedValues[0]);
+            onMaxChange("maxYear", sortedValues[1]);
+          }}
+          onValueCommitted={(val) => {
+            const values = Array.isArray(val) ? val : [val, val];
+            const sortedValues = [...values].sort((a, b) => a - b);
+            onMinCommit("minYear", sortedValues[0]);
+            onMaxCommit("maxYear", sortedValues[1]);
+          }}
+          className="w-full h-2 bg-secondary rounded-lg appearance-none cursor-pointer accent-primary"
         />
       </div>
     </div>

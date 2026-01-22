@@ -15,6 +15,34 @@ export const get = query({
   },
 });
 
+export const getPublicByIds = query({
+  args: { trackIds: v.array(v.id("tracks")) },
+  handler: async (ctx, args) => {
+    const { trackIds } = args;
+
+    if (trackIds.length === 0) {
+      return [];
+    }
+
+    const tracks = await Promise.all(
+      trackIds.map(async (trackId) => {
+        const track = await ctx.db.get(trackId);
+        if (!track) return null;
+
+        return {
+          trackId: track._id,
+          title: track.title,
+          artist: track.artist,
+          year: track.year,
+          youtubeVideoId: track.externalIds.youtubeVideoId ?? undefined,
+        };
+      }),
+    );
+
+    return tracks.filter((t): t is NonNullable<typeof t> => t !== null);
+  },
+});
+
 export const list = query({
   args: {},
   handler: async (ctx) => {

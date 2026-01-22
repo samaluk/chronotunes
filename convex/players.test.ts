@@ -1,25 +1,27 @@
 import { convexTest } from "convex-test";
 import { expect, test } from "vitest";
 import { api } from "./_generated/api";
+import { asSessionId } from "./lib/sessions";
 import schema from "./schema";
+import { modules } from "./test.setup";
 
 test("list returns all players in lobby", async () => {
-  const t = convexTest(schema);
+  const t = convexTest(schema, modules);
 
   const { code } = await t.mutation(api.lobbies.create, {
-    sessionId: "list-host-session",
+    sessionId: asSessionId("list-host-session"),
     displayName: "ListHost",
   });
 
   await t.mutation(api.lobbies.join, {
     code,
-    sessionId: "list-player1-session",
+    sessionId: asSessionId("list-player1-session"),
     displayName: "Player1",
   });
 
   await t.mutation(api.lobbies.join, {
     code,
-    sessionId: "list-player2-session",
+    sessionId: asSessionId("list-player2-session"),
     displayName: "Player2",
   });
 
@@ -32,10 +34,10 @@ test("list returns all players in lobby", async () => {
 });
 
 test("list returns empty array for lobby with no players", async () => {
-  const t = convexTest(schema);
+  const t = convexTest(schema, modules);
 
   const { code } = await t.mutation(api.lobbies.create, {
-    sessionId: "list-empty-host",
+    sessionId: asSessionId("list-empty-host"),
     displayName: "ListEmptyHost",
   });
 
@@ -46,16 +48,16 @@ test("list returns empty array for lobby with no players", async () => {
 });
 
 test("list returns players with correct properties", async () => {
-  const t = convexTest(schema);
+  const t = convexTest(schema, modules);
 
   const { code } = await t.mutation(api.lobbies.create, {
-    sessionId: "list-props-host",
+    sessionId: asSessionId("list-props-host"),
     displayName: "ListPropsHost",
   });
 
   await t.mutation(api.lobbies.join, {
     code,
-    sessionId: "list-props-player",
+    sessionId: asSessionId("list-props-player"),
     displayName: "ListPropsPlayer",
   });
 
@@ -80,16 +82,16 @@ test("list returns players with correct properties", async () => {
 });
 
 test("getMe returns current player by sessionId", async () => {
-  const t = convexTest(schema);
+  const t = convexTest(schema, modules);
 
   const { code } = await t.mutation(api.lobbies.create, {
-    sessionId: "me-host-session",
+    sessionId: asSessionId("me-host-session"),
     displayName: "MeHost",
   });
 
   await t.mutation(api.lobbies.join, {
     code,
-    sessionId: "me-player-session",
+    sessionId: asSessionId("me-player-session"),
     displayName: "MePlayer",
   });
 
@@ -97,7 +99,7 @@ test("getMe returns current player by sessionId", async () => {
 
   const me = await t.query(api.players.getMe, {
     lobbyId: lobby!._id,
-    sessionId: "me-player-session",
+    sessionId: asSessionId("me-player-session"),
   });
 
   expect(me).not.toBeNull();
@@ -107,10 +109,10 @@ test("getMe returns current player by sessionId", async () => {
 });
 
 test("getMe returns host player", async () => {
-  const t = convexTest(schema);
+  const t = convexTest(schema, modules);
 
   const { code } = await t.mutation(api.lobbies.create, {
-    sessionId: "me-real-host-session",
+    sessionId: asSessionId("me-real-host-session"),
     displayName: "MeRealHost",
   });
 
@@ -118,7 +120,7 @@ test("getMe returns host player", async () => {
 
   const me = await t.query(api.players.getMe, {
     lobbyId: lobby!._id,
-    sessionId: "me-real-host-session",
+    sessionId: asSessionId("me-real-host-session"),
   });
 
   expect(me).not.toBeNull();
@@ -127,10 +129,10 @@ test("getMe returns host player", async () => {
 });
 
 test("getMe returns null when session not in lobby", async () => {
-  const t = convexTest(schema);
+  const t = convexTest(schema, modules);
 
   const { code } = await t.mutation(api.lobbies.create, {
-    sessionId: "me-not-in-session",
+    sessionId: asSessionId("me-not-in-session"),
     displayName: "MeNotInHost",
   });
 
@@ -138,7 +140,7 @@ test("getMe returns null when session not in lobby", async () => {
 
   const me = await t.query(api.players.getMe, {
     lobbyId: lobby!._id,
-    sessionId: "random-session-not-in-lobby",
+    sessionId: asSessionId("random-session-not-in-lobby"),
   });
 
   expect(me).toBeNull();

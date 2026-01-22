@@ -1,13 +1,12 @@
 "use client";
 
-import { useMutation } from "convex/react";
 import type { GenericId } from "convex/values";
+import { useSessionMutation } from "convex-helpers/react/sessions";
 import { Play, Users } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { api } from "@/convex/_generated/api.js";
-import { getSessionId } from "@/lib/session";
 
 interface StartGameButtonProps {
   lobbyId: GenericId<"lobbies">;
@@ -23,12 +22,11 @@ export function StartGameButton({
   const t = useTranslations("startGame");
 
   const router = useRouter();
-  const startGame = useMutation(api.games.start);
+  const startGame = useSessionMutation(api.games.start);
 
   const handleStartGame = async (): Promise<void> => {
     try {
-      const sessionId = getSessionId();
-      const _result = await startGame({ lobbyId, sessionId });
+      await startGame({ lobbyId });
       toast.success(t("gameStarted"));
       router.refresh();
     } catch (error) {

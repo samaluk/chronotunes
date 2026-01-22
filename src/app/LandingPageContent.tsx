@@ -1,6 +1,7 @@
 "use client";
 
 import { useMutation } from "convex/react";
+import { useSessionId } from "convex-helpers/react/sessions";
 import { Music } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
@@ -8,7 +9,6 @@ import { toast } from "sonner";
 import { LocaleSwitcher } from "@/components/ui/locale-switcher";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { api } from "@/convex/_generated/api.js";
-import { useSessionId } from "@/lib/hooks/use-session-id";
 
 const DISPLAY_NAME_KEY = "chronotunes-display-name";
 const LOBBY_CODE_LENGTH = 6;
@@ -29,11 +29,11 @@ function saveDisplayName(name: string): void {
   }
 }
 
-export default function LandingPageContent(): React.ReactNode {
+export function LandingPageContent() {
   const t = useTranslations("landing");
   const tCommon = useTranslations("common");
 
-  const sessionId = useSessionId();
+  const [sessionId] = useSessionId();
   const createLobby = useMutation(api.lobbies.create);
   const joinLobby = useMutation(api.lobbies.join);
 

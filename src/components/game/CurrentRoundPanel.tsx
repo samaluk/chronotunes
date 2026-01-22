@@ -1,53 +1,53 @@
 "use client";
 
-import type { GenericId } from "convex/values";
 import { Music } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { YouTubePlayer } from "@/components/player/YouTubePlayer";
+import type { Doc, Id } from "@/convex/_generated/dataModel";
 import { BettingPanel } from "./BettingPanel";
 import { RoundResults } from "./RoundResults";
 import { TimelinePlacer } from "./TimelinePlacer";
-
+import { TurnPlayerTimeline } from "./TurnPlayerTimeline";
 export type RoundPhase = "placing" | "betting" | "resolved";
 
 interface TimelineEntry {
-  trackId: GenericId<"tracks">;
+  trackId: Id<"tracks">;
   year: number;
   earnedAtRoundNumber: number;
-  earnedBy: "placement" | "bet";
-}
-
-interface Player {
-  _id: GenericId<"players">;
-  displayName: string;
-  timeline: TimelineEntry[];
-  timelineSize: number;
-  coins: number;
-  isHost: boolean;
-  sessionId: string;
+  earnedBy: "placement" | "bet" | "initial";
 }
 
 interface CurrentRoundPanelProps {
   phase: RoundPhase;
   isMyTurn: boolean;
-  lobbyId?: GenericId<"lobbies">;
-  me?: Player | null;
-  players?: Player[] | null;
+  lobbyId?: Id<"lobbies">;
+  me?: Doc<"players"> | null;
+  players?: Doc<"players">[] | null;
   track?: {
-    _id: GenericId<"tracks">;
+    _id: Id<"tracks">;
+    title?: string;
+    artist?: string;
+    year?: number;
+    youtubeVideoId?: string;
+  } | null;
+  existingPreviewIndex?: number | null;
+  turnPlayerId?: Id<"players"> | null;
+  turnPlayerTimeline?: TimelineEntry[];
+  turnPlayerTimelineSize?: number;
+  revealedTracks?: Array<{
+    trackId: Id<"tracks">;
     title: string;
     artist: string;
     year: number;
-  } | null;
-  existingPreviewIndex?: number | null;
-  turnPlayerTimeline?: TimelineEntry[];
-  turnPlayerTimelineSize?: number;
+    youtubeVideoId?: string;
+  }>;
   resolution?: {
     validIndexMin: number;
     validIndexMax: number;
     turnPlayerWasCorrect: boolean;
-    awardedPlayerIds: GenericId<"players">[];
+    awardedPlayerIds: Id<"players">[];
     coinDeltas: Array<{
-      playerId: GenericId<"players">;
+      playerId: Id<"players">;
       delta: number;
     }>;
     resolvedAt: number;
@@ -62,8 +62,10 @@ export function CurrentRoundPanel({
   players,
   track,
   existingPreviewIndex,
+  turnPlayerId,
   turnPlayerTimeline,
   turnPlayerTimelineSize,
+  revealedTracks,
   resolution,
 }: CurrentRoundPanelProps): React.ReactNode {
   const t = useTranslations("roundPhase");
@@ -81,11 +83,37 @@ export function CurrentRoundPanel({
               player={me}
               currentTrack={track}
               existingPreviewIndex={existingPreviewIndex ?? null}
+              revealedTracks={revealedTracks ?? []}
             />
+          );
+        }
+        if (lobbyId && track && players && turnPlayerId) {
+          const turnPlayer = players.find((p) => p._id === turnPlayerId);
+          const turnPlayerName = turnPlayer?.displayName ?? "Player";
+          return (
+            <div className="space-y-4">
+              {track?.youtubeVideoId && (
+                <div className="w-full max-w-xs">
+                  <YouTubePlayer youtubeVideoId={track.youtubeVideoId} />
+                </div>
+              )}
+              <TurnPlayerTimeline
+                turnPlayerName={turnPlayerName}
+                timeline={turnPlayerTimeline ?? []}
+                timelineSize={turnPlayerTimelineSize ?? 0}
+                revealedTracks={revealedTracks ?? []}
+                existingPreviewIndex={existingPreviewIndex ?? null}
+              />
+            </div>
           );
         }
         return (
           <div className="flex flex-col items-center justify-center py-12 space-y-4">
+            {track?.youtubeVideoId ? (
+              <div className="w-full max-w-xs">
+                <YouTubePlayer youtubeVideoId={track.youtubeVideoId} />
+              </div>
+            ) : null}
             <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
               <Music className="h-8 w-8 text-primary animate-pulse" />
             </div>
@@ -108,12 +136,17 @@ export function CurrentRoundPanel({
               me={me}
               track={track}
               turnPlayerTimeline={turnPlayerTimeline ?? []}
-              turnPlayerTimelineSize={turnPlayerTimelineSize ?? 0}
+              revealedTracks={revealedTracks ?? []}
             />
           );
         }
         return (
           <div className="flex flex-col items-center justify-center py-12 space-y-4">
+            {track?.youtubeVideoId ? (
+              <div className="w-full max-w-xs">
+                <YouTubePlayer youtubeVideoId={track.youtubeVideoId} />
+              </div>
+            ) : null}
             <div className="flex h-16 w-16 items-center justify-center rounded-full bg-amber-100 dark:bg-amber-900/30">
               <Music className="h-8 w-8 text-amber-600 dark:text-amber-400" />
             </div>
@@ -126,17 +159,10 @@ export function CurrentRoundPanel({
 
       case "resolved":
         if (lobbyId && track && resolution && players) {
-          const turnPlayer = players.find((p) => p._id === resolution.awardedPlayerIds[0]) ?? {
-            _id: "" as GenericId<"players">,
-            displayName: "Unknown",
-            timeline: [],
-            timelineSize: 0,
-            coins: 0,
-            isHost: false,
-            sessionId: "",
-          };
-          const _turnPlayerTimelineEntry = turnPlayerTimeline ?? [];
-          const _turnPlayerTimelineSizeValue = turnPlayerTimelineSize ?? 0;
+          const turnPlayer = players.find((p) => p._id === resolution.awardedPlayerIds[0]) ?? null;
+          if (!turnPlayer) {
+            return null;
+          }
 
           return (
             <RoundResults
@@ -152,6 +178,11 @@ export function CurrentRoundPanel({
         }
         return (
           <div className="flex flex-col items-center justify-center py-12 space-y-4">
+            {track?.youtubeVideoId && (
+              <div className="w-full max-w-xs">
+                <YouTubePlayer youtubeVideoId={track.youtubeVideoId} />
+              </div>
+            )}
             <div className="flex h-16 w-16 items-center justify-center rounded-full bg-green-100 dark:bg-green-900/30">
               <Music className="h-8 w-8 text-green-600 dark:text-green-400" />
             </div>
@@ -159,7 +190,7 @@ export function CurrentRoundPanel({
               <p className="text-lg font-medium">{tResults("roundResults")}</p>
               <p className="text-sm text-muted-foreground">{tResults("songRevealed")}</p>
             </div>
-            {track && (
+            {track?.title && track?.artist && track?.year && (
               <div className="mt-4 p-4 rounded-lg bg-card border max-w-md w-full text-center">
                 <p className="text-sm text-muted-foreground">{tResults("songWas")}</p>
                 <p className="text-xl font-bold mt-1">

@@ -3,8 +3,10 @@
 import { Globe } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
-import { useLocaleContext } from "@/lib/hooks/useLocale";
+import { useLocalStorage } from "usehooks-ts";
 import { cn } from "@/lib/utils";
+
+const LOCALE_STORAGE_KEY = "locale";
 
 const localeNames: Record<string, string> = {
   en: "English",
@@ -15,8 +17,10 @@ const localeNames: Record<string, string> = {
   ja: "日本語",
 };
 
+const availableLocales = ["en", "es", "fr", "de", "pt", "ja"];
+
 export function LocaleSwitcher(): React.ReactNode {
-  const { locale, setLocale, availableLocales } = useLocaleContext();
+  const [locale, setLocale] = useLocalStorage(LOCALE_STORAGE_KEY, "en");
   const t = useTranslations("locale");
   const [isOpen, setIsOpen] = useState(false);
 

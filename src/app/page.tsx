@@ -1,5 +1,5 @@
-import { redirect } from "next/navigation";
+import { LandingPageContent } from "./LandingPageContent";
 
-export default function HomePage(): never {
-  redirect("/en");
+export default function HomePage() {
+  return <LandingPageContent />;
 }

@@ -1,31 +1,25 @@
 "use client";
 
-import { useMutation } from "convex/react";
-import type { GenericId } from "convex/values";
-import { Check, GripVertical, Loader2, Music } from "lucide-react";
+import { useSessionMutation } from "convex-helpers/react/sessions";
+import { Check, HelpCircle, Loader2 } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useRef, useState, useMemo } from "react";
+import { YouTubePlayer } from "@/components/player/YouTubePlayer";
 import { Button } from "@/components/ui/button";
 import { api } from "@/convex/_generated/api";
-import { useSessionId } from "@/lib/hooks/use-session-id";
+import type { Doc, Id } from "@/convex/_generated/dataModel";
 import { cn } from "@/lib/utils";
 
-interface TimelineEntry {
-  trackId: GenericId<"tracks">;
-  year: number;
-  earnedAtRoundNumber: number;
-  earnedBy: "placement" | "bet";
-}
-
-interface Player {
-  _id: GenericId<"players">;
-  displayName: string;
-  timeline: TimelineEntry[];
-  timelineSize: number;
-}
-
 interface TrackInfo {
-  _id: GenericId<"tracks">;
+  _id: Id<"tracks">;
+  title?: string;
+  artist?: string;
+  year?: number;
+  youtubeVideoId?: string;
+}
+
+interface RevealedTrack {
+  trackId: Id<"tracks">;
   title: string;
   artist: string;
   year: number;
@@ -33,77 +27,61 @@ interface TrackInfo {
 }
 
 interface TimelinePlacerProps {
-  lobbyId: GenericId<"lobbies">;
-  player: Player;
+  lobbyId: Id<"lobbies">;
+  player: Doc<"players">;
   currentTrack: TrackInfo | null;
   existingPreviewIndex: number | null;
+  revealedTracks: RevealedTrack[];
 }
 
-function TimelineCard({
-  track,
-  isPreview,
-}: {
-  track: { title: string; artist: string; year: number };
-  isPreview?: boolean;
-}): React.ReactNode {
-  const tCommon = useTranslations("common");
-
+function YearCard({ year, isNew }: { year?: number; isNew?: boolean }): React.ReactNode {
   return (
     <div
       className={cn(
-        "flex items-center gap-3 p-3 rounded-lg border transition-all",
-        isPreview ? "bg-primary/10 border-primary border-dashed animate-pulse" : "bg-card",
+        "flex items-center gap-3 p-3 rounded-lg border bg-card",
+        isNew && "bg-primary/10 border-primary border-dashed animate-pulse",
       )}
     >
       <div
         className={cn(
           "flex h-10 w-10 shrink-0 items-center justify-center rounded-full",
-          isPreview ? "bg-primary/20 text-primary" : "bg-muted",
+          isNew ? "bg-primary/20 text-primary" : "bg-muted",
         )}
       >
-        <Music className={cn("h-5 w-5", isPreview ? "" : "text-muted-foreground")} />
+        {isNew ? (
+          <HelpCircle className="h-5 w-5" />
+        ) : (
+          <span className="text-sm font-semibold text-primary">{year ?? "?"}</span>
+        )}
+      </div>
+      <div className="flex-1 min-w-0">
+        <p
+          className={cn(
+            "font-medium truncate",
+            isNew ? "text-foreground" : "text-muted-foreground",
+          )}
+        >
+          {isNew ? "New Song" : "Known Track"}
+        </p>
+        <p className="text-sm text-muted-foreground truncate">
+          {isNew ? "Guess the year!" : `From round`}
+        </p>
+      </div>
+    </div>
+  );
+}
+
+function KnownTrackCard({ track }: { track: RevealedTrack }): React.ReactNode {
+  return (
+    <div className="flex items-center gap-3 p-3 rounded-lg border bg-card">
+      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-muted">
+        <span className="text-sm font-semibold text-muted-foreground">{track.year}</span>
       </div>
       <div className="flex-1 min-w-0">
         <p className="font-medium text-foreground truncate">{track.title}</p>
         <p className="text-sm text-muted-foreground truncate">{track.artist}</p>
       </div>
-      {!isPreview && (
-        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary/10">
-          <span className="text-sm font-semibold text-primary">{track.year}</span>
-        </div>
-      )}
     </div>
-  );
-}
-
-function DropZone({
-  isActive,
-  isPreview,
-  onClick,
-  t,
-}: {
-  isActive: boolean;
-  isPreview: boolean;
-  onClick: () => void;
-  t: ReturnType<typeof useTranslations>;
-}): React.ReactNode {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={cn(
-        "w-full py-1 my-1 rounded-md transition-all duration-200 flex items-center justify-center gap-2",
-        isActive
-          ? "bg-primary/20 border-2 border-primary border-dashed"
-          : "opacity-0 hover:opacity-50 border-2 border-transparent",
-        isPreview && "opacity-100 bg-primary/10 border-primary border-dashed",
-      )}
-    >
-      <div className="flex items-center gap-1 text-xs text-muted-foreground">
-        <GripVertical className="h-3 w-3" />
-        <span>{t("dropHere")}</span>
-      </div>
-    </button>
   );
 }
 
@@ -112,48 +90,63 @@ export function TimelinePlacer({
   player,
   currentTrack,
   existingPreviewIndex,
+  revealedTracks,
 }: TimelinePlacerProps): React.ReactNode {
   const t = useTranslations("placing");
-  const tCommon = useTranslations("common");
 
-  const sessionId = useSessionId();
-  const [selectedIndex, setSelectedIndex] = useState<number | null>(existingPreviewIndex ?? null);
+  const [selectedIndex, setSelectedIndex] = useState<number>(existingPreviewIndex ?? 0);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const setPlacementPreview = useMutation(api.rounds.setPlacementPreview);
-  const submitPlacement = useMutation(api.rounds.submitPlacement);
+  const _setPlacementPreview = useSessionMutation(api.rounds.setPlacementPreview);
+  const submitPlacement = useSessionMutation(api.rounds.submitPlacement);
 
   const sortedTimeline = [...player.timeline].sort((a, b) => a.year - b.year);
-
-  const handlePositionSelect = useCallback(
-    (index: number) => {
-      setSelectedIndex(index);
-      if (sessionId) {
-        void setPlacementPreview({
-          lobbyId,
-          sessionId,
-          proposedIndex: index,
-        });
-      }
-    },
-    [lobbyId, sessionId, setPlacementPreview],
+  const revealedTrackMap = useMemo(
+    () => new Map(revealedTracks.map((track) => [track.trackId, track])),
+    [revealedTracks],
   );
+  const maxPosition = sortedTimeline.length;
 
   const handleSubmit = useCallback(async () => {
-    if (selectedIndex === null || !sessionId) return;
-
     setIsSubmitting(true);
     try {
       await submitPlacement({
         lobbyId,
-        sessionId,
       });
     } catch (error) {
       console.error("Failed to submit placement:", error);
     } finally {
       setIsSubmitting(false);
     }
-  }, [lobbyId, sessionId, selectedIndex, submitPlacement]);
+  }, [lobbyId, submitPlacement]);
+
+  const handleSubmitRef = useRef(handleSubmit);
+  handleSubmitRef.current = handleSubmit;
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "ArrowUp") {
+        e.preventDefault();
+        setSelectedIndex((prev) => Math.max(0, prev - 1));
+      } else if (e.key === "ArrowDown") {
+        e.preventDefault();
+        setSelectedIndex((prev) => Math.min(maxPosition, prev + 1));
+      } else if (e.key === "Enter") {
+        e.preventDefault();
+        handleSubmitRef.current();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [maxPosition]);
+
+  useEffect(() => {
+    void _setPlacementPreview({
+      lobbyId,
+      proposedIndex: selectedIndex,
+    });
+  }, [lobbyId, selectedIndex, _setPlacementPreview]);
 
   if (!currentTrack) {
     return (
@@ -164,7 +157,11 @@ export function TimelinePlacer({
     );
   }
 
-  const hasEmptyTimeline = sortedTimeline.length === 0;
+  const getPositionLabel = (index: number): string => {
+    if (index === 0) return t("firstPosition");
+    if (index === maxPosition) return t("lastPosition");
+    return t("afterYear", { year: sortedTimeline[index - 1]?.year });
+  };
 
   return (
     <div className="w-full space-y-4">
@@ -175,169 +172,47 @@ export function TimelinePlacer({
         </span>
       </div>
 
+      {currentTrack.youtubeVideoId && (
+        <div className="mb-4">
+          <YouTubePlayer youtubeVideoId={currentTrack.youtubeVideoId} className="w-full max-w-md" />
+        </div>
+      )}
+
       <div className="space-y-2">
-        {hasEmptyTimeline ? (
-          <>
-            <DropZone
-              isActive={selectedIndex === 0}
-              isPreview={selectedIndex === 0}
-              onClick={() => handlePositionSelect(0)}
-              t={t}
-            />
-            <div className="pl-4">
-              <TimelineCard
-                track={{
-                  title: currentTrack.title,
-                  artist: currentTrack.artist,
-                  year: currentTrack.year,
-                }}
-                isPreview={selectedIndex === 0}
-              />
-            </div>
-          </>
-        ) : (
-          <>
-            {sortedTimeline.map((entry, idx) => {
-              const isBeforePreview = selectedIndex !== null && idx === selectedIndex;
-              const isAfterPreview = selectedIndex !== null && idx === selectedIndex + 1;
-
-              return (
-                <div key={`${entry.trackId}-${entry.earnedAtRoundNumber}`}>
-                  {isBeforePreview && (
-                    <DropZone
-                      isActive={true}
-                      isPreview={true}
-                      onClick={() => handlePositionSelect(idx)}
-                      t={t}
-                    />
-                  )}
-                  <div className={cn(isAfterPreview && "pl-4")}>
-                    <TimelineCard
-                      track={{
-                        title: tCommon("knownTrack"),
-                        artist: "Artist",
-                        year: entry.year,
-                      }}
-                    />
-                  </div>
-                  {isAfterPreview && (
-                    <DropZone
-                      isActive={true}
-                      isPreview={true}
-                      onClick={() => handlePositionSelect(idx + 1)}
-                      t={t}
-                    />
-                  )}
-                </div>
-              );
-            })}
-
-            {selectedIndex === sortedTimeline.length && (
-              <DropZone
-                isActive={true}
-                isPreview={true}
-                onClick={() => handlePositionSelect(sortedTimeline.length)}
-                t={t}
-              />
+        {sortedTimeline.map((entry, idx) => (
+          <div key={`${entry.trackId}-${entry.earnedAtRoundNumber}`}>
+            {idx === selectedIndex && <YearCard year={currentTrack.year} isNew={true} />}
+            {revealedTrackMap.has(entry.trackId) ? (
+              <KnownTrackCard track={revealedTrackMap.get(entry.trackId)!} />
+            ) : (
+              <YearCard year={entry.year} />
             )}
-
-            {selectedIndex === null && (
-              <>
-                <DropZone
-                  isActive={false}
-                  isPreview={false}
-                  onClick={() => handlePositionSelect(0)}
-                  t={t}
-                />
-                <div className="pl-4">
-                  <TimelineCard
-                    track={{
-                      title: tCommon("knownTrack"),
-                      artist: "Artist",
-                      year: sortedTimeline[0].year,
-                    }}
-                  />
-                </div>
-                {sortedTimeline.slice(1).map((entry, idx) => (
-                  <div key={`${entry.trackId}-${entry.earnedAtRoundNumber}`}>
-                    <DropZone
-                      isActive={false}
-                      isPreview={false}
-                      onClick={() => handlePositionSelect(idx + 1)}
-                      t={t}
-                    />
-                    <div className="pl-4">
-                      <TimelineCard
-                        track={{
-                          title: tCommon("knownTrack"),
-                          artist: "Artist",
-                          year: entry.year,
-                        }}
-                      />
-                    </div>
-                  </div>
-                ))}
-                <DropZone
-                  isActive={false}
-                  isPreview={false}
-                  onClick={() => handlePositionSelect(sortedTimeline.length)}
-                  t={t}
-                />
-              </>
-            )}
-
-            <div className="pl-4 mt-2">
-              <div className="relative">
-                <div className="absolute -left-4 top-1/2 -translate-y-1/2 w-px h-full bg-border" />
-                <TimelineCard
-                  track={{
-                    title: currentTrack.title,
-                    artist: currentTrack.artist,
-                    year: currentTrack.year,
-                  }}
-                  isPreview={selectedIndex !== null}
-                />
-              </div>
-            </div>
-          </>
-        )}
+          </div>
+        ))}
+        {maxPosition === selectedIndex && <YearCard year={currentTrack.year} isNew={true} />}
       </div>
 
       <div className="flex items-center justify-between pt-4 border-t">
-        <div className="text-sm">
-          {selectedIndex !== null ? (
-            <p className="text-muted-foreground">
-              {t("selectPosition")}{" "}
-              <span className="font-medium text-foreground">
-                {selectedIndex === 0
-                  ? t("firstPosition")
-                  : selectedIndex === sortedTimeline.length
-                    ? t("lastPosition")
-                    : t("afterPosition", {
-                        year:
-                          sortedTimeline[selectedIndex - 1]?.year ?? `position ${selectedIndex}`,
-                      })}
-              </span>
-            </p>
-          ) : (
-            <p className="text-muted-foreground">{t("selectPosition")}</p>
-          )}
-        </div>
-
-        <Button onClick={handleSubmit} disabled={selectedIndex === null || isSubmitting} size="lg">
-          {isSubmitting ? (
-            <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              {tCommon("submitting")}
-            </>
-          ) : (
-            <>
-              <Check className="mr-2 h-4 w-4" />
-              {t("confirmPlacement")}
-            </>
-          )}
-        </Button>
+        <p className="text-sm text-muted-foreground">
+          {t("selectPosition")}{" "}
+          <span className="font-medium text-foreground">{getPositionLabel(selectedIndex)}</span>
+        </p>
+        <p className="text-xs text-muted-foreground mr-2">↑↓ to move, Enter to confirm</p>
       </div>
+
+      <Button onClick={handleSubmit} disabled={isSubmitting} size="lg" className="w-full">
+        {isSubmitting ? (
+          <>
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            {t("submitting")}
+          </>
+        ) : (
+          <>
+            <Check className="mr-2 h-4 w-4" />
+            {t("confirmPlacement")}
+          </>
+        )}
+      </Button>
     </div>
   );
 }

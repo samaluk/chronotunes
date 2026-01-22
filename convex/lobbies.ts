@@ -1,5 +1,7 @@
 import { ConvexError, v } from "convex/values";
-import { mutation, query } from "./_generated/server";
+import { vSessionId } from "convex-helpers/server/sessions";
+import { query } from "./_generated/server";
+import { mutationWithSession } from "./lib/sessions";
 
 const LOBBY_CODE_CHARS = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
 const LOBBY_CODE_LENGTH = 6;
@@ -31,13 +33,13 @@ function generateLobbyCode(): string {
   return code;
 }
 
-export const create = mutation({
+export const create = mutationWithSession({
   args: {
-    sessionId: v.string(),
     displayName: v.string(),
   },
   handler: async (ctx, args) => {
-    const { sessionId, displayName } = args;
+    const { displayName } = args;
+    const { sessionId } = ctx;
 
     if (displayName.length < 1 || displayName.length > 20) {
       throw new ConvexError("Display name must be between 1 and 20 characters");
@@ -81,14 +83,14 @@ export const create = mutation({
   },
 });
 
-export const join = mutation({
+export const join = mutationWithSession({
   args: {
     code: v.string(),
-    sessionId: v.string(),
     displayName: v.string(),
   },
   handler: async (ctx, args) => {
-    const { code, sessionId, displayName } = args;
+    const { code, displayName } = args;
+    const { sessionId } = ctx;
 
     if (displayName.length < 1 || displayName.length > 20) {
       throw new ConvexError("Display name must be between 1 and 20 characters");
@@ -133,13 +135,13 @@ export const join = mutation({
   },
 });
 
-export const leave = mutation({
+export const leave = mutationWithSession({
   args: {
     code: v.string(),
-    sessionId: v.string(),
   },
   handler: async (ctx, args) => {
-    const { code, sessionId } = args;
+    const { code } = args;
+    const { sessionId } = ctx;
 
     const lobby = await ctx.db
       .query("lobbies")
@@ -206,14 +208,14 @@ const lobbySettingsValidator = v.object({
   maxYear: v.number(),
 });
 
-export const updateSettings = mutation({
+export const updateSettings = mutationWithSession({
   args: {
     code: v.string(),
-    sessionId: v.string(),
-    settings: lobbySettingsValidator,
+    settings: lobbySettingsValidator.partial(),
   },
   handler: async (ctx, args) => {
-    const { code, sessionId, settings } = args;
+    const { code, settings } = args;
+    const { sessionId } = ctx;
 
     const lobby = await ctx.db
       .query("lobbies")
@@ -232,42 +234,58 @@ export const updateSettings = mutation({
       throw new ConvexError("Cannot update settings for a lobby that is not in lobby status");
     }
 
-    if (settings.targetTimelineSize < 5 || settings.targetTimelineSize > 15) {
+    if (
+      settings?.targetTimelineSize &&
+      (settings.targetTimelineSize < 5 || settings.targetTimelineSize > 15)
+    ) {
       throw new ConvexError("Target timeline size must be between 5 and 15");
     }
 
-    if (settings.startingCoins < 1 || settings.startingCoins > 10) {
+    if (
+      settings.startingCoins !== undefined &&
+      (settings.startingCoins < 1 || settings.startingCoins > 10)
+    ) {
       throw new ConvexError("Starting coins must be between 1 and 10");
     }
 
-    if (settings.turnSeconds < 15 || settings.turnSeconds > 120) {
+    if (settings.turnSeconds && (settings.turnSeconds < 15 || settings.turnSeconds > 120)) {
       throw new ConvexError("Turn seconds must be between 15 and 120");
     }
 
-    if (settings.bettingWindowSeconds < 5 || settings.bettingWindowSeconds > 60) {
+    if (
+      settings.bettingWindowSeconds &&
+      (settings.bettingWindowSeconds < 5 || settings.bettingWindowSeconds > 60)
+    ) {
       throw new ConvexError("Betting window seconds must be between 5 and 60");
     }
 
-    if (settings.minYear < 1900 || settings.minYear > settings.maxYear) {
-      throw new ConvexError("Invalid minimum year");
+    const currentMaxYear = settings.maxYear ?? lobby.settings.maxYear;
+    const currentMinYear = settings.minYear ?? lobby.settings.minYear;
+
+    if (settings.minYear !== undefined) {
+      if (settings.minYear < 1900 || settings.minYear > currentMaxYear) {
+        throw new ConvexError("Invalid minimum year");
+      }
     }
 
-    if (settings.maxYear < settings.minYear || settings.maxYear > 2030) {
-      throw new ConvexError("Invalid maximum year");
+    if (settings.maxYear !== undefined) {
+      if (settings.maxYear > 2030 || settings.maxYear < currentMinYear) {
+        throw new ConvexError("Invalid maximum year");
+      }
     }
 
-    await ctx.db.patch(lobby._id, { settings });
+    await ctx.db.patch(lobby._id, { settings: { ...lobby.settings, ...settings } });
   },
 });
 
-export const transferHost = mutation({
+export const transferHost = mutationWithSession({
   args: {
     code: v.string(),
-    sessionId: v.string(),
-    newHostSessionId: v.string(),
+    newHostSessionId: vSessionId,
   },
   handler: async (ctx, args) => {
-    const { code, sessionId, newHostSessionId } = args;
+    const { code, newHostSessionId } = args;
+    const { sessionId } = ctx;
 
     const lobby = await ctx.db
       .query("lobbies")

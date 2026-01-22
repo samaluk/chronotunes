@@ -1,12 +1,12 @@
 "use client";
 
-import { useMutation } from "convex/react";
 import type { GenericId } from "convex/values";
+import { useSessionMutation } from "convex-helpers/react/sessions";
 import { Check, Clock, Music, Star, Trophy, Users, X } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { api } from "@/convex/_generated/api";
-import { useSessionId } from "@/lib/hooks/use-session-id";
+import type { Doc, Id } from "@/convex/_generated/dataModel";
 import { cn } from "@/lib/utils";
 
 interface TimelineEntry {
@@ -53,13 +53,13 @@ interface BetWithPlayer {
 }
 
 interface RoundResultsProps {
-  lobbyId: GenericId<"lobbies">;
+  lobbyId: Id<"lobbies">;
   track: TrackInfo;
   resolution: RoundResolution;
-  turnPlayer: Player;
+  turnPlayer: Doc<"players">;
   bets: BetWithPlayer[];
-  players: Player[];
-  me: Player | null;
+  players: Doc<"players">[];
+  me: Doc<"players"> | null;
 }
 
 export function RoundResults({
@@ -71,17 +71,15 @@ export function RoundResults({
   players,
   me,
 }: RoundResultsProps): React.ReactNode {
-  const sessionId = useSessionId();
   const [isResolving, setIsResolving] = useState(false);
 
-  const resolveAndNext = useMutation(api.games.resolveAndNext);
+  const resolveAndNext = useSessionMutation(api.games.resolveAndNext);
   const isHost = me?._id === turnPlayer._id || players.find((p) => p._id === me?._id)?.isHost;
 
   const handleNextRound = async () => {
-    if (!sessionId) return;
     setIsResolving(true);
     try {
-      await resolveAndNext({ lobbyId, sessionId });
+      await resolveAndNext({ lobbyId });
     } catch (error) {
       console.error("Failed to advance to next round:", error);
     } finally {

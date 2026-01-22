@@ -31,7 +31,7 @@ const timelineEntry = v.object({
   trackId: v.id("tracks"),
   year: v.number(),
   earnedAtRoundNumber: v.number(),
-  earnedBy: v.union(v.literal("placement"), v.literal("bet")),
+  earnedBy: v.union(v.literal("placement"), v.literal("bet"), v.literal("initial")),
 });
 
 // Placement preview object

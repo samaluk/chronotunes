@@ -2,6 +2,7 @@
 
 import { useQuery } from "convex/react";
 import type { GenericId } from "convex/values";
+import { useSessionId } from "convex-helpers/react/sessions";
 import { User } from "lucide-react";
 import { SkeletonPlayersBar } from "@/components/ui/skeletons";
 import { api } from "@/convex/_generated/api.js";
@@ -17,15 +18,17 @@ interface PlayerStats {
 
 interface PlayersBarProps {
   lobbyId: GenericId<"lobbies">;
-  currentSessionId: string | null;
+  currentSessionId?: string | null;
   highlightPlayerId?: GenericId<"players"> | null;
 }
 
 export function PlayersBar({
   lobbyId,
-  currentSessionId,
+  currentSessionId: propSessionId,
   highlightPlayerId,
 }: PlayersBarProps): React.ReactNode {
+  const [hookSessionId] = useSessionId();
+  const currentSessionId = propSessionId ?? hookSessionId ?? null;
   const players = useQuery(api.players.list, { lobbyId });
 
   if (players === undefined) {

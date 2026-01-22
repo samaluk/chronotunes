@@ -1,13 +1,13 @@
 "use client";
 
-import { useMutation, useQuery } from "convex/react";
+import { useQuery } from "convex/react";
 import type { GenericId } from "convex/values";
+import { useSessionMutation, useSessionQuery } from "convex-helpers/react/sessions";
 import { Music, Play, Repeat, Trophy } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { api } from "@/convex/_generated/api";
-import { useSessionId } from "@/lib/hooks/use-session-id";
 import { cn } from "@/lib/utils";
 
 interface GameResultsProps {
@@ -16,18 +16,16 @@ interface GameResultsProps {
 }
 
 export function GameResults({ lobbyId, code: _code }: GameResultsProps): React.ReactNode {
-  const sessionId = useSessionId();
   const [isPlayingAgain, setIsPlayingAgain] = useState(false);
 
   const results = useQuery(api.games.getResults, lobbyId ? { lobbyId } : "skip");
-  const me = useQuery(api.players.getMe, lobbyId && sessionId ? { lobbyId, sessionId } : "skip");
-  const playAgain = useMutation(api.games.playAgain);
+  const me = useSessionQuery(api.players.getMe, lobbyId ? { lobbyId } : "skip");
+  const playAgain = useSessionMutation(api.games.playAgain);
 
   const handlePlayAgain = async () => {
-    if (!sessionId) return;
     setIsPlayingAgain(true);
     try {
-      await playAgain({ lobbyId, sessionId });
+      await playAgain({ lobbyId });
     } catch (error) {
       console.error("Failed to play again:", error);
     } finally {

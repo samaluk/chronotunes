@@ -3,6 +3,7 @@
 import type { GenericId } from "convex/values";
 import { Timer } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { SoftTimer } from "./SoftTimer";
 
 interface TurnPlayer {
   _id: GenericId<"players">;
@@ -27,21 +28,7 @@ export function GameHeader({
   const t = useTranslations("game");
   const tCommon = useTranslations("common");
 
-  const getTimeRemaining = (): number | null => {
-    if (!startedAt || !turnSeconds) return null;
-    const elapsed = (Date.now() - startedAt) / 1000;
-    const remaining = turnSeconds - elapsed;
-    return Math.max(0, remaining);
-  };
-
-  const formatTime = (seconds: number): string => {
-    const mins = Math.floor(seconds / 60);
-    const secs = Math.floor(seconds % 60);
-    return `${mins}:${secs.toString().padStart(2, "0")}`;
-  };
-
-  const timeRemaining = getTimeRemaining();
-  const isLowTime = timeRemaining !== null && timeRemaining <= 10 && timeRemaining > 0;
+  const isLowTime = turnSeconds !== undefined && startedAt !== undefined;
 
   return (
     <div className="w-full space-y-4">
@@ -69,15 +56,12 @@ export function GameHeader({
         </div>
 
         {turnSeconds && startedAt && (
-          <div
-            className={`
-              flex items-center gap-2 px-4 py-2 rounded-lg font-mono text-lg
-              ${isLowTime ? "bg-destructive/10 text-destructive animate-pulse" : "bg-muted"}
-            `}
-          >
-            <Timer className={`h-5 w-5 ${isLowTime ? "animate-pulse" : ""}`} />
-            <span>{timeRemaining !== null ? formatTime(timeRemaining) : `--:--`}</span>
-          </div>
+          <SoftTimer
+            startedAt={startedAt}
+            turnSeconds={turnSeconds}
+            lowTimeThreshold={10}
+            className={isLowTime ? "bg-destructive/10 text-destructive animate-pulse" : "bg-muted"}
+          />
         )}
       </div>
     </div>

@@ -1,6 +1,6 @@
 import { cleanup, render, screen } from "@testing-library/react";
 import type { GenericId } from "convex/values";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { GameResults } from "./GameResults";
 
 const mockLobbyId = "lobby123" as GenericId<"lobbies">;

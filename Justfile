@@ -6,12 +6,8 @@ default:
     @just --list
 
 # Start the local Convex OSS backend (Terminal 1)
-run-local-backend:
-    npx convex backend --port 3210
-
-# Deploy Convex functions to local backend (Terminal 2)
-convex *ARGS:
-    CONVEX_DEPLOY_KEY="" npx convex {{ARGS}} --url http://127.0.0.1:3210
+convex:
+    pnpx convex dev --local
 
 # Push Convex schema and functions to local backend
 push:
@@ -20,6 +16,10 @@ push:
 # Run Convex code generation
 codegen:
     just convex codegen
+
+# Seed the local database with test data
+seed:
+    just convex run seed
 
 # Open Convex dashboard for local backend
 dashboard:

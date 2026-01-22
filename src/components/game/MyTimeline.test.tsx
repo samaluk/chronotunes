@@ -9,7 +9,7 @@ const createMockPlayer = (
       trackId: GenericId<"tracks">;
       year: number;
       earnedAtRoundNumber: number;
-      earnedBy: "placement" | "bet";
+      earnedBy: "placement" | "bet" | "initial";
     }>;
     timelineSize: number;
   }> = {},
@@ -20,7 +20,7 @@ const createMockPlayer = (
     trackId: GenericId<"tracks">;
     year: number;
     earnedAtRoundNumber: number;
-    earnedBy: "placement" | "bet";
+    earnedBy: "placement" | "bet" | "initial";
   }>;
   timelineSize: number;
 } => ({

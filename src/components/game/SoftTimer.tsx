@@ -8,7 +8,6 @@ interface SoftTimerProps {
   startedAt: number;
   turnSeconds: number;
   lowTimeThreshold?: number;
-  showProgress?: boolean;
   className?: string;
 }
 
@@ -16,7 +15,6 @@ export function SoftTimer({
   startedAt,
   turnSeconds,
   lowTimeThreshold = 10,
-  showProgress = true,
   className,
 }: SoftTimerProps): React.ReactNode {
   const [timeRemaining, setTimeRemaining] = useState<number | null>(null);
@@ -67,7 +65,7 @@ export function SoftTimer({
           <AlertTriangle data-testid="alert-triangle" className="h-4 w-4 animate-pulse" />
         )}
       </div>
-      {showProgress && progressValue !== null && (
+      {progressValue !== null && (
         <div className="mt-2">
           <Progress value={progressValue} className="h-1.5">
             <ProgressTrack>

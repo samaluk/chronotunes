@@ -23,7 +23,7 @@ vi.mock("convex-helpers/react/sessions", () => ({
 }));
 
 vi.mock("next-intl", () => ({
-  useTranslations: vi.fn((namespace) => {
+  useTranslations: vi.fn((_namespace) => {
     const translations: Record<string, string> = {
       loadingTrack: "Loading track...",
       placeTheSong: "Place the Song",

@@ -4,7 +4,7 @@ export interface TimelineEntry {
   trackId: Id<"tracks">;
   year: number;
   earnedAtRoundNumber: number;
-  earnedBy: "placement" | "bet";
+  earnedBy: "placement" | "bet" | "initial";
 }
 
 export interface ValidRange {
