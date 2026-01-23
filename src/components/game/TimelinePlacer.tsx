@@ -1,14 +1,14 @@
 "use client";
 
 import { useSessionMutation } from "convex-helpers/react/sessions";
-import { Check, HelpCircle, Loader2 } from "lucide-react";
+import { Check, Loader2 } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useCallback, useEffect, useRef, useState, useMemo } from "react";
-import { YouTubePlayer } from "@/components/player/YouTubePlayer";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { api } from "@/convex/_generated/api";
 import type { Doc, Id } from "@/convex/_generated/dataModel";
-import { cn } from "@/lib/utils";
+import { sortTimelineByYear } from "@/lib/timeline";
+import { TimelineCard } from "./TimelineCard";
 
 interface TrackInfo {
   _id: Id<"tracks">;
@@ -34,57 +34,6 @@ interface TimelinePlacerProps {
   revealedTracks: RevealedTrack[];
 }
 
-function YearCard({ year, isNew }: { year?: number; isNew?: boolean }): React.ReactNode {
-  return (
-    <div
-      className={cn(
-        "flex items-center gap-3 p-3 rounded-lg border bg-card",
-        isNew && "bg-primary/10 border-primary border-dashed animate-pulse",
-      )}
-    >
-      <div
-        className={cn(
-          "flex h-10 w-10 shrink-0 items-center justify-center rounded-full",
-          isNew ? "bg-primary/20 text-primary" : "bg-muted",
-        )}
-      >
-        {isNew ? (
-          <HelpCircle className="h-5 w-5" />
-        ) : (
-          <span className="text-sm font-semibold text-primary">{year ?? "?"}</span>
-        )}
-      </div>
-      <div className="flex-1 min-w-0">
-        <p
-          className={cn(
-            "font-medium truncate",
-            isNew ? "text-foreground" : "text-muted-foreground",
-          )}
-        >
-          {isNew ? "New Song" : "Known Track"}
-        </p>
-        <p className="text-sm text-muted-foreground truncate">
-          {isNew ? "Guess the year!" : `From round`}
-        </p>
-      </div>
-    </div>
-  );
-}
-
-function KnownTrackCard({ track }: { track: RevealedTrack }): React.ReactNode {
-  return (
-    <div className="flex items-center gap-3 p-3 rounded-lg border bg-card">
-      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-muted">
-        <span className="text-sm font-semibold text-muted-foreground">{track.year}</span>
-      </div>
-      <div className="flex-1 min-w-0">
-        <p className="font-medium text-foreground truncate">{track.title}</p>
-        <p className="text-sm text-muted-foreground truncate">{track.artist}</p>
-      </div>
-    </div>
-  );
-}
-
 export function TimelinePlacer({
   lobbyId,
   player,
@@ -100,7 +49,7 @@ export function TimelinePlacer({
   const _setPlacementPreview = useSessionMutation(api.rounds.setPlacementPreview);
   const submitPlacement = useSessionMutation(api.rounds.submitPlacement);
 
-  const sortedTimeline = [...player.timeline].sort((a, b) => a.year - b.year);
+  const sortedTimeline = sortTimelineByYear(player.timeline);
   const revealedTrackMap = useMemo(
     () => new Map(revealedTracks.map((track) => [track.trackId, track])),
     [revealedTracks],
@@ -158,45 +107,73 @@ export function TimelinePlacer({
   }
 
   const getPositionLabel = (index: number): string => {
-    if (index === 0) return t("firstPosition");
-    if (index === maxPosition) return t("lastPosition");
-    return t("afterYear", { year: sortedTimeline[index - 1]?.year });
+    if (index === 0 && maxPosition === 0) {
+      return t("emptyTimeline");
+    }
+    if (index === 0) {
+      const firstYear = sortedTimeline[0]?.year;
+      return t("beforeYear", { year: firstYear });
+    }
+    if (index === maxPosition) {
+      const lastYear = sortedTimeline[maxPosition - 1]?.year;
+      return t("afterYear", { year: lastYear });
+    }
+    const yearBefore = sortedTimeline[index - 1]?.year;
+    const yearAfter = sortedTimeline[index]?.year;
+    return t("betweenYears", { year1: yearBefore, year2: yearAfter });
   };
 
   return (
     <div className="w-full space-y-4">
       <div className="flex items-center justify-between">
         <h3 className="text-sm font-medium text-muted-foreground">{t("placeTheSong")}</h3>
-        <span className="text-xs text-muted-foreground">
-          {t("timelineCards", { count: player.timelineSize })}
-        </span>
       </div>
-
-      {currentTrack.youtubeVideoId && (
-        <div className="mb-4">
-          <YouTubePlayer youtubeVideoId={currentTrack.youtubeVideoId} className="w-full max-w-md" />
-        </div>
-      )}
 
       <div className="space-y-2">
         {sortedTimeline.map((entry, idx) => (
-          <div key={`${entry.trackId}-${entry.earnedAtRoundNumber}`}>
-            {idx === selectedIndex && <YearCard year={currentTrack.year} isNew={true} />}
+          <div key={`${entry.trackId}-${entry.earnedAtRoundNumber}-${idx}`}>
+            {idx === selectedIndex && (
+              <TimelineCard
+                icon="help"
+                title="New Song"
+                subtitle="Guess the year!"
+                year={currentTrack.year}
+                isNew={true}
+                isPreview={true}
+              />
+            )}
             {revealedTrackMap.has(entry.trackId) ? (
-              <KnownTrackCard track={revealedTrackMap.get(entry.trackId)!} />
+              <TimelineCard
+                icon="music"
+                title={revealedTrackMap.get(entry.trackId)!.title}
+                artist={revealedTrackMap.get(entry.trackId)!.artist}
+                year={revealedTrackMap.get(entry.trackId)!.year}
+              />
             ) : (
-              <YearCard year={entry.year} />
+              <TimelineCard
+                icon="music"
+                title="Known Track"
+                subtitle="From round"
+                year={entry.year}
+                iconColor="primary"
+              />
             )}
           </div>
         ))}
-        {maxPosition === selectedIndex && <YearCard year={currentTrack.year} isNew={true} />}
+        {maxPosition === selectedIndex && (
+          <TimelineCard
+            icon="help"
+            title="New Song"
+            subtitle="Guess the year!"
+            year={currentTrack.year}
+            isNew={true}
+            isPreview={true}
+          />
+        )}
       </div>
 
       <div className="flex items-center justify-between pt-4 border-t">
-        <p className="text-sm text-muted-foreground">
-          {t("selectPosition")}{" "}
-          <span className="font-medium text-foreground">{getPositionLabel(selectedIndex)}</span>
-        </p>
+        <p className="text-sm text-foreground font-medium">{getPositionLabel(selectedIndex)}</p>
         <p className="text-xs text-muted-foreground mr-2">↑↓ to move, Enter to confirm</p>
       </div>
 

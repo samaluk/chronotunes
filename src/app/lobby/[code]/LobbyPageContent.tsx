@@ -55,24 +55,6 @@ export function LobbyPageContent({ code }: LobbyPageContentProps): React.ReactNo
     toast.success(tCommon("copied"), { description: t("copiedToClipboard") });
   };
 
-  const handleShare = async (): Promise<void> => {
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: t("title"),
-          text: `${t("title")}: ${t("shareCode")} ${code}`,
-          url: window.location.href,
-        });
-      } catch (error) {
-        if ((error as Error).name !== "AbortError") {
-          handleCopyCode();
-        }
-      }
-    } else {
-      handleCopyCode();
-    }
-  };
-
   const handleLeaveLobby = async (): Promise<void> => {
     if (!sessionId) return;
     try {
@@ -161,23 +143,25 @@ export function LobbyPageContent({ code }: LobbyPageContentProps): React.ReactNo
                 <p className="text-sm text-muted-foreground">{t("subtitle")}</p>
               </div>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2 px-3 py-1.5 rounded-md bg-muted/50">
+                <code className="text-lg font-mono font-bold tracking-widest">{code}</code>
+                <button
+                  type="button"
+                  onClick={handleCopyCode}
+                  className="inline-flex items-center justify-center h-8 w-8 rounded-md hover:bg-background transition-colors"
+                  title={t("copyCode")}
+                >
+                  <Copy className="h-4 w-4" />
+                </button>
+              </div>
               <LocaleSwitcher />
-              <button
-                type="button"
-                onClick={handleShare}
-                className="inline-flex items-center justify-center h-9 px-3 rounded-md border border-input bg-background font-medium transition-colors hover:bg-accent"
-              >
-                <Share2 className="h-4 w-4 mr-2" />
-                {t("share")}
-              </button>
               <button
                 type="button"
                 onClick={handleLeaveLobby}
                 className="inline-flex items-center justify-center h-9 px-3 rounded-md border border-input bg-background font-medium text-destructive transition-colors hover:bg-accent hover:text-destructive"
               >
-                <LogOut className="h-4 w-4 mr-2" />
-                {t("leave")}
+                <LogOut className="h-4 w-4" />
               </button>
             </div>
           </div>
@@ -186,27 +170,6 @@ export function LobbyPageContent({ code }: LobbyPageContentProps): React.ReactNo
 
       <main className="flex-1 container mx-auto px-4 py-8">
         <div className="max-w-4xl mx-auto space-y-8">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-6 rounded-xl bg-primary/5 border">
-            <div>
-              <p className="text-sm font-medium text-muted-foreground uppercase tracking-wider">
-                {t("lobbyCode")}
-              </p>
-              <div className="flex items-center gap-3 mt-1">
-                <code className="text-4xl font-mono font-bold tracking-widest">{code}</code>
-              </div>
-            </div>
-            <div className="flex items-center gap-2">
-              <button
-                type="button"
-                onClick={handleCopyCode}
-                className="inline-flex items-center justify-center h-10 px-4 rounded-md bg-secondary font-medium transition-colors hover:bg-secondary/80"
-              >
-                <Copy className="h-4 w-4 mr-2" />
-                {t("copyCode")}
-              </button>
-            </div>
-          </div>
-
           {isInGame ? (
             <ErrorBoundary>
               <GameView lobbyId={lobby._id} code={code} />

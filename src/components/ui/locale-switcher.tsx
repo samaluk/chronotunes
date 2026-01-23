@@ -4,6 +4,7 @@ import { Globe } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { useLocalStorage } from "usehooks-ts";
+import { useRouter } from "@/i18n/routing";
 import { cn } from "@/lib/utils";
 
 const LOCALE_STORAGE_KEY = "locale";
@@ -23,12 +24,13 @@ export function LocaleSwitcher(): React.ReactNode {
   const [locale, setLocale] = useLocalStorage(LOCALE_STORAGE_KEY, "en");
   const t = useTranslations("locale");
   const [isOpen, setIsOpen] = useState(false);
+  const router = useRouter();
 
   const handleLocaleChange = (newLocale: string): void => {
     setIsOpen(false);
     if (newLocale === locale) return;
     setLocale(newLocale);
-    window.location.reload();
+    router.refresh();
   };
 
   const currentLocaleName = localeNames[locale] || localeNames.en;

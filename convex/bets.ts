@@ -1,7 +1,18 @@
 import { ConvexError, v } from "convex/values";
 import type { Id } from "./_generated/dataModel";
 import { query } from "./_generated/server";
+import { getGameContext, getPlayerBySession } from "./lib/gameContext";
 import { mutationWithSession } from "./lib/sessions";
+
+type BetWithPlayer = {
+  playerId: Id<"players">;
+  playerDisplayName: string;
+  proposedIndex: number;
+  placedAt: number;
+  lockedIn: boolean;
+  declinedToBet: boolean;
+  status: "pending" | "won" | "lost";
+};
 
 export const preview = mutationWithSession({
   args: { lobbyId: v.id("lobbies"), proposedIndex: v.number() },
@@ -9,44 +20,13 @@ export const preview = mutationWithSession({
     const { lobbyId, proposedIndex } = args;
     const { sessionId } = ctx;
 
-    const lobby = await ctx.db.get(lobbyId);
+    const { round } = await getGameContext(ctx, lobbyId);
 
-    if (!lobby) {
-      throw new ConvexError("Lobby not found");
-    }
-
-    if (!lobby.activeGameId) {
-      throw new ConvexError("No active game in this lobby");
-    }
-
-    const game = await ctx.db.get(lobby.activeGameId);
-
-    if (!game) {
-      throw new ConvexError("Game not found");
-    }
-
-    if (!game.currentRoundId) {
-      throw new ConvexError("No current round in this game");
-    }
-
-    const round = await ctx.db.get(game.currentRoundId);
-
-    if (!round) {
-      throw new ConvexError("Round not found");
-    }
-
-    if (round.phase !== "betting") {
+    if (!round || round.phase !== "betting") {
       throw new ConvexError("Can only place bets after placement is locked in");
     }
 
-    const player = await ctx.db
-      .query("players")
-      .withIndex("by_lobby_and_session", (q) => q.eq("lobbyId", lobbyId).eq("sessionId", sessionId))
-      .unique();
-
-    if (!player) {
-      throw new ConvexError("Player not found in this lobby");
-    }
+    const player = await getPlayerBySession(ctx, lobbyId, sessionId);
 
     if (round.turnPlayerId === player._id) {
       throw new ConvexError("Turn player cannot place bets");
@@ -87,7 +67,7 @@ export const preview = mutationWithSession({
       .filter((q) => q.eq(q.field("proposedIndex"), proposedIndex))
       .first();
 
-    if (slotBet && slotBet.playerId !== player._id) {
+    if (slotBet && slotBet.playerId !== player._id && slotBet.lockedIn) {
       throw new ConvexError("That placement slot is already taken");
     }
 
@@ -119,44 +99,13 @@ export const lockIn = mutationWithSession({
     const { lobbyId } = args;
     const { sessionId } = ctx;
 
-    const lobby = await ctx.db.get(lobbyId);
+    const { round } = await getGameContext(ctx, lobbyId);
 
-    if (!lobby) {
-      throw new ConvexError("Lobby not found");
-    }
-
-    if (!lobby.activeGameId) {
-      throw new ConvexError("No active game in this lobby");
-    }
-
-    const game = await ctx.db.get(lobby.activeGameId);
-
-    if (!game) {
-      throw new ConvexError("Game not found");
-    }
-
-    if (!game.currentRoundId) {
-      throw new ConvexError("No current round in this game");
-    }
-
-    const round = await ctx.db.get(game.currentRoundId);
-
-    if (!round) {
-      throw new ConvexError("Round not found");
-    }
-
-    if (round.phase !== "betting") {
+    if (!round || round.phase !== "betting") {
       throw new ConvexError("Can only lock in bets during betting phase");
     }
 
-    const player = await ctx.db
-      .query("players")
-      .withIndex("by_lobby_and_session", (q) => q.eq("lobbyId", lobbyId).eq("sessionId", sessionId))
-      .unique();
-
-    if (!player) {
-      throw new ConvexError("Player not found in this lobby");
-    }
+    const player = await getPlayerBySession(ctx, lobbyId, sessionId);
 
     const existingBet = await ctx.db
       .query("roundBets")
@@ -185,44 +134,13 @@ export const cancel = mutationWithSession({
     const { lobbyId } = args;
     const { sessionId } = ctx;
 
-    const lobby = await ctx.db.get(lobbyId);
+    const { round } = await getGameContext(ctx, lobbyId);
 
-    if (!lobby) {
-      throw new ConvexError("Lobby not found");
-    }
-
-    if (!lobby.activeGameId) {
-      throw new ConvexError("No active game in this lobby");
-    }
-
-    const game = await ctx.db.get(lobby.activeGameId);
-
-    if (!game) {
-      throw new ConvexError("Game not found");
-    }
-
-    if (!game.currentRoundId) {
-      throw new ConvexError("No current round in this game");
-    }
-
-    const round = await ctx.db.get(game.currentRoundId);
-
-    if (!round) {
-      throw new ConvexError("Round not found");
-    }
-
-    if (round.phase !== "betting") {
+    if (!round || round.phase !== "betting") {
       throw new ConvexError("Can only cancel bets during betting phase");
     }
 
-    const player = await ctx.db
-      .query("players")
-      .withIndex("by_lobby_and_session", (q) => q.eq("lobbyId", lobbyId).eq("sessionId", sessionId))
-      .unique();
-
-    if (!player) {
-      throw new ConvexError("Player not found in this lobby");
-    }
+    const player = await getPlayerBySession(ctx, lobbyId, sessionId);
 
     const existingBet = await ctx.db
       .query("roundBets")
@@ -247,33 +165,18 @@ export const cancel = mutationWithSession({
   },
 });
 
-type BetWithPlayer = {
-  playerId: Id<"players">;
-  playerDisplayName: string;
-  proposedIndex: number;
-  placedAt: number;
-  lockedIn: boolean;
-  status: "pending" | "won" | "lost";
-};
-
 export const listForRound = query({
   args: { lobbyId: v.id("lobbies") },
   handler: async (ctx, args): Promise<BetWithPlayer[]> => {
-    const { lobbyId } = args;
+    const lobby = await ctx.db.get(args.lobbyId);
 
-    const lobby = await ctx.db.get(lobbyId);
-
-    if (!lobby) {
-      throw new ConvexError("Lobby not found");
-    }
-
-    if (!lobby.activeGameId) {
+    if (!(lobby && lobby.activeGameId)) {
       return [];
     }
 
     const game = await ctx.db.get(lobby.activeGameId);
 
-    if (!game || !game.currentRoundId) {
+    if (!(game && game.currentRoundId)) {
       return [];
     }
 
@@ -294,11 +197,15 @@ export const listForRound = query({
 
     const showLiveBets = lobby.settings.showLiveBets;
 
-    const filteredBets = showLiveBets ? bets : bets.filter((bet) => bet.lockedIn);
+    const filteredBets = showLiveBets
+      ? bets
+      : bets.filter((bet) => bet.lockedIn || bet.declinedToBet);
+
+    const betsToReturn = round.phase === "betting" ? bets : filteredBets;
 
     const betsWithPlayers: BetWithPlayer[] = [];
 
-    for (const bet of filteredBets) {
+    for (const bet of betsToReturn) {
       const player = await ctx.db.get(bet.playerId);
 
       if (player) {
@@ -308,6 +215,7 @@ export const listForRound = query({
           proposedIndex: bet.proposedIndex,
           placedAt: bet.placedAt,
           lockedIn: bet.lockedIn,
+          declinedToBet: bet.declinedToBet ?? false,
           status: bet.status,
         });
       }

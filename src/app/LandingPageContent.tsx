@@ -6,6 +6,10 @@ import { Music } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
+import { Label } from "@/components/ui/label";
 import { LocaleSwitcher } from "@/components/ui/locale-switcher";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { api } from "@/convex/_generated/api.js";
@@ -141,73 +145,103 @@ export function LandingPageContent() {
 
         <div className="flex w-full max-w-sm flex-col gap-4">
           <div className="flex flex-col gap-2">
-            <label htmlFor="displayName" className="text-sm font-medium text-foreground">
+            <Label htmlFor="displayName" className="text-sm font-medium text-foreground">
               {t("displayNameLabel")}
-            </label>
-            <input
+            </Label>
+            <Input
               id="displayName"
               type="text"
               value={displayName}
               onChange={(e) => setDisplayNameState(e.target.value)}
               placeholder={t("displayNamePlaceholder")}
               maxLength={20}
-              className="flex h-12 w-full rounded-full border border-input bg-background px-4 py-2 text-base ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
             />
           </div>
 
           {!showJoinForm ? (
-            <div className="flex flex-col gap-4 sm:flex-row">
-              <button
+            <div className="flex justify-between gap-4">
+              <Button
                 type="button"
+                variant={"default"}
                 onClick={handleCreateGame}
                 disabled={isCreating || !sessionId}
-                className="inline-flex h-12 items-center justify-center gap-2 rounded-full bg-primary px-6 text-base font-medium text-primary-foreground transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                className="h-12"
               >
                 {isCreating ? t("createGameLoading") : t("createGame")}
-              </button>
-              <button
+              </Button>
+              <Button
                 type="button"
+                variant={"outline"}
                 onClick={() => setShowJoinForm(true)}
-                className="inline-flex h-12 items-center justify-center rounded-full border border-input bg-background px-6 text-base font-medium text-foreground transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                className="h-12"
               >
                 {t("joinGame")}
-              </button>
+              </Button>
             </div>
           ) : (
             <div className="flex flex-col gap-4">
               <div className="flex flex-col gap-2">
-                <label htmlFor="joinCode" className="text-sm font-medium text-foreground">
+                <Label htmlFor="joinCode" className="text-sm font-medium text-foreground">
                   {t("lobbyCodeLabel")}
-                </label>
-                <input
-                  id="joinCode"
-                  type="text"
-                  value={joinCode}
-                  onChange={(e) => setJoinCode(e.target.value.toUpperCase())}
-                  placeholder={t("lobbyCodePlaceholder", { length: LOBBY_CODE_LENGTH })}
-                  maxLength={LOBBY_CODE_LENGTH}
-                  className="flex h-12 w-full rounded-full border border-input bg-background px-4 py-2 text-center text-2xl tracking-widest uppercase ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                />
+                </Label>
+                <div className="flex w-full items-center justify-center">
+                  <InputOTP
+                    maxLength={6}
+                    value={joinCode}
+                    onChange={(value) => setJoinCode(value)}
+                    className="w-full"
+                    containerClassName="w-full"
+                  >
+                    <InputOTPGroup className="w-full">
+                      <InputOTPSlot
+                        index={0}
+                        className="aspect-square h-auto w-auto flex-1 text-3xl"
+                      />
+                      <InputOTPSlot
+                        index={1}
+                        className="aspect-square h-auto w-auto flex-1 text-3xl"
+                      />
+                      <InputOTPSlot
+                        index={2}
+                        className="aspect-square h-auto w-auto flex-1 text-3xl"
+                      />
+                      <InputOTPSlot
+                        index={3}
+                        className="aspect-square h-auto w-auto flex-1 text-3xl"
+                      />
+                      <InputOTPSlot
+                        index={4}
+                        className="aspect-square h-auto w-auto flex-1 text-3xl"
+                      />
+                      <InputOTPSlot
+                        index={5}
+                        className="aspect-square h-auto w-auto flex-1 text-3xl"
+                      />
+                    </InputOTPGroup>
+                  </InputOTP>
+                </div>
               </div>
-              <div className="flex gap-4">
-                <button
+              <div className="flex justify-between gap-4">
+                <Button
                   type="button"
-                  onClick={handleJoinGame}
-                  disabled={isJoining || !sessionId}
-                  className="inline-flex h-12 flex-1 items-center justify-center gap-2 rounded-full bg-primary px-6 text-base font-medium text-primary-foreground transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                >
-                  {isJoining ? t("joinGameLoading") : t("joinGame")}
-                </button>
-                <button
-                  type="button"
+                  variant={"outline"}
                   onClick={() => {
                     setShowJoinForm(false);
                     setJoinCode("");
                   }}
-                  className="inline-flex h-12 flex-1 items-center justify-center rounded-full border border-input bg-background px-6 text-base font-medium text-foreground transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                  className="h-12 flex-1"
                 >
                   {tCommon("cancel")}
-                </button>
+                </Button>
+                <Button
+                  variant={"default"}
+                  type="button"
+                  onClick={handleJoinGame}
+                  disabled={isJoining || !sessionId}
+                  className="h-12 flex-1"
+                >
+                  {isJoining ? t("joinGameLoading") : t("joinGame")}
+                </Button>
               </div>
             </div>
           )}

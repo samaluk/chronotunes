@@ -1,9 +1,11 @@
 "use client";
 
-import { AlertTriangle, Volume2, VolumeX } from "lucide-react";
+import { AlertTriangle } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import ReactPlayer from "react-player";
 import type { Config } from "react-player/types";
+import { useLocalStorage } from "usehooks-ts";
+import { useMounted } from "@/lib/hooks/useMounted";
 import { cn } from "@/lib/utils";
 
 interface YouTubePlayerProps {
@@ -11,12 +13,16 @@ interface YouTubePlayerProps {
   className?: string;
 }
 
+const VOLUME_STORAGE_KEY = "chronotunes-volume";
+const MUTED_STORAGE_KEY = "chronotunes-muted";
+
 export function YouTubePlayer({ youtubeVideoId, className }: YouTubePlayerProps): React.ReactNode {
+  const mounted = useMounted();
   const [isReady, setIsReady] = useState(false);
   const [hasError, setHasError] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const [volume, setVolume] = useState(80);
-  const [isMuted, setIsMuted] = useState(false);
+  const [volume, _setVolume] = useLocalStorage(VOLUME_STORAGE_KEY, 80);
+  const [isMuted, _setIsMuted] = useLocalStorage(MUTED_STORAGE_KEY, false);
 
   const playerConfig: Config = useMemo(
     () => ({
@@ -29,14 +35,14 @@ export function YouTubePlayer({ youtubeVideoId, className }: YouTubePlayerProps)
         fs: 0,
         playsinline: 1,
       },
-      file: { attributes: { disablepictureinpicture: 'true' } }
+      file: { attributes: { disablepictureinpicture: "true" } },
     }),
     [],
   );
 
   useEffect(() => {
-    if (!youtubeVideoId) {
-      setHasError(true);
+    if (!mounted || !youtubeVideoId) {
+      setHasError(!mounted || !youtubeVideoId);
       setIsLoading(false);
       return;
     }
@@ -44,17 +50,7 @@ export function YouTubePlayer({ youtubeVideoId, className }: YouTubePlayerProps)
     setHasError(false);
     setIsReady(false);
     setIsLoading(true);
-  }, [youtubeVideoId]);
-
-  const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
-    const newVolume = Number(e.target.value);
-    setVolume(newVolume);
-    setIsMuted(newVolume === 0);
-  };
-
-  const toggleMute = (): void => {
-    setIsMuted((prev) => !prev);
-  };
+  }, [mounted, youtubeVideoId]);
 
   if (hasError || !youtubeVideoId) {
     return (
@@ -104,29 +100,6 @@ export function YouTubePlayer({ youtubeVideoId, className }: YouTubePlayerProps)
       </div>
 
       <div className="flex items-center gap-3">
-        <button
-          type="button"
-          onClick={toggleMute}
-          className="shrink-0 p-2 rounded-md hover:bg-muted transition-colors"
-          aria-label={isMuted ? "Unmute" : "Mute"}
-        >
-          {isMuted ? (
-            <VolumeX className="h-4 w-4 text-muted-foreground" />
-          ) : (
-            <Volume2 className="h-4 w-4 text-foreground" />
-          )}
-        </button>
-
-        <input
-          type="range"
-          min="0"
-          max="100"
-          value={isMuted ? 0 : volume}
-          onChange={handleVolumeChange}
-          className="flex-1 h-2 bg-muted rounded-full appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-primary"
-          aria-label="Volume"
-        />
-
         {isLoading ? (
           <span className="text-xs text-muted-foreground">Loading...</span>
         ) : (

@@ -14,7 +14,8 @@
     "biome": "biome",
     "next:typegen": "tsc -p tsconfig.json --noEmit",
     "convex:typegen": "convex codegen --url http://127.0.0.1:3210 2>/dev/null || true",
-    "convex:dev": "convex dev --local"
+    "convex:dev": "convex dev --local",
+    "prepare": "lefthook install"
   },
   "dependencies": {
     "@base-ui/react": "^1.1.0",
@@ -50,7 +51,7 @@
     "yt-search": "^2.13.1"
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.3.11",
+    "@biomejs/biome": "2.3.11",
     "@edge-runtime/vm": "^5.0.0",
     "@tailwindcss/postcss": "^4",
     "@testing-library/jest-dom": "^6.9.1",
@@ -61,9 +62,11 @@
     "@vitest/ui": "3.2.4",
     "convex-test": "^0.0.41",
     "jsdom": "^26.0.0",
+    "lefthook": "^2.0.15",
     "scrape-youtube": "^2.4.0",
     "tailwindcss": "^4",
     "typescript": "^5",
+    "ultracite": "7.0.12",
     "vitest": "^3.0.0"
   }
 }

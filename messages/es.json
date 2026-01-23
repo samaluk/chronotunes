@@ -111,11 +111,12 @@
     "waitForPlayer": "Espera a que el jugador termine de colocar",
     "placeTheSong": "Coloca la canción",
     "timelineCards": "{count} {count, plural, =1 {carta} other {cartas}} en la línea temporal",
-    "selectPosition": "Selecciona una posición para la canción",
-    "firstPosition": "Primera posición",
-    "lastPosition": "Última posición",
-    "afterPosition": "Después de {year}",
+    "beforeYear": "Antes de {year}",
+    "afterYear": "Después de {year}",
+    "betweenYears": "Entre {year1} y {year2}",
+    "emptyTimeline": "Colocar en la línea temporal",
     "confirmPlacement": "Confirmar colocación",
+    "submitting": "Enviando...",
     "dropHere": "Suelta aquí",
     "loadingTrack": "Cargando canción..."
   },
@@ -139,12 +140,44 @@
     "positionBet": "Posición {number}",
     "failedToPreview": "No se pudo previsualizar la apuesta",
     "failedToLockIn": "No se pudo bloquear la apuesta",
-    "failedToCancel": "No se pudo cancelar la apuesta"
+    "failedToCancel": "No se pudo cancelar la apuesta",
+    "turnPlayerPlacement": "Selección del jugador",
+    "slotTaken": "Espacio ocupado",
+    "noBet": "No apostar",
+    "betDeclined": "Has decidido no apostar",
+    "decliningBet": "No apostar...",
+    "failedToDecline": "No se pudo declinar la apuesta",
+    "confirmBet": "Confirmar apuesta",
+    "useArrowsToMove": "Usa las flechas para moverte",
+    "enterToConfirm": "Enter para confirmar",
+    "turnPlayerCannotBet": "El jugador del turno no puede apostar",
+    "declinedToBet": "Has decidido no apostar",
+    "yourPreview": "Tu vista previa",
+    "tapToPreview": "Toca para previsualizar"
+  },
+  "phase": {
+    "placing": "Colocando",
+    "betting": "Apostando",
+    "resolved": "Resultados"
+  },
+  "timer": {
+    "timeRemaining": "Tiempo restante",
+    "timeUp": "Se acabó el tiempo",
+    "allBetsIn": "¡Todas las apuestas están listas!",
+    "resolveRound": "Resolver ronda",
+    "resolvingRound": "Resolviendo ronda...",
+    "waitingForHost": "Esperando a que el anfitrión resuelva...",
+    "waitingForBets": "Esperando a que todos los jugadores apuesten..."
   },
   "results": {
+    "revealing": "Revelando...",
+    "correct": "¡Correcto!",
+    "incorrect": "Incorrecto",
     "placementCorrect": "¡Colocación correcta!",
     "placementIncorrect": "Colocación incorrecta",
     "placementResult": "{name} colocó la canción {result}",
+    "validRange": "Posiciones válidas: {min} - {max}",
+    "theSongWas": "La canción era",
     "cardAwards": "Otorgamiento de cartas",
     "gotCardVia": "Obtuvo la carta mediante {method}",
     "noCardsAwarded": "No se otorgaron cartas esta ronda",
@@ -193,5 +226,14 @@
     "selectLanguage": "Seleccionar idioma",
     "english": "Inglés",
     "spanish": "Español"
+  },
+  "playerTimeline": {
+    "title": "Línea temporal de {name}",
+    "hostBadge": "Anfitrión",
+    "cardsCount": "{count} cartas",
+    "noCards": "Aún no hay cartas",
+    "noCardsDescription": "Las cartas aparecerán aquí a medida que avance el juego",
+    "placed": "Colocada",
+    "won": "Ganada"
   }
 }

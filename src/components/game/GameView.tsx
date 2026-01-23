@@ -3,15 +3,19 @@
 import { useQuery } from "convex/react";
 import type { GenericId } from "convex/values";
 import { useSessionId, useSessionQuery } from "convex-helpers/react/sessions";
-import { useEffect, useMemo, useState } from "react";
+import { Disc, History } from "lucide-react";
+import { useMemo, useState } from "react";
 import { ErrorBoundary } from "@/components/ui/error-boundary";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { api } from "@/convex/_generated/api.js";
-import type { Id } from "@/convex/_generated/dataModel";
+import type { Doc, Id } from "@/convex/_generated/dataModel";
+import { useMounted } from "@/lib/hooks/useMounted";
 import { CurrentRoundPanel } from "./CurrentRoundPanel";
 import { GameHeader } from "./GameHeader";
 import { GameResults } from "./GameResults";
 import { MyTimeline } from "./MyTimeline";
 import { PlayersBar } from "./PlayersBar";
+import { PlayerTimelineModal } from "./PlayerTimelineModal";
 
 interface GameViewProps {
   lobbyId: GenericId<"lobbies">;
@@ -20,11 +24,10 @@ interface GameViewProps {
 
 export function GameView({ lobbyId, code }: GameViewProps): React.ReactNode {
   const [sessionId] = useSessionId();
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  const mounted = useMounted();
+  const [selectedPlayerForTimeline, setSelectedPlayerForTimeline] = useState<Doc<"players"> | null>(
+    null,
+  );
 
   const lobby = useQuery(api.lobbies.get, mounted && code ? { code } : "skip");
   const players = useQuery(api.players.list, mounted && lobbyId ? { lobbyId } : "skip");
@@ -110,7 +113,7 @@ export function GameView({ lobbyId, code }: GameViewProps): React.ReactNode {
   const isGameFinished = game?.status === "finished";
 
   return (
-    <div className="w-full space-y-6">
+    <div className="w-full space-y-4">
       {isGameFinished ? (
         <ErrorBoundary>
           <GameResults lobbyId={lobbyId} code={code} />
@@ -118,22 +121,21 @@ export function GameView({ lobbyId, code }: GameViewProps): React.ReactNode {
       ) : (
         <>
           <ErrorBoundary>
+            {selectedPlayerForTimeline && (
+              <PlayerTimelineModal
+                player={selectedPlayerForTimeline}
+                open={selectedPlayerForTimeline !== null}
+                onOpenChange={(open) => !open && setSelectedPlayerForTimeline(null)}
+              />
+            )}
+
             <PlayersBar
               lobbyId={lobbyId}
               currentSessionId={sessionId ?? null}
               highlightPlayerId={currentRound?.turnPlayerId ?? null}
+              onPlayerClick={(player) => setSelectedPlayerForTimeline(player)}
             />
-          </ErrorBoundary>
 
-          {me && me.timeline.length > 0 && (
-            <div className="max-w-md">
-              <ErrorBoundary>
-                <MyTimeline player={me} />
-              </ErrorBoundary>
-            </div>
-          )}
-
-          <ErrorBoundary>
             <GameHeader
               roundNumber={game.currentRoundNumber ?? 1}
               turnPlayer={
@@ -145,27 +147,70 @@ export function GameView({ lobbyId, code }: GameViewProps): React.ReactNode {
                   : null
               }
               isMyTurn={isMyTurn}
-              turnSeconds={lobby?.settings?.turnSeconds}
-              startedAt={currentRound?.startedAt}
+              roundPhase={roundPhase}
+              bettingStartedAt={roundPhase === "betting" ? currentRound?.startedAt : undefined}
+              bettingWindowSeconds={
+                roundPhase === "betting" ? lobby?.settings?.bettingWindowSeconds : undefined
+              }
+              resolution={roundPhase === "resolved" ? (currentRound?.resolution ?? null) : null}
             />
           </ErrorBoundary>
 
-          <ErrorBoundary>
-            <CurrentRoundPanel
-              phase={roundPhase}
-              isMyTurn={isMyTurn}
-              lobbyId={lobbyId}
-              me={me ?? null}
-              players={players ?? null}
-              track={trackInfo}
-              existingPreviewIndex={currentRound?.placementPreview?.proposedIndex ?? null}
-              turnPlayerId={currentRound?.turnPlayerId ?? null}
-              turnPlayerTimeline={turnPlayer?.timeline ?? []}
-              turnPlayerTimelineSize={turnPlayer?.timelineSize ?? 0}
-              revealedTracks={revealedTracks ?? []}
-              resolution={currentRound?.resolution ?? null}
-            />
-          </ErrorBoundary>
+          <Tabs defaultValue="round" className="w-full">
+            <TabsList
+              variant="line"
+              className="w-full justify-start border-b rounded-none h-auto p-0 bg-transparent gap-6"
+            >
+              <TabsTrigger
+                value="round"
+                className="data-[active]:border-primary data-[active]:text-foreground px-0 pb-2 text-muted-foreground hover:text-foreground"
+              >
+                <Disc className="mr-2 h-4 w-4" />
+                Current Round
+              </TabsTrigger>
+              <TabsTrigger
+                value="timeline"
+                className="data-[active]:border-primary data-[active]:text-foreground px-0 pb-2 text-muted-foreground hover:text-foreground"
+              >
+                <History className="mr-2 h-4 w-4" />
+                My Timeline
+              </TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="round" className="mt-4">
+              <ErrorBoundary>
+                <CurrentRoundPanel
+                  phase={roundPhase}
+                  isMyTurn={isMyTurn}
+                  lobbyId={lobbyId}
+                  me={me ?? null}
+                  players={players ?? null}
+                  track={trackInfo}
+                  existingPreviewIndex={currentRound?.placementPreview?.proposedIndex ?? null}
+                  turnPlayerId={currentRound?.turnPlayerId ?? null}
+                  turnPlayerTimeline={turnPlayer?.timeline ?? []}
+                  turnPlayerTimelineSize={turnPlayer?.timelineSize ?? 0}
+                  revealedTracks={revealedTracks ?? []}
+                  roundStartedAt={currentRound?.startedAt}
+                  turnSeconds={lobby?.settings?.turnSeconds}
+                  bettingWindowSeconds={lobby?.settings?.bettingWindowSeconds}
+                  resolution={currentRound?.resolution ?? null}
+                  turnPlayerPlacementIndex={
+                    currentRound?.phase === "betting"
+                      ? (currentRound?.placement?.proposedIndex ?? null)
+                      : null
+                  }
+                  showLiveBets={lobby?.settings?.showLiveBets ?? false}
+                />
+              </ErrorBoundary>
+            </TabsContent>
+
+            <TabsContent value="timeline" className="mt-4">
+              <ErrorBoundary>
+                <MyTimeline player={me ?? null} />
+              </ErrorBoundary>
+            </TabsContent>
+          </Tabs>
         </>
       )}
     </div>

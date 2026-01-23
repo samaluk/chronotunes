@@ -1,6 +1,8 @@
 import { render, screen } from "@testing-library/react";
 import type { GenericId } from "convex/values";
+import { NextIntlClientProvider } from "next-intl";
 import { describe, expect, it, vi } from "vitest";
+import messages from "../../../messages/en.json";
 import { BettingPanel } from "./BettingPanel";
 
 vi.mock("convex/react", () => ({
@@ -24,6 +26,7 @@ vi.mock("react", () => ({
   }),
   useCallback: vi.fn((fn) => fn),
   useMemo: vi.fn((fn) => fn()),
+  useRef: vi.fn((initial) => ({ current: initial })),
 }));
 
 const createMockPlayer = (overrides = {}) => ({
@@ -47,13 +50,17 @@ describe("BettingPanel", () => {
     const player = createMockPlayer({ coins: 5 });
 
     render(
-      <BettingPanel
-        lobbyId={"lobby123" as GenericId<"lobbies">}
-        me={player}
-        track={mockTrack}
-        turnPlayerTimeline={[]}
-        turnPlayerTimelineSize={0}
-      />,
+      <NextIntlClientProvider locale="en" messages={messages}>
+        <BettingPanel
+          lobbyId={"lobby123" as GenericId<"lobbies">}
+          me={player}
+          track={mockTrack}
+          turnPlayerTimeline={[]}
+          revealedTracks={[]}
+          players={[]}
+          turnPlayerId={null}
+        />
+      </NextIntlClientProvider>,
     );
 
     expect(screen.getByText("5 coins")).toBeInTheDocument();
@@ -63,13 +70,17 @@ describe("BettingPanel", () => {
     const player = createMockPlayer({ coins: 0 });
 
     render(
-      <BettingPanel
-        lobbyId={"lobby123" as GenericId<"lobbies">}
-        me={player}
-        track={mockTrack}
-        turnPlayerTimeline={[]}
-        turnPlayerTimelineSize={0}
-      />,
+      <NextIntlClientProvider locale="en" messages={messages}>
+        <BettingPanel
+          lobbyId={"lobby123" as GenericId<"lobbies">}
+          me={player}
+          track={mockTrack}
+          turnPlayerTimeline={[]}
+          revealedTracks={[]}
+          players={[]}
+          turnPlayerId={null}
+        />
+      </NextIntlClientProvider>,
     );
 
     expect(screen.getByText("Not enough coins to place a bet")).toBeInTheDocument();
@@ -79,32 +90,40 @@ describe("BettingPanel", () => {
     const player = createMockPlayer();
 
     render(
-      <BettingPanel
-        lobbyId={"lobby123" as GenericId<"lobbies">}
-        me={player}
-        track={null}
-        turnPlayerTimeline={[]}
-        turnPlayerTimelineSize={0}
-      />,
+      <NextIntlClientProvider locale="en" messages={messages}>
+        <BettingPanel
+          lobbyId={"lobby123" as GenericId<"lobbies">}
+          me={player}
+          track={null}
+          turnPlayerTimeline={[]}
+          revealedTracks={[]}
+          players={[]}
+          turnPlayerId={null}
+        />
+      </NextIntlClientProvider>,
     );
 
-    expect(screen.getByText("Loading track...")).toBeInTheDocument();
+    expect(screen.getByText("Loading...")).toBeInTheDocument();
   });
 
   it("displays header section", () => {
     const player = createMockPlayer();
 
     render(
-      <BettingPanel
-        lobbyId={"lobby123" as GenericId<"lobbies">}
-        me={player}
-        track={mockTrack}
-        turnPlayerTimeline={[]}
-        turnPlayerTimelineSize={0}
-      />,
+      <NextIntlClientProvider locale="en" messages={messages}>
+        <BettingPanel
+          lobbyId={"lobby123" as GenericId<"lobbies">}
+          me={player}
+          track={mockTrack}
+          turnPlayerTimeline={[]}
+          revealedTracks={[]}
+          players={[]}
+          turnPlayerId={null}
+        />
+      </NextIntlClientProvider>,
     );
 
     expect(screen.getByText("Place Your Bet")).toBeInTheDocument();
-    expect(screen.getByText("Guess where the song belongs on the timeline")).toBeInTheDocument();
+    expect(screen.getByText("Choose an open placement slot for the song")).toBeInTheDocument();
   });
 });

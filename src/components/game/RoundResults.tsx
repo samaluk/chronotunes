@@ -3,8 +3,11 @@
 import type { GenericId } from "convex/values";
 import { useSessionMutation } from "convex-helpers/react/sessions";
 import { Check, Clock, Music, Star, Trophy, Users, X } from "lucide-react";
-import { useState } from "react";
+import { useTranslations } from "next-intl";
+import { useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
 import { api } from "@/convex/_generated/api";
 import type { Doc, Id } from "@/convex/_generated/dataModel";
 import { cn } from "@/lib/utils";
@@ -49,6 +52,7 @@ interface BetWithPlayer {
   playerId: GenericId<"players">;
   playerDisplayName: string;
   proposedIndex: number;
+  declinedToBet: boolean;
   status: "pending" | "won" | "lost";
 }
 
@@ -71,10 +75,17 @@ export function RoundResults({
   players,
   me,
 }: RoundResultsProps): React.ReactNode {
+  const t = useTranslations("results");
   const [isResolving, setIsResolving] = useState(false);
+  const [showCorrectness, setShowCorrectness] = useState(false);
 
   const resolveAndNext = useSessionMutation(api.games.resolveAndNext);
-  const isHost = me?._id === turnPlayer._id || players.find((p) => p._id === me?._id)?.isHost;
+  const isHost = players.find((p) => p._id === me?._id)?.isHost ?? false;
+
+  useEffect(() => {
+    const timer = setTimeout(() => setShowCorrectness(true), 300);
+    return () => clearTimeout(timer);
+  }, []);
 
   const handleNextRound = async () => {
     setIsResolving(true);
@@ -95,6 +106,8 @@ export function RoundResults({
     return bets.find((b) => b.playerId === playerId);
   };
 
+  const bettingBets = useMemo(() => bets.filter((bet) => !bet.declinedToBet), [bets]);
+
   const formatTime = (timestamp: number): string => {
     const date = new Date(timestamp);
     return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
@@ -108,89 +121,124 @@ export function RoundResults({
       <div className="text-center space-y-4">
         <div
           className={cn(
-            "mx-auto flex h-16 w-16 items-center justify-center rounded-full",
-            resolution.turnPlayerWasCorrect
-              ? "bg-green-100 dark:bg-green-900/30"
-              : "bg-red-100 dark:bg-red-900/30",
+            "mx-auto flex h-20 w-20 items-center justify-center rounded-full transition-all duration-500 transform",
+            showCorrectness
+              ? resolution.turnPlayerWasCorrect
+                ? "bg-green-100 dark:bg-green-900/30 scale-100"
+                : "bg-red-100 dark:bg-red-900/30 scale-100"
+              : "bg-muted scale-90 opacity-50",
           )}
         >
-          {resolution.turnPlayerWasCorrect ? (
-            <Check className="h-8 w-8 text-green-600 dark:text-green-400" />
+          {showCorrectness ? (
+            resolution.turnPlayerWasCorrect ? (
+              <Check className="h-10 w-10 text-green-600 dark:text-green-400 animate-bounce" />
+            ) : (
+              <X className="h-10 w-10 text-red-600 dark:text-red-400 animate-shake" />
+            )
           ) : (
-            <X className="h-8 w-8 text-red-600 dark:text-red-400" />
+            <Clock className="h-8 w-8 text-muted-foreground animate-pulse" />
           )}
         </div>
-        <div>
-          <p className="text-lg font-medium">
-            {resolution.turnPlayerWasCorrect ? "Placement Correct!" : "Placement Incorrect"}
+        <div className="space-y-1">
+          <p
+            className={cn(
+              "text-xl font-bold transition-all duration-300",
+              showCorrectness
+                ? resolution.turnPlayerWasCorrect
+                  ? "text-green-600 dark:text-green-400"
+                  : "text-red-600 dark:text-red-400"
+                : "text-foreground",
+            )}
+          >
+            {showCorrectness
+              ? resolution.turnPlayerWasCorrect
+                ? t("correct")
+                : t("incorrect")
+              : t("revealing")}
           </p>
           <p className="text-sm text-muted-foreground">
-            {turnPlayer.displayName} placed the song{" "}
-            {resolution.turnPlayerWasCorrect ? "in the valid range" : "outside the valid range"}
+            {resolution.turnPlayerWasCorrect
+              ? t("placementResult", { name: turnPlayer.displayName, result: "in the valid range" })
+              : t("placementResult", {
+                  name: turnPlayer.displayName,
+                  result: "outside the valid range",
+                })}
           </p>
         </div>
       </div>
 
-      <div className="rounded-lg bg-card border p-4 text-center">
-        <p className="text-sm text-muted-foreground">The song was</p>
-        <p className="text-xl font-bold mt-1">
-          {track.title} - {track.artist}
-        </p>
-        <p className="text-lg text-primary font-medium">{track.year}</p>
-      </div>
+      {showCorrectness && (
+        <Card className="p-4 text-center transition-all duration-300 animate-in fade-in slide-in-from-bottom-2">
+          <p className="text-xs text-muted-foreground uppercase tracking-wide">{t("theSongWas")}</p>
+          <div className="flex items-center justify-between">
+            <Label className="text-lg font-medium text-muted-foreground">Title</Label>
+            <p className="text-2xl font-bold text-foreground">{track.title}</p>
+          </div>
+          <div className="flex items-center justify-between">
+            <Label className="text-lg font-medium text-muted-foreground">Artist</Label>
+            <p className="text-2xl font-bold text-foreground">{track.artist}</p>
+          </div>
+          <div className="flex items-center justify-between">
+            <Label className="text-lg font-medium text-muted-foreground">Year</Label>
+            <p className="text-2xl font-bold text-foreground">{track.year}</p>
+          </div>
+        </Card>
+      )}
 
-      <div className="space-y-3">
-        <div className="flex items-center gap-2 text-sm font-medium">
-          <Trophy className="h-4 w-4" />
-          <span>Card Awards</span>
-        </div>
-        <div className="grid gap-2">
-          {resolution.awardedPlayerIds.map((playerId) => {
-            const player = getPlayerById(playerId);
-            if (!player) return null;
-            const isMe = player._id === me?._id;
-            return (
-              <div
-                key={playerId}
-                className={cn(
-                  "flex items-center justify-between p-3 rounded-lg border",
-                  isMe ? "bg-primary/5 border-primary/20" : "bg-muted/30",
-                )}
-              >
-                <div className="flex items-center gap-2">
-                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10">
-                    <Music className="h-4 w-4 text-primary" />
+      {showCorrectness && (
+        <div className="space-y-3 transition-all duration-500 animate-in fade-in slide-in-from-bottom-4">
+          <div className="flex items-center gap-2 text-sm font-medium">
+            <Trophy className="h-4 w-4" />
+            <span>Card Awards</span>
+          </div>
+          <div className="grid gap-2">
+            {resolution.awardedPlayerIds.map((playerId) => {
+              const player = getPlayerById(playerId);
+              if (!player) return null;
+              const isMe = player._id === me?._id;
+              return (
+                <div
+                  key={playerId}
+                  className={cn(
+                    "flex items-center justify-between p-3 rounded-lg border",
+                    isMe ? "bg-primary/5 border-primary/20" : "bg-muted/30",
+                  )}
+                >
+                  <div className="flex items-center gap-2">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10">
+                      <Music className="h-4 w-4 text-primary" />
+                    </div>
+                    <div>
+                      <p className="font-medium">
+                        {player.displayName}
+                        {isMe && <span className="ml-1 text-xs text-primary">(You)</span>}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        Got the card via {playerId === turnPlayer._id ? "placement" : "betting"}
+                      </p>
+                    </div>
                   </div>
-                  <div>
-                    <p className="font-medium">
-                      {player.displayName}
-                      {isMe && <span className="ml-1 text-xs text-primary">(You)</span>}
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      Got the card via {playerId === turnPlayer._id ? "placement" : "betting"}
-                    </p>
-                  </div>
+                  <Star className="h-4 w-4 text-green-600 dark:text-green-400" />
                 </div>
-                <Star className="h-4 w-4 text-green-600 dark:text-green-400" />
-              </div>
-            );
-          })}
-          {resolution.awardedPlayerIds.length === 0 && (
-            <p className="text-sm text-muted-foreground text-center py-2">
-              No cards were awarded this round
-            </p>
-          )}
+              );
+            })}
+            {resolution.awardedPlayerIds.length === 0 && (
+              <p className="text-sm text-muted-foreground text-center py-2">
+                No cards were awarded this round
+              </p>
+            )}
+          </div>
         </div>
-      </div>
+      )}
 
-      {bets.length > 0 && (
+      {bettingBets.length > 0 && (
         <div className="space-y-3">
           <div className="flex items-center gap-2 text-sm font-medium">
             <Users className="h-4 w-4" />
             <span>Betting Results</span>
           </div>
           <div className="grid gap-2">
-            {bets.map((bet) => {
+            {bettingBets.map((bet) => {
               const player = getPlayerById(bet.playerId);
               if (!player) return null;
               const isMe = player._id === me?._id;

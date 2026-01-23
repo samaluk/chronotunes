@@ -143,6 +143,7 @@ export default defineSchema({
     proposedIndex: v.number(),
     placedAt: v.number(),
     lockedIn: v.boolean(),
+    declinedToBet: v.optional(v.boolean()),
     status: betStatus,
   })
     .index("by_round", ["roundId"])

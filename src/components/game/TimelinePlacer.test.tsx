@@ -1,6 +1,8 @@
 import { render, screen } from "@testing-library/react";
 import type { GenericId } from "convex/values";
+import { NextIntlClientProvider } from "next-intl";
 import { describe, expect, test, vi } from "vitest";
+import messages from "../../../messages/en.json";
 import { TimelinePlacer } from "./TimelinePlacer";
 
 vi.mock("@/convex/_generated/api.js", () => ({
@@ -22,31 +24,6 @@ vi.mock("convex-helpers/react/sessions", () => ({
   SessionProvider: ({ children }: { children: React.ReactNode }) => children,
 }));
 
-vi.mock("next-intl", () => ({
-  useTranslations: vi.fn((_namespace) => {
-    const translations: Record<string, string> = {
-      loadingTrack: "Loading track...",
-      placeTheSong: "Place the Song",
-      timelineCards: "card in timeline|cards in timeline",
-      dropHere: "Drop here",
-      selectPosition: "Select a position on your timeline",
-      confirmPlacement: "Confirm Placement",
-      knownTrack: "known track",
-    };
-    return (key: string, options?: { count?: number }) => {
-      const translation = translations[key];
-      if (!translation) return key;
-      // Handle plural forms
-      if (translation.includes("|")) {
-        const [singular, plural] = translation.split("|");
-        const count = options?.count ?? 1;
-        return count === 1 ? singular : plural;
-      }
-      return translation;
-    };
-  }),
-}));
-
 vi.mock("react", () => ({
   useEffect: vi.fn((fn) => fn()),
   useState: vi.fn((initial) => {
@@ -57,6 +34,7 @@ vi.mock("react", () => ({
   }),
   useCallback: vi.fn((fn) => fn),
   useMemo: vi.fn((fn) => fn()),
+  useRef: vi.fn((initial) => ({ current: initial })),
 }));
 
 const createMockPlayer = (
@@ -67,25 +45,38 @@ const createMockPlayer = (
       trackId: GenericId<"tracks">;
       year: number;
       earnedAtRoundNumber: number;
-      earnedBy: "placement" | "bet";
+      earnedBy: "placement" | "bet" | "initial";
     }>;
     timelineSize: number;
+    coins: number;
   }> = {},
 ): {
   _id: GenericId<"players">;
+  _creationTime: number;
   displayName: string;
   timeline: Array<{
     trackId: GenericId<"tracks">;
     year: number;
     earnedAtRoundNumber: number;
-    earnedBy: "placement" | "bet";
+    earnedBy: "placement" | "bet" | "initial";
   }>;
   timelineSize: number;
+  coins: number;
+  lobbyId: GenericId<"lobbies">;
+  sessionId: string;
+  isHost: boolean;
+  createdAt: number;
 } => ({
   _id: "player123" as GenericId<"players">,
+  _creationTime: Date.now(),
   displayName: "Test Player",
   timeline: [],
   timelineSize: 0,
+  coins: 3,
+  lobbyId: "lobby123" as GenericId<"lobbies">,
+  sessionId: "session123",
+  isHost: false,
+  createdAt: Date.now(),
   ...overrides,
 });
 
@@ -116,12 +107,15 @@ describe("TimelinePlacer", () => {
     const mockPlayer = createMockPlayer();
 
     render(
-      <TimelinePlacer
-        lobbyId={lobbyId}
-        player={mockPlayer}
-        currentTrack={null}
-        existingPreviewIndex={null}
-      />,
+      <NextIntlClientProvider locale="en" messages={messages}>
+        <TimelinePlacer
+          lobbyId={lobbyId}
+          player={mockPlayer}
+          currentTrack={null}
+          existingPreviewIndex={null}
+          revealedTracks={[]}
+        />
+      </NextIntlClientProvider>,
     );
 
     expect(screen.getByText("Loading track...")).toBeInTheDocument();
@@ -132,17 +126,20 @@ describe("TimelinePlacer", () => {
     const mockTrack = createMockTrack();
 
     render(
-      <TimelinePlacer
-        lobbyId={lobbyId}
-        player={mockPlayer}
-        currentTrack={mockTrack}
-        existingPreviewIndex={null}
-      />,
+      <NextIntlClientProvider locale="en" messages={messages}>
+        <TimelinePlacer
+          lobbyId={lobbyId}
+          player={mockPlayer}
+          currentTrack={mockTrack}
+          existingPreviewIndex={null}
+          revealedTracks={[]}
+        />
+      </NextIntlClientProvider>,
     );
 
     expect(screen.getByRole("heading", { name: /place the song/i })).toBeInTheDocument();
-    expect(screen.getByText("Test Song")).toBeInTheDocument();
-    expect(screen.getByText("Test Artist")).toBeInTheDocument();
+    expect(screen.getByText("New Song")).toBeInTheDocument();
+    expect(screen.getByText("Guess the year!")).toBeInTheDocument();
   });
 
   test("renders timeline with existing cards", () => {
@@ -166,18 +163,21 @@ describe("TimelinePlacer", () => {
     const mockTrack = createMockTrack({ title: "New Song", artist: "New Artist" });
 
     render(
-      <TimelinePlacer
-        lobbyId={lobbyId}
-        player={mockPlayer}
-        currentTrack={mockTrack}
-        existingPreviewIndex={null}
-      />,
+      <NextIntlClientProvider locale="en" messages={messages}>
+        <TimelinePlacer
+          lobbyId={lobbyId}
+          player={mockPlayer}
+          currentTrack={mockTrack}
+          existingPreviewIndex={null}
+          revealedTracks={[]}
+        />
+      </NextIntlClientProvider>,
     );
 
     expect(screen.getByText("New Song")).toBeInTheDocument();
   });
 
-  test("displays card count", () => {
+  test("displays confirm placement button", () => {
     const mockPlayer = createMockPlayer({
       timeline: [
         {
@@ -192,14 +192,17 @@ describe("TimelinePlacer", () => {
     const mockTrack = createMockTrack();
 
     render(
-      <TimelinePlacer
-        lobbyId={lobbyId}
-        player={mockPlayer}
-        currentTrack={mockTrack}
-        existingPreviewIndex={null}
-      />,
+      <NextIntlClientProvider locale="en" messages={messages}>
+        <TimelinePlacer
+          lobbyId={lobbyId}
+          player={mockPlayer}
+          currentTrack={mockTrack}
+          existingPreviewIndex={null}
+          revealedTracks={[]}
+        />
+      </NextIntlClientProvider>,
     );
 
-    expect(screen.getByText("card in timeline")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /confirm placement/i })).toBeInTheDocument();
   });
 });

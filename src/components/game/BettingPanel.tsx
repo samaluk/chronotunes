@@ -3,12 +3,14 @@
 import { useQuery } from "convex/react";
 import type { GenericId } from "convex/values";
 import { useSessionMutation } from "convex-helpers/react/sessions";
-import { ArrowDown, ArrowUp, Check, Coins, Loader2, Lock, Music, X } from "lucide-react";
+import { Check, Coins, Loader2, Lock, Music, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { TimelineCard } from "@/components/game/TimelineCard";
 import { YouTubePlayer } from "@/components/player/YouTubePlayer";
 import { Button } from "@/components/ui/button";
 import { api } from "@/convex/_generated/api";
+import { getRevealedTrackMap, sortTimelineByYear } from "@/lib/timeline";
 import { cn } from "@/lib/utils";
 
 interface TimelineEntry {
@@ -24,6 +26,7 @@ interface Player {
   timeline: TimelineEntry[];
   timelineSize: number;
   coins: number;
+  isHost: boolean;
 }
 
 interface TrackInfo {
@@ -48,18 +51,29 @@ interface BettingPanelProps {
   track: TrackInfo | null;
   turnPlayerTimeline: TimelineEntry[];
   revealedTracks: RevealedTrack[];
+  players?: Player[];
+  turnPlayerId?: GenericId<"players"> | null;
+  roundStartedAt?: number;
+  turnSeconds?: number;
+  bettingWindowSeconds?: number;
+  turnPlayerPlacementIndex?: number | null;
+  phase?: string;
+  showLiveBets?: boolean;
+}
+
+interface SlotBetInfo {
+  playerId: GenericId<"players">;
+  playerDisplayName: string;
+  lockedIn: boolean;
 }
 
 interface SlotInfo {
   index: number;
-  label: string;
+  yearMin: number;
+  yearMax: number | null;
   above?: TimelineEntry;
   below?: TimelineEntry;
-  bet?: {
-    playerId: GenericId<"players">;
-    playerDisplayName: string;
-    lockedIn: boolean;
-  };
+  bets: SlotBetInfo[];
 }
 
 export function BettingPanel({
@@ -68,23 +82,110 @@ export function BettingPanel({
   track,
   turnPlayerTimeline,
   revealedTracks,
+  players,
+  turnPlayerId,
 }: BettingPanelProps): React.ReactNode {
   const t = useTranslations("betting");
   const tCommon = useTranslations("common");
+  const tTimer = useTranslations("timer");
 
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [isPreviewing, setIsPreviewing] = useState(false);
   const [isLockingIn, setIsLockingIn] = useState(false);
   const [isCancelling, setIsCancelling] = useState(false);
+  const [isResolving, setIsResolving] = useState(false);
 
   const previewBet = useSessionMutation(api.bets.preview);
   const lockInBet = useSessionMutation(api.bets.lockIn);
   const cancelBet = useSessionMutation(api.bets.cancel);
+  const resolveRound = useSessionMutation(api.games.resolveRound);
 
   const existingBets = useQuery(api.bets.listForRound, lobbyId ? { lobbyId } : "skip");
   const safeBets = existingBets ?? [];
   const myBet = safeBets.find((bet) => bet.playerId === me?._id) ?? null;
   const hasLockedBet = myBet?.lockedIn ?? false;
+
+  const sortedTimeline = sortTimelineByYear(turnPlayerTimeline);
+  const revealedTrackMap = getRevealedTrackMap(revealedTracks);
+
+  const isHost = players?.find((p) => p._id === me?._id)?.isHost ?? false;
+
+  const slotBets = useMemo(() => {
+    const map = new Map<number, SlotBetInfo[]>();
+    for (const bet of safeBets) {
+      const existing = map.get(bet.proposedIndex) ?? [];
+      existing.push({
+        playerId: bet.playerId,
+        playerDisplayName: bet.playerDisplayName,
+        lockedIn: bet.lockedIn,
+      });
+      map.set(bet.proposedIndex, existing);
+    }
+    return map;
+  }, [safeBets]);
+
+  const canResolveRound = useMemo(() => {
+    if (!isHost || !players || !turnPlayerId) return false;
+
+    const nonTurnPlayers = players.filter((p) => p._id !== turnPlayerId);
+    if (nonTurnPlayers.length === 0) return false;
+
+    const lockedBets = safeBets.filter((bet) => bet.lockedIn);
+    const declinedBets = safeBets.filter((bet) => bet.declinedToBet);
+
+    return nonTurnPlayers.every(
+      (player) =>
+        lockedBets.some((bet) => bet.playerId === player._id) ||
+        declinedBets.some((bet) => bet.playerId === player._id),
+    );
+  }, [isHost, players, turnPlayerId, safeBets]);
+
+  const handleResolveRound = useCallback(async () => {
+    if (!lobbyId) return;
+
+    setIsResolving(true);
+    try {
+      await resolveRound({ lobbyId });
+    } catch (error) {
+      console.error("Failed to resolve round:", error);
+    } finally {
+      setIsResolving(false);
+    }
+  }, [resolveRound, lobbyId]);
+
+  const slots = useMemo<SlotInfo[]>(() => {
+    const result: SlotInfo[] = [];
+    for (let index = 0; index <= sortedTimeline.length; index += 1) {
+      const aboveYear = sortedTimeline[index - 1]?.year ?? null;
+      const belowYear = sortedTimeline[index]?.year ?? null;
+
+      let yearMin: number;
+      let yearMax: number | null;
+
+      if (aboveYear === null) {
+        yearMax = belowYear! - 10;
+        yearMin = yearMax - 10;
+      } else if (belowYear === null) {
+        yearMin = aboveYear + 10;
+        yearMax = null;
+      } else {
+        yearMin = Math.round(aboveYear);
+        yearMax = Math.round(belowYear);
+      }
+
+      result.push({
+        index,
+        yearMin,
+        yearMax,
+        above: sortedTimeline[index - 1],
+        below: sortedTimeline[index],
+        bets: slotBets.get(index) ?? [],
+      });
+    }
+    return result;
+  }, [sortedTimeline, slotBets]);
+
+  const canBet = me !== null && me.coins >= 1 && !hasLockedBet;
 
   useEffect(() => {
     if (myBet && !hasLockedBet) {
@@ -95,57 +196,13 @@ export function BettingPanel({
     }
   }, [myBet?.proposedIndex, myBet, hasLockedBet]);
 
-  const canBet = me !== null && me.coins >= 1 && !hasLockedBet;
-  const sortedTimeline = useMemo(
-    () => [...turnPlayerTimeline].sort((a, b) => a.year - b.year),
-    [turnPlayerTimeline],
-  );
-  const revealedTrackMap = useMemo(
-    () => new Map(revealedTracks.map((item) => [item.trackId, item])),
-    [revealedTracks],
-  );
-  const slotBets = useMemo(
-    () => new Map(safeBets.map((bet) => [bet.proposedIndex, bet])),
-    [safeBets],
-  );
-
-  const slots = useMemo<SlotInfo[]>(() => {
-    const result: SlotInfo[] = [];
-    for (let index = 0; index <= sortedTimeline.length; index += 1) {
-      const label =
-        index === 0
-          ? t("firstPositionBet")
-          : index === sortedTimeline.length
-            ? t("lastPositionBet")
-            : t("positionBet", { number: index + 1 });
-      result.push({
-        index,
-        label,
-        above: sortedTimeline[index - 1],
-        below: sortedTimeline[index],
-        bet: slotBets.get(index),
-      });
-    }
-    return result;
-  }, [sortedTimeline, slotBets, t]);
-
-  const formatTrackLine = useCallback(
-    (entry: TimelineEntry): string => {
-      const track = revealedTrackMap.get(entry.trackId);
-      if (track) {
-        return `${track.year} · ${track.title} — ${track.artist}`;
-      }
-      return `${entry.year}`;
-    },
-    [revealedTrackMap],
-  );
-
   const handleSelect = useCallback(
     async (index: number) => {
       if (!canBet || !me) return;
 
-      const existingBet = slotBets.get(index);
-      if (existingBet && existingBet.playerId !== me._id) {
+      const slotBetsForIndex = slotBets.get(index) ?? [];
+      const otherLockedBet = slotBetsForIndex.find((b) => b.playerId !== me._id && b.lockedIn);
+      if (otherLockedBet) {
         return;
       }
 
@@ -194,6 +251,44 @@ export function BettingPanel({
     }
   }, [cancelBet, lobbyId, t]);
 
+  useEffect(() => {
+    if (!canBet) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (selectedIndex === null) return;
+
+      if (e.key === "ArrowDown") {
+        e.preventDefault();
+        const newIndex = Math.min(selectedIndex + 1, slots.length - 1);
+        handleSelect(newIndex);
+      } else if (e.key === "ArrowUp") {
+        e.preventDefault();
+        const newIndex = Math.max(selectedIndex - 1, 0);
+        handleSelect(newIndex);
+      } else if (e.key === "Enter" && selectedIndex !== null && !hasLockedBet) {
+        e.preventDefault();
+        handleConfirm();
+      } else if (e.key === "Escape") {
+        e.preventDefault();
+        handleCancel();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [canBet, selectedIndex, slots, hasLockedBet, handleSelect, handleConfirm, handleCancel]);
+
+  const formatTrackLine = useCallback(
+    (entry: TimelineEntry): string => {
+      const track = revealedTrackMap.get(entry.trackId);
+      if (track) {
+        return `${track.year} · ${track.title} — ${track.artist}`;
+      }
+      return `${entry.year}`;
+    },
+    [revealedTrackMap],
+  );
+
   const selectedSlot = slots.find((slot) => slot.index === selectedIndex) ?? null;
 
   if (!track) {
@@ -204,6 +299,9 @@ export function BettingPanel({
       </div>
     );
   }
+
+  const trackTitle = track.title?.trim() ? track.title : undefined;
+  const trackArtist = track.artist?.trim() ? track.artist : undefined;
 
   return (
     <div className="w-full space-y-4">
@@ -230,26 +328,24 @@ export function BettingPanel({
 
       <div className="space-y-3">
         {slots.map((slot) => {
-          const betOwner = slot.bet;
-          const isTakenByOther = betOwner && betOwner.playerId !== me?._id;
+          const slotBetsForIndex = slot.bets;
+          const mySlotBet = slotBetsForIndex.find((b) => b.playerId === me?._id);
+          const otherBets = slotBetsForIndex.filter((b) => b.playerId !== me?._id);
           const isSelected = selectedIndex === slot.index;
-          const canSelectSlot = canBet && !isTakenByOther;
+          const hasLockedBetByOther = otherBets.some((b) => b.lockedIn);
+          const canSelectSlot = canBet && !hasLockedBetByOther;
+          const isMyPreview = isSelected && mySlotBet && !mySlotBet.lockedIn;
 
           return (
-            <button
+            <div
               key={`slot-${slot.index}`}
-              type="button"
-              onClick={() => handleSelect(slot.index)}
-              disabled={!canSelectSlot}
               className={cn(
-                "w-full text-left rounded-lg border p-4 transition-all",
-                isSelected
-                  ? "border-primary bg-primary/10"
-                  : "border-border bg-card hover:bg-muted/40",
-                !canSelectSlot && "opacity-60 cursor-not-allowed",
+                "w-full rounded-lg border p-4 transition-all",
+                isSelected ? "border-primary bg-primary/10" : "border-border bg-card",
+                !canSelectSlot && "opacity-60",
               )}
             >
-              <div className="flex items-start justify-between gap-4">
+              <div className="flex items-start justify-between gap-4 mb-3">
                 <div className="flex items-start gap-3">
                   <div
                     className={cn(
@@ -262,17 +358,17 @@ export function BettingPanel({
                     <span className="text-sm font-semibold">{slot.index + 1}</span>
                   </div>
                   <div className="space-y-1">
-                    <p className="text-sm font-semibold text-foreground">{slot.label}</p>
+                    <p className="text-sm font-semibold text-foreground">
+                      {slot.yearMin} - {slot.yearMax === null ? "∞" : slot.yearMax}
+                    </p>
                     <div className="space-y-1 text-xs text-muted-foreground">
                       {slot.above && (
                         <div className="flex items-center gap-2">
-                          <ArrowUp className="h-3 w-3" />
                           <span className="truncate">{formatTrackLine(slot.above)}</span>
                         </div>
                       )}
                       {slot.below && (
                         <div className="flex items-center gap-2">
-                          <ArrowDown className="h-3 w-3" />
                           <span className="truncate">{formatTrackLine(slot.below)}</span>
                         </div>
                       )}
@@ -280,21 +376,69 @@ export function BettingPanel({
                   </div>
                 </div>
 
-                {betOwner && (
-                  <div
-                    className={cn(
-                      "inline-flex items-center gap-1 rounded-full px-2 py-1 text-xs font-medium",
-                      betOwner.lockedIn
-                        ? "bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300"
-                        : "bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300",
-                    )}
-                  >
-                    <Lock className="h-3 w-3" />
-                    <span>{betOwner.playerDisplayName}</span>
+                {slotBetsForIndex.length > 0 && (
+                  <div className="flex flex-wrap gap-1">
+                    {slotBetsForIndex.map((bet) => (
+                      <div
+                        key={bet.playerId}
+                        className={cn(
+                          "inline-flex items-center gap-1 rounded-full px-2 py-1 text-xs font-medium",
+                          bet.lockedIn
+                            ? "bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300"
+                            : "bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300",
+                        )}
+                      >
+                        {bet.lockedIn && <Lock className="h-3 w-3" />}
+                        <span>{bet.playerDisplayName}</span>
+                      </div>
+                    ))}
                   </div>
                 )}
               </div>
-            </button>
+
+              <div className="flex flex-wrap gap-2">
+                {isMyPreview && (
+                  <div className="flex-1 min-w-[200px] animate-slideIn">
+                    <TimelineCard
+                      title={trackTitle}
+                      artist={trackArtist}
+                      yearMin={slot.yearMin}
+                      yearMax={slot.yearMax}
+                      playerName={me?.displayName}
+                      isBetPreview
+                      isPreview={false}
+                      coinCost={1}
+                    />
+                  </div>
+                )}
+                {otherBets.map((bet) => (
+                  <div
+                    key={bet.playerId}
+                    className={cn("flex-1 min-w-[200px]", !bet.lockedIn && "animate-slideIn")}
+                  >
+                    <TimelineCard
+                      title={trackTitle}
+                      artist={trackArtist}
+                      yearMin={slot.yearMin}
+                      yearMax={slot.yearMax}
+                      playerName={bet.playerDisplayName}
+                      isBetPreview={!bet.lockedIn}
+                      isPreview={bet.lockedIn}
+                    />
+                  </div>
+                ))}
+              </div>
+
+              {canSelectSlot && !isSelected && (
+                <button
+                  type="button"
+                  onClick={() => handleSelect(slot.index)}
+                  className="mt-3 w-full text-xs text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  {t("tapToPreview")}
+                </button>
+              )}
+            </div>
           );
         })}
       </div>
@@ -303,7 +447,10 @@ export function BettingPanel({
         <div className="flex flex-col gap-3 rounded-lg border bg-muted/30 p-3">
           <div className="flex items-center justify-between gap-3">
             <div>
-              <p className="text-sm font-medium text-foreground">{selectedSlot.label}</p>
+              <p className="text-sm font-medium text-foreground">
+                {selectedSlot.yearMin} -{" "}
+                {selectedSlot.yearMax === null ? "∞" : selectedSlot.yearMax}
+              </p>
               <p className="text-xs text-muted-foreground">{t("previewMode")}</p>
             </div>
             <div className="flex items-center gap-2">
@@ -338,6 +485,22 @@ export function BettingPanel({
           <span className="text-sm font-medium text-green-700 dark:text-green-300">
             {t("yourBetLocked")}
           </span>
+        </div>
+      )}
+
+      {canResolveRound && (
+        <div className="flex items-center justify-center gap-2 rounded-lg border border-primary bg-primary/10 p-4">
+          <Button type="button" size="lg" onClick={handleResolveRound} disabled={isResolving}>
+            {isResolving ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                {tTimer("resolvingRound")}
+              </>
+            ) : (
+              tTimer("resolveRound")
+            )}
+          </Button>
+          <p className="text-xs text-muted-foreground">{tTimer("waitingForBets")}</p>
         </div>
       )}
 

@@ -2,9 +2,13 @@
 
 import { useQuery } from "convex/react";
 import type { GenericId } from "convex/values";
-import { Music, Target, Trophy } from "lucide-react";
-import { useEffect, useState } from "react";
+import { Music } from "lucide-react";
+import { useTranslations } from "next-intl";
+import { useMemo } from "react";
 import { api } from "@/convex/_generated/api.js";
+import { useMounted } from "@/lib/hooks/useMounted";
+import { sortTimelineByYear } from "@/lib/timeline";
+import { TimelineCard } from "./TimelineCard";
 
 interface TimelineEntry {
   trackId: GenericId<"tracks">;
@@ -28,133 +32,68 @@ interface Track {
 }
 
 interface MyTimelineProps {
-  player: Player;
-}
-
-function TimelineCard({
-  track,
-  earnedBy,
-}: {
-  track: Track;
-  earnedBy: "placement" | "bet" | "initial";
-}): React.ReactNode {
-  const isPlacement = earnedBy === "placement";
-
-  return (
-    <div className="flex items-start gap-3 p-3 rounded-lg bg-card border transition-all hover:shadow-md">
-      <div
-        className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full ${
-          isPlacement
-            ? "bg-primary/20 text-primary"
-            : "bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400"
-        }`}
-      >
-        {isPlacement ? <Target className="h-5 w-5" /> : <Trophy className="h-5 w-5" />}
-      </div>
-      <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-2">
-          <span className="text-lg font-semibold text-foreground truncate">{track.title}</span>
-        </div>
-        <p className="text-sm text-muted-foreground truncate">{track.artist}</p>
-        <div className="flex items-center gap-2 mt-1">
-          <span className="text-xs font-medium text-primary bg-primary/10 px-2 py-0.5 rounded">
-            {track.year}
-          </span>
-          <span
-            className={`text-xs ${
-              isPlacement ? "text-primary" : "text-amber-600 dark:text-amber-400"
-            }`}
-          >
-            {isPlacement ? "Placed yourself" : "Won from bet"}
-          </span>
-        </div>
-      </div>
-      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-muted">
-        <Music className="h-4 w-4 text-muted-foreground" />
-      </div>
-    </div>
-  );
-}
-
-function TimelineCardSkeleton(): React.ReactNode {
-  return (
-    <div className="flex items-start gap-3 p-3 rounded-lg bg-card border animate-pulse">
-      <div className="h-10 w-10 rounded-full bg-muted" />
-      <div className="flex-1 min-w-0 space-y-2">
-        <div className="h-5 w-3/4 rounded bg-muted" />
-        <div className="h-4 w-1/2 rounded bg-muted" />
-        <div className="flex items-center gap-2">
-          <div className="h-5 w-12 rounded bg-muted" />
-        </div>
-      </div>
-      <div className="h-8 w-8 rounded-full bg-muted" />
-    </div>
-  );
+  player: Player | null;
 }
 
 export function MyTimeline({ player }: MyTimelineProps): React.ReactNode {
-  const [mounted, setMounted] = useState(false);
+  const mounted = useMounted();
 
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  const trackIds = player.timeline.map((entry) => entry.trackId);
+  const trackIds = player?.timeline.map((entry) => entry.trackId) ?? [];
   const tracks = useQuery(api.tracks.get, mounted && trackIds.length > 0 ? { trackIds } : "skip");
 
   if (!mounted) {
     return (
       <div className="w-full space-y-3">
         <div className="h-6 w-32 rounded bg-muted animate-pulse" />
-        <TimelineCardSkeleton />
-        <TimelineCardSkeleton />
+        <TimelineCard isLoading={true} />
+        <TimelineCard isLoading={true} />
       </div>
     );
   }
 
-  if (player.timeline.length === 0) {
+  if (!player || player.timeline.length === 0) {
     return (
       <div className="w-full">
         <div className="flex items-center justify-between mb-3">
           <h3 className="text-sm font-medium text-muted-foreground">My Timeline</h3>
-          <span className="text-xs text-muted-foreground">0 cards</span>
+          {player && <span className="text-xs text-muted-foreground">0 cards</span>}
         </div>
         <div className="flex flex-col items-center justify-center py-8 rounded-lg border border-dashed bg-muted/30">
           <Music className="h-8 w-8 text-muted-foreground mb-2" />
-          <p className="text-sm text-muted-foreground text-center">No cards yet</p>
-          <p className="text-xs text-muted-foreground text-center mt-1">
-            Place songs on your timeline to collect cards
+          <p className="text-sm text-muted-foreground text-center">
+            {player ? "No cards yet" : "Loading..."}
           </p>
+          {player && (
+            <p className="text-xs text-muted-foreground text-center mt-1">
+              Place songs on your timeline to collect cards
+            </p>
+          )}
         </div>
       </div>
     );
   }
 
   const isLoading = tracks === undefined;
-  const trackMap = new Map<GenericId<"tracks">, Track>();
-  if (Array.isArray(tracks)) {
-    for (const track of tracks) {
-      if (track) {
-        trackMap.set(track._id, track);
-      }
-    }
-  }
-
-  const sortedTimeline = [...player.timeline].sort((a, b) => a.year - b.year);
+  const trackMap = useMemo(() => {
+    if (!tracks || !Array.isArray(tracks)) return new Map();
+    return new Map(
+      tracks
+        .filter((track): track is NonNullable<typeof track> => track != null)
+        .map((track) => [track._id, track]),
+    );
+  }, [tracks]);
+  const sortedTimeline = sortTimelineByYear(player.timeline);
 
   return (
     <div className="w-full space-y-3">
       <div className="flex items-center justify-between">
         <h3 className="text-sm font-medium text-muted-foreground">My Timeline</h3>
-        <span className="text-xs text-muted-foreground">
-          {player.timelineSize} {player.timelineSize === 1 ? "card" : "cards"}
-        </span>
       </div>
 
       {isLoading ? (
         <div className="space-y-3">
-          <TimelineCardSkeleton />
-          <TimelineCardSkeleton />
+          <TimelineCard isLoading={true} />
+          <TimelineCard isLoading={true} />
         </div>
       ) : (
         <div className="space-y-2">
@@ -162,30 +101,35 @@ export function MyTimeline({ player }: MyTimelineProps): React.ReactNode {
             const track = trackMap.get(entry.trackId);
             if (!track) {
               return (
-                <div
+                <TimelineCard
                   key={`${entry.trackId}-${entry.earnedAtRoundNumber}`}
-                  className="flex items-start gap-3 p-3 rounded-lg bg-card border"
-                >
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-muted-foreground">Track {entry.year}</p>
-                    <p className="text-xs text-muted-foreground">
-                      {entry.earnedBy === "placement"
-                        ? "Placed yourself"
-                        : entry.earnedBy === "bet"
-                          ? "Won from bet"
-                          : entry.earnedBy === "initial"
-                            ? "Initial placement"
-                            : "Unknown"}
-                    </p>
-                  </div>
-                </div>
+                  icon="music"
+                  iconColor="muted"
+                  title="Unknown Track"
+                  subtitle={
+                    entry.earnedBy === "placement"
+                      ? "Placed yourself"
+                      : entry.earnedBy === "bet"
+                        ? "Won from bet"
+                        : entry.earnedBy === "initial"
+                          ? "Initial placement"
+                          : "Unknown"
+                  }
+                  year={entry.year}
+                />
               );
             }
+
+            const isPlacement = entry.earnedBy === "placement";
+
             return (
               <TimelineCard
                 key={`${entry.trackId}-${entry.earnedAtRoundNumber}`}
-                track={track}
-                earnedBy={entry.earnedBy}
+                icon={isPlacement ? "target" : "trophy"}
+                iconColor={isPlacement ? "primary" : "amber"}
+                title={track.title}
+                artist={track.artist}
+                year={track.year}
               />
             );
           })}
