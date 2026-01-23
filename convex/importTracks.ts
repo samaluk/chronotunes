@@ -16,7 +16,9 @@ interface CsvTrackImportItem {
 }
 
 function parseDurationToMs(durationRaw: string | undefined): number | undefined {
-  if (!durationRaw) return undefined
+  if (!durationRaw) {
+    return undefined
+  }
   const parts = durationRaw.split(":").map(Number)
   if (parts.length === 2 && !parts.includes(Number.NaN)) {
     return parts[0] * 60 + parts[1]
@@ -168,10 +170,14 @@ export const parseAndImportCsv = mutation({
 
     for (let i = 1; i < lines.length; i++) {
       const line = lines[i].trim()
-      if (!line) continue
+      if (!line) {
+        continue
+      }
 
       const parts = line.split("|")
-      if (parts.length < 12) continue
+      if (parts.length < 12) {
+        continue
+      }
 
       const titleRaw = parts[1]
       const artistRaw = parts[2]
@@ -180,7 +186,9 @@ export const parseAndImportCsv = mutation({
       const spotifyTrackIdRaw = parts[19]
       const mbidRaw = parts[20]
 
-      if (!(titleRaw && artistRaw)) continue
+      if (!(titleRaw && artistRaw)) {
+        continue
+      }
 
       const title = titleRaw.replace(/^"|"$/g, "").trim()
       const artist = artistRaw.replace(/^"|"$/g, "").trim()

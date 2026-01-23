@@ -27,7 +27,7 @@ export interface RoundOverrides {
 export async function create(
   t: TestContext,
   lobbyId: Id<"lobbies">,
-  turnOrder: Array<Id<"players">>,
+  turnOrder: Id<"players">[],
   overrides: GameOverrides = {},
 ): Promise<{ id: Id<"games">; record: Game }> {
   const turnPlayerId = overrides.turnPlayerId ?? turnOrder[0]!
@@ -58,7 +58,7 @@ export async function create(
 export async function createWithRound(
   t: TestContext,
   lobbyId: Id<"lobbies">,
-  turnOrder: Array<Id<"players">>,
+  turnOrder: Id<"players">[],
   options: {
     gameOverrides?: GameOverrides
     roundOverrides?: RoundOverrides
@@ -136,7 +136,7 @@ export async function createInPhase(
   phase: "placing" | "betting" | "resolved",
   options: {
     playerCount?: number
-    playerIds?: Array<Id<"players">>
+    playerIds?: Id<"players">[]
     roundNumber?: number
     placementIndex?: number
     resolution?: Round["resolution"]
@@ -145,7 +145,7 @@ export async function createInPhase(
   id: Id<"games">
   record: Game
   roundId: Id<"rounds">
-  playerIds: Array<Id<"players">>
+  playerIds: Id<"players">[]
 }> {
   let playerIds = options.playerIds
 

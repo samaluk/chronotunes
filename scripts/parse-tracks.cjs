@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 "use strict"
-const fs = require("fs")
-const path = require("path")
+const fs = require("node:fs")
+const path = require("node:path")
 
 function parseDurationToMs(duration) {
   const parts = duration.split(":").map(Number)
@@ -61,11 +61,15 @@ function main() {
 
   for (let i = 1; i < lines.length; i++) {
     const line = lines[i].trim()
-    if (!line) continue
+    if (!line) {
+      continue
+    }
 
     // CSV parsing with proper handling of quoted fields
     const parts = parseCSVLine(line)
-    if (parts.length < 12) continue
+    if (parts.length < 12) {
+      continue
+    }
 
     const title = parts[1]?.replace(/^"|"$/g, "").trim() || ""
     const artist = parts[2]?.replace(/^"|"$/g, "").trim() || ""
@@ -76,9 +80,15 @@ function main() {
 
     if (title && artist) {
       const track = { title, artist, year }
-      if (spotifyTrackId) track.spotifyTrackId = spotifyTrackId
-      if (durationMs !== undefined) track.durationMs = durationMs
-      if (mbid) track.mbid = mbid
+      if (spotifyTrackId) {
+        track.spotifyTrackId = spotifyTrackId
+      }
+      if (durationMs !== undefined) {
+        track.durationMs = durationMs
+      }
+      if (mbid) {
+        track.mbid = mbid
+      }
       tracks.push(track)
     }
   }
@@ -89,8 +99,12 @@ function main() {
   let yearMin = Number.POSITIVE_INFINITY
   let yearMax = Number.NEGATIVE_INFINITY
   tracks.forEach((t) => {
-    if (t.year < yearMin) yearMin = t.year
-    if (t.year > yearMax) yearMax = t.year
+    if (t.year < yearMin) {
+      yearMin = t.year
+    }
+    if (t.year > yearMax) {
+      yearMax = t.year
+    }
   })
 
   console.log("Summary:")

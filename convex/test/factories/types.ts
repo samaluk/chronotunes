@@ -9,7 +9,7 @@ export interface FactoryResult<T extends TableNames | SystemTableNames> {
   record: Record<string, unknown>
 }
 
-export type CreateManyOptions = {
+export interface CreateManyOptions {
   startIndex?: number
 }
 

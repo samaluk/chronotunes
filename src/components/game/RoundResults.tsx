@@ -193,7 +193,9 @@ export function RoundResults({
           <div className="grid gap-2">
             {resolution.awardedPlayerIds.map((playerId) => {
               const player = getPlayerById(playerId)
-              if (!player) return null
+              if (!player) {
+                return null
+              }
               const isMe = player._id === me?._id
               return (
                 <div
@@ -239,7 +241,9 @@ export function RoundResults({
           <div className="grid gap-2">
             {bettingBets.map((bet) => {
               const player = getPlayerById(bet.playerId)
-              if (!player) return null
+              if (!player) {
+                return null
+              }
               const isMe = player._id === me?._id
               return (
                 <div

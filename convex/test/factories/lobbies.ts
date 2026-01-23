@@ -97,10 +97,10 @@ export async function createWithPlayers(
   playerCount: number,
   options: {
     hostDisplayName?: string
-    playerOverrides?: Array<LobbyOverrides["players"]>
+    playerOverrides?: LobbyOverrides["players"][]
     settings?: LobbyOverrides["settings"]
   } = {},
-): Promise<FactoryResult<"lobbies"> & { playerIds: Array<Id<"players">> }> {
+): Promise<FactoryResult<"lobbies"> & { playerIds: Id<"players">[] }> {
   const hostName = options.hostDisplayName ?? "Host"
   const code = generateLobbyCode()
   const status: "lobby" | "in_game" | "finished" = "lobby"
@@ -119,7 +119,7 @@ export async function createWithPlayers(
   }
 
   let lobbyId: Id<"lobbies"> | null = null
-  const playerIds: Array<Id<"players">> = []
+  const playerIds: Id<"players">[] = []
 
   await t.run(async (ctx: MutationCtx) => {
     lobbyId = await ctx.db.insert("lobbies", {
@@ -192,13 +192,13 @@ export async function createWithGame(
   playerCount: number,
   options: {
     hostDisplayName?: string
-    playerOverrides?: Array<LobbyOverrides["players"]>
+    playerOverrides?: LobbyOverrides["players"][]
     settings?: LobbyOverrides["settings"]
   } = {},
 ): Promise<
   FactoryResult<"lobbies"> & {
     gameId: Id<"games">
-    playerIds: Array<Id<"players">>
+    playerIds: Id<"players">[]
     roundId: Id<"rounds">
   }
 > {

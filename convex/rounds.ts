@@ -9,13 +9,13 @@ export const getCurrent = queryWithSession({
 
     const lobby = await ctx.db.get(lobbyId)
 
-    if (!(lobby && lobby.activeGameId)) {
+    if (!lobby?.activeGameId) {
       return null
     }
 
     const game = await ctx.db.get(lobby.activeGameId)
 
-    if (!(game && game.currentRoundId)) {
+    if (!game?.currentRoundId) {
       return null
     }
 
@@ -142,9 +142,15 @@ export const submitPlacement = mutationWithSession({
     const playersWithBets = new Set(allBets.map((bet) => bet.playerId))
 
     for (const p of players) {
-      if (p._id === round.turnPlayerId) continue
-      if (playersWithBets.has(p._id)) continue
-      if (p.coins >= 1) continue
+      if (p._id === round.turnPlayerId) {
+        continue
+      }
+      if (playersWithBets.has(p._id)) {
+        continue
+      }
+      if (p.coins >= 1) {
+        continue
+      }
 
       await ctx.db.insert("roundBets", {
         roundId: round._id,

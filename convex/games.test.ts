@@ -517,7 +517,7 @@ test("skipTurn handles end of turn order", async () => {
 
   const gameBefore = await t.query(api.games.getCurrent, { lobbyId: lobby!._id })
   const turnOrder = gameBefore!.turnOrder!
-  const lastPlayerId = turnOrder[turnOrder.length - 1]!
+  const lastPlayerId = turnOrder.at(-1)!
 
   await t.run(async (ctx) => {
     await ctx.db.patch(gameBefore!._id, { turnPlayerId: lastPlayerId })

@@ -125,10 +125,16 @@ export function usePresence({
   )
 
   return useMemo(() => {
-    if (!state) return state
+    if (!state) {
+      return state
+    }
     return state.slice().sort((a, b) => {
-      if (a.userId === userId) return -1
-      if (b.userId === userId) return 1
+      if (a.userId === userId) {
+        return -1
+      }
+      if (b.userId === userId) {
+        return 1
+      }
       return 0
     })
   }, [state, userId])

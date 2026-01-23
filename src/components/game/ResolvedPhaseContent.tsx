@@ -73,7 +73,9 @@ export function ResolvedPhaseContent({
   }
 
   const turnPlayer = players.find((player) => player._id === turnPlayerId) ?? null
-  if (!turnPlayer) return null
+  if (!turnPlayer) {
+    return null
+  }
 
   const resultsContent = (
     <RoundResults

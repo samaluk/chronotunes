@@ -70,13 +70,13 @@ export async function getGameAndRound(
 ): Promise<{ game: Doc<"games">; round: Doc<"rounds"> }> {
   const lobby = await ctx.db.get(lobbyId)
 
-  if (!(lobby && lobby.activeGameId)) {
+  if (!lobby?.activeGameId) {
     throw new ConvexError("No active game in this lobby")
   }
 
   const game = await ctx.db.get(lobby.activeGameId)
 
-  if (!(game && game.currentRoundId)) {
+  if (!game?.currentRoundId) {
     throw new ConvexError("Game or round not found")
   }
 

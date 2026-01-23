@@ -2,8 +2,8 @@
 "use strict"
 
 const scrapeYt = require("scrape-yt")
-const fs = require("fs")
-const path = require("path")
+const fs = require("node:fs")
+const path = require("node:path")
 
 const TEST_TRACKS = [
   { title: "Johnny B. Goode", artist: "Chuck Berry", year: 1958 },

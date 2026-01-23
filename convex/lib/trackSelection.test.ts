@@ -115,7 +115,9 @@ test("selectTrackForRound never returns track already used in game", async () =>
 
   await t.run(async (ctx) => {
     const game = await ctx.db.get(gameId)
-    if (!game) return
+    if (!game) {
+      return
+    }
 
     const players = await ctx.db
       .query("players")
@@ -189,7 +191,9 @@ test("selectTrackForRound returns null if no tracks available", async () => {
   for (const round of allRounds) {
     await t.run(async (ctx) => {
       const game = await ctx.db.get(gameId)
-      if (!game) return
+      if (!game) {
+        return
+      }
 
       const players = await ctx.db
         .query("players")

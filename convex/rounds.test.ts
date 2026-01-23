@@ -112,8 +112,12 @@ test("getCurrent hides track details during placing phase for non-host", async (
     sessionId: asSessionId("player-session-hide"),
   })
 
-  if (!result) throw new Error("Result is null")
-  if (!result.track) throw new Error("Result is null")
+  if (!result) {
+    throw new Error("Result is null")
+  }
+  if (!result.track) {
+    throw new Error("Result is null")
+  }
   expect(result).not.toBeNull()
   expect(result?.phase).toBe("placing")
   expect(result?.track).not.toBeNull()

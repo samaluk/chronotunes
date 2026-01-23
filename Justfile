@@ -43,7 +43,7 @@ lint:
 
 # Auto-fix lint and format issues
 fix:
-    pnpm biome check . --write
+    pnpm biome check . --write --unsafe
 
 # Build for production
 build:

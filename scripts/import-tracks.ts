@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-import * as fs from "fs"
-import * as path from "path"
+import * as fs from "node:fs"
+import * as path from "node:path"
 
 interface TrackData {
   title: string
@@ -46,10 +46,14 @@ async function importTracks(): Promise<void> {
 
   for (let i = 1; i < lines.length; i++) {
     const line = lines[i].trim()
-    if (!line) continue
+    if (!line) {
+      continue
+    }
 
     const parts = line.split("|")
-    if (parts.length < 12) continue
+    if (parts.length < 12) {
+      continue
+    }
 
     const title = parts[1]?.replace(/^"|"$/g, "").trim() || ""
     const artist = parts[2]?.replace(/^"|"$/g, "").trim() || ""
@@ -60,9 +64,15 @@ async function importTracks(): Promise<void> {
 
     if (title && artist) {
       const track: TrackData = { title, artist, year }
-      if (spotifyTrackId) track.spotifyTrackId = spotifyTrackId
-      if (durationMs !== undefined) track.durationMs = durationMs
-      if (mbid) track.mbid = mbid
+      if (spotifyTrackId) {
+        track.spotifyTrackId = spotifyTrackId
+      }
+      if (durationMs !== undefined) {
+        track.durationMs = durationMs
+      }
+      if (mbid) {
+        track.mbid = mbid
+      }
       tracks.push(track)
     }
   }

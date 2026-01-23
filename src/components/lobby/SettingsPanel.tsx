@@ -64,7 +64,9 @@ export function SettingsPanel({ code, isHost, currentSettings }: SettingsPanelPr
     key: K,
     value: LobbySettings[K],
   ): Promise<void> => {
-    if (!sessionId) return
+    if (!sessionId) {
+      return
+    }
     try {
       await updateSettings({ code, settings: { [key]: value }, sessionId })
     } catch (error) {

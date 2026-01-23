@@ -32,7 +32,9 @@ export function PlayerTimelineModal({
   )
 
   const trackMap = useMemo(() => {
-    if (!(tracks && Array.isArray(tracks))) return new Map()
+    if (!(tracks && Array.isArray(tracks))) {
+      return new Map()
+    }
     return new Map(
       tracks
         .filter((track): track is NonNullable<typeof track> => track != null)
@@ -75,7 +77,9 @@ export function PlayerTimelineModal({
             <div className="space-y-2">
               {sortedTimeline.map((entry) => {
                 const track = trackMap.get(entry.trackId)
-                if (!track) return null
+                if (!track) {
+                  return null
+                }
 
                 const isPlacement = entry.earnedBy === "placement"
 

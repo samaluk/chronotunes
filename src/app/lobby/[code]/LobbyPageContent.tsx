@@ -56,7 +56,9 @@ export function LobbyPageContent({ code }: LobbyPageContentProps): React.ReactNo
   }
 
   const handleLeaveLobby = async (): Promise<void> => {
-    if (!sessionId) return
+    if (!sessionId) {
+      return
+    }
     try {
       await leaveLobby({ code })
       toast.success(t("leftLobby"))

@@ -55,7 +55,7 @@ export async function createLocked(
 export async function createMany(
   t: TestContext,
   roundId: Id<"rounds">,
-  playerIds: Array<Id<"players">>,
+  playerIds: Id<"players">[],
   options: {
     proposedIndex?: number
     lockedIn?: boolean

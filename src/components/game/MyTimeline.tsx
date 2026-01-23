@@ -46,7 +46,9 @@ export function MyTimeline({ player }: MyTimelineProps): React.ReactNode {
 
   // Must be called before any early returns to maintain consistent hook order
   const trackMap = useMemo(() => {
-    if (!(tracks && Array.isArray(tracks))) return new Map()
+    if (!(tracks && Array.isArray(tracks))) {
+      return new Map()
+    }
     return new Map(
       tracks
         .filter((track): track is NonNullable<typeof track> => track != null)

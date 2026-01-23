@@ -146,7 +146,7 @@ export const getCurrent = query({
   handler: async (ctx, args) => {
     const lobby = await ctx.db.get(args.lobbyId)
 
-    if (!(lobby && lobby.activeGameId)) {
+    if (!lobby?.activeGameId) {
       return null
     }
 
@@ -412,7 +412,7 @@ export const getResults = query({
   handler: async (ctx, args) => {
     const lobby = await ctx.db.get(args.lobbyId)
 
-    if (!(lobby && lobby.activeGameId)) {
+    if (!lobby?.activeGameId) {
       return null
     }
 

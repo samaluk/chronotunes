@@ -27,7 +27,9 @@ export const getPublicByIds = query({
     const tracks = await Promise.all(
       trackIds.map(async (trackId) => {
         const track = await ctx.db.get(trackId)
-        if (!track) return null
+        if (!track) {
+          return null
+        }
 
         return {
           trackId: track._id,
@@ -74,7 +76,7 @@ export const getForRound = query({
 
     const game = await ctx.db.get(lobby.activeGameId)
 
-    if (!(game && game.currentRoundId)) {
+    if (!game?.currentRoundId) {
       return null
     }
 
