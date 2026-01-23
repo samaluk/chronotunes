@@ -3,10 +3,8 @@
 import { useQuery } from "convex/react";
 import type { GenericId } from "convex/values";
 import { Music } from "lucide-react";
-import { useTranslations } from "next-intl";
 import { useMemo } from "react";
 import { api } from "@/convex/_generated/api.js";
-import { useMounted } from "@/lib/hooks/useMounted";
 import { sortTimelineByYear } from "@/lib/timeline";
 import { TimelineCard } from "./TimelineCard";
 
@@ -36,15 +34,18 @@ interface MyTimelineProps {
 }
 
 export function MyTimeline({ player }: MyTimelineProps): React.ReactNode {
-  const mounted = useMounted();
+  const isMounted = useIsMounted();
 
   const trackIds = player?.timeline.map((entry) => entry.trackId) ?? [];
-  const tracks = useQuery(api.tracks.get, mounted && trackIds.length > 0 ? { trackIds } : "skip");
+  const tracks = useQuery(
+    api.tracks.get,
+    isMounted() && trackIds.length > 0 ? { trackIds } : "skip",
+  );
 
-  if (!mounted) {
+  if (!isMounted()) {
     return (
       <div className="w-full space-y-3">
-        <div className="h-6 w-32 rounded bg-muted animate-pulse" />
+        <div className="h-6 w-32 animate-pulse rounded bg-muted" />
         <TimelineCard isLoading={true} />
         <TimelineCard isLoading={true} />
       </div>
@@ -54,17 +55,17 @@ export function MyTimeline({ player }: MyTimelineProps): React.ReactNode {
   if (!player || player.timeline.length === 0) {
     return (
       <div className="w-full">
-        <div className="flex items-center justify-between mb-3">
-          <h3 className="text-sm font-medium text-muted-foreground">My Timeline</h3>
-          {player && <span className="text-xs text-muted-foreground">0 cards</span>}
+        <div className="mb-3 flex items-center justify-between">
+          <h3 className="font-medium text-muted-foreground text-sm">My Timeline</h3>
+          {player && <span className="text-muted-foreground text-xs">0 cards</span>}
         </div>
-        <div className="flex flex-col items-center justify-center py-8 rounded-lg border border-dashed bg-muted/30">
-          <Music className="h-8 w-8 text-muted-foreground mb-2" />
-          <p className="text-sm text-muted-foreground text-center">
+        <div className="flex flex-col items-center justify-center rounded-lg border border-dashed bg-muted/30 py-8">
+          <Music className="mb-2 h-8 w-8 text-muted-foreground" />
+          <p className="text-center text-muted-foreground text-sm">
             {player ? "No cards yet" : "Loading..."}
           </p>
           {player && (
-            <p className="text-xs text-muted-foreground text-center mt-1">
+            <p className="mt-1 text-center text-muted-foreground text-xs">
               Place songs on your timeline to collect cards
             </p>
           )}
@@ -75,7 +76,7 @@ export function MyTimeline({ player }: MyTimelineProps): React.ReactNode {
 
   const isLoading = tracks === undefined;
   const trackMap = useMemo(() => {
-    if (!tracks || !Array.isArray(tracks)) return new Map();
+    if (!(tracks && Array.isArray(tracks))) return new Map();
     return new Map(
       tracks
         .filter((track): track is NonNullable<typeof track> => track != null)
@@ -87,7 +88,7 @@ export function MyTimeline({ player }: MyTimelineProps): React.ReactNode {
   return (
     <div className="w-full space-y-3">
       <div className="flex items-center justify-between">
-        <h3 className="text-sm font-medium text-muted-foreground">My Timeline</h3>
+        <h3 className="font-medium text-muted-foreground text-sm">My Timeline</h3>
       </div>
 
       {isLoading ? (
@@ -102,10 +103,9 @@ export function MyTimeline({ player }: MyTimelineProps): React.ReactNode {
             if (!track) {
               return (
                 <TimelineCard
-                  key={`${entry.trackId}-${entry.earnedAtRoundNumber}`}
                   icon="music"
                   iconColor="muted"
-                  title="Unknown Track"
+                  key={`${entry.trackId}-${entry.earnedAtRoundNumber}`}
                   subtitle={
                     entry.earnedBy === "placement"
                       ? "Placed yourself"
@@ -115,6 +115,7 @@ export function MyTimeline({ player }: MyTimelineProps): React.ReactNode {
                           ? "Initial placement"
                           : "Unknown"
                   }
+                  title="Unknown Track"
                   year={entry.year}
                 />
               );
@@ -124,11 +125,11 @@ export function MyTimeline({ player }: MyTimelineProps): React.ReactNode {
 
             return (
               <TimelineCard
-                key={`${entry.trackId}-${entry.earnedAtRoundNumber}`}
+                artist={track.artist}
                 icon={isPlacement ? "target" : "trophy"}
                 iconColor={isPlacement ? "primary" : "amber"}
+                key={`${entry.trackId}-${entry.earnedAtRoundNumber}`}
                 title={track.title}
-                artist={track.artist}
                 year={track.year}
               />
             );
