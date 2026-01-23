@@ -1,30 +1,31 @@
 "use client";
 
 import { useQuery } from "convex/react";
-import type { GenericId } from "convex/values";
+
 import { Music } from "lucide-react";
 import { useMemo } from "react";
 import { useIsMounted } from "usehooks-ts";
 import { api } from "@/convex/_generated/api";
+import type { Id } from "@/convex/_generated/dataModel";
 import { sortTimelineByYear } from "@/lib/timeline";
 import { TimelineCard } from "./TimelineCard";
 
 interface TimelineEntry {
-  trackId: GenericId<"tracks">;
+  trackId: Id<"tracks">;
   year: number;
   earnedAtRoundNumber: number;
   earnedBy: "placement" | "bet" | "initial";
 }
 
 interface Player {
-  _id: GenericId<"players">;
+  _id: Id<"players">;
   displayName: string;
   timeline: TimelineEntry[];
   timelineSize: number;
 }
 
 interface Track {
-  _id: GenericId<"tracks">;
+  _id: Id<"tracks">;
   title: string;
   artist: string;
   year: number;

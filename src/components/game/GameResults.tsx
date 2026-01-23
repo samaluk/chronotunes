@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery } from "convex/react";
-import type { GenericId } from "convex/values";
+import type { Id } from "@/convex/_generated/dataModel";
 import { useSessionMutation, useSessionQuery } from "convex-helpers/react/sessions";
 import { Music, Play, Repeat, Trophy } from "lucide-react";
 import { useState } from "react";
@@ -11,7 +11,7 @@ import { api } from "@/convex/_generated/api";
 import { cn } from "@/lib/utils";
 
 interface GameResultsProps {
-  lobbyId: GenericId<"lobbies">;
+  lobbyId: Id<"lobbies">;
   code: string;
 }
 

@@ -1,7 +1,7 @@
-import type { GenericId } from "convex/values";
+import type { Id } from "@/convex/_generated/dataModel";
 
 interface TimelineEntry {
-  trackId: GenericId<"tracks">;
+  trackId: Id<"tracks">;
   year: number;
   earnedAtRoundNumber: number;
   earnedBy: "placement" | "bet" | "initial";
@@ -11,9 +11,9 @@ export function sortTimelineByYear<T extends Pick<TimelineEntry, "year">>(entrie
   return [...entries].sort((a, b) => a.year - b.year);
 }
 
-export function buildTrackMap<T extends { _id: GenericId<"tracks"> }>(
+export function buildTrackMap<T extends { _id: Id<"tracks"> }>(
   tracks: T[] | undefined,
-): Map<GenericId<"tracks">, T> {
+): Map<Id<"tracks">, T> {
   if (!tracks || !Array.isArray(tracks)) {
     return new Map();
   }
@@ -23,7 +23,7 @@ export function buildTrackMap<T extends { _id: GenericId<"tracks"> }>(
 }
 
 export function getRevealedTrackMap(
-  tracks: Array<{ trackId: GenericId<"tracks">; title: string; artist: string; year: number }>,
-): Map<GenericId<"tracks">, { title: string; artist: string; year: number }> {
+  tracks: Array<{ trackId: Id<"tracks">; title: string; artist: string; year: number }>,
+): Map<Id<"tracks">, { title: string; artist: string; year: number }> {
   return new Map(tracks.map((track) => [track.trackId, track]));
 }

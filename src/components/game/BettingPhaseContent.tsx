@@ -1,17 +1,17 @@
 "use client";
 
-import type { GenericId } from "convex/values";
+import type { Id } from "@/convex/_generated/dataModel";
 import { Music } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { BettingPanel } from "./BettingPanel";
 
 interface BettingPhaseContentProps {
-  lobbyId: GenericId<"lobbies">;
+  lobbyId: Id<"lobbies">;
   me: {
-    _id: GenericId<"players">;
+    _id: Id<"players">;
     displayName: string;
     timeline: Array<{
-      trackId: GenericId<"tracks">;
+      trackId: Id<"tracks">;
       year: number;
       earnedAtRoundNumber: number;
       earnedBy: "placement" | "bet" | "initial";
@@ -21,30 +21,30 @@ interface BettingPhaseContentProps {
     isHost: boolean;
   } | null;
   track: {
-    _id: GenericId<"tracks">;
+    _id: Id<"tracks">;
     title?: string;
     artist?: string;
     year?: number;
     youtubeVideoId?: string;
   } | null;
   turnPlayerTimeline: Array<{
-    trackId: GenericId<"tracks">;
+    trackId: Id<"tracks">;
     year: number;
     earnedAtRoundNumber: number;
     earnedBy: "placement" | "bet" | "initial";
   }>;
   revealedTracks: Array<{
-    trackId: GenericId<"tracks">;
+    trackId: Id<"tracks">;
     title: string;
     artist: string;
     year: number;
     youtubeVideoId?: string;
   }>;
   players: Array<{
-    _id: GenericId<"players">;
+    _id: Id<"players">;
     displayName: string;
     timeline: Array<{
-      trackId: GenericId<"tracks">;
+      trackId: Id<"tracks">;
       year: number;
       earnedAtRoundNumber: number;
       earnedBy: "placement" | "bet" | "initial";
@@ -53,7 +53,7 @@ interface BettingPhaseContentProps {
     coins: number;
     isHost: boolean;
   }> | null;
-  turnPlayerId: GenericId<"players"> | null;
+  turnPlayerId: Id<"players"> | null;
   roundStartedAt: number | undefined;
   turnSeconds: number | undefined;
   bettingWindowSeconds: number | undefined;

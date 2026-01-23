@@ -1,6 +1,5 @@
 "use client";
 
-import type { GenericId } from "convex/values";
 import { useSessionMutation } from "convex-helpers/react/sessions";
 import { Check, Clock, Music, Star, Trophy, Users, X } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -13,14 +12,14 @@ import type { Doc, Id } from "@/convex/_generated/dataModel";
 import { cn } from "@/lib/utils";
 
 interface TimelineEntry {
-  trackId: GenericId<"tracks">;
+  trackId: Id<"tracks">;
   year: number;
   earnedAtRoundNumber: number;
   earnedBy: "placement" | "bet";
 }
 
 interface Player {
-  _id: GenericId<"players">;
+  _id: Id<"players">;
   displayName: string;
   timeline: TimelineEntry[];
   timelineSize: number;
@@ -30,7 +29,7 @@ interface Player {
 }
 
 interface TrackInfo {
-  _id: GenericId<"tracks">;
+  _id: Id<"tracks">;
   title: string;
   artist: string;
   year: number;
@@ -40,16 +39,16 @@ interface RoundResolution {
   validIndexMin: number;
   validIndexMax: number;
   turnPlayerWasCorrect: boolean;
-  awardedPlayerIds: GenericId<"players">[];
+  awardedPlayerIds: Id<"players">[];
   coinDeltas: Array<{
-    playerId: GenericId<"players">;
+    playerId: Id<"players">;
     delta: number;
   }>;
   resolvedAt: number;
 }
 
 interface BetWithPlayer {
-  playerId: GenericId<"players">;
+  playerId: Id<"players">;
   playerDisplayName: string;
   proposedIndex: number;
   declinedToBet: boolean;
@@ -98,11 +97,11 @@ export function RoundResults({
     }
   };
 
-  const getPlayerById = (playerId: GenericId<"players">): Player | undefined => {
+  const getPlayerById = (playerId: Id<"players">): Player | undefined => {
     return players.find((p) => p._id === playerId) as Player | undefined;
   };
 
-  const getBetForPlayer = (playerId: GenericId<"players">): BetWithPlayer | undefined => {
+  const getBetForPlayer = (playerId: Id<"players">): BetWithPlayer | undefined => {
     return bets.find((b) => b.playerId === playerId);
   };
 

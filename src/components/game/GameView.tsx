@@ -1,7 +1,6 @@
 "use client";
 
 import { useQuery } from "convex/react";
-import type { GenericId } from "convex/values";
 import { useSessionId, useSessionQuery } from "convex-helpers/react/sessions";
 import { Disc, History } from "lucide-react";
 import { useMemo, useState } from "react";
@@ -18,7 +17,7 @@ import { PlayersBar } from "./PlayersBar";
 import { PlayerTimelineModal } from "./PlayerTimelineModal";
 
 interface GameViewProps {
-  lobbyId: GenericId<"lobbies">;
+  lobbyId: Id<"lobbies">;
   code: string;
 }
 
@@ -89,7 +88,7 @@ export function GameView({ lobbyId, code }: GameViewProps): React.ReactNode {
   const roundPhase = (currentRound?.phase ?? "placing") as "placing" | "betting" | "resolved";
 
   const trackInfo = ((): {
-    _id: GenericId<"tracks">;
+    _id: Id<"tracks">;
     title?: string;
     artist?: string;
     year?: number;
@@ -98,7 +97,7 @@ export function GameView({ lobbyId, code }: GameViewProps): React.ReactNode {
     if (!currentRound?.track) return null;
     const track = currentRound.track;
     return {
-      _id: track.trackId as GenericId<"tracks">,
+      _id: track.trackId as Id<"tracks">,
       youtubeVideoId: "youtubeVideoId" in track ? track.youtubeVideoId : undefined,
       ...("title" in track
         ? {

@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery } from "convex/react";
-import type { GenericId } from "convex/values";
+import type { Id } from "@/convex/_generated/dataModel";
 import { useSessionId } from "convex-helpers/react/sessions";
 import { Crown, User } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -9,17 +9,17 @@ import { SkeletonPlayerList } from "@/components/ui/skeletons";
 import { api } from "@/convex/_generated/api";
 
 interface PlayerListProps {
-  lobbyId: GenericId<"lobbies">;
+  lobbyId: Id<"lobbies">;
 }
 
 interface Player {
-  _id: GenericId<"players">;
+  _id: Id<"players">;
   _creationTime: number;
   displayName: string;
   isHost: boolean;
   coins: number;
   sessionId: string;
-  lobbyId: GenericId<"lobbies">;
+  lobbyId: Id<"lobbies">;
 }
 
 export function PlayerList({ lobbyId }: PlayerListProps): React.ReactNode {

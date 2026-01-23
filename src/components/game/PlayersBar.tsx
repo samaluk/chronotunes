@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery } from "convex/react";
-import type { GenericId } from "convex/values";
+import type { Id } from "@/convex/_generated/dataModel";
 import { useSessionId } from "convex-helpers/react/sessions";
 import { Coins, Crown, Music, Star, User, UserRound } from "lucide-react";
 import { SkeletonPlayersBar } from "@/components/ui/skeletons";
@@ -10,9 +10,9 @@ import type { Doc } from "@/convex/_generated/dataModel";
 import { cn } from "@/lib/utils";
 
 interface PlayersBarProps {
-  lobbyId: GenericId<"lobbies">;
+  lobbyId: Id<"lobbies">;
   currentSessionId?: string | null;
-  highlightPlayerId?: GenericId<"players"> | null;
+  highlightPlayerId?: Id<"players"> | null;
   onPlayerClick?: (player: Doc<"players">) => void;
 }
 

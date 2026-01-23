@@ -1,6 +1,6 @@
 "use client";
 
-import type { GenericId } from "convex/values";
+import type { Id } from "@/convex/_generated/dataModel";
 import { Check, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { VolumeSlider } from "@/components/player/VolumeSlider";
@@ -8,13 +8,13 @@ import { cn } from "@/lib/utils";
 import { GameTimer } from "./GameTimer";
 
 interface TurnPlayer {
-  _id: GenericId<"players">;
+  _id: Id<"players">;
   displayName: string;
 }
 
 interface ResolutionInfo {
   turnPlayerWasCorrect: boolean;
-  awardedPlayerIds: GenericId<"players">[];
+  awardedPlayerIds: Id<"players">[];
 }
 
 interface GameHeaderProps {

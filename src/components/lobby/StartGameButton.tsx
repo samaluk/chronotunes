@@ -1,6 +1,6 @@
 "use client";
 
-import type { GenericId } from "convex/values";
+import type { Id } from "@/convex/_generated/dataModel";
 import { useSessionMutation } from "convex-helpers/react/sessions";
 import { Play, Users } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -9,7 +9,7 @@ import { toast } from "sonner";
 import { api } from "@/convex/_generated/api";
 
 interface StartGameButtonProps {
-  lobbyId: GenericId<"lobbies">;
+  lobbyId: Id<"lobbies">;
   isHost: boolean;
   playerCount: number;
 }

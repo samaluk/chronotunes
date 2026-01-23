@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery } from "convex/react";
-import type { GenericId } from "convex/values";
+import type { Id } from "@/convex/_generated/dataModel";
 import { useSessionMutation } from "convex-helpers/react/sessions";
 import { Check, Coins, Loader2, Lock, Music, X } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -14,14 +14,14 @@ import { getRevealedTrackMap, sortTimelineByYear } from "@/lib/timeline";
 import { cn } from "@/lib/utils";
 
 interface TimelineEntry {
-  trackId: GenericId<"tracks">;
+  trackId: Id<"tracks">;
   year: number;
   earnedAtRoundNumber: number;
   earnedBy: "placement" | "bet" | "initial";
 }
 
 interface Player {
-  _id: GenericId<"players">;
+  _id: Id<"players">;
   displayName: string;
   timeline: TimelineEntry[];
   timelineSize: number;
@@ -30,7 +30,7 @@ interface Player {
 }
 
 interface TrackInfo {
-  _id: GenericId<"tracks">;
+  _id: Id<"tracks">;
   title?: string;
   artist?: string;
   year?: number;
@@ -38,7 +38,7 @@ interface TrackInfo {
 }
 
 interface RevealedTrack {
-  trackId: GenericId<"tracks">;
+  trackId: Id<"tracks">;
   title: string;
   artist: string;
   year: number;
@@ -46,13 +46,13 @@ interface RevealedTrack {
 }
 
 interface BettingPanelProps {
-  lobbyId: GenericId<"lobbies">;
+  lobbyId: Id<"lobbies">;
   me: Player | null;
   track: TrackInfo | null;
   turnPlayerTimeline: TimelineEntry[];
   revealedTracks: RevealedTrack[];
   players?: Player[];
-  turnPlayerId?: GenericId<"players"> | null;
+  turnPlayerId?: Id<"players"> | null;
   roundStartedAt?: number;
   turnSeconds?: number;
   bettingWindowSeconds?: number;
@@ -62,7 +62,7 @@ interface BettingPanelProps {
 }
 
 interface SlotBetInfo {
-  playerId: GenericId<"players">;
+  playerId: Id<"players">;
   playerDisplayName: string;
   lockedIn: boolean;
 }
