@@ -1,17 +1,17 @@
-import { defineSchema, defineTable } from "convex/server";
-import { v } from "convex/values";
+import { defineSchema, defineTable } from "convex/server"
+import { v } from "convex/values"
 
 // Lobby status enum values
-const lobbyStatus = v.union(v.literal("lobby"), v.literal("in_game"), v.literal("finished"));
+const lobbyStatus = v.union(v.literal("lobby"), v.literal("in_game"), v.literal("finished"))
 
 // Game status enum values
-const gameStatus = v.union(v.literal("active"), v.literal("paused"), v.literal("finished"));
+const gameStatus = v.union(v.literal("active"), v.literal("paused"), v.literal("finished"))
 
 // Round phase enum values
-const roundPhase = v.union(v.literal("placing"), v.literal("betting"), v.literal("resolved"));
+const roundPhase = v.union(v.literal("placing"), v.literal("betting"), v.literal("resolved"))
 
 // Bet status enum values
-const betStatus = v.union(v.literal("pending"), v.literal("won"), v.literal("lost"));
+const betStatus = v.union(v.literal("pending"), v.literal("won"), v.literal("lost"))
 
 // Lobby settings object
 const lobbySettings = v.object({
@@ -24,7 +24,7 @@ const lobbySettings = v.object({
   allowBetRetraction: v.boolean(),
   minYear: v.number(),
   maxYear: v.number(),
-});
+})
 
 // Timeline entry for player's timeline (embedded array)
 const timelineEntry = v.object({
@@ -32,19 +32,19 @@ const timelineEntry = v.object({
   year: v.number(),
   earnedAtRoundNumber: v.number(),
   earnedBy: v.union(v.literal("placement"), v.literal("bet"), v.literal("initial")),
-});
+})
 
 // Placement preview object
 const placementPreview = v.object({
   proposedIndex: v.number(),
   updatedAt: v.number(),
-});
+})
 
 // Placement object
 const placement = v.object({
   proposedIndex: v.number(),
   submittedAt: v.number(),
-});
+})
 
 // Guess object for title/artist guessing
 const guess = v.object({
@@ -53,7 +53,7 @@ const guess = v.object({
   isCorrect: v.boolean(),
   awardedCoin: v.boolean(),
   submittedAt: v.number(),
-});
+})
 
 // Round resolution object
 const resolution = v.object({
@@ -68,21 +68,21 @@ const resolution = v.object({
     }),
   ),
   resolvedAt: v.number(),
-});
+})
 
 // External IDs for tracks (Spotify, YouTube, Deezer)
 const externalIds = v.object({
   spotifyTrackId: v.optional(v.string()),
   youtubeVideoId: v.optional(v.string()),
   deezerTrackId: v.optional(v.string()),
-});
+})
 
 // Links for tracks
 const trackLinks = v.object({
   spotifyUrl: v.optional(v.string()),
   youtubeUrl: v.optional(v.string()),
   deezerUrl: v.optional(v.string()),
-});
+})
 
 export default defineSchema({
   // Lobbies table
@@ -163,4 +163,4 @@ export default defineSchema({
   })
     .index("by_year", ["year"])
     .index("by_year_and_creation", ["year", "createdAt"]),
-});
+})

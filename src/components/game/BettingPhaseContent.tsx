@@ -1,64 +1,64 @@
-"use client";
+"use client"
 
-import { Music } from "lucide-react";
-import { useTranslations } from "next-intl";
-import type { Id } from "@/convex/_generated/dataModel";
-import { BettingPanel } from "./BettingPanel";
+import { Music } from "lucide-react"
+import { useTranslations } from "next-intl"
+import type { Id } from "@/convex/_generated/dataModel"
+import { BettingPanel } from "./BettingPanel"
 
 interface BettingPhaseContentProps {
-  lobbyId: Id<"lobbies">;
+  lobbyId: Id<"lobbies">
   me: {
-    _id: Id<"players">;
-    displayName: string;
+    _id: Id<"players">
+    displayName: string
     timeline: Array<{
-      trackId: Id<"tracks">;
-      year: number;
-      earnedAtRoundNumber: number;
-      earnedBy: "placement" | "bet" | "initial";
-    }>;
-    timelineSize: number;
-    coins: number;
-    isHost: boolean;
-  } | null;
+      trackId: Id<"tracks">
+      year: number
+      earnedAtRoundNumber: number
+      earnedBy: "placement" | "bet" | "initial"
+    }>
+    timelineSize: number
+    coins: number
+    isHost: boolean
+  } | null
   track: {
-    _id: Id<"tracks">;
-    title?: string;
-    artist?: string;
-    year?: number;
-    youtubeVideoId?: string;
-  } | null;
+    _id: Id<"tracks">
+    title?: string
+    artist?: string
+    year?: number
+    youtubeVideoId?: string
+  } | null
   turnPlayerTimeline: Array<{
-    trackId: Id<"tracks">;
-    year: number;
-    earnedAtRoundNumber: number;
-    earnedBy: "placement" | "bet" | "initial";
-  }>;
+    trackId: Id<"tracks">
+    year: number
+    earnedAtRoundNumber: number
+    earnedBy: "placement" | "bet" | "initial"
+  }>
   revealedTracks: Array<{
-    trackId: Id<"tracks">;
-    title: string;
-    artist: string;
-    year: number;
-    youtubeVideoId?: string;
-  }>;
+    trackId: Id<"tracks">
+    title: string
+    artist: string
+    year: number
+    youtubeVideoId?: string
+  }>
   players: Array<{
-    _id: Id<"players">;
-    displayName: string;
+    _id: Id<"players">
+    displayName: string
     timeline: Array<{
-      trackId: Id<"tracks">;
-      year: number;
-      earnedAtRoundNumber: number;
-      earnedBy: "placement" | "bet" | "initial";
-    }>;
-    timelineSize: number;
-    coins: number;
-    isHost: boolean;
-  }> | null;
-  turnPlayerId: Id<"players"> | null;
-  roundStartedAt: number | undefined;
-  turnSeconds: number | undefined;
-  bettingWindowSeconds: number | undefined;
-  turnPlayerPlacementIndex: number | null;
-  showLiveBets: boolean;
+      trackId: Id<"tracks">
+      year: number
+      earnedAtRoundNumber: number
+      earnedBy: "placement" | "bet" | "initial"
+    }>
+    timelineSize: number
+    coins: number
+    isHost: boolean
+  }> | null
+  turnPlayerId: Id<"players"> | null
+  roundStartedAt: number | undefined
+  turnSeconds: number | undefined
+  bettingWindowSeconds: number | undefined
+  turnPlayerPlacementIndex: number | null
+  showLiveBets: boolean
 }
 
 export function BettingPhaseContent({
@@ -75,7 +75,7 @@ export function BettingPhaseContent({
   turnPlayerPlacementIndex,
   showLiveBets,
 }: BettingPhaseContentProps): React.ReactNode {
-  const tBetting = useTranslations("betting");
+  const tBetting = useTranslations("betting")
 
   if (lobbyId && me && track && players) {
     return (
@@ -94,7 +94,7 @@ export function BettingPhaseContent({
         turnPlayerTimeline={turnPlayerTimeline}
         turnSeconds={turnSeconds}
       />
-    );
+    )
   }
 
   return (
@@ -107,5 +107,5 @@ export function BettingPhaseContent({
         <p className="text-muted-foreground text-sm">{tBetting("placeBetDescription")}</p>
       </div>
     </div>
-  );
+  )
 }

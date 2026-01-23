@@ -1,68 +1,68 @@
-"use client";
+"use client"
 
-import { useSessionMutation } from "convex-helpers/react/sessions";
-import { Check, Clock, Music, Star, Trophy, Users, X } from "lucide-react";
-import { useTranslations } from "next-intl";
-import { useEffect, useMemo, useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
-import { api } from "@/convex/_generated/api";
-import type { Doc, Id } from "@/convex/_generated/dataModel";
-import { cn } from "@/lib/utils";
+import { useSessionMutation } from "convex-helpers/react/sessions"
+import { Check, Clock, Music, Star, Trophy, Users, X } from "lucide-react"
+import { useTranslations } from "next-intl"
+import { useEffect, useMemo, useState } from "react"
+import { Button } from "@/components/ui/button"
+import { Card } from "@/components/ui/card"
+import { Label } from "@/components/ui/label"
+import { api } from "@/convex/_generated/api"
+import type { Doc, Id } from "@/convex/_generated/dataModel"
+import { cn } from "@/lib/utils"
 
 interface TimelineEntry {
-  trackId: Id<"tracks">;
-  year: number;
-  earnedAtRoundNumber: number;
-  earnedBy: "placement" | "bet";
+  trackId: Id<"tracks">
+  year: number
+  earnedAtRoundNumber: number
+  earnedBy: "placement" | "bet"
 }
 
 interface Player {
-  _id: Id<"players">;
-  displayName: string;
-  timeline: TimelineEntry[];
-  timelineSize: number;
-  coins: number;
-  isHost: boolean;
-  sessionId: string;
+  _id: Id<"players">
+  displayName: string
+  timeline: TimelineEntry[]
+  timelineSize: number
+  coins: number
+  isHost: boolean
+  sessionId: string
 }
 
 interface TrackInfo {
-  _id: Id<"tracks">;
-  title: string;
-  artist: string;
-  year: number;
+  _id: Id<"tracks">
+  title: string
+  artist: string
+  year: number
 }
 
 interface RoundResolution {
-  validIndexMin: number;
-  validIndexMax: number;
-  turnPlayerWasCorrect: boolean;
-  awardedPlayerIds: Id<"players">[];
+  validIndexMin: number
+  validIndexMax: number
+  turnPlayerWasCorrect: boolean
+  awardedPlayerIds: Id<"players">[]
   coinDeltas: Array<{
-    playerId: Id<"players">;
-    delta: number;
-  }>;
-  resolvedAt: number;
+    playerId: Id<"players">
+    delta: number
+  }>
+  resolvedAt: number
 }
 
 interface BetWithPlayer {
-  playerId: Id<"players">;
-  playerDisplayName: string;
-  proposedIndex: number;
-  declinedToBet: boolean;
-  status: "pending" | "won" | "lost";
+  playerId: Id<"players">
+  playerDisplayName: string
+  proposedIndex: number
+  declinedToBet: boolean
+  status: "pending" | "won" | "lost"
 }
 
 interface RoundResultsProps {
-  lobbyId: Id<"lobbies">;
-  track: TrackInfo;
-  resolution: RoundResolution;
-  turnPlayer: Doc<"players">;
-  bets: BetWithPlayer[];
-  players: Doc<"players">[];
-  me: Doc<"players"> | null;
+  lobbyId: Id<"lobbies">
+  track: TrackInfo
+  resolution: RoundResolution
+  turnPlayer: Doc<"players">
+  bets: BetWithPlayer[]
+  players: Doc<"players">[]
+  me: Doc<"players"> | null
 }
 
 export function RoundResults({
@@ -74,46 +74,46 @@ export function RoundResults({
   players,
   me,
 }: RoundResultsProps): React.ReactNode {
-  const t = useTranslations("results");
-  const [isResolving, setIsResolving] = useState(false);
-  const [showCorrectness, setShowCorrectness] = useState(false);
+  const t = useTranslations("results")
+  const [isResolving, setIsResolving] = useState(false)
+  const [showCorrectness, setShowCorrectness] = useState(false)
 
-  const resolveAndNext = useSessionMutation(api.games.resolveAndNext);
-  const isHost = players.find((p) => p._id === me?._id)?.isHost ?? false;
+  const resolveAndNext = useSessionMutation(api.games.resolveAndNext)
+  const isHost = players.find((p) => p._id === me?._id)?.isHost ?? false
 
   useEffect(() => {
-    const timer = setTimeout(() => setShowCorrectness(true), 300);
-    return () => clearTimeout(timer);
-  }, []);
+    const timer = setTimeout(() => setShowCorrectness(true), 300)
+    return () => clearTimeout(timer)
+  }, [])
 
   const handleNextRound = async () => {
-    setIsResolving(true);
+    setIsResolving(true)
     try {
-      await resolveAndNext({ lobbyId });
+      await resolveAndNext({ lobbyId })
     } catch (error) {
-      console.error("Failed to advance to next round:", error);
+      console.error("Failed to advance to next round:", error)
     } finally {
-      setIsResolving(false);
+      setIsResolving(false)
     }
-  };
+  }
 
   const getPlayerById = (playerId: Id<"players">): Player | undefined => {
-    return players.find((p) => p._id === playerId) as Player | undefined;
-  };
+    return players.find((p) => p._id === playerId) as Player | undefined
+  }
 
   const getBetForPlayer = (playerId: Id<"players">): BetWithPlayer | undefined => {
-    return bets.find((b) => b.playerId === playerId);
-  };
+    return bets.find((b) => b.playerId === playerId)
+  }
 
-  const bettingBets = useMemo(() => bets.filter((bet) => !bet.declinedToBet), [bets]);
+  const bettingBets = useMemo(() => bets.filter((bet) => !bet.declinedToBet), [bets])
 
   const formatTime = (timestamp: number): string => {
-    const date = new Date(timestamp);
-    return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-  };
+    const date = new Date(timestamp)
+    return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
+  }
 
-  const turnPlayerBet = getBetForPlayer(turnPlayer._id);
-  const _didTurnPlayerWinCard = resolution.turnPlayerWasCorrect || turnPlayerBet?.status === "won";
+  const turnPlayerBet = getBetForPlayer(turnPlayer._id)
+  const _didTurnPlayerWinCard = resolution.turnPlayerWasCorrect || turnPlayerBet?.status === "won"
 
   return (
     <div className="space-y-6">
@@ -192,9 +192,9 @@ export function RoundResults({
           </div>
           <div className="grid gap-2">
             {resolution.awardedPlayerIds.map((playerId) => {
-              const player = getPlayerById(playerId);
-              if (!player) return null;
-              const isMe = player._id === me?._id;
+              const player = getPlayerById(playerId)
+              if (!player) return null
+              const isMe = player._id === me?._id
               return (
                 <div
                   className={cn(
@@ -219,7 +219,7 @@ export function RoundResults({
                   </div>
                   <Star className="h-4 w-4 text-green-600 dark:text-green-400" />
                 </div>
-              );
+              )
             })}
             {resolution.awardedPlayerIds.length === 0 && (
               <p className="py-2 text-center text-muted-foreground text-sm">
@@ -238,9 +238,9 @@ export function RoundResults({
           </div>
           <div className="grid gap-2">
             {bettingBets.map((bet) => {
-              const player = getPlayerById(bet.playerId);
-              if (!player) return null;
-              const isMe = player._id === me?._id;
+              const player = getPlayerById(bet.playerId)
+              if (!player) return null
+              const isMe = player._id === me?._id
               return (
                 <div
                   className={cn(
@@ -298,7 +298,7 @@ export function RoundResults({
                     </p>
                   </div>
                 </div>
-              );
+              )
             })}
           </div>
         </div>
@@ -336,5 +336,5 @@ export function RoundResults({
         </div>
       )}
     </div>
-  );
+  )
 }

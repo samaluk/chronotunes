@@ -1,40 +1,40 @@
-"use client";
+"use client"
 
-import { useQuery } from "convex/react";
-import { useSessionId } from "convex-helpers/react/sessions";
-import { Crown, User } from "lucide-react";
-import { useTranslations } from "next-intl";
-import { SkeletonPlayerList } from "@/components/ui/skeletons";
-import { api } from "@/convex/_generated/api";
-import type { Id } from "@/convex/_generated/dataModel";
+import { useQuery } from "convex/react"
+import { useSessionId } from "convex-helpers/react/sessions"
+import { Crown, User } from "lucide-react"
+import { useTranslations } from "next-intl"
+import { SkeletonPlayerList } from "@/components/ui/skeletons"
+import { api } from "@/convex/_generated/api"
+import type { Id } from "@/convex/_generated/dataModel"
 
 interface PlayerListProps {
-  lobbyId: Id<"lobbies">;
+  lobbyId: Id<"lobbies">
 }
 
 interface Player {
-  _id: Id<"players">;
-  _creationTime: number;
-  displayName: string;
-  isHost: boolean;
-  coins: number;
-  sessionId: string;
-  lobbyId: Id<"lobbies">;
+  _id: Id<"players">
+  _creationTime: number
+  displayName: string
+  isHost: boolean
+  coins: number
+  sessionId: string
+  lobbyId: Id<"lobbies">
 }
 
 export function PlayerList({ lobbyId }: PlayerListProps): React.ReactNode {
-  const t = useTranslations("players");
-  const tCommon = useTranslations("common");
-  const [currentSessionId] = useSessionId();
+  const t = useTranslations("players")
+  const tCommon = useTranslations("common")
+  const [currentSessionId] = useSessionId()
 
-  const players = useQuery(api.players.list, { lobbyId });
+  const players = useQuery(api.players.list, { lobbyId })
 
   if (players === undefined) {
-    return <SkeletonPlayerList count={4} />;
+    return <SkeletonPlayerList count={4} />
   }
 
   if (players.length === 0) {
-    return <div className="py-8 text-center text-muted-foreground">{t("noPlayers")}</div>;
+    return <div className="py-8 text-center text-muted-foreground">{t("noPlayers")}</div>
   }
 
   return (
@@ -44,7 +44,7 @@ export function PlayerList({ lobbyId }: PlayerListProps): React.ReactNode {
       </h3>
       <div className="grid gap-2">
         {players.map((player: Player) => {
-          const isCurrentUser = player.sessionId === currentSessionId;
+          const isCurrentUser = player.sessionId === currentSessionId
           return (
             <div
               className="flex items-center gap-3 rounded-lg border bg-card p-3 transition-colors"
@@ -79,9 +79,9 @@ export function PlayerList({ lobbyId }: PlayerListProps): React.ReactNode {
                 </div>
               </div>
             </div>
-          );
+          )
         })}
       </div>
     </div>
-  );
+  )
 }

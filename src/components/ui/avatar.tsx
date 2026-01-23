@@ -1,16 +1,16 @@
-"use client";
+"use client"
 
-import { Avatar as AvatarPrimitive } from "@base-ui/react/avatar";
-import type * as React from "react";
+import { Avatar as AvatarPrimitive } from "@base-ui/react/avatar"
+import type * as React from "react"
 
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/utils"
 
 function Avatar({
   className,
   size = "default",
   ...props
 }: AvatarPrimitive.Root.Props & {
-  size?: "default" | "sm" | "lg";
+  size?: "default" | "sm" | "lg"
 }) {
   return (
     <AvatarPrimitive.Root
@@ -22,7 +22,7 @@ function Avatar({
       data-slot="avatar"
       {...props}
     />
-  );
+  )
 }
 
 function AvatarImage({ className, ...props }: AvatarPrimitive.Image.Props) {
@@ -32,7 +32,7 @@ function AvatarImage({ className, ...props }: AvatarPrimitive.Image.Props) {
       data-slot="avatar-image"
       {...props}
     />
-  );
+  )
 }
 
 function AvatarFallback({ className, ...props }: AvatarPrimitive.Fallback.Props) {
@@ -45,7 +45,7 @@ function AvatarFallback({ className, ...props }: AvatarPrimitive.Fallback.Props)
       data-slot="avatar-fallback"
       {...props}
     />
-  );
+  )
 }
 
 function AvatarBadge({ className, ...props }: React.ComponentProps<"span">) {
@@ -61,7 +61,7 @@ function AvatarBadge({ className, ...props }: React.ComponentProps<"span">) {
       data-slot="avatar-badge"
       {...props}
     />
-  );
+  )
 }
 
 function AvatarGroup({ className, ...props }: React.ComponentProps<"div">) {
@@ -74,7 +74,7 @@ function AvatarGroup({ className, ...props }: React.ComponentProps<"div">) {
       data-slot="avatar-group"
       {...props}
     />
-  );
+  )
 }
 
 function AvatarGroupCount({ className, ...props }: React.ComponentProps<"div">) {
@@ -87,7 +87,7 @@ function AvatarGroupCount({ className, ...props }: React.ComponentProps<"div">) 
       data-slot="avatar-group-count"
       {...props}
     />
-  );
+  )
 }
 
-export { Avatar, AvatarImage, AvatarFallback, AvatarGroup, AvatarGroupCount, AvatarBadge };
+export { Avatar, AvatarImage, AvatarFallback, AvatarGroup, AvatarGroupCount, AvatarBadge }

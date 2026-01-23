@@ -1,16 +1,16 @@
-import { Skeleton } from "@/components/ui/skeleton";
-import { cn } from "@/lib/utils";
+import { Skeleton } from "@/components/ui/skeleton"
+import { cn } from "@/lib/utils"
 
 export function SkeletonCard({ className }: { className?: string }) {
-  return <Skeleton className={cn("h-32 w-full rounded-xl", className)} />;
+  return <Skeleton className={cn("h-32 w-full rounded-xl", className)} />
 }
 
 export function SkeletonButton({ className }: { className?: string }) {
-  return <Skeleton className={cn("h-10 w-24 rounded-md", className)} />;
+  return <Skeleton className={cn("h-10 w-24 rounded-md", className)} />
 }
 
 export function SkeletonText({ className }: { className?: string }) {
-  return <Skeleton className={cn("h-4 w-full", className)} />;
+  return <Skeleton className={cn("h-4 w-full", className)} />
 }
 
 export function SkeletonParagraph({ className }: { className?: string }) {
@@ -20,11 +20,11 @@ export function SkeletonParagraph({ className }: { className?: string }) {
       <Skeleton className="h-4 w-4/5" />
       <Skeleton className="h-4 w-3/5" />
     </div>
-  );
+  )
 }
 
 export function SkeletonAvatar({ className }: { className?: string }) {
-  return <Skeleton className={cn("h-10 w-10 rounded-full", className)} />;
+  return <Skeleton className={cn("h-10 w-10 rounded-full", className)} />
 }
 
 export function SkeletonPlayerCard({ className }: { className?: string }) {
@@ -36,7 +36,7 @@ export function SkeletonPlayerCard({ className }: { className?: string }) {
         <Skeleton className="h-3 w-16" />
       </div>
     </div>
-  );
+  )
 }
 
 export function SkeletonPlayerList({ count = 4 }: { count?: number }) {
@@ -49,7 +49,7 @@ export function SkeletonPlayerList({ count = 4 }: { count?: number }) {
         ))}
       </div>
     </div>
-  );
+  )
 }
 
 export function SkeletonPlayersBar({ count = 4 }: { count?: number }) {
@@ -70,7 +70,7 @@ export function SkeletonPlayersBar({ count = 4 }: { count?: number }) {
         ))}
       </div>
     </div>
-  );
+  )
 }
 
 export function SkeletonGameHeader({ className }: { className?: string }) {
@@ -85,7 +85,7 @@ export function SkeletonGameHeader({ className }: { className?: string }) {
       </div>
       <Skeleton className="mx-auto h-4 w-40" />
     </div>
-  );
+  )
 }
 
 export function SkeletonRoundPanel({ className }: { className?: string }) {
@@ -107,7 +107,7 @@ export function SkeletonRoundPanel({ className }: { className?: string }) {
         </div>
       </div>
     </div>
-  );
+  )
 }
 
 export function SkeletonTimeline({ className }: { className?: string }) {
@@ -120,7 +120,7 @@ export function SkeletonTimeline({ className }: { className?: string }) {
         ))}
       </div>
     </div>
-  );
+  )
 }
 
 export function SkeletonLobbyCode({ className }: { className?: string }) {
@@ -137,7 +137,7 @@ export function SkeletonLobbyCode({ className }: { className?: string }) {
       </div>
       <SkeletonButton />
     </div>
-  );
+  )
 }
 
 export function SkeletonBettingPanel({ className }: { className?: string }) {
@@ -156,7 +156,7 @@ export function SkeletonBettingPanel({ className }: { className?: string }) {
         <Skeleton className="h-10 w-full" />
       </div>
     </div>
-  );
+  )
 }
 
 export function SkeletonResults({ className }: { className?: string }) {
@@ -178,7 +178,7 @@ export function SkeletonResults({ className }: { className?: string }) {
         </div>
       </div>
     </div>
-  );
+  )
 }
 
 export function SkeletonPage({ className }: { className?: string }) {
@@ -189,5 +189,5 @@ export function SkeletonPage({ className }: { className?: string }) {
         <Skeleton className="mx-auto h-4 w-32" />
       </div>
     </div>
-  );
+  )
 }

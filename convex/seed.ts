@@ -1,4 +1,4 @@
-import { mutation } from "./_generated/server";
+import { mutation } from "./_generated/server"
 
 const TEST_TRACKS = [
   { title: "Johnny B. Goode", artist: "Chuck Berry", year: 1958, videoId: "uFeZ_x--aRg" },
@@ -60,16 +60,16 @@ const TEST_TRACKS = [
   { title: "As It Was", artist: "Harry Styles", year: 2022, videoId: "K4eB2w35314" },
   { title: "Flowers", artist: "Miley Cyrus", year: 2023, videoId: "My2FRPA3Gf8" },
   { title: "Dance The Night", artist: "Dua Lipa", year: 2023, videoId: "suAR1PYFNYA" },
-];
+]
 
 export const seed = mutation({
   args: {},
   handler: async (ctx) => {
-    const existingTracks = await ctx.db.query("tracks").collect();
+    const existingTracks = await ctx.db.query("tracks").collect()
     if (existingTracks.length > 0) {
       existingTracks.forEach(async (track) => {
-        await ctx.db.delete(track._id);
-      });
+        await ctx.db.delete(track._id)
+      })
     }
 
     const lobbyId = await ctx.db.insert("lobbies", {
@@ -87,7 +87,7 @@ export const seed = mutation({
         minYear: 1950,
         maxYear: 2025,
       },
-    });
+    })
 
     const hostPlayerId = await ctx.db.insert("players", {
       lobbyId,
@@ -98,7 +98,7 @@ export const seed = mutation({
       timeline: [],
       timelineSize: 0,
       createdAt: Date.now(),
-    });
+    })
 
     const trackIds = await Promise.all(
       TEST_TRACKS.map((track) =>
@@ -112,7 +112,7 @@ export const seed = mutation({
           source: "seed",
         }),
       ),
-    );
+    )
 
     return {
       message: "Database seeded successfully",
@@ -121,6 +121,6 @@ export const seed = mutation({
       hostPlayerId,
       trackCount: trackIds.length,
       tracks: TEST_TRACKS.map((t, i) => ({ ...t, id: trackIds[i] })),
-    };
+    }
   },
-});
+})

@@ -1,8 +1,8 @@
-"use client";
+"use client"
 
-import { ScrollArea as ScrollAreaPrimitive } from "@base-ui/react/scroll-area";
+import { ScrollArea as ScrollAreaPrimitive } from "@base-ui/react/scroll-area"
 
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/utils"
 
 function ScrollArea({ className, children, ...props }: ScrollAreaPrimitive.Root.Props) {
   return (
@@ -20,7 +20,7 @@ function ScrollArea({ className, children, ...props }: ScrollAreaPrimitive.Root.
       <ScrollBar />
       <ScrollAreaPrimitive.Corner />
     </ScrollAreaPrimitive.Root>
-  );
+  )
 }
 
 function ScrollBar({
@@ -44,7 +44,7 @@ function ScrollBar({
         data-slot="scroll-area-thumb"
       />
     </ScrollAreaPrimitive.Scrollbar>
-  );
+  )
 }
 
-export { ScrollArea, ScrollBar };
+export { ScrollArea, ScrollBar }

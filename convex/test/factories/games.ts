@@ -1,27 +1,27 @@
-import type { Infer } from "convex/values";
-import type { Id } from "../../_generated/dataModel";
-import type schema from "../../schema";
-import type { TestContext } from "./types";
+import type { Infer } from "convex/values"
+import type { Id } from "../../_generated/dataModel"
+import type schema from "../../schema"
+import type { TestContext } from "./types"
 
-export type Game = Infer<typeof schema.tables.games.validator>;
-export type Round = Infer<typeof schema.tables.rounds.validator>;
+export type Game = Infer<typeof schema.tables.games.validator>
+export type Round = Infer<typeof schema.tables.rounds.validator>
 
 export interface GameOverrides {
-  status?: Game["status"];
-  currentRoundNumber?: number;
-  turnOrder?: Game["turnOrder"];
-  turnPlayerId?: Game["turnPlayerId"];
+  status?: Game["status"]
+  currentRoundNumber?: number
+  turnOrder?: Game["turnOrder"]
+  turnPlayerId?: Game["turnPlayerId"]
 }
 
 export interface RoundOverrides {
-  roundNumber?: number;
-  phase?: Round["phase"];
-  trackId?: Round["trackId"];
-  turnPlayerId?: Round["turnPlayerId"];
-  placement?: Round["placement"];
-  placementPreview?: Round["placementPreview"];
-  guess?: Round["guess"];
-  resolution?: Round["resolution"];
+  roundNumber?: number
+  phase?: Round["phase"]
+  trackId?: Round["trackId"]
+  turnPlayerId?: Round["turnPlayerId"]
+  placement?: Round["placement"]
+  placementPreview?: Round["placementPreview"]
+  guess?: Round["guess"]
+  resolution?: Round["resolution"]
 }
 
 export async function create(
@@ -30,7 +30,7 @@ export async function create(
   turnOrder: Array<Id<"players">>,
   overrides: GameOverrides = {},
 ): Promise<{ id: Id<"games">; record: Game }> {
-  const turnPlayerId = overrides.turnPlayerId ?? turnOrder[0]!;
+  const turnPlayerId = overrides.turnPlayerId ?? turnOrder[0]!
 
   const data: Game = {
     lobbyId,
@@ -39,20 +39,20 @@ export async function create(
     currentRoundNumber: overrides.currentRoundNumber ?? 1,
     turnOrder,
     turnPlayerId,
-  };
-
-  let gameId: Id<"games"> | null = null;
-
-  await t.run(async (ctx: any) => {
-    gameId = await ctx.db.insert("games", data);
-    await ctx.db.patch(lobbyId, { status: "in_game", activeGameId: gameId });
-  });
-
-  if (!gameId) {
-    throw new Error("Failed to create game");
   }
 
-  return { id: gameId, record: data };
+  let gameId: Id<"games"> | null = null
+
+  await t.run(async (ctx: any) => {
+    gameId = await ctx.db.insert("games", data)
+    await ctx.db.patch(lobbyId, { status: "in_game", activeGameId: gameId })
+  })
+
+  if (!gameId) {
+    throw new Error("Failed to create game")
+  }
+
+  return { id: gameId, record: data }
 }
 
 export async function createWithRound(
@@ -60,20 +60,20 @@ export async function createWithRound(
   lobbyId: Id<"lobbies">,
   turnOrder: Array<Id<"players">>,
   options: {
-    gameOverrides?: GameOverrides;
-    roundOverrides?: RoundOverrides;
+    gameOverrides?: GameOverrides
+    roundOverrides?: RoundOverrides
   } = {},
 ): Promise<{ id: Id<"games">; record: Game; roundId: Id<"rounds">; turnPlayerId: Id<"players"> }> {
-  const turnPlayerId = options.gameOverrides?.turnPlayerId ?? turnOrder[0]!;
-  let trackId: Id<"tracks"> | undefined;
+  const turnPlayerId = options.gameOverrides?.turnPlayerId ?? turnOrder[0]!
+  let trackId: Id<"tracks"> | undefined
 
   await t.run(async (ctx: any) => {
-    const track = await ctx.db.query("tracks").first();
-    trackId = track?._id;
-  });
+    const track = await ctx.db.query("tracks").first()
+    trackId = track?._id
+  })
 
   if (!trackId) {
-    throw new Error("No tracks available. Please seed tracks first.");
+    throw new Error("No tracks available. Please seed tracks first.")
   }
 
   const gameData: Game = {
@@ -83,7 +83,7 @@ export async function createWithRound(
     currentRoundNumber: options.gameOverrides?.currentRoundNumber ?? 1,
     turnOrder,
     turnPlayerId,
-  };
+  }
 
   const roundData = {
     gameId: "" as Id<"games">,
@@ -104,22 +104,22 @@ export async function createWithRound(
     ...(options.roundOverrides?.resolution !== undefined && {
       resolution: options.roundOverrides.resolution,
     }),
-  };
+  }
 
-  let gameId: Id<"games"> | null = null;
-  let roundId: Id<"rounds"> | null = null;
+  let gameId: Id<"games"> | null = null
+  let roundId: Id<"rounds"> | null = null
 
   await t.run(async (ctx: any) => {
-    gameId = await ctx.db.insert("games", gameData);
-    await ctx.db.patch(lobbyId, { status: "in_game", activeGameId: gameId });
+    gameId = await ctx.db.insert("games", gameData)
+    await ctx.db.patch(lobbyId, { status: "in_game", activeGameId: gameId })
 
-    roundData.gameId = gameId!;
-    roundId = await ctx.db.insert("rounds", roundData);
-    await ctx.db.patch(gameId!, { currentRoundId: roundId });
-  });
+    roundData.gameId = gameId!
+    roundId = await ctx.db.insert("rounds", roundData)
+    await ctx.db.patch(gameId!, { currentRoundId: roundId })
+  })
 
   if (!(gameId && roundId)) {
-    throw new Error("Failed to create game or round");
+    throw new Error("Failed to create game or round")
   }
 
   return {
@@ -127,7 +127,7 @@ export async function createWithRound(
     record: gameData,
     roundId,
     turnPlayerId,
-  };
+  }
 }
 
 export async function createInPhase(
@@ -135,44 +135,44 @@ export async function createInPhase(
   lobbyId: Id<"lobbies">,
   phase: "placing" | "betting" | "resolved",
   options: {
-    playerCount?: number;
-    playerIds?: Array<Id<"players">>;
-    roundNumber?: number;
-    placementIndex?: number;
-    resolution?: Round["resolution"];
+    playerCount?: number
+    playerIds?: Array<Id<"players">>
+    roundNumber?: number
+    placementIndex?: number
+    resolution?: Round["resolution"]
   } = {},
 ): Promise<{
-  id: Id<"games">;
-  record: Game;
-  roundId: Id<"rounds">;
-  playerIds: Array<Id<"players">>;
+  id: Id<"games">
+  record: Game
+  roundId: Id<"rounds">
+  playerIds: Array<Id<"players">>
 }> {
-  let playerIds = options.playerIds;
+  let playerIds = options.playerIds
 
   if (!playerIds) {
     await t.run(async (ctx: any) => {
       const players = await ctx.db
         .query("players")
         .filter((q: any) => q.eq(q.field("lobbyId"), lobbyId))
-        .collect();
-      playerIds = players.map((p: any) => p._id);
-    });
+        .collect()
+      playerIds = players.map((p: any) => p._id)
+    })
   }
 
   if (!playerIds || playerIds.length === 0) {
-    throw new Error("No players found in lobby");
+    throw new Error("No players found in lobby")
   }
 
-  const turnPlayerId = playerIds[0]!;
-  let trackId: Id<"tracks"> | undefined;
+  const turnPlayerId = playerIds[0]!
+  let trackId: Id<"tracks"> | undefined
 
   await t.run(async (ctx: any) => {
-    const track = await ctx.db.query("tracks").first();
-    trackId = track?._id;
-  });
+    const track = await ctx.db.query("tracks").first()
+    trackId = track?._id
+  })
 
   if (!trackId) {
-    throw new Error("No tracks available. Please seed tracks first.");
+    throw new Error("No tracks available. Please seed tracks first.")
   }
 
   const gameData: Game = {
@@ -182,7 +182,7 @@ export async function createInPhase(
     currentRoundNumber: options.roundNumber ?? 1,
     turnOrder: playerIds,
     turnPlayerId,
-  };
+  }
 
   const roundData: Round = {
     gameId: "" as Id<"games">,
@@ -191,13 +191,13 @@ export async function createInPhase(
     trackId,
     phase,
     startedAt: Date.now(),
-  };
+  }
 
   if (phase === "betting" || phase === "resolved") {
     roundData.placement = {
       proposedIndex: options.placementIndex ?? 0,
       submittedAt: Date.now(),
-    };
+    }
   }
 
   if (phase === "resolved") {
@@ -208,23 +208,23 @@ export async function createInPhase(
       awardedPlayerIds: [],
       coinDeltas: [],
       resolvedAt: Date.now(),
-    };
+    }
   }
 
-  let gameId: Id<"games"> | null = null;
-  let roundId: Id<"rounds"> | null = null;
+  let gameId: Id<"games"> | null = null
+  let roundId: Id<"rounds"> | null = null
 
   await t.run(async (ctx: any) => {
-    gameId = await ctx.db.insert("games", gameData);
-    await ctx.db.patch(lobbyId, { status: "in_game", activeGameId: gameId });
+    gameId = await ctx.db.insert("games", gameData)
+    await ctx.db.patch(lobbyId, { status: "in_game", activeGameId: gameId })
 
-    roundData.gameId = gameId!;
-    roundId = await ctx.db.insert("rounds", roundData);
-    await ctx.db.patch(gameId!, { currentRoundId: roundId });
-  });
+    roundData.gameId = gameId!
+    roundId = await ctx.db.insert("rounds", roundData)
+    await ctx.db.patch(gameId!, { currentRoundId: roundId })
+  })
 
   if (!(gameId && roundId)) {
-    throw new Error("Failed to create game or round");
+    throw new Error("Failed to create game or round")
   }
 
   return {
@@ -232,40 +232,40 @@ export async function createInPhase(
     record: gameData,
     roundId,
     playerIds,
-  };
+  }
 }
 
 export async function findCurrent(
   t: TestContext,
   lobbyId: Id<"lobbies">,
 ): Promise<{ id: Id<"games">; record: Game } | null> {
-  let result: { id: Id<"games">; record: Game } | null = null;
+  let result: { id: Id<"games">; record: Game } | null = null
 
   await t.run(async (ctx: any) => {
-    const lobby = await ctx.db.get(lobbyId);
+    const lobby = await ctx.db.get(lobbyId)
     if (lobby?.activeGameId) {
-      const game = await ctx.db.get(lobby.activeGameId);
+      const game = await ctx.db.get(lobby.activeGameId)
       if (game) {
-        result = { id: game._id, record: game as Game };
+        result = { id: game._id, record: game as Game }
       }
     }
-  });
+  })
 
-  return result;
+  return result
 }
 
 export async function findById(
   t: TestContext,
   gameId: Id<"games">,
 ): Promise<{ id: Id<"games">; record: Game } | null> {
-  let result: { id: Id<"games">; record: Game } | null = null;
+  let result: { id: Id<"games">; record: Game } | null = null
 
   await t.run(async (ctx: any) => {
-    const game = await ctx.db.get(gameId);
+    const game = await ctx.db.get(gameId)
     if (game) {
-      result = { id: game._id, record: game as Game };
+      result = { id: game._id, record: game as Game }
     }
-  });
+  })
 
-  return result;
+  return result
 }

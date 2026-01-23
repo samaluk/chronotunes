@@ -1,33 +1,33 @@
-import { ConvexError, v } from "convex/values";
-import { mutation, query } from "./_generated/server";
+import { ConvexError, v } from "convex/values"
+import { mutation, query } from "./_generated/server"
 
-const MIN_YEAR = 1900;
-const MAX_YEAR = 2030;
+const MIN_YEAR = 1900
+const MAX_YEAR = 2030
 
 export const get = query({
   args: { trackIds: v.array(v.id("tracks")) },
   handler: async (ctx, args) => {
-    const { trackIds } = args;
+    const { trackIds } = args
 
-    const tracks = await Promise.all(trackIds.map((trackId) => ctx.db.get(trackId)));
+    const tracks = await Promise.all(trackIds.map((trackId) => ctx.db.get(trackId)))
 
-    return tracks;
+    return tracks
   },
-});
+})
 
 export const getPublicByIds = query({
   args: { trackIds: v.array(v.id("tracks")) },
   handler: async (ctx, args) => {
-    const { trackIds } = args;
+    const { trackIds } = args
 
     if (trackIds.length === 0) {
-      return [];
+      return []
     }
 
     const tracks = await Promise.all(
       trackIds.map(async (trackId) => {
-        const track = await ctx.db.get(trackId);
-        if (!track) return null;
+        const track = await ctx.db.get(trackId)
+        if (!track) return null
 
         return {
           trackId: track._id,
@@ -35,59 +35,59 @@ export const getPublicByIds = query({
           artist: track.artist,
           year: track.year,
           youtubeVideoId: track.externalIds.youtubeVideoId ?? undefined,
-        };
+        }
       }),
-    );
+    )
 
-    return tracks.filter((t): t is NonNullable<typeof t> => t !== null);
+    return tracks.filter((t): t is NonNullable<typeof t> => t !== null)
   },
-});
+})
 
 export const list = query({
   args: {},
   handler: async (ctx) => {
-    const tracks = await ctx.db.query("tracks").collect();
-    return tracks;
+    const tracks = await ctx.db.query("tracks").collect()
+    return tracks
   },
-});
+})
 
 export const getForRound = query({
   args: { lobbyId: v.id("lobbies"), sessionId: v.string() },
   handler: async (ctx, args) => {
-    const { lobbyId, sessionId } = args;
+    const { lobbyId, sessionId } = args
 
-    const lobby = await ctx.db.get(lobbyId);
+    const lobby = await ctx.db.get(lobbyId)
 
     if (!lobby) {
-      return null;
+      return null
     }
 
-    const isHost = lobby.hostSessionId === sessionId;
+    const isHost = lobby.hostSessionId === sessionId
 
     if (!isHost) {
-      return null;
+      return null
     }
 
     if (!lobby.activeGameId) {
-      return null;
+      return null
     }
 
-    const game = await ctx.db.get(lobby.activeGameId);
+    const game = await ctx.db.get(lobby.activeGameId)
 
     if (!(game && game.currentRoundId)) {
-      return null;
+      return null
     }
 
-    const round = await ctx.db.get(game.currentRoundId);
+    const round = await ctx.db.get(game.currentRoundId)
 
     if (!round) {
-      return null;
+      return null
     }
 
-    const track = await ctx.db.get(round.trackId);
+    const track = await ctx.db.get(round.trackId)
 
     if (!track) {
-      return null;
+      return null
     }
 
     return {
@@ -100,29 +100,29 @@ export const getForRound = query({
       externalIds: track.externalIds,
       links: track.links,
       source: track.source,
-    };
+    }
   },
-});
+})
 
 export const getPublic = query({
   args: { roundId: v.id("rounds") },
   handler: async (ctx, args) => {
-    const { roundId } = args;
+    const { roundId } = args
 
-    const round = await ctx.db.get(roundId);
+    const round = await ctx.db.get(roundId)
 
     if (!round) {
-      return null;
+      return null
     }
 
     if (round.phase !== "resolved") {
-      return null;
+      return null
     }
 
-    const track = await ctx.db.get(round.trackId);
+    const track = await ctx.db.get(round.trackId)
 
     if (!track) {
-      return null;
+      return null
     }
 
     return {
@@ -131,9 +131,9 @@ export const getPublic = query({
       artist: track.artist,
       year: track.year,
       youtubeVideoId: track.externalIds.youtubeVideoId ?? null,
-    };
+    }
   },
-});
+})
 
 const trackImportItem = v.object({
   title: v.string(),
@@ -142,52 +142,52 @@ const trackImportItem = v.object({
   youtubeVideoId: v.optional(v.string()),
   mbid: v.optional(v.string()),
   durationMs: v.optional(v.number()),
-});
+})
 
 function validateTrackItem(item: (typeof trackImportItem)["type"]): void {
   if (!item.title || item.title.trim().length === 0) {
-    throw new ConvexError("Track title is required");
+    throw new ConvexError("Track title is required")
   }
 
   if (!item.artist || item.artist.trim().length === 0) {
-    throw new ConvexError("Track artist is required");
+    throw new ConvexError("Track artist is required")
   }
 
   if (item.year < MIN_YEAR || item.year > MAX_YEAR) {
-    throw new ConvexError(`Track year must be between ${MIN_YEAR} and ${MAX_YEAR}`);
+    throw new ConvexError(`Track year must be between ${MIN_YEAR} and ${MAX_YEAR}`)
   }
 
   if (item.youtubeVideoId !== undefined && item.youtubeVideoId.trim().length === 0) {
-    throw new ConvexError("YouTube video ID must be a non-empty string if provided");
+    throw new ConvexError("YouTube video ID must be a non-empty string if provided")
   }
 
   if (item.mbid !== undefined && item.mbid.trim().length === 0) {
-    throw new ConvexError("MusicBrainz ID must be a non-empty string if provided");
+    throw new ConvexError("MusicBrainz ID must be a non-empty string if provided")
   }
 
   if (item.durationMs !== undefined && item.durationMs < 0) {
-    throw new ConvexError("Duration must be a non-negative number if provided");
+    throw new ConvexError("Duration must be a non-negative number if provided")
   }
 }
 
 export const importTracks = mutation({
   args: { tracks: v.array(trackImportItem) },
   handler: async (ctx, args) => {
-    const { tracks } = args;
+    const { tracks } = args
 
     if (tracks.length === 0) {
-      throw new ConvexError("At least one track must be provided");
+      throw new ConvexError("At least one track must be provided")
     }
 
     if (tracks.length > 1000) {
-      throw new ConvexError("Cannot import more than 1000 tracks at once");
+      throw new ConvexError("Cannot import more than 1000 tracks at once")
     }
 
-    const importedIds: string[] = [];
-    const now = Date.now();
+    const importedIds: string[] = []
+    const now = Date.now()
 
     for (const track of tracks) {
-      validateTrackItem(track);
+      validateTrackItem(track)
 
       const trackId = await ctx.db.insert("tracks", {
         title: track.title.trim(),
@@ -201,11 +201,11 @@ export const importTracks = mutation({
         source: "import",
         ...(track.mbid ? { mbid: track.mbid.trim() } : {}),
         ...(track.durationMs !== undefined ? { durationMs: track.durationMs } : {}),
-      });
+      })
 
-      importedIds.push(trackId);
+      importedIds.push(trackId)
     }
 
-    return { importedCount: importedIds.length, trackIds: importedIds };
+    return { importedCount: importedIds.length, trackIds: importedIds }
   },
-});
+})

@@ -1,39 +1,39 @@
-"use client";
+"use client"
 
-import { Music } from "lucide-react";
-import { useTranslations } from "next-intl";
-import type { Doc, Id } from "@/convex/_generated/dataModel";
-import { TimelinePlacer } from "./TimelinePlacer";
-import { TurnPlayerTimeline } from "./TurnPlayerTimeline";
+import { Music } from "lucide-react"
+import { useTranslations } from "next-intl"
+import type { Doc, Id } from "@/convex/_generated/dataModel"
+import { TimelinePlacer } from "./TimelinePlacer"
+import { TurnPlayerTimeline } from "./TurnPlayerTimeline"
 
 interface PlacingPhaseContentProps {
-  isMyTurn: boolean;
-  lobbyId?: Id<"lobbies">;
-  me: Doc<"players"> | null;
-  players: Doc<"players">[] | null;
+  isMyTurn: boolean
+  lobbyId?: Id<"lobbies">
+  me: Doc<"players"> | null
+  players: Doc<"players">[] | null
   track: {
-    _id: Id<"tracks">;
-    title?: string;
-    artist?: string;
-    year?: number;
-    youtubeVideoId?: string;
-  } | null;
-  existingPreviewIndex: number | null;
-  turnPlayerId: Id<"players"> | null;
+    _id: Id<"tracks">
+    title?: string
+    artist?: string
+    year?: number
+    youtubeVideoId?: string
+  } | null
+  existingPreviewIndex: number | null
+  turnPlayerId: Id<"players"> | null
   turnPlayerTimeline: Array<{
-    trackId: Id<"tracks">;
-    year: number;
-    earnedAtRoundNumber: number;
-    earnedBy: "placement" | "bet" | "initial";
-  }>;
-  turnPlayerTimelineSize: number;
+    trackId: Id<"tracks">
+    year: number
+    earnedAtRoundNumber: number
+    earnedBy: "placement" | "bet" | "initial"
+  }>
+  turnPlayerTimelineSize: number
   revealedTracks: Array<{
-    trackId: Id<"tracks">;
-    title: string;
-    artist: string;
-    year: number;
-    youtubeVideoId?: string;
-  }>;
+    trackId: Id<"tracks">
+    title: string
+    artist: string
+    year: number
+    youtubeVideoId?: string
+  }>
 }
 
 export function PlacingPhaseContent({
@@ -48,7 +48,7 @@ export function PlacingPhaseContent({
   turnPlayerTimelineSize,
   revealedTracks,
 }: PlacingPhaseContentProps): React.ReactNode {
-  const tPlacing = useTranslations("placing");
+  const tPlacing = useTranslations("placing")
 
   if (isMyTurn && lobbyId && me && track) {
     return (
@@ -59,12 +59,12 @@ export function PlacingPhaseContent({
         player={me}
         revealedTracks={revealedTracks}
       />
-    );
+    )
   }
 
   if (lobbyId && track && players && turnPlayerId) {
-    const turnPlayer = players.find((p) => p._id === turnPlayerId);
-    const turnPlayerName = turnPlayer?.displayName ?? "Player";
+    const turnPlayer = players.find((p) => p._id === turnPlayerId)
+    const turnPlayerName = turnPlayer?.displayName ?? "Player"
     return (
       <TurnPlayerTimeline
         existingPreviewIndex={existingPreviewIndex ?? null}
@@ -73,7 +73,7 @@ export function PlacingPhaseContent({
         timelineSize={turnPlayerTimelineSize}
         turnPlayerName={turnPlayerName}
       />
-    );
+    )
   }
 
   return (
@@ -90,5 +90,5 @@ export function PlacingPhaseContent({
         </p>
       </div>
     </div>
-  );
+  )
 }

@@ -1,37 +1,37 @@
-"use client";
+"use client"
 
-import { useQuery } from "convex/react";
-import { Music } from "lucide-react";
-import { useTranslations } from "next-intl";
-import { useEffect, useState } from "react";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { api } from "@/convex/_generated/api";
-import type { Doc, Id } from "@/convex/_generated/dataModel";
-import { RoundResults } from "./RoundResults";
+import { useQuery } from "convex/react"
+import { Music } from "lucide-react"
+import { useTranslations } from "next-intl"
+import { useEffect, useState } from "react"
+import { Dialog, DialogContent } from "@/components/ui/dialog"
+import { api } from "@/convex/_generated/api"
+import type { Doc, Id } from "@/convex/_generated/dataModel"
+import { RoundResults } from "./RoundResults"
 
 interface ResolvedPhaseContentProps {
-  lobbyId: Id<"lobbies">;
+  lobbyId: Id<"lobbies">
   track: {
-    _id: Id<"tracks">;
-    title?: string;
-    artist?: string;
-    year?: number;
-    youtubeVideoId?: string;
-  } | null;
+    _id: Id<"tracks">
+    title?: string
+    artist?: string
+    year?: number
+    youtubeVideoId?: string
+  } | null
   resolution: {
-    validIndexMin: number;
-    validIndexMax: number;
-    turnPlayerWasCorrect: boolean;
-    awardedPlayerIds: Id<"players">[];
+    validIndexMin: number
+    validIndexMax: number
+    turnPlayerWasCorrect: boolean
+    awardedPlayerIds: Id<"players">[]
     coinDeltas: Array<{
-      playerId: Id<"players">;
-      delta: number;
-    }>;
-    resolvedAt: number;
-  } | null;
-  players: Doc<"players">[] | null;
-  turnPlayerId: Id<"players"> | null;
-  me: Doc<"players"> | null;
+      playerId: Id<"players">
+      delta: number
+    }>
+    resolvedAt: number
+  } | null
+  players: Doc<"players">[] | null
+  turnPlayerId: Id<"players"> | null
+  me: Doc<"players"> | null
 }
 
 export function ResolvedPhaseContent({
@@ -42,13 +42,13 @@ export function ResolvedPhaseContent({
   turnPlayerId,
   me,
 }: ResolvedPhaseContentProps): React.ReactNode {
-  const tResults = useTranslations("results");
-  const [showResultsModal, setShowResultsModal] = useState(false);
-  const roundBets = useQuery(api.bets.listForRound, lobbyId ? { lobbyId } : "skip");
+  const tResults = useTranslations("results")
+  const [showResultsModal, setShowResultsModal] = useState(false)
+  const roundBets = useQuery(api.bets.listForRound, lobbyId ? { lobbyId } : "skip")
 
   useEffect(() => {
-    setShowResultsModal(true);
-  }, []);
+    setShowResultsModal(true)
+  }, [])
 
   if (!(lobbyId && track && resolution && players && turnPlayerId)) {
     return (
@@ -69,11 +69,11 @@ export function ResolvedPhaseContent({
           </div>
         )}
       </div>
-    );
+    )
   }
 
-  const turnPlayer = players.find((player) => player._id === turnPlayerId) ?? null;
-  if (!turnPlayer) return null;
+  const turnPlayer = players.find((player) => player._id === turnPlayerId) ?? null
+  if (!turnPlayer) return null
 
   const resultsContent = (
     <RoundResults
@@ -84,15 +84,15 @@ export function ResolvedPhaseContent({
       resolution={resolution}
       track={
         track as {
-          _id: typeof track._id;
-          title: string;
-          artist: string;
-          year: number;
+          _id: typeof track._id
+          title: string
+          artist: string
+          year: number
         }
       }
       turnPlayer={turnPlayer}
     />
-  );
+  )
 
   return (
     <>
@@ -101,5 +101,5 @@ export function ResolvedPhaseContent({
       </Dialog>
       {!showResultsModal && resultsContent}
     </>
-  );
+  )
 }

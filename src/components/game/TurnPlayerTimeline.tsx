@@ -1,30 +1,30 @@
-"use client";
+"use client"
 
-import type { Id } from "@/convex/_generated/dataModel";
-import { getRevealedTrackMap, sortTimelineByYear } from "@/lib/timeline";
-import { TimelineCard } from "./TimelineCard";
+import type { Id } from "@/convex/_generated/dataModel"
+import { getRevealedTrackMap, sortTimelineByYear } from "@/lib/timeline"
+import { TimelineCard } from "./TimelineCard"
 
 interface TimelineEntry {
-  trackId: Id<"tracks">;
-  year: number;
-  earnedAtRoundNumber: number;
-  earnedBy: "placement" | "bet" | "initial";
+  trackId: Id<"tracks">
+  year: number
+  earnedAtRoundNumber: number
+  earnedBy: "placement" | "bet" | "initial"
 }
 
 interface RevealedTrack {
-  trackId: Id<"tracks">;
-  title: string;
-  artist: string;
-  year: number;
-  youtubeVideoId?: string;
+  trackId: Id<"tracks">
+  title: string
+  artist: string
+  year: number
+  youtubeVideoId?: string
 }
 
 interface TurnPlayerTimelineProps {
-  turnPlayerName: string;
-  timeline: TimelineEntry[];
-  timelineSize: number;
-  revealedTracks: RevealedTrack[];
-  existingPreviewIndex: number | null;
+  turnPlayerName: string
+  timeline: TimelineEntry[]
+  timelineSize: number
+  revealedTracks: RevealedTrack[]
+  existingPreviewIndex: number | null
 }
 
 export function TurnPlayerTimeline({
@@ -34,9 +34,9 @@ export function TurnPlayerTimeline({
   revealedTracks,
   existingPreviewIndex,
 }: TurnPlayerTimelineProps): React.ReactNode {
-  const sortedTimeline = sortTimelineByYear(timeline);
-  const revealedTrackMap = getRevealedTrackMap(revealedTracks);
-  const hasEmptyTimeline = sortedTimeline.length === 0;
+  const sortedTimeline = sortTimelineByYear(timeline)
+  const revealedTrackMap = getRevealedTrackMap(revealedTracks)
+  const hasEmptyTimeline = sortedTimeline.length === 0
 
   return (
     <div className="w-full space-y-4">
@@ -56,8 +56,8 @@ export function TurnPlayerTimeline({
         ) : (
           <>
             {sortedTimeline.map((entry, idx) => {
-              const isBeforePreview = existingPreviewIndex !== null && idx === existingPreviewIndex;
-              const revealedTrack = revealedTrackMap.get(entry.trackId);
+              const isBeforePreview = existingPreviewIndex !== null && idx === existingPreviewIndex
+              const revealedTrack = revealedTrackMap.get(entry.trackId)
 
               return (
                 <div key={`${entry.trackId}-${entry.earnedAtRoundNumber}-${idx}`}>
@@ -79,7 +79,7 @@ export function TurnPlayerTimeline({
                     />
                   )}
                 </div>
-              );
+              )
             })}
 
             {existingPreviewIndex === sortedTimeline.length && (
@@ -102,5 +102,5 @@ export function TurnPlayerTimeline({
         </div>
       )}
     </div>
-  );
+  )
 }

@@ -1,19 +1,19 @@
-"use client";
+"use client"
 
-import { CheckCircle2, CircleDashed, RefreshCw, WifiOff } from "lucide-react";
-import { type ConvexConnectionStatus, useConvexStatus } from "@/lib/hooks/use-convex-status";
-import { cn } from "@/lib/utils";
+import { CheckCircle2, CircleDashed, RefreshCw, WifiOff } from "lucide-react"
+import { type ConvexConnectionStatus, useConvexStatus } from "@/lib/hooks/use-convex-status"
+import { cn } from "@/lib/utils"
 
 interface NetworkStatusProps {
-  className?: string;
-  showLabel?: boolean;
+  className?: string
+  showLabel?: boolean
 }
 
 export function NetworkStatus({ className, showLabel = true }: NetworkStatusProps) {
-  const { status, retry } = useConvexStatus();
+  const { status, retry } = useConvexStatus()
 
   if (status === "connected") {
-    return null;
+    return null
   }
 
   return (
@@ -31,28 +31,28 @@ export function NetworkStatus({ className, showLabel = true }: NetworkStatusProp
       <StatusIcon status={status} />
       {showLabel && <StatusLabel onRetry={retry} status={status} />}
     </div>
-  );
+  )
 }
 
 function StatusIcon({ status }: { status: ConvexConnectionStatus }) {
   switch (status) {
     case "connecting":
-      return <CircleDashed className="h-3.5 w-3.5 animate-spin" />;
+      return <CircleDashed className="h-3.5 w-3.5 animate-spin" />
     case "reconnecting":
-      return <RefreshCw className="h-3.5 w-3.5 animate-spin" />;
+      return <RefreshCw className="h-3.5 w-3.5 animate-spin" />
     case "disconnected":
-      return <WifiOff className="h-3.5 w-3.5" />;
+      return <WifiOff className="h-3.5 w-3.5" />
     case "error":
-      return <WifiOff className="h-3.5 w-3.5" />;
+      return <WifiOff className="h-3.5 w-3.5" />
     case "connected":
-      return <CheckCircle2 className="h-3.5 w-3.5" />;
+      return <CheckCircle2 className="h-3.5 w-3.5" />
   }
 }
 
 function StatusLabel({ status, onRetry }: { status: ConvexConnectionStatus; onRetry: () => void }) {
   switch (status) {
     case "connecting":
-      return <span>Connecting...</span>;
+      return <span>Connecting...</span>
     case "reconnecting":
       return (
         <span className="flex items-center gap-1.5">
@@ -60,17 +60,17 @@ function StatusLabel({ status, onRetry }: { status: ConvexConnectionStatus; onRe
           <button
             className="underline hover:no-underline"
             onClick={(e) => {
-              e.stopPropagation();
-              onRetry();
+              e.stopPropagation()
+              onRetry()
             }}
             type="button"
           >
             Retry now
           </button>
         </span>
-      );
+      )
     case "disconnected":
-      return <span>Disconnected</span>;
+      return <span>Disconnected</span>
     case "error":
       return (
         <span className="flex items-center gap-1.5">
@@ -78,25 +78,25 @@ function StatusLabel({ status, onRetry }: { status: ConvexConnectionStatus; onRe
           <button
             className="underline hover:no-underline"
             onClick={(e) => {
-              e.stopPropagation();
-              onRetry();
+              e.stopPropagation()
+              onRetry()
             }}
             type="button"
           >
             Retry
           </button>
         </span>
-      );
+      )
     case "connected":
-      return <span>Connected</span>;
+      return <span>Connected</span>
   }
 }
 
 export function ConnectionBanner() {
-  const { status, retry } = useConvexStatus();
+  const { status, retry } = useConvexStatus()
 
   if (status === "connected") {
-    return null;
+    return null
   }
 
   return (
@@ -113,5 +113,5 @@ export function ConnectionBanner() {
       <StatusIcon status={status} />
       <StatusLabel onRetry={retry} status={status} />
     </div>
-  );
+  )
 }

@@ -1,5 +1,5 @@
-import { LandingPageContent } from "./LandingPageContent";
+import { LandingPageContent } from "./LandingPageContent"
 
 export default function HomePage() {
-  return <LandingPageContent />;
+  return <LandingPageContent />
 }

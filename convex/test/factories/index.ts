@@ -1,9 +1,9 @@
-import * as games from "./games";
-import * as lobbies from "./lobbies";
-import * as players from "./players";
-import * as roundBets from "./roundBets";
-import * as rounds from "./rounds";
-import * as tracks from "./tracks";
+import * as games from "./games"
+import * as lobbies from "./lobbies"
+import * as players from "./players"
+import * as roundBets from "./roundBets"
+import * as rounds from "./rounds"
+import * as tracks from "./tracks"
 
 export const factories = {
   tracks,
@@ -12,6 +12,6 @@ export const factories = {
   games,
   rounds,
   roundBets,
-};
+}
 
-export { tracks, players, lobbies, games, rounds, roundBets };
+export { tracks, players, lobbies, games, rounds, roundBets }

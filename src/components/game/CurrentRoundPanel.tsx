@@ -1,62 +1,62 @@
-"use client";
+"use client"
 
-import { useTranslations } from "next-intl";
-import { YouTubePlayer } from "@/components/player/YouTubePlayer";
-import type { Doc, Id } from "@/convex/_generated/dataModel";
-import { cn } from "@/lib/utils";
-import { BettingPhaseContent } from "./BettingPhaseContent";
-import { PlacingPhaseContent } from "./PlacingPhaseContent";
-import { ResolvedPhaseContent } from "./ResolvedPhaseContent";
+import { useTranslations } from "next-intl"
+import { YouTubePlayer } from "@/components/player/YouTubePlayer"
+import type { Doc, Id } from "@/convex/_generated/dataModel"
+import { cn } from "@/lib/utils"
+import { BettingPhaseContent } from "./BettingPhaseContent"
+import { PlacingPhaseContent } from "./PlacingPhaseContent"
+import { ResolvedPhaseContent } from "./ResolvedPhaseContent"
 
-export type RoundPhase = "placing" | "betting" | "resolved";
+export type RoundPhase = "placing" | "betting" | "resolved"
 
 interface TimelineEntry {
-  trackId: Id<"tracks">;
-  year: number;
-  earnedAtRoundNumber: number;
-  earnedBy: "placement" | "bet" | "initial";
+  trackId: Id<"tracks">
+  year: number
+  earnedAtRoundNumber: number
+  earnedBy: "placement" | "bet" | "initial"
 }
 
 interface CurrentRoundPanelProps {
-  phase: RoundPhase;
-  isMyTurn: boolean;
-  lobbyId?: Id<"lobbies">;
-  me?: Doc<"players"> | null;
-  players?: Doc<"players">[] | null;
+  phase: RoundPhase
+  isMyTurn: boolean
+  lobbyId?: Id<"lobbies">
+  me?: Doc<"players"> | null
+  players?: Doc<"players">[] | null
   track?: {
-    _id: Id<"tracks">;
-    title?: string;
-    artist?: string;
-    year?: number;
-    youtubeVideoId?: string;
-  } | null;
-  existingPreviewIndex?: number | null;
-  turnPlayerId?: Id<"players"> | null;
-  turnPlayerTimeline?: TimelineEntry[];
-  turnPlayerTimelineSize?: number;
+    _id: Id<"tracks">
+    title?: string
+    artist?: string
+    year?: number
+    youtubeVideoId?: string
+  } | null
+  existingPreviewIndex?: number | null
+  turnPlayerId?: Id<"players"> | null
+  turnPlayerTimeline?: TimelineEntry[]
+  turnPlayerTimelineSize?: number
   revealedTracks?: Array<{
-    trackId: Id<"tracks">;
-    title: string;
-    artist: string;
-    year: number;
-    youtubeVideoId?: string;
-  }>;
-  roundStartedAt?: number;
-  turnSeconds?: number;
-  bettingWindowSeconds?: number;
+    trackId: Id<"tracks">
+    title: string
+    artist: string
+    year: number
+    youtubeVideoId?: string
+  }>
+  roundStartedAt?: number
+  turnSeconds?: number
+  bettingWindowSeconds?: number
   resolution?: {
-    validIndexMin: number;
-    validIndexMax: number;
-    turnPlayerWasCorrect: boolean;
-    awardedPlayerIds: Id<"players">[];
+    validIndexMin: number
+    validIndexMax: number
+    turnPlayerWasCorrect: boolean
+    awardedPlayerIds: Id<"players">[]
     coinDeltas: Array<{
-      playerId: Id<"players">;
-      delta: number;
-    }>;
-    resolvedAt: number;
-  } | null;
-  turnPlayerPlacementIndex?: number | null;
-  showLiveBets?: boolean;
+      playerId: Id<"players">
+      delta: number
+    }>
+    resolvedAt: number
+  } | null
+  turnPlayerPlacementIndex?: number | null
+  showLiveBets?: boolean
 }
 
 export function CurrentRoundPanel({
@@ -78,12 +78,12 @@ export function CurrentRoundPanel({
   turnPlayerPlacementIndex,
   showLiveBets,
 }: CurrentRoundPanelProps): React.ReactNode {
-  const t = useTranslations("roundPhase");
-  let phaseBadgeClass = "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400";
+  const t = useTranslations("roundPhase")
+  let phaseBadgeClass = "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
   if (phase === "placing") {
-    phaseBadgeClass = "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400";
+    phaseBadgeClass = "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400"
   } else if (phase === "betting") {
-    phaseBadgeClass = "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400";
+    phaseBadgeClass = "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400"
   }
 
   const renderPhaseContent = (): React.ReactNode => {
@@ -110,7 +110,7 @@ export function CurrentRoundPanel({
                   turnPlayerTimeline={turnPlayerTimeline ?? []}
                   turnPlayerTimelineSize={turnPlayerTimelineSize ?? 0}
                 />
-              );
+              )
 
             case "betting":
               return (
@@ -128,7 +128,7 @@ export function CurrentRoundPanel({
                   turnPlayerTimeline={turnPlayerTimeline ?? []}
                   turnSeconds={turnSeconds}
                 />
-              );
+              )
 
             case "resolved":
               return (
@@ -140,19 +140,19 @@ export function CurrentRoundPanel({
                   track={track!}
                   turnPlayerId={turnPlayerId!}
                 />
-              );
+              )
 
             default:
               return (
                 <div className="flex flex-col items-center justify-center py-12">
                   <p className="text-muted-foreground">Waiting for round to start...</p>
                 </div>
-              );
+              )
           }
         })()}
       </>
-    );
-  };
+    )
+  }
 
   return (
     <div className="w-full">
@@ -175,5 +175,5 @@ export function CurrentRoundPanel({
         </div>
       </div>
     </div>
-  );
+  )
 }

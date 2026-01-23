@@ -1,37 +1,37 @@
-"use client";
+"use client"
 
-import { useSessionMutation } from "convex-helpers/react/sessions";
-import { Check, Loader2 } from "lucide-react";
-import { useTranslations } from "next-intl";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Button } from "@/components/ui/button";
-import { api } from "@/convex/_generated/api";
-import type { Doc, Id } from "@/convex/_generated/dataModel";
-import { sortTimelineByYear } from "@/lib/timeline";
-import { TimelineCard } from "./TimelineCard";
+import { useSessionMutation } from "convex-helpers/react/sessions"
+import { Check, Loader2 } from "lucide-react"
+import { useTranslations } from "next-intl"
+import { useCallback, useEffect, useMemo, useRef, useState } from "react"
+import { Button } from "@/components/ui/button"
+import { api } from "@/convex/_generated/api"
+import type { Doc, Id } from "@/convex/_generated/dataModel"
+import { sortTimelineByYear } from "@/lib/timeline"
+import { TimelineCard } from "./TimelineCard"
 
 interface TrackInfo {
-  _id: Id<"tracks">;
-  title?: string;
-  artist?: string;
-  year?: number;
-  youtubeVideoId?: string;
+  _id: Id<"tracks">
+  title?: string
+  artist?: string
+  year?: number
+  youtubeVideoId?: string
 }
 
 interface RevealedTrack {
-  trackId: Id<"tracks">;
-  title: string;
-  artist: string;
-  year: number;
-  youtubeVideoId?: string;
+  trackId: Id<"tracks">
+  title: string
+  artist: string
+  year: number
+  youtubeVideoId?: string
 }
 
 interface TimelinePlacerProps {
-  lobbyId: Id<"lobbies">;
-  player: Doc<"players">;
-  currentTrack: TrackInfo | null;
-  existingPreviewIndex: number | null;
-  revealedTracks: RevealedTrack[];
+  lobbyId: Id<"lobbies">
+  player: Doc<"players">
+  currentTrack: TrackInfo | null
+  existingPreviewIndex: number | null
+  revealedTracks: RevealedTrack[]
 }
 
 export function TimelinePlacer({
@@ -41,61 +41,61 @@ export function TimelinePlacer({
   existingPreviewIndex,
   revealedTracks,
 }: TimelinePlacerProps): React.ReactNode {
-  const t = useTranslations("placing");
+  const t = useTranslations("placing")
 
-  const [selectedIndex, setSelectedIndex] = useState<number>(existingPreviewIndex ?? 0);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [selectedIndex, setSelectedIndex] = useState<number>(existingPreviewIndex ?? 0)
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
-  const _setPlacementPreview = useSessionMutation(api.rounds.setPlacementPreview);
-  const submitPlacement = useSessionMutation(api.rounds.submitPlacement);
+  const _setPlacementPreview = useSessionMutation(api.rounds.setPlacementPreview)
+  const submitPlacement = useSessionMutation(api.rounds.submitPlacement)
 
-  const sortedTimeline = sortTimelineByYear(player.timeline);
+  const sortedTimeline = sortTimelineByYear(player.timeline)
   const revealedTrackMap = useMemo(
     () => new Map(revealedTracks.map((track) => [track.trackId, track])),
     [revealedTracks],
-  );
-  const maxPosition = sortedTimeline.length;
+  )
+  const maxPosition = sortedTimeline.length
 
   const handleSubmit = useCallback(async () => {
-    setIsSubmitting(true);
+    setIsSubmitting(true)
     try {
       await submitPlacement({
         lobbyId,
-      });
+      })
     } catch (error) {
-      console.error("Failed to submit placement:", error);
+      console.error("Failed to submit placement:", error)
     } finally {
-      setIsSubmitting(false);
+      setIsSubmitting(false)
     }
-  }, [lobbyId, submitPlacement]);
+  }, [lobbyId, submitPlacement])
 
-  const handleSubmitRef = useRef(handleSubmit);
-  handleSubmitRef.current = handleSubmit;
+  const handleSubmitRef = useRef(handleSubmit)
+  handleSubmitRef.current = handleSubmit
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "ArrowUp") {
-        e.preventDefault();
-        setSelectedIndex((prev) => Math.max(0, prev - 1));
+        e.preventDefault()
+        setSelectedIndex((prev) => Math.max(0, prev - 1))
       } else if (e.key === "ArrowDown") {
-        e.preventDefault();
-        setSelectedIndex((prev) => Math.min(maxPosition, prev + 1));
+        e.preventDefault()
+        setSelectedIndex((prev) => Math.min(maxPosition, prev + 1))
       } else if (e.key === "Enter") {
-        e.preventDefault();
-        handleSubmitRef.current();
+        e.preventDefault()
+        handleSubmitRef.current()
       }
-    };
+    }
 
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [maxPosition]);
+    window.addEventListener("keydown", handleKeyDown)
+    return () => window.removeEventListener("keydown", handleKeyDown)
+  }, [maxPosition])
 
   useEffect(() => {
     void _setPlacementPreview({
       lobbyId,
       proposedIndex: selectedIndex,
-    });
-  }, [lobbyId, selectedIndex, _setPlacementPreview]);
+    })
+  }, [lobbyId, selectedIndex, _setPlacementPreview])
 
   if (!currentTrack) {
     return (
@@ -103,25 +103,25 @@ export function TimelinePlacer({
         <div className="h-8 w-8 animate-spin rounded-full border-primary border-b-2" />
         <p className="mt-4 text-muted-foreground">{t("loadingTrack")}</p>
       </div>
-    );
+    )
   }
 
   const getPositionLabel = (index: number): string => {
     if (index === 0 && maxPosition === 0) {
-      return t("emptyTimeline");
+      return t("emptyTimeline")
     }
     if (index === 0) {
-      const firstYear = sortedTimeline[0]?.year;
-      return t("beforeYear", { year: firstYear });
+      const firstYear = sortedTimeline[0]?.year
+      return t("beforeYear", { year: firstYear })
     }
     if (index === maxPosition) {
-      const lastYear = sortedTimeline[maxPosition - 1]?.year;
-      return t("afterYear", { year: lastYear });
+      const lastYear = sortedTimeline[maxPosition - 1]?.year
+      return t("afterYear", { year: lastYear })
     }
-    const yearBefore = sortedTimeline[index - 1]?.year;
-    const yearAfter = sortedTimeline[index]?.year;
-    return t("betweenYears", { year1: yearBefore, year2: yearAfter });
-  };
+    const yearBefore = sortedTimeline[index - 1]?.year
+    const yearAfter = sortedTimeline[index]?.year
+    return t("betweenYears", { year1: yearBefore, year2: yearAfter })
+  }
 
   return (
     <div className="w-full space-y-4">
@@ -191,5 +191,5 @@ export function TimelinePlacer({
         )}
       </Button>
     </div>
-  );
+  )
 }

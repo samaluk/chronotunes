@@ -1,9 +1,9 @@
-import { render, screen } from "@testing-library/react";
-import type { GenericId } from "convex/values";
-import { NextIntlClientProvider } from "next-intl";
-import { describe, expect, test, vi } from "vitest";
-import messages from "../../../messages/en.json";
-import { TimelinePlacer } from "./TimelinePlacer";
+import { render, screen } from "@testing-library/react"
+import type { GenericId } from "convex/values"
+import { NextIntlClientProvider } from "next-intl"
+import { describe, expect, test, vi } from "vitest"
+import messages from "../../../messages/en.json"
+import { TimelinePlacer } from "./TimelinePlacer"
 
 vi.mock("@/convex/_generated/api.js", () => ({
   api: {
@@ -12,60 +12,60 @@ vi.mock("@/convex/_generated/api.js", () => ({
       submitPlacement: vi.fn(),
     },
   },
-}));
+}))
 
 vi.mock("convex/react", () => ({
   useMutation: vi.fn(() => vi.fn()),
-}));
+}))
 
 vi.mock("convex-helpers/react/sessions", () => ({
   useSessionQuery: vi.fn(() => null),
   useSessionMutation: vi.fn(() => vi.fn()),
   SessionProvider: ({ children }: { children: React.ReactNode }) => children,
-}));
+}))
 
 vi.mock("react", () => ({
   useEffect: vi.fn((fn) => fn()),
   useState: vi.fn((initial) => {
     if (typeof initial === "function") {
-      return [initial(), vi.fn()];
+      return [initial(), vi.fn()]
     }
-    return [initial, vi.fn()];
+    return [initial, vi.fn()]
   }),
   useCallback: vi.fn((fn) => fn),
   useMemo: vi.fn((fn) => fn()),
   useRef: vi.fn((initial) => ({ current: initial })),
-}));
+}))
 
 const createMockPlayer = (
   overrides: Partial<{
-    _id: GenericId<"players">;
-    displayName: string;
+    _id: GenericId<"players">
+    displayName: string
     timeline: Array<{
-      trackId: GenericId<"tracks">;
-      year: number;
-      earnedAtRoundNumber: number;
-      earnedBy: "placement" | "bet" | "initial";
-    }>;
-    timelineSize: number;
-    coins: number;
+      trackId: GenericId<"tracks">
+      year: number
+      earnedAtRoundNumber: number
+      earnedBy: "placement" | "bet" | "initial"
+    }>
+    timelineSize: number
+    coins: number
   }> = {},
 ): {
-  _id: GenericId<"players">;
-  _creationTime: number;
-  displayName: string;
+  _id: GenericId<"players">
+  _creationTime: number
+  displayName: string
   timeline: Array<{
-    trackId: GenericId<"tracks">;
-    year: number;
-    earnedAtRoundNumber: number;
-    earnedBy: "placement" | "bet" | "initial";
-  }>;
-  timelineSize: number;
-  coins: number;
-  lobbyId: GenericId<"lobbies">;
-  sessionId: string;
-  isHost: boolean;
-  createdAt: number;
+    trackId: GenericId<"tracks">
+    year: number
+    earnedAtRoundNumber: number
+    earnedBy: "placement" | "bet" | "initial"
+  }>
+  timelineSize: number
+  coins: number
+  lobbyId: GenericId<"lobbies">
+  sessionId: string
+  isHost: boolean
+  createdAt: number
 } => ({
   _id: "player123" as GenericId<"players">,
   _creationTime: Date.now(),
@@ -78,33 +78,33 @@ const createMockPlayer = (
   isHost: false,
   createdAt: Date.now(),
   ...overrides,
-});
+})
 
 const createMockTrack = (
   overrides: Partial<{
-    _id: GenericId<"tracks">;
-    title: string;
-    artist: string;
-    year: number;
+    _id: GenericId<"tracks">
+    title: string
+    artist: string
+    year: number
   }> = {},
 ): {
-  _id: GenericId<"tracks">;
-  title: string;
-  artist: string;
-  year: number;
+  _id: GenericId<"tracks">
+  title: string
+  artist: string
+  year: number
 } => ({
   _id: "track123" as GenericId<"tracks">,
   title: "Test Song",
   artist: "Test Artist",
   year: 1990,
   ...overrides,
-});
+})
 
-const lobbyId = "lobby123" as GenericId<"lobbies">;
+const lobbyId = "lobby123" as GenericId<"lobbies">
 
 describe("TimelinePlacer", () => {
   test("renders loading state when track is null", () => {
-    const mockPlayer = createMockPlayer();
+    const mockPlayer = createMockPlayer()
 
     render(
       <NextIntlClientProvider locale="en" messages={messages}>
@@ -116,14 +116,14 @@ describe("TimelinePlacer", () => {
           revealedTracks={[]}
         />
       </NextIntlClientProvider>,
-    );
+    )
 
-    expect(screen.getByText("Loading track...")).toBeInTheDocument();
-  });
+    expect(screen.getByText("Loading track...")).toBeInTheDocument()
+  })
 
   test("renders empty timeline with drop zone", () => {
-    const mockPlayer = createMockPlayer();
-    const mockTrack = createMockTrack();
+    const mockPlayer = createMockPlayer()
+    const mockTrack = createMockTrack()
 
     render(
       <NextIntlClientProvider locale="en" messages={messages}>
@@ -135,12 +135,12 @@ describe("TimelinePlacer", () => {
           revealedTracks={[]}
         />
       </NextIntlClientProvider>,
-    );
+    )
 
-    expect(screen.getByRole("heading", { name: /place the song/i })).toBeInTheDocument();
-    expect(screen.getByText("New Song")).toBeInTheDocument();
-    expect(screen.getByText("Guess the year!")).toBeInTheDocument();
-  });
+    expect(screen.getByRole("heading", { name: /place the song/i })).toBeInTheDocument()
+    expect(screen.getByText("New Song")).toBeInTheDocument()
+    expect(screen.getByText("Guess the year!")).toBeInTheDocument()
+  })
 
   test("renders timeline with existing cards", () => {
     const mockPlayer = createMockPlayer({
@@ -159,8 +159,8 @@ describe("TimelinePlacer", () => {
         },
       ],
       timelineSize: 2,
-    });
-    const mockTrack = createMockTrack({ title: "New Song", artist: "New Artist" });
+    })
+    const mockTrack = createMockTrack({ title: "New Song", artist: "New Artist" })
 
     render(
       <NextIntlClientProvider locale="en" messages={messages}>
@@ -172,10 +172,10 @@ describe("TimelinePlacer", () => {
           revealedTracks={[]}
         />
       </NextIntlClientProvider>,
-    );
+    )
 
-    expect(screen.getByText("New Song")).toBeInTheDocument();
-  });
+    expect(screen.getByText("New Song")).toBeInTheDocument()
+  })
 
   test("displays confirm placement button", () => {
     const mockPlayer = createMockPlayer({
@@ -188,8 +188,8 @@ describe("TimelinePlacer", () => {
         },
       ],
       timelineSize: 1,
-    });
-    const mockTrack = createMockTrack();
+    })
+    const mockTrack = createMockTrack()
 
     render(
       <NextIntlClientProvider locale="en" messages={messages}>
@@ -201,8 +201,8 @@ describe("TimelinePlacer", () => {
           revealedTracks={[]}
         />
       </NextIntlClientProvider>,
-    );
+    )
 
-    expect(screen.getByRole("button", { name: /confirm placement/i })).toBeInTheDocument();
-  });
-});
+    expect(screen.getByRole("button", { name: /confirm placement/i })).toBeInTheDocument()
+  })
+})

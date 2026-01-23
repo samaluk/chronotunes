@@ -1,50 +1,50 @@
-"use client";
+"use client"
 
-import { AlertCircle, RefreshCw } from "lucide-react";
-import React, { type ReactNode } from "react";
-import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { AlertCircle, RefreshCw } from "lucide-react"
+import React, { type ReactNode } from "react"
+import { Button } from "@/components/ui/button"
+import { cn } from "@/lib/utils"
 
 interface ErrorBoundaryState {
-  hasError: boolean;
-  error: Error | null;
-  errorInfo: string | null;
+  hasError: boolean
+  error: Error | null
+  errorInfo: string | null
 }
 
 interface ErrorBoundaryProps {
-  children: ReactNode;
-  fallback?: ReactNode;
-  onError?: (error: Error, errorInfo: string) => void;
-  className?: string;
+  children: ReactNode
+  fallback?: ReactNode
+  onError?: (error: Error, errorInfo: string) => void
+  className?: string
 }
 
 export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundaryState> {
   constructor(props: ErrorBoundaryProps) {
-    super(props);
-    this.state = { hasError: false, error: null, errorInfo: null };
+    super(props)
+    this.state = { hasError: false, error: null, errorInfo: null }
   }
 
   static getDerivedStateFromError(error: Error): Partial<ErrorBoundaryState> {
-    return { hasError: true, error };
+    return { hasError: true, error }
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    console.error("ErrorBoundary caught an error:", error, errorInfo);
-    const errorInfoString: string | null = errorInfo.componentStack || null;
-    this.setState({ errorInfo: errorInfoString });
+    console.error("ErrorBoundary caught an error:", error, errorInfo)
+    const errorInfoString: string | null = errorInfo.componentStack || null
+    this.setState({ errorInfo: errorInfoString })
     if (this.props.onError) {
-      this.props.onError(error, errorInfo.componentStack || "");
+      this.props.onError(error, errorInfo.componentStack || "")
     }
   }
 
   handleRetry = (): void => {
-    this.setState({ hasError: false, error: null, errorInfo: null });
-  };
+    this.setState({ hasError: false, error: null, errorInfo: null })
+  }
 
   render(): ReactNode {
     if (this.state.hasError) {
       if (this.props.fallback) {
-        return this.props.fallback;
+        return this.props.fallback
       }
 
       return (
@@ -68,22 +68,22 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
             Try Again
           </Button>
         </div>
-      );
+      )
     }
 
-    return this.props.children;
+    return this.props.children
   }
 }
 
 interface AsyncErrorBoundaryState {
-  hasError: boolean;
-  error: Error | null;
+  hasError: boolean
+  error: Error | null
 }
 
 interface AsyncErrorBoundaryProps {
-  children: ReactNode;
-  fallback?: (error: Error, retry: () => void) => ReactNode;
-  className?: string;
+  children: ReactNode
+  fallback?: (error: Error, retry: () => void) => ReactNode
+  className?: string
 }
 
 export function AsyncErrorBoundary({
@@ -94,15 +94,15 @@ export function AsyncErrorBoundary({
   const [state, setState] = React.useState<AsyncErrorBoundaryState>({
     hasError: false,
     error: null,
-  });
+  })
 
   const handleRetry = (): void => {
-    setState({ hasError: false, error: null });
-  };
+    setState({ hasError: false, error: null })
+  }
 
   if (state.hasError && state.error) {
     if (fallback) {
-      return fallback(state.error, handleRetry);
+      return fallback(state.error, handleRetry)
     }
 
     return (
@@ -126,8 +126,8 @@ export function AsyncErrorBoundary({
           Try Again
         </Button>
       </div>
-    );
+    )
   }
 
-  return <>{children}</>;
+  return <>{children}</>
 }

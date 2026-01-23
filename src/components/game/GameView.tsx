@@ -1,65 +1,65 @@
-"use client";
+"use client"
 
-import { useQuery } from "convex/react";
-import { useSessionId, useSessionQuery } from "convex-helpers/react/sessions";
-import { Disc, History } from "lucide-react";
-import { useCallback, useMemo, useState } from "react";
-import { useIsMounted } from "usehooks-ts";
-import { ErrorBoundary } from "@/components/ui/error-boundary";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { api } from "@/convex/_generated/api";
-import type { Doc, Id } from "@/convex/_generated/dataModel";
-import { CurrentRoundPanel } from "./CurrentRoundPanel";
-import { GameHeader } from "./GameHeader";
-import { GameResults } from "./GameResults";
-import { MyTimeline } from "./MyTimeline";
-import { PlayersBar } from "./PlayersBar";
-import { PlayerTimelineModal } from "./PlayerTimelineModal";
+import { useQuery } from "convex/react"
+import { useSessionId, useSessionQuery } from "convex-helpers/react/sessions"
+import { Disc, History } from "lucide-react"
+import { useCallback, useMemo, useState } from "react"
+import { useIsMounted } from "usehooks-ts"
+import { ErrorBoundary } from "@/components/ui/error-boundary"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { api } from "@/convex/_generated/api"
+import type { Doc, Id } from "@/convex/_generated/dataModel"
+import { CurrentRoundPanel } from "./CurrentRoundPanel"
+import { GameHeader } from "./GameHeader"
+import { GameResults } from "./GameResults"
+import { MyTimeline } from "./MyTimeline"
+import { PlayersBar } from "./PlayersBar"
+import { PlayerTimelineModal } from "./PlayerTimelineModal"
 
 interface GameViewProps {
-  lobbyId: Id<"lobbies">;
-  code: string;
+  lobbyId: Id<"lobbies">
+  code: string
 }
 
 export function GameView({ lobbyId, code }: GameViewProps): React.ReactNode {
-  const [sessionId] = useSessionId();
-  const isMounted = useIsMounted();
+  const [sessionId] = useSessionId()
+  const isMounted = useIsMounted()
   const [selectedPlayerForTimeline, setSelectedPlayerForTimeline] = useState<Doc<"players"> | null>(
     null,
-  );
+  )
 
-  const lobby = useQuery(api.lobbies.get, isMounted() && code ? { code } : "skip");
-  const players = useQuery(api.players.list, isMounted() && lobbyId ? { lobbyId } : "skip");
-  const me = useSessionQuery(api.players.getMe, isMounted() && lobbyId ? { lobbyId } : "skip");
-  const game = useQuery(api.games.getCurrent, isMounted() && lobbyId ? { lobbyId } : "skip");
+  const lobby = useQuery(api.lobbies.get, isMounted() && code ? { code } : "skip")
+  const players = useQuery(api.players.list, isMounted() && lobbyId ? { lobbyId } : "skip")
+  const me = useSessionQuery(api.players.getMe, isMounted() && lobbyId ? { lobbyId } : "skip")
+  const game = useQuery(api.games.getCurrent, isMounted() && lobbyId ? { lobbyId } : "skip")
   const currentRound = useSessionQuery(
     api.rounds.getCurrent,
     isMounted() && lobbyId ? { lobbyId } : "skip",
-  );
+  )
 
-  const turnPlayer = players?.find((p) => p._id === currentRound?.turnPlayerId);
+  const turnPlayer = players?.find((p) => p._id === currentRound?.turnPlayerId)
 
   const turnPlayerTrackIds = useMemo((): Id<"tracks">[] => {
     if (!turnPlayer?.timeline) {
-      return [];
+      return []
     }
-    return turnPlayer.timeline.map((t) => t.trackId);
-  }, [turnPlayer]);
+    return turnPlayer.timeline.map((t) => t.trackId)
+  }, [turnPlayer])
 
   const handlePlayerClick = useCallback((player: Doc<"players">) => {
-    setSelectedPlayerForTimeline(player);
-  }, []);
+    setSelectedPlayerForTimeline(player)
+  }, [])
 
   const handleModalClose = useCallback((open: boolean) => {
     if (!open) {
-      setSelectedPlayerForTimeline(null);
+      setSelectedPlayerForTimeline(null)
     }
-  }, []);
+  }, [])
 
   const revealedTracks = useQuery(
     api.tracks.getPublicByIds,
     turnPlayerTrackIds.length > 0 ? { trackIds: turnPlayerTrackIds } : "skip",
-  );
+  )
 
   if (!isMounted()) {
     return (
@@ -68,7 +68,7 @@ export function GameView({ lobbyId, code }: GameViewProps): React.ReactNode {
         <div className="h-12 animate-pulse rounded-lg bg-muted" />
         <div className="h-64 animate-pulse rounded-lg bg-muted" />
       </div>
-    );
+    )
   }
 
   if (
@@ -83,7 +83,7 @@ export function GameView({ lobbyId, code }: GameViewProps): React.ReactNode {
         <div className="h-12 animate-pulse rounded-lg bg-muted" />
         <div className="h-64 animate-pulse rounded-lg bg-muted" />
       </div>
-    );
+    )
   }
 
   if (!game) {
@@ -93,23 +93,23 @@ export function GameView({ lobbyId, code }: GameViewProps): React.ReactNode {
           <p className="text-muted-foreground">No active game found</p>
         </div>
       </div>
-    );
+    )
   }
 
-  const isMyTurn = currentRound?.turnPlayerId === me?._id;
-  const roundPhase = (currentRound?.phase ?? "placing") as "placing" | "betting" | "resolved";
+  const isMyTurn = currentRound?.turnPlayerId === me?._id
+  const roundPhase = (currentRound?.phase ?? "placing") as "placing" | "betting" | "resolved"
 
   const trackInfo = ((): {
-    _id: Id<"tracks">;
-    title?: string;
-    artist?: string;
-    year?: number;
-    youtubeVideoId?: string;
+    _id: Id<"tracks">
+    title?: string
+    artist?: string
+    year?: number
+    youtubeVideoId?: string
   } | null => {
     if (!currentRound?.track) {
-      return null;
+      return null
     }
-    const track = currentRound.track;
+    const track = currentRound.track
     return {
       _id: track.trackId as Id<"tracks">,
       youtubeVideoId: "youtubeVideoId" in track ? track.youtubeVideoId : undefined,
@@ -120,10 +120,10 @@ export function GameView({ lobbyId, code }: GameViewProps): React.ReactNode {
             year: track.year,
           }
         : {}),
-    };
-  })();
+    }
+  })()
 
-  const isGameFinished = game?.status === "finished";
+  const isGameFinished = game?.status === "finished"
 
   return (
     <div className="w-full space-y-4">
@@ -227,5 +227,5 @@ export function GameView({ lobbyId, code }: GameViewProps): React.ReactNode {
         </>
       )}
     </div>
-  );
+  )
 }

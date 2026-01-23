@@ -1,7 +1,7 @@
-import { NavigationMenu as NavigationMenuPrimitive } from "@base-ui/react/navigation-menu";
-import { cva } from "class-variance-authority";
-import { ChevronDownIcon } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { NavigationMenu as NavigationMenuPrimitive } from "@base-ui/react/navigation-menu"
+import { cva } from "class-variance-authority"
+import { ChevronDownIcon } from "lucide-react"
+import { cn } from "@/lib/utils"
 
 function NavigationMenu({ className, children, ...props }: NavigationMenuPrimitive.Root.Props) {
   return (
@@ -16,7 +16,7 @@ function NavigationMenu({ className, children, ...props }: NavigationMenuPrimiti
       {children}
       <NavigationMenuPositioner />
     </NavigationMenuPrimitive.Root>
-  );
+  )
 }
 
 function NavigationMenuList({
@@ -29,7 +29,7 @@ function NavigationMenuList({
       data-slot="navigation-menu-list"
       {...props}
     />
-  );
+  )
 }
 
 function NavigationMenuItem({
@@ -42,12 +42,12 @@ function NavigationMenuItem({
       data-slot="navigation-menu-item"
       {...props}
     />
-  );
+  )
 }
 
 const navigationMenuTriggerStyle = cva(
   "group/navigation-menu-trigger inline-flex h-9 w-max items-center justify-center rounded-lg bg-background px-2.5 py-1.5 font-medium text-sm outline-none transition-all hover:bg-muted focus:bg-muted focus-visible:outline-1 focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 data-open:bg-muted/50 data-popup-open:bg-muted/50 data-open:focus:bg-muted data-open:hover:bg-muted data-popup-open:hover:bg-muted",
-);
+)
 
 function NavigationMenuTrigger({
   className,
@@ -66,7 +66,7 @@ function NavigationMenuTrigger({
         className="relative top-[1px] ml-1 size-3 transition duration-300 group-data-open/navigation-menu-trigger:rotate-180 group-data-popup-open/navigation-menu-trigger:rotate-180"
       />
     </NavigationMenuPrimitive.Trigger>
-  );
+  )
 }
 
 function NavigationMenuContent({ className, ...props }: NavigationMenuPrimitive.Content.Props) {
@@ -79,7 +79,7 @@ function NavigationMenuContent({ className, ...props }: NavigationMenuPrimitive.
       data-slot="navigation-menu-content"
       {...props}
     />
-  );
+  )
 }
 
 function NavigationMenuPositioner({
@@ -108,7 +108,7 @@ function NavigationMenuPositioner({
         </NavigationMenuPrimitive.Popup>
       </NavigationMenuPrimitive.Positioner>
     </NavigationMenuPrimitive.Portal>
-  );
+  )
 }
 
 function NavigationMenuLink({ className, ...props }: NavigationMenuPrimitive.Link.Props) {
@@ -121,7 +121,7 @@ function NavigationMenuLink({ className, ...props }: NavigationMenuPrimitive.Lin
       data-slot="navigation-menu-link"
       {...props}
     />
-  );
+  )
 }
 
 function NavigationMenuIndicator({
@@ -139,7 +139,7 @@ function NavigationMenuIndicator({
     >
       <div className="relative top-[60%] h-2 w-2 rotate-45 rounded-tl-sm bg-border shadow-md" />
     </NavigationMenuPrimitive.Icon>
-  );
+  )
 }
 
 export {
@@ -152,4 +152,4 @@ export {
   NavigationMenuTrigger,
   navigationMenuTriggerStyle,
   NavigationMenuPositioner,
-};
+}

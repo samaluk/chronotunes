@@ -1,21 +1,21 @@
-import type { Infer } from "convex/values";
-import type { Id } from "../../_generated/dataModel";
-import type { MutationCtx } from "../../_generated/server";
-import type schema from "../../schema";
-import type { TestContext } from "./types";
-import { withIndex } from "./types";
+import type { Infer } from "convex/values"
+import type { Id } from "../../_generated/dataModel"
+import type { MutationCtx } from "../../_generated/server"
+import type schema from "../../schema"
+import type { TestContext } from "./types"
+import { withIndex } from "./types"
 
-export type Track = Infer<typeof schema.tables.tracks.validator>;
+export type Track = Infer<typeof schema.tables.tracks.validator>
 
 export interface TrackOverrides {
-  title?: string;
-  artist?: string;
-  year?: number;
-  externalIds?: Track["externalIds"];
-  links?: Track["links"];
-  source?: string;
-  durationMs?: number;
-  mbid?: string;
+  title?: string
+  artist?: string
+  year?: number
+  externalIds?: Track["externalIds"]
+  links?: Track["links"]
+  source?: string
+  durationMs?: number
+  mbid?: string
 }
 
 function buildTrackData(overrides: TrackOverrides, index: number): Track {
@@ -31,21 +31,21 @@ function buildTrackData(overrides: TrackOverrides, index: number): Track {
     source: overrides.source ?? "test",
     ...(overrides.durationMs !== undefined && { durationMs: overrides.durationMs }),
     ...(overrides.mbid !== undefined && { mbid: overrides.mbid }),
-  };
+  }
 }
 
 export async function create(
   t: TestContext,
   overrides: TrackOverrides = {},
 ): Promise<{ id: Id<"tracks">; record: Track }> {
-  const data = buildTrackData(overrides, 1);
-  let trackId: Id<"tracks"> | null = null;
+  const data = buildTrackData(overrides, 1)
+  let trackId: Id<"tracks"> | null = null
 
   await t.run(async (ctx: MutationCtx) => {
-    trackId = await ctx.db.insert("tracks", data);
-  });
+    trackId = await ctx.db.insert("tracks", data)
+  })
 
-  return { id: trackId!, record: data };
+  return { id: trackId!, record: data }
 }
 
 export async function createMany(
@@ -54,21 +54,21 @@ export async function createMany(
   overrides: TrackOverrides = {},
   options: { startIndex?: number } = {},
 ): Promise<Array<{ id: Id<"tracks">; record: Track }>> {
-  const startIndex = options.startIndex ?? 1;
-  const results: Array<{ id: Id<"tracks">; record: Track }> = [];
+  const startIndex = options.startIndex ?? 1
+  const results: Array<{ id: Id<"tracks">; record: Track }> = []
 
   for (let i = 0; i < count; i++) {
-    const data = buildTrackData(overrides, startIndex + i);
-    let trackId: Id<"tracks"> | null = null;
+    const data = buildTrackData(overrides, startIndex + i)
+    let trackId: Id<"tracks"> | null = null
 
     await t.run(async (ctx: MutationCtx) => {
-      trackId = await ctx.db.insert("tracks", data);
-    });
+      trackId = await ctx.db.insert("tracks", data)
+    })
 
-    results.push({ id: trackId!, record: data });
+    results.push({ id: trackId!, record: data })
   }
 
-  return results;
+  return results
 }
 
 export async function createWithYear(
@@ -76,7 +76,7 @@ export async function createWithYear(
   year: number,
   overrides: TrackOverrides = {},
 ): Promise<{ id: Id<"tracks">; record: Track }> {
-  return create(t, { ...overrides, year });
+  return create(t, { ...overrides, year })
 }
 
 export async function createForTimeline(
@@ -90,5 +90,5 @@ export async function createForTimeline(
     artist,
     year,
     externalIds: { youtubeVideoId: `timeline-${year}-${title.slice(0, 3).toLowerCase()}` },
-  });
+  })
 }

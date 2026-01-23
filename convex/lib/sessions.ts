@@ -1,15 +1,15 @@
-import { customAction, customMutation, customQuery } from "convex-helpers/server/customFunctions";
-import { runSessionFunctions, type SessionId, SessionIdArg } from "convex-helpers/server/sessions";
-import { action, mutation, query } from "../_generated/server";
+import { customAction, customMutation, customQuery } from "convex-helpers/server/customFunctions"
+import { runSessionFunctions, type SessionId, SessionIdArg } from "convex-helpers/server/sessions"
+import { action, mutation, query } from "../_generated/server"
 
-export type { SessionId };
+export type { SessionId }
 
 /**
  * Helper to cast a string to SessionId for testing purposes.
  * Only use this in test files.
  */
 export function asSessionId(id: string): SessionId {
-  return id as unknown as SessionId;
+  return id as unknown as SessionId
 }
 
 /**
@@ -35,9 +35,9 @@ export function asSessionId(id: string): SessionId {
 export const queryWithSession = customQuery(query, {
   args: { ...SessionIdArg },
   input: async (ctx, { sessionId }) => {
-    return { ctx: { ...ctx, sessionId }, args: {} };
+    return { ctx: { ...ctx, sessionId }, args: {} }
   },
-});
+})
 
 /**
  * Mutation wrapper that automatically injects sessionId into context.
@@ -60,9 +60,9 @@ export const queryWithSession = customQuery(query, {
 export const mutationWithSession = customMutation(mutation, {
   args: { ...SessionIdArg },
   input: async (ctx, { sessionId }) => {
-    return { ctx: { ...ctx, sessionId }, args: {} };
+    return { ctx: { ...ctx, sessionId }, args: {} }
   },
-});
+})
 
 /**
  * Action wrapper that automatically injects sessionId into context.
@@ -78,6 +78,6 @@ export const actionWithSession = customAction(action, {
         sessionId,
       },
       args: {},
-    };
+    }
   },
-});
+})

@@ -1,37 +1,37 @@
-"use client";
+"use client"
 
-import { useQuery } from "convex/react";
-import { useSessionMutation, useSessionQuery } from "convex-helpers/react/sessions";
-import { Music, Play, Repeat, Trophy } from "lucide-react";
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { api } from "@/convex/_generated/api";
-import type { Id } from "@/convex/_generated/dataModel";
-import { cn } from "@/lib/utils";
+import { useQuery } from "convex/react"
+import { useSessionMutation, useSessionQuery } from "convex-helpers/react/sessions"
+import { Music, Play, Repeat, Trophy } from "lucide-react"
+import { useState } from "react"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { api } from "@/convex/_generated/api"
+import type { Id } from "@/convex/_generated/dataModel"
+import { cn } from "@/lib/utils"
 
 interface GameResultsProps {
-  lobbyId: Id<"lobbies">;
-  code: string;
+  lobbyId: Id<"lobbies">
+  code: string
 }
 
 export function GameResults({ lobbyId, code: _code }: GameResultsProps): React.ReactNode {
-  const [isPlayingAgain, setIsPlayingAgain] = useState(false);
+  const [isPlayingAgain, setIsPlayingAgain] = useState(false)
 
-  const results = useQuery(api.games.getResults, lobbyId ? { lobbyId } : "skip");
-  const me = useSessionQuery(api.players.getMe, lobbyId ? { lobbyId } : "skip");
-  const playAgain = useSessionMutation(api.games.playAgain);
+  const results = useQuery(api.games.getResults, lobbyId ? { lobbyId } : "skip")
+  const me = useSessionQuery(api.players.getMe, lobbyId ? { lobbyId } : "skip")
+  const playAgain = useSessionMutation(api.games.playAgain)
 
   const handlePlayAgain = async () => {
-    setIsPlayingAgain(true);
+    setIsPlayingAgain(true)
     try {
-      await playAgain({ lobbyId });
+      await playAgain({ lobbyId })
     } catch (error) {
-      console.error("Failed to play again:", error);
+      console.error("Failed to play again:", error)
     } finally {
-      setIsPlayingAgain(false);
+      setIsPlayingAgain(false)
     }
-  };
+  }
 
   if (results === undefined) {
     return (
@@ -41,7 +41,7 @@ export function GameResults({ lobbyId, code: _code }: GameResultsProps): React.R
           <p className="mt-4 text-muted-foreground">Loading game results...</p>
         </div>
       </div>
-    );
+    )
   }
 
   if (!results) {
@@ -51,20 +51,20 @@ export function GameResults({ lobbyId, code: _code }: GameResultsProps): React.R
           <p className="text-muted-foreground">No game results found</p>
         </div>
       </div>
-    );
+    )
   }
 
-  const { game, players, rounds } = results;
-  const sortedPlayers = [...players].sort((a, b) => b.timelineSize - a.timelineSize);
-  const winner = sortedPlayers[0];
-  const isWinner = winner?._id === me?._id;
+  const { game, players, rounds } = results
+  const sortedPlayers = [...players].sort((a, b) => b.timelineSize - a.timelineSize)
+  const winner = sortedPlayers[0]
+  const isWinner = winner?._id === me?._id
 
   const formatDuration = (startTime: number, endTime: number): string => {
-    const durationMs = endTime - startTime;
-    const minutes = Math.floor(durationMs / 60_000);
-    const seconds = Math.floor((durationMs % 60_000) / 1000);
-    return `${minutes}m ${seconds}s`;
-  };
+    const durationMs = endTime - startTime
+    const minutes = Math.floor(durationMs / 60_000)
+    const seconds = Math.floor((durationMs % 60_000) / 1000)
+    return `${minutes}m ${seconds}s`
+  }
 
   const songHistory = rounds
     .filter((r) => r.track)
@@ -72,7 +72,7 @@ export function GameResults({ lobbyId, code: _code }: GameResultsProps): React.R
     .map((round) => ({
       roundNumber: round.roundNumber,
       track: round.track!,
-    }));
+    }))
 
   return (
     <div className="w-full space-y-8">
@@ -221,5 +221,5 @@ export function GameResults({ lobbyId, code: _code }: GameResultsProps): React.R
         </Button>
       </div>
     </div>
-  );
+  )
 }

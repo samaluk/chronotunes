@@ -1,19 +1,19 @@
-"use client";
+"use client"
 
-import { useQuery } from "convex/react";
-import { useSessionId } from "convex-helpers/react/sessions";
-import { Coins, Crown, Music, Star, User, UserRound } from "lucide-react";
-import { memo } from "react";
-import { SkeletonPlayersBar } from "@/components/ui/skeletons";
-import { api } from "@/convex/_generated/api";
-import type { Doc, Id } from "@/convex/_generated/dataModel";
-import { cn } from "@/lib/utils";
+import { useQuery } from "convex/react"
+import { useSessionId } from "convex-helpers/react/sessions"
+import { Coins, Crown, Music, Star, User, UserRound } from "lucide-react"
+import { memo } from "react"
+import { SkeletonPlayersBar } from "@/components/ui/skeletons"
+import { api } from "@/convex/_generated/api"
+import type { Doc, Id } from "@/convex/_generated/dataModel"
+import { cn } from "@/lib/utils"
 
 interface PlayersBarProps {
-  lobbyId: Id<"lobbies">;
-  currentSessionId?: string | null;
-  highlightPlayerId?: Id<"players"> | null;
-  onPlayerClick?: (player: Doc<"players">) => void;
+  lobbyId: Id<"lobbies">
+  currentSessionId?: string | null
+  highlightPlayerId?: Id<"players"> | null
+  onPlayerClick?: (player: Doc<"players">) => void
 }
 
 export const PlayersBar = memo(function PlayersBar({
@@ -22,30 +22,30 @@ export const PlayersBar = memo(function PlayersBar({
   highlightPlayerId,
   onPlayerClick,
 }: PlayersBarProps): React.ReactNode {
-  const [hookSessionId] = useSessionId();
-  const currentSessionId = propSessionId ?? hookSessionId ?? null;
-  const players = useQuery(api.players.list, { lobbyId });
+  const [hookSessionId] = useSessionId()
+  const currentSessionId = propSessionId ?? hookSessionId ?? null
+  const players = useQuery(api.players.list, { lobbyId })
 
   if (players === undefined) {
-    return <SkeletonPlayersBar count={4} />;
+    return <SkeletonPlayersBar count={4} />
   }
 
   if (players.length === 0) {
-    return null;
+    return null
   }
 
-  const maxTimelineSize = Math.max(...players.map((p) => p.timelineSize));
+  const maxTimelineSize = Math.max(...players.map((p) => p.timelineSize))
 
   return (
     <div className="w-full">
       <div className="flex flex-wrap justify-center gap-3">
         {players.map((player) => {
-          const isCurrentUser = player.sessionId === currentSessionId;
-          const isTurnPlayer = player._id === highlightPlayerId;
-          const isHost = player.isHost;
-          const isLeader = player.timelineSize === maxTimelineSize && maxTimelineSize > 0;
-          const timelineSize = player.timelineSize;
-          const coins = player.coins;
+          const isCurrentUser = player.sessionId === currentSessionId
+          const isTurnPlayer = player._id === highlightPlayerId
+          const isHost = player.isHost
+          const isLeader = player.timelineSize === maxTimelineSize && maxTimelineSize > 0
+          const timelineSize = player.timelineSize
+          const coins = player.coins
 
           return (
             <button
@@ -130,9 +130,9 @@ export const PlayersBar = memo(function PlayersBar({
                 </div>
               </div>
             </button>
-          );
+          )
         })}
       </div>
     </div>
-  );
-});
+  )
+})

@@ -1,58 +1,58 @@
-"use client";
+"use client"
 
-import { useQuery } from "convex/react";
+import { useQuery } from "convex/react"
 
-import { Music } from "lucide-react";
-import { useMemo } from "react";
-import { useIsMounted } from "usehooks-ts";
-import { api } from "@/convex/_generated/api";
-import type { Id } from "@/convex/_generated/dataModel";
-import { sortTimelineByYear } from "@/lib/timeline";
-import { TimelineCard } from "./TimelineCard";
+import { Music } from "lucide-react"
+import { useMemo } from "react"
+import { useIsMounted } from "usehooks-ts"
+import { api } from "@/convex/_generated/api"
+import type { Id } from "@/convex/_generated/dataModel"
+import { sortTimelineByYear } from "@/lib/timeline"
+import { TimelineCard } from "./TimelineCard"
 
 interface TimelineEntry {
-  trackId: Id<"tracks">;
-  year: number;
-  earnedAtRoundNumber: number;
-  earnedBy: "placement" | "bet" | "initial";
+  trackId: Id<"tracks">
+  year: number
+  earnedAtRoundNumber: number
+  earnedBy: "placement" | "bet" | "initial"
 }
 
 interface Player {
-  _id: Id<"players">;
-  displayName: string;
-  timeline: TimelineEntry[];
-  timelineSize: number;
+  _id: Id<"players">
+  displayName: string
+  timeline: TimelineEntry[]
+  timelineSize: number
 }
 
 interface Track {
-  _id: Id<"tracks">;
-  title: string;
-  artist: string;
-  year: number;
+  _id: Id<"tracks">
+  title: string
+  artist: string
+  year: number
 }
 
 interface MyTimelineProps {
-  player: Player | null;
+  player: Player | null
 }
 
 export function MyTimeline({ player }: MyTimelineProps): React.ReactNode {
-  const isMounted = useIsMounted();
+  const isMounted = useIsMounted()
 
-  const trackIds = player?.timeline.map((entry) => entry.trackId) ?? [];
+  const trackIds = player?.timeline.map((entry) => entry.trackId) ?? []
   const tracks = useQuery(
     api.tracks.get,
     isMounted() && trackIds.length > 0 ? { trackIds } : "skip",
-  );
+  )
 
   // Must be called before any early returns to maintain consistent hook order
   const trackMap = useMemo(() => {
-    if (!(tracks && Array.isArray(tracks))) return new Map();
+    if (!(tracks && Array.isArray(tracks))) return new Map()
     return new Map(
       tracks
         .filter((track): track is NonNullable<typeof track> => track != null)
         .map((track) => [track._id, track]),
-    );
-  }, [tracks]);
+    )
+  }, [tracks])
 
   if (!isMounted()) {
     return (
@@ -61,7 +61,7 @@ export function MyTimeline({ player }: MyTimelineProps): React.ReactNode {
         <TimelineCard isLoading={true} />
         <TimelineCard isLoading={true} />
       </div>
-    );
+    )
   }
 
   if (!player || player.timeline.length === 0) {
@@ -83,11 +83,11 @@ export function MyTimeline({ player }: MyTimelineProps): React.ReactNode {
           )}
         </div>
       </div>
-    );
+    )
   }
 
-  const isLoading = tracks === undefined;
-  const sortedTimeline = sortTimelineByYear(player.timeline);
+  const isLoading = tracks === undefined
+  const sortedTimeline = sortTimelineByYear(player.timeline)
 
   return (
     <div className="w-full space-y-3">
@@ -103,7 +103,7 @@ export function MyTimeline({ player }: MyTimelineProps): React.ReactNode {
       ) : (
         <div className="space-y-2">
           {sortedTimeline.map((entry) => {
-            const track = trackMap.get(entry.trackId);
+            const track = trackMap.get(entry.trackId)
             if (!track) {
               return (
                 <TimelineCard
@@ -122,10 +122,10 @@ export function MyTimeline({ player }: MyTimelineProps): React.ReactNode {
                   title="Unknown Track"
                   year={entry.year}
                 />
-              );
+              )
             }
 
-            const isPlacement = entry.earnedBy === "placement";
+            const isPlacement = entry.earnedBy === "placement"
 
             return (
               <TimelineCard
@@ -136,10 +136,10 @@ export function MyTimeline({ player }: MyTimelineProps): React.ReactNode {
                 title={track.title}
                 year={track.year}
               />
-            );
+            )
           })}
         </div>
       )}
     </div>
-  );
+  )
 }

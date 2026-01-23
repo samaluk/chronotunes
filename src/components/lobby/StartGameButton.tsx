@@ -1,17 +1,17 @@
-"use client";
+"use client"
 
-import { useSessionMutation } from "convex-helpers/react/sessions";
-import { Play, Users } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { useTranslations } from "next-intl";
-import { toast } from "sonner";
-import { api } from "@/convex/_generated/api";
-import type { Id } from "@/convex/_generated/dataModel";
+import { useSessionMutation } from "convex-helpers/react/sessions"
+import { Play, Users } from "lucide-react"
+import { useRouter } from "next/navigation"
+import { useTranslations } from "next-intl"
+import { toast } from "sonner"
+import { api } from "@/convex/_generated/api"
+import type { Id } from "@/convex/_generated/dataModel"
 
 interface StartGameButtonProps {
-  lobbyId: Id<"lobbies">;
-  isHost: boolean;
-  playerCount: number;
+  lobbyId: Id<"lobbies">
+  isHost: boolean
+  playerCount: number
 }
 
 export function StartGameButton({
@@ -19,31 +19,31 @@ export function StartGameButton({
   isHost,
   playerCount,
 }: StartGameButtonProps): React.ReactNode {
-  const t = useTranslations("startGame");
+  const t = useTranslations("startGame")
 
-  const router = useRouter();
-  const startGame = useSessionMutation(api.games.start);
+  const router = useRouter()
+  const startGame = useSessionMutation(api.games.start)
 
   const handleStartGame = async (): Promise<void> => {
     try {
-      await startGame({ lobbyId });
-      toast.success(t("gameStarted"));
-      router.refresh();
+      await startGame({ lobbyId })
+      toast.success(t("gameStarted"))
+      router.refresh()
     } catch (error) {
-      const message = error instanceof Error ? error.message : t("failedToStart");
-      toast.error(message);
+      const message = error instanceof Error ? error.message : t("failedToStart")
+      toast.error(message)
     }
-  };
+  }
 
   if (!isHost) {
     return (
       <div className="rounded-lg bg-muted p-4 text-center">
         <p className="text-muted-foreground">{t("waitingForHost")}</p>
       </div>
-    );
+    )
   }
 
-  const canStart = playerCount >= 2;
+  const canStart = playerCount >= 2
 
   return (
     <div className="space-y-2">
@@ -68,5 +68,5 @@ export function StartGameButton({
         </p>
       )}
     </div>
-  );
+  )
 }

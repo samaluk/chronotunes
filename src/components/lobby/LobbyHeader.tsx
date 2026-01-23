@@ -1,11 +1,11 @@
-"use client";
+"use client"
 
-import { Music } from "lucide-react";
-import { useTranslations } from "next-intl";
-import { memo } from "react";
+import { Music } from "lucide-react"
+import { useTranslations } from "next-intl"
+import { memo } from "react"
 
 export const LobbyHeader = memo(function LobbyHeader(): React.ReactNode {
-  const t = useTranslations("lobby");
+  const t = useTranslations("lobby")
 
   return (
     <div className="flex items-center gap-3">
@@ -17,5 +17,5 @@ export const LobbyHeader = memo(function LobbyHeader(): React.ReactNode {
         <p className="text-muted-foreground text-sm">{t("subtitle")}</p>
       </div>
     </div>
-  );
-});
+  )
+})

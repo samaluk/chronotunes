@@ -1,10 +1,10 @@
-import { convexTest } from "convex-test";
-import { expect, test } from "vitest";
-import { api } from "./_generated/api";
-import type { Id } from "./_generated/dataModel";
-import { asSessionId, type SessionId } from "./lib/sessions";
-import schema from "./schema";
-import { modules } from "./test.setup";
+import { convexTest } from "convex-test"
+import { expect, test } from "vitest"
+import { api } from "./_generated/api"
+import type { Id } from "./_generated/dataModel"
+import { asSessionId, type SessionId } from "./lib/sessions"
+import schema from "./schema"
+import { modules } from "./test.setup"
 
 async function seedTestData(t: ReturnType<typeof convexTest>) {
   await t.run(async (ctx) => {
@@ -16,7 +16,7 @@ async function seedTestData(t: ReturnType<typeof convexTest>) {
       links: {},
       createdAt: Date.now(),
       source: "test",
-    });
+    })
     await ctx.db.insert("tracks", {
       title: "Test Song 2",
       artist: "Test Artist 2",
@@ -25,81 +25,81 @@ async function seedTestData(t: ReturnType<typeof convexTest>) {
       links: {},
       createdAt: Date.now(),
       source: "test",
-    });
-  });
+    })
+  })
 }
 
 test("preview creates unlocked bet for non-turn player", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema, modules)
 
-  await seedTestData(t);
+  await seedTestData(t)
 
   const { code } = await t.mutation(api.lobbies.create, {
     sessionId: asSessionId("host-session-preview"),
     displayName: "HostPreview",
-  });
+  })
 
   await t.mutation(api.lobbies.join, {
     code,
     sessionId: asSessionId("player-session-preview"),
     displayName: "PlayerPreview",
-  });
+  })
 
   await t.mutation(api.lobbies.join, {
     code,
     sessionId: asSessionId("spectator-session-preview"),
     displayName: "SpectatorPreview",
-  });
+  })
 
-  const lobby = await t.query(api.lobbies.get, { code });
+  const lobby = await t.query(api.lobbies.get, { code })
 
   await t.mutation(api.games.start, {
     lobbyId: lobby!._id,
     sessionId: asSessionId("host-session-preview"),
-  });
+  })
 
-  let turnPlayerId: Id<"players"> | null = null;
+  let turnPlayerId: Id<"players"> | null = null
   await t.run(async (ctx) => {
-    const game = await ctx.db.query("games").first();
+    const game = await ctx.db.query("games").first()
     if (game?.currentRoundId) {
-      const round = await ctx.db.get(game.currentRoundId);
+      const round = await ctx.db.get(game.currentRoundId)
       if (round) {
-        turnPlayerId = round.turnPlayerId;
+        turnPlayerId = round.turnPlayerId
       }
     }
-  });
+  })
 
-  let nonTurnPlayerId: Id<"players"> | null = null;
+  let nonTurnPlayerId: Id<"players"> | null = null
   await t.run(async (ctx) => {
     const player = await ctx.db
       .query("players")
       .filter((q) => q.eq(q.field("sessionId"), asSessionId("spectator-session-preview")))
-      .first();
+      .first()
     if (player) {
-      nonTurnPlayerId = player._id;
+      nonTurnPlayerId = player._id
     }
-  });
+  })
 
-  expect(turnPlayerId).not.toBeNull();
-  expect(nonTurnPlayerId).not.toBeNull();
+  expect(turnPlayerId).not.toBeNull()
+  expect(nonTurnPlayerId).not.toBeNull()
 
   if (turnPlayerId === nonTurnPlayerId) {
-    return;
+    return
   }
 
-  expect(nonTurnPlayerId).not.toBe(turnPlayerId);
+  expect(nonTurnPlayerId).not.toBe(turnPlayerId)
 
   const result = await t.mutation(api.bets.preview, {
     lobbyId: lobby!._id,
     sessionId: asSessionId("spectator-session-preview"),
     proposedIndex: 0,
-  });
+  })
 
-  expect(result).toBeNull();
+  expect(result).toBeNull()
 
-  let betCreated = false;
+  let betCreated = false
   await t.run(async (ctx) => {
-    const game = await ctx.db.query("games").first();
+    const game = await ctx.db.query("games").first()
     if (game?.currentRoundId) {
       const bet = await ctx.db
         .query("roundBets")
@@ -109,146 +109,146 @@ test("preview creates unlocked bet for non-turn player", async () => {
             q.eq(q.field("playerId"), nonTurnPlayerId),
           ),
         )
-        .first();
+        .first()
       if (bet) {
-        betCreated = true;
-        expect(bet.lockedIn).toBe(false);
-        expect(bet.proposedIndex).toBe(0);
-        expect(bet.status).toBe("pending");
+        betCreated = true
+        expect(bet.lockedIn).toBe(false)
+        expect(bet.proposedIndex).toBe(0)
+        expect(bet.status).toBe("pending")
       }
     }
-  });
+  })
 
-  expect(betCreated).toBe(true);
-});
+  expect(betCreated).toBe(true)
+})
 
 test("preview deducts 1 coin from player", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema, modules)
 
-  await seedTestData(t);
+  await seedTestData(t)
 
   const { code } = await t.mutation(api.lobbies.create, {
     sessionId: asSessionId("host-session-coin"),
     displayName: "HostCoin",
-  });
+  })
 
   await t.mutation(api.lobbies.join, {
     code,
     sessionId: asSessionId("player-session-coin"),
     displayName: "PlayerCoin",
-  });
+  })
 
   await t.mutation(api.lobbies.join, {
     code,
     sessionId: asSessionId("spectator-session-coin"),
     displayName: "SpectatorCoin",
-  });
+  })
 
-  const lobby = await t.query(api.lobbies.get, { code });
+  const lobby = await t.query(api.lobbies.get, { code })
 
   await t.mutation(api.games.start, {
     lobbyId: lobby!._id,
     sessionId: asSessionId("host-session-coin"),
-  });
+  })
 
-  let playerBeforeCoins: number | null = null;
+  let playerBeforeCoins: number | null = null
   await t.run(async (ctx) => {
     const player = await ctx.db
       .query("players")
       .filter((q) => q.eq(q.field("sessionId"), asSessionId("spectator-session-coin")))
-      .first();
+      .first()
     if (player) {
-      playerBeforeCoins = player.coins;
+      playerBeforeCoins = player.coins
     }
-  });
+  })
 
-  expect(playerBeforeCoins).not.toBeNull();
-  expect(playerBeforeCoins).toBeGreaterThanOrEqual(1);
+  expect(playerBeforeCoins).not.toBeNull()
+  expect(playerBeforeCoins).toBeGreaterThanOrEqual(1)
 
-  let turnPlayerSessionId: SessionId | null = null;
+  let turnPlayerSessionId: SessionId | null = null
   await t.run(async (ctx) => {
-    const game = await ctx.db.query("games").first();
+    const game = await ctx.db.query("games").first()
     if (game?.currentRoundId) {
-      const round = await ctx.db.get(game.currentRoundId);
+      const round = await ctx.db.get(game.currentRoundId)
       if (round) {
-        const player = await ctx.db.get(round.turnPlayerId);
+        const player = await ctx.db.get(round.turnPlayerId)
         if (player) {
-          turnPlayerSessionId = player.sessionId as SessionId;
+          turnPlayerSessionId = player.sessionId as SessionId
         }
       }
     }
-  });
+  })
 
-  expect(turnPlayerSessionId).not.toBeNull();
+  expect(turnPlayerSessionId).not.toBeNull()
 
   if (turnPlayerSessionId === "spectator-session-coin") {
-    return;
+    return
   }
 
   await t.mutation(api.bets.preview, {
     lobbyId: lobby!._id,
     sessionId: asSessionId("spectator-session-coin"),
     proposedIndex: 0,
-  });
+  })
 
-  let playerAfterCoins: number | null = null;
+  let playerAfterCoins: number | null = null
   await t.run(async (ctx) => {
     const player = await ctx.db
       .query("players")
       .filter((q) => q.eq(q.field("sessionId"), asSessionId("spectator-session-coin")))
-      .first();
+      .first()
     if (player) {
-      playerAfterCoins = player.coins;
+      playerAfterCoins = player.coins
     }
-  });
+  })
 
-  expect(playerAfterCoins).toBe(playerBeforeCoins! - 1);
-});
+  expect(playerAfterCoins).toBe(playerBeforeCoins! - 1)
+})
 
 test("preview fails for turn player", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema, modules)
 
-  await seedTestData(t);
+  await seedTestData(t)
 
   const { code } = await t.mutation(api.lobbies.create, {
     sessionId: asSessionId("host-session-turn"),
     displayName: "HostTurn",
-  });
+  })
 
   await t.mutation(api.lobbies.join, {
     code,
     sessionId: asSessionId("player-session-turn"),
     displayName: "PlayerTurn",
-  });
+  })
 
   await t.mutation(api.lobbies.join, {
     code,
     sessionId: asSessionId("spectator-session-turn"),
     displayName: "SpectatorTurn",
-  });
+  })
 
-  const lobby = await t.query(api.lobbies.get, { code });
+  const lobby = await t.query(api.lobbies.get, { code })
 
   await t.mutation(api.games.start, {
     lobbyId: lobby!._id,
     sessionId: asSessionId("host-session-turn"),
-  });
+  })
 
-  let turnPlayerSessionId: SessionId | null = null;
+  let turnPlayerSessionId: SessionId | null = null
   await t.run(async (ctx) => {
-    const game = await ctx.db.query("games").first();
+    const game = await ctx.db.query("games").first()
     if (game?.currentRoundId) {
-      const round = await ctx.db.get(game.currentRoundId);
+      const round = await ctx.db.get(game.currentRoundId)
       if (round) {
-        const player = await ctx.db.get(round.turnPlayerId);
+        const player = await ctx.db.get(round.turnPlayerId)
         if (player) {
-          turnPlayerSessionId = player.sessionId as SessionId;
+          turnPlayerSessionId = player.sessionId as SessionId
         }
       }
     }
-  });
+  })
 
-  expect(turnPlayerSessionId).not.toBeNull();
+  expect(turnPlayerSessionId).not.toBeNull()
 
   await expect(
     t.mutation(api.bets.preview, {
@@ -256,63 +256,63 @@ test("preview fails for turn player", async () => {
       sessionId: turnPlayerSessionId!,
       proposedIndex: 0,
     }),
-  ).rejects.toThrow("Turn player cannot place bets");
-});
+  ).rejects.toThrow("Turn player cannot place bets")
+})
 
 test("preview fails when player has no coins", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema, modules)
 
-  await seedTestData(t);
+  await seedTestData(t)
 
   const { code } = await t.mutation(api.lobbies.create, {
     sessionId: asSessionId("host-session-nocoin"),
     displayName: "HostNoCoin",
-  });
+  })
 
   await t.mutation(api.lobbies.join, {
     code,
     sessionId: asSessionId("player-session-nocoin"),
     displayName: "PlayerNoCoin",
-  });
+  })
 
   await t.mutation(api.lobbies.join, {
     code,
     sessionId: asSessionId("spectator-session-nocoin"),
     displayName: "SpectatorNoCoin",
-  });
+  })
 
-  const lobby = await t.query(api.lobbies.get, { code });
+  const lobby = await t.query(api.lobbies.get, { code })
 
   await t.mutation(api.games.start, {
     lobbyId: lobby!._id,
     sessionId: asSessionId("host-session-nocoin"),
-  });
+  })
 
-  let turnPlayerSessionId: SessionId | null = null;
+  let turnPlayerSessionId: SessionId | null = null
   await t.run(async (ctx) => {
-    const game = await ctx.db.query("games").first();
+    const game = await ctx.db.query("games").first()
     if (game?.currentRoundId) {
-      const round = await ctx.db.get(game.currentRoundId);
+      const round = await ctx.db.get(game.currentRoundId)
       if (round) {
-        const player = await ctx.db.get(round.turnPlayerId);
+        const player = await ctx.db.get(round.turnPlayerId)
         if (player) {
-          turnPlayerSessionId = player.sessionId as SessionId;
+          turnPlayerSessionId = player.sessionId as SessionId
         }
       }
     }
-  });
+  })
 
-  expect(turnPlayerSessionId).not.toBeNull();
+  expect(turnPlayerSessionId).not.toBeNull()
 
   await t.run(async (ctx) => {
     const player = await ctx.db
       .query("players")
       .filter((q) => q.eq(q.field("sessionId"), asSessionId("spectator-session-nocoin")))
-      .first();
+      .first()
     if (player) {
-      await ctx.db.patch(player._id, { coins: 0 });
+      await ctx.db.patch(player._id, { coins: 0 })
     }
-  });
+  })
 
   if (turnPlayerSessionId !== "spectator-session-nocoin") {
     await expect(
@@ -321,7 +321,7 @@ test("preview fails when player has no coins", async () => {
         sessionId: asSessionId("spectator-session-nocoin"),
         proposedIndex: 0,
       }),
-    ).rejects.toThrow("Not enough coins to place a bet");
+    ).rejects.toThrow("Not enough coins to place a bet")
   } else {
     await expect(
       t.mutation(api.bets.preview, {
@@ -329,54 +329,54 @@ test("preview fails when player has no coins", async () => {
         sessionId: asSessionId("spectator-session-nocoin"),
         proposedIndex: 0,
       }),
-    ).rejects.toThrow("Turn player cannot place bets");
+    ).rejects.toThrow("Turn player cannot place bets")
   }
-});
+})
 
 test("preview fails for negative index", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema, modules)
 
-  await seedTestData(t);
+  await seedTestData(t)
 
   const { code } = await t.mutation(api.lobbies.create, {
     sessionId: asSessionId("host-session-neg"),
     displayName: "HostNeg",
-  });
+  })
 
   await t.mutation(api.lobbies.join, {
     code,
     sessionId: asSessionId("player-session-neg"),
     displayName: "PlayerNeg",
-  });
+  })
 
   await t.mutation(api.lobbies.join, {
     code,
     sessionId: asSessionId("spectator-session-neg"),
     displayName: "SpectatorNeg",
-  });
+  })
 
-  const lobby = await t.query(api.lobbies.get, { code });
+  const lobby = await t.query(api.lobbies.get, { code })
 
   await t.mutation(api.games.start, {
     lobbyId: lobby!._id,
     sessionId: asSessionId("host-session-neg"),
-  });
+  })
 
-  let turnPlayerSessionId: SessionId | null = null;
+  let turnPlayerSessionId: SessionId | null = null
   await t.run(async (ctx) => {
-    const game = await ctx.db.query("games").first();
+    const game = await ctx.db.query("games").first()
     if (game?.currentRoundId) {
-      const round = await ctx.db.get(game.currentRoundId);
+      const round = await ctx.db.get(game.currentRoundId)
       if (round) {
-        const player = await ctx.db.get(round.turnPlayerId);
+        const player = await ctx.db.get(round.turnPlayerId)
         if (player) {
-          turnPlayerSessionId = player.sessionId as SessionId;
+          turnPlayerSessionId = player.sessionId as SessionId
         }
       }
     }
-  });
+  })
 
-  expect(turnPlayerSessionId).not.toBeNull();
+  expect(turnPlayerSessionId).not.toBeNull()
 
   if (turnPlayerSessionId !== "spectator-session-neg") {
     await expect(
@@ -385,7 +385,7 @@ test("preview fails for negative index", async () => {
         sessionId: asSessionId("spectator-session-neg"),
         proposedIndex: -1,
       }),
-    ).rejects.toThrow("Proposed index cannot be negative");
+    ).rejects.toThrow("Proposed index cannot be negative")
   } else {
     await expect(
       t.mutation(api.bets.preview, {
@@ -393,49 +393,49 @@ test("preview fails for negative index", async () => {
         sessionId: asSessionId("spectator-session-neg"),
         proposedIndex: -1,
       }),
-    ).rejects.toThrow("Turn player cannot place bets");
+    ).rejects.toThrow("Turn player cannot place bets")
   }
-});
+})
 
 test("preview fails when betting on the turn player's placement", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema, modules)
 
-  await seedTestData(t);
+  await seedTestData(t)
 
   const { code } = await t.mutation(api.lobbies.create, {
     sessionId: asSessionId("host-session-turn-slot"),
     displayName: "HostTurnSlot",
-  });
+  })
 
   await t.mutation(api.lobbies.join, {
     code,
     sessionId: asSessionId("player-session-turn-slot"),
     displayName: "PlayerTurnSlot",
-  });
+  })
 
   await t.mutation(api.lobbies.join, {
     code,
     sessionId: asSessionId("spectator-session-turn-slot"),
     displayName: "SpectatorTurnSlot",
-  });
+  })
 
-  const lobby = await t.query(api.lobbies.get, { code });
+  const lobby = await t.query(api.lobbies.get, { code })
 
   await t.mutation(api.games.start, {
     lobbyId: lobby!._id,
     sessionId: asSessionId("host-session-turn-slot"),
-  });
+  })
 
-  let nonTurnSessionId: SessionId | null = null;
+  let nonTurnSessionId: SessionId | null = null
   await t.run(async (ctx) => {
-    const game = await ctx.db.query("games").first();
+    const game = await ctx.db.query("games").first()
     if (game?.currentRoundId) {
-      const round = await ctx.db.get(game.currentRoundId);
+      const round = await ctx.db.get(game.currentRoundId)
       if (round) {
-        const players = await ctx.db.query("players").collect();
-        const nonTurnPlayer = players.find((p) => p._id !== round.turnPlayerId);
+        const players = await ctx.db.query("players").collect()
+        const nonTurnPlayer = players.find((p) => p._id !== round.turnPlayerId)
         if (nonTurnPlayer) {
-          nonTurnSessionId = nonTurnPlayer.sessionId as SessionId;
+          nonTurnSessionId = nonTurnPlayer.sessionId as SessionId
         }
 
         await ctx.db.patch(round._id, {
@@ -444,15 +444,15 @@ test("preview fails when betting on the turn player's placement", async () => {
             proposedIndex: 0,
             submittedAt: Date.now(),
           },
-        });
+        })
       }
     }
-  });
+  })
 
-  expect(nonTurnSessionId).not.toBeNull();
+  expect(nonTurnSessionId).not.toBeNull()
 
   if (!nonTurnSessionId) {
-    return;
+    return
   }
 
   await expect(
@@ -461,146 +461,146 @@ test("preview fails when betting on the turn player's placement", async () => {
       sessionId: nonTurnSessionId,
       proposedIndex: 0,
     }),
-  ).rejects.toThrow("Cannot bet on the turn player's placement");
-});
+  ).rejects.toThrow("Cannot bet on the turn player's placement")
+})
 
 test("preview updates existing unlocked bet", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema, modules)
 
-  await seedTestData(t);
+  await seedTestData(t)
 
   const { code } = await t.mutation(api.lobbies.create, {
     sessionId: asSessionId("host-session-update"),
     displayName: "HostUpdate",
-  });
+  })
 
   await t.mutation(api.lobbies.join, {
     code,
     sessionId: asSessionId("player-session-update"),
     displayName: "PlayerUpdate",
-  });
+  })
 
   await t.mutation(api.lobbies.join, {
     code,
     sessionId: asSessionId("spectator-session-update"),
     displayName: "SpectatorUpdate",
-  });
+  })
 
-  const lobby = await t.query(api.lobbies.get, { code });
+  const lobby = await t.query(api.lobbies.get, { code })
 
   await t.mutation(api.games.start, {
     lobbyId: lobby!._id,
     sessionId: asSessionId("host-session-update"),
-  });
+  })
 
-  let turnPlayerSessionId: SessionId | null = null;
+  let turnPlayerSessionId: SessionId | null = null
   await t.run(async (ctx) => {
-    const game = await ctx.db.query("games").first();
+    const game = await ctx.db.query("games").first()
     if (game?.currentRoundId) {
-      const round = await ctx.db.get(game.currentRoundId);
+      const round = await ctx.db.get(game.currentRoundId)
       if (round) {
-        const player = await ctx.db.get(round.turnPlayerId);
+        const player = await ctx.db.get(round.turnPlayerId)
         if (player) {
-          turnPlayerSessionId = player.sessionId as SessionId;
+          turnPlayerSessionId = player.sessionId as SessionId
         }
       }
     }
-  });
+  })
 
-  expect(turnPlayerSessionId).not.toBeNull();
+  expect(turnPlayerSessionId).not.toBeNull()
 
   if (turnPlayerSessionId === "spectator-session-update") {
-    return;
+    return
   }
 
   await t.mutation(api.bets.preview, {
     lobbyId: lobby!._id,
     sessionId: asSessionId("spectator-session-update"),
     proposedIndex: 1,
-  });
+  })
 
   await t.mutation(api.bets.preview, {
     lobbyId: lobby!._id,
     sessionId: asSessionId("spectator-session-update"),
     proposedIndex: 2,
-  });
+  })
 
-  let betProposedIndex: number | null = null;
+  let betProposedIndex: number | null = null
   await t.run(async (ctx) => {
-    const game = await ctx.db.query("games").first();
+    const game = await ctx.db.query("games").first()
     if (game?.currentRoundId) {
       const bet = await ctx.db
         .query("roundBets")
         .filter((q) => q.eq(q.field("roundId"), game.currentRoundId))
-        .first();
+        .first()
       if (bet) {
-        betProposedIndex = bet.proposedIndex;
+        betProposedIndex = bet.proposedIndex
       }
     }
-  });
+  })
 
-  expect(betProposedIndex).toBe(2);
-});
+  expect(betProposedIndex).toBe(2)
+})
 
 test("preview fails when bet is already locked in", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema, modules)
 
-  await seedTestData(t);
+  await seedTestData(t)
 
   const { code } = await t.mutation(api.lobbies.create, {
     sessionId: asSessionId("host-session-locked"),
     displayName: "HostLocked",
-  });
+  })
 
   await t.mutation(api.lobbies.join, {
     code,
     sessionId: asSessionId("player-session-locked"),
     displayName: "PlayerLocked",
-  });
+  })
 
   await t.mutation(api.lobbies.join, {
     code,
     sessionId: asSessionId("spectator-session-locked"),
     displayName: "SpectatorLocked",
-  });
+  })
 
-  const lobby = await t.query(api.lobbies.get, { code });
+  const lobby = await t.query(api.lobbies.get, { code })
 
   await t.mutation(api.games.start, {
     lobbyId: lobby!._id,
     sessionId: asSessionId("host-session-locked"),
-  });
+  })
 
-  let turnPlayerSessionId: SessionId | null = null;
+  let turnPlayerSessionId: SessionId | null = null
   await t.run(async (ctx) => {
-    const game = await ctx.db.query("games").first();
+    const game = await ctx.db.query("games").first()
     if (game?.currentRoundId) {
-      const round = await ctx.db.get(game.currentRoundId);
+      const round = await ctx.db.get(game.currentRoundId)
       if (round) {
-        const player = await ctx.db.get(round.turnPlayerId);
+        const player = await ctx.db.get(round.turnPlayerId)
         if (player) {
-          turnPlayerSessionId = player.sessionId as SessionId;
+          turnPlayerSessionId = player.sessionId as SessionId
         }
       }
     }
-  });
+  })
 
-  expect(turnPlayerSessionId).not.toBeNull();
+  expect(turnPlayerSessionId).not.toBeNull()
 
   if (turnPlayerSessionId === "spectator-session-locked") {
-    return;
+    return
   }
 
   await t.mutation(api.bets.preview, {
     lobbyId: lobby!._id,
     sessionId: asSessionId("spectator-session-locked"),
     proposedIndex: 0,
-  });
+  })
 
   await t.mutation(api.bets.lockIn, {
     lobbyId: lobby!._id,
     sessionId: asSessionId("spectator-session-locked"),
-  });
+  })
 
   await expect(
     t.mutation(api.bets.preview, {
@@ -608,618 +608,618 @@ test("preview fails when bet is already locked in", async () => {
       sessionId: asSessionId("spectator-session-locked"),
       proposedIndex: 1,
     }),
-  ).rejects.toThrow("Cannot change a locked bet");
-});
+  ).rejects.toThrow("Cannot change a locked bet")
+})
 
 test("lockIn sets lockedIn to true", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema, modules)
 
-  await seedTestData(t);
+  await seedTestData(t)
 
   const { code } = await t.mutation(api.lobbies.create, {
     sessionId: asSessionId("host-session-lock"),
     displayName: "HostLock",
-  });
+  })
 
   await t.mutation(api.lobbies.join, {
     code,
     sessionId: asSessionId("player-session-lock"),
     displayName: "PlayerLock",
-  });
+  })
 
   await t.mutation(api.lobbies.join, {
     code,
     sessionId: asSessionId("spectator-session-lock"),
     displayName: "SpectatorLock",
-  });
+  })
 
-  const lobby = await t.query(api.lobbies.get, { code });
+  const lobby = await t.query(api.lobbies.get, { code })
 
   await t.mutation(api.games.start, {
     lobbyId: lobby!._id,
     sessionId: asSessionId("host-session-lock"),
-  });
+  })
 
-  let turnPlayerSessionId: SessionId | null = null;
+  let turnPlayerSessionId: SessionId | null = null
   await t.run(async (ctx) => {
-    const game = await ctx.db.query("games").first();
+    const game = await ctx.db.query("games").first()
     if (game?.currentRoundId) {
-      const round = await ctx.db.get(game.currentRoundId);
+      const round = await ctx.db.get(game.currentRoundId)
       if (round) {
-        const player = await ctx.db.get(round.turnPlayerId);
+        const player = await ctx.db.get(round.turnPlayerId)
         if (player) {
-          turnPlayerSessionId = player.sessionId as SessionId;
+          turnPlayerSessionId = player.sessionId as SessionId
         }
       }
     }
-  });
+  })
 
-  expect(turnPlayerSessionId).not.toBeNull();
+  expect(turnPlayerSessionId).not.toBeNull()
 
   if (turnPlayerSessionId === "spectator-session-lock") {
-    return;
+    return
   }
 
   await t.mutation(api.bets.preview, {
     lobbyId: lobby!._id,
     sessionId: asSessionId("spectator-session-lock"),
     proposedIndex: 0,
-  });
+  })
 
   const result = await t.mutation(api.bets.lockIn, {
     lobbyId: lobby!._id,
     sessionId: asSessionId("spectator-session-lock"),
-  });
+  })
 
-  expect(result).toBeNull();
+  expect(result).toBeNull()
 
-  let betLockedIn = false;
+  let betLockedIn = false
   await t.run(async (ctx) => {
-    const game = await ctx.db.query("games").first();
+    const game = await ctx.db.query("games").first()
     if (game?.currentRoundId) {
       const bet = await ctx.db
         .query("roundBets")
         .filter((q) => q.eq(q.field("roundId"), game.currentRoundId))
-        .first();
+        .first()
       if (bet) {
-        betLockedIn = bet.lockedIn;
+        betLockedIn = bet.lockedIn
       }
     }
-  });
+  })
 
-  expect(betLockedIn).toBe(true);
-});
+  expect(betLockedIn).toBe(true)
+})
 
 test("lockIn fails when no bet exists", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema, modules)
 
-  await seedTestData(t);
+  await seedTestData(t)
 
   const { code } = await t.mutation(api.lobbies.create, {
     sessionId: asSessionId("host-session-nobet"),
     displayName: "HostNoBet",
-  });
+  })
 
   await t.mutation(api.lobbies.join, {
     code,
     sessionId: asSessionId("player-session-nobet"),
     displayName: "PlayerNoBet",
-  });
+  })
 
   await t.mutation(api.lobbies.join, {
     code,
     sessionId: asSessionId("spectator-session-nobet"),
     displayName: "SpectatorNoBet",
-  });
+  })
 
-  const lobby = await t.query(api.lobbies.get, { code });
+  const lobby = await t.query(api.lobbies.get, { code })
 
   await t.mutation(api.games.start, {
     lobbyId: lobby!._id,
     sessionId: asSessionId("host-session-nobet"),
-  });
+  })
 
   await expect(
     t.mutation(api.bets.lockIn, {
       lobbyId: lobby!._id,
       sessionId: asSessionId("spectator-session-nobet"),
     }),
-  ).rejects.toThrow("No bet to lock in");
-});
+  ).rejects.toThrow("No bet to lock in")
+})
 
 test("lockIn fails when bet is already locked", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema, modules)
 
-  await seedTestData(t);
+  await seedTestData(t)
 
   const { code } = await t.mutation(api.lobbies.create, {
     sessionId: asSessionId("host-session-already"),
     displayName: "HostAlready",
-  });
+  })
 
   await t.mutation(api.lobbies.join, {
     code,
     sessionId: asSessionId("player-session-already"),
     displayName: "PlayerAlready",
-  });
+  })
 
   await t.mutation(api.lobbies.join, {
     code,
     sessionId: asSessionId("spectator-session-already"),
     displayName: "SpectatorAlready",
-  });
+  })
 
-  const lobby = await t.query(api.lobbies.get, { code });
+  const lobby = await t.query(api.lobbies.get, { code })
 
   await t.mutation(api.games.start, {
     lobbyId: lobby!._id,
     sessionId: asSessionId("host-session-already"),
-  });
+  })
 
-  let turnPlayerSessionId: SessionId | null = null;
+  let turnPlayerSessionId: SessionId | null = null
   await t.run(async (ctx) => {
-    const game = await ctx.db.query("games").first();
+    const game = await ctx.db.query("games").first()
     if (game?.currentRoundId) {
-      const round = await ctx.db.get(game.currentRoundId);
+      const round = await ctx.db.get(game.currentRoundId)
       if (round) {
-        const player = await ctx.db.get(round.turnPlayerId);
+        const player = await ctx.db.get(round.turnPlayerId)
         if (player) {
-          turnPlayerSessionId = player.sessionId as SessionId;
+          turnPlayerSessionId = player.sessionId as SessionId
         }
       }
     }
-  });
+  })
 
-  expect(turnPlayerSessionId).not.toBeNull();
+  expect(turnPlayerSessionId).not.toBeNull()
 
   if (turnPlayerSessionId === "spectator-session-already") {
-    return;
+    return
   }
 
   await t.mutation(api.bets.preview, {
     lobbyId: lobby!._id,
     sessionId: asSessionId("spectator-session-already"),
     proposedIndex: 0,
-  });
+  })
 
   await t.mutation(api.bets.lockIn, {
     lobbyId: lobby!._id,
     sessionId: asSessionId("spectator-session-already"),
-  });
+  })
 
   await expect(
     t.mutation(api.bets.lockIn, {
       lobbyId: lobby!._id,
       sessionId: asSessionId("spectator-session-already"),
     }),
-  ).rejects.toThrow("Bet is already locked in");
-});
+  ).rejects.toThrow("Bet is already locked in")
+})
 
 test("lockIn fails after round is resolved", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema, modules)
 
-  await seedTestData(t);
+  await seedTestData(t)
 
   const { code } = await t.mutation(api.lobbies.create, {
     sessionId: asSessionId("host-session-resolved"),
     displayName: "HostResolved",
-  });
+  })
 
   await t.mutation(api.lobbies.join, {
     code,
     sessionId: asSessionId("player-session-resolved"),
     displayName: "PlayerResolved",
-  });
+  })
 
   await t.mutation(api.lobbies.join, {
     code,
     sessionId: asSessionId("spectator-session-resolved"),
     displayName: "SpectatorResolved",
-  });
+  })
 
-  const lobby = await t.query(api.lobbies.get, { code });
+  const lobby = await t.query(api.lobbies.get, { code })
 
   await t.mutation(api.games.start, {
     lobbyId: lobby!._id,
     sessionId: asSessionId("host-session-resolved"),
-  });
+  })
 
-  const game = await t.query(api.games.getCurrent, { lobbyId: lobby!._id });
+  const game = await t.query(api.games.getCurrent, { lobbyId: lobby!._id })
 
   await t.run(async (ctx) => {
     if (game?.currentRoundId) {
-      await ctx.db.patch(game.currentRoundId, { phase: "betting" });
+      await ctx.db.patch(game.currentRoundId, { phase: "betting" })
     }
-  });
+  })
 
-  let turnPlayerSessionId: SessionId | null = null;
+  let turnPlayerSessionId: SessionId | null = null
   await t.run(async (ctx) => {
-    const game = await ctx.db.query("games").first();
+    const game = await ctx.db.query("games").first()
     if (game?.currentRoundId) {
-      const round = await ctx.db.get(game.currentRoundId);
+      const round = await ctx.db.get(game.currentRoundId)
       if (round) {
-        const player = await ctx.db.get(round.turnPlayerId);
+        const player = await ctx.db.get(round.turnPlayerId)
         if (player) {
-          turnPlayerSessionId = player.sessionId as SessionId;
+          turnPlayerSessionId = player.sessionId as SessionId
         }
       }
     }
-  });
+  })
 
-  expect(turnPlayerSessionId).not.toBeNull();
+  expect(turnPlayerSessionId).not.toBeNull()
 
   if (turnPlayerSessionId !== "spectator-session-resolved") {
     await t.mutation(api.bets.preview, {
       lobbyId: lobby!._id,
       sessionId: asSessionId("spectator-session-resolved"),
       proposedIndex: 0,
-    });
+    })
   } else {
-    return;
+    return
   }
 
   await t.run(async (ctx) => {
     if (game?.currentRoundId) {
-      await ctx.db.patch(game.currentRoundId, { phase: "resolved" });
+      await ctx.db.patch(game.currentRoundId, { phase: "resolved" })
     }
-  });
+  })
 
   await expect(
     t.mutation(api.bets.lockIn, {
       lobbyId: lobby!._id,
       sessionId: asSessionId("spectator-session-resolved"),
     }),
-  ).rejects.toThrow("Cannot lock in bet after round is resolved");
-});
+  ).rejects.toThrow("Cannot lock in bet after round is resolved")
+})
 
 test("cancel deletes bet and refunds coin", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema, modules)
 
-  await seedTestData(t);
+  await seedTestData(t)
 
   const { code } = await t.mutation(api.lobbies.create, {
     sessionId: asSessionId("host-session-cancel"),
     displayName: "HostCancel",
-  });
+  })
 
   await t.mutation(api.lobbies.join, {
     code,
     sessionId: asSessionId("player-session-cancel"),
     displayName: "PlayerCancel",
-  });
+  })
 
   await t.mutation(api.lobbies.join, {
     code,
     sessionId: asSessionId("spectator-session-cancel"),
     displayName: "SpectatorCancel",
-  });
+  })
 
-  const lobby = await t.query(api.lobbies.get, { code });
+  const lobby = await t.query(api.lobbies.get, { code })
 
   await t.mutation(api.games.start, {
     lobbyId: lobby!._id,
     sessionId: asSessionId("host-session-cancel"),
-  });
+  })
 
-  let playerBeforeCoins: number | null = null;
+  let playerBeforeCoins: number | null = null
   await t.run(async (ctx) => {
     const player = await ctx.db
       .query("players")
       .filter((q) => q.eq(q.field("sessionId"), asSessionId("spectator-session-cancel")))
-      .first();
+      .first()
     if (player) {
-      playerBeforeCoins = player.coins;
+      playerBeforeCoins = player.coins
     }
-  });
+  })
 
-  expect(playerBeforeCoins).not.toBeNull();
+  expect(playerBeforeCoins).not.toBeNull()
 
-  let turnPlayerSessionId: SessionId | null = null;
+  let turnPlayerSessionId: SessionId | null = null
   await t.run(async (ctx) => {
-    const game = await ctx.db.query("games").first();
+    const game = await ctx.db.query("games").first()
     if (game?.currentRoundId) {
-      const round = await ctx.db.get(game.currentRoundId);
+      const round = await ctx.db.get(game.currentRoundId)
       if (round) {
-        const player = await ctx.db.get(round.turnPlayerId);
+        const player = await ctx.db.get(round.turnPlayerId)
         if (player) {
-          turnPlayerSessionId = player.sessionId as SessionId;
+          turnPlayerSessionId = player.sessionId as SessionId
         }
       }
     }
-  });
+  })
 
-  expect(turnPlayerSessionId).not.toBeNull();
+  expect(turnPlayerSessionId).not.toBeNull()
 
   if (turnPlayerSessionId === "spectator-session-cancel") {
-    return;
+    return
   }
 
   await t.mutation(api.bets.preview, {
     lobbyId: lobby!._id,
     sessionId: asSessionId("spectator-session-cancel"),
     proposedIndex: 0,
-  });
+  })
 
-  expect(playerBeforeCoins).toBeGreaterThanOrEqual(1);
-  const expectedAfterPreview = playerBeforeCoins! - 1;
+  expect(playerBeforeCoins).toBeGreaterThanOrEqual(1)
+  const expectedAfterPreview = playerBeforeCoins! - 1
 
   const result = await t.mutation(api.bets.cancel, {
     lobbyId: lobby!._id,
     sessionId: asSessionId("spectator-session-cancel"),
-  });
+  })
 
-  expect(result).toBeNull();
+  expect(result).toBeNull()
 
-  let betExists = true;
+  let betExists = true
   await t.run(async (ctx) => {
-    const game = await ctx.db.query("games").first();
+    const game = await ctx.db.query("games").first()
     if (game?.currentRoundId) {
       const bet = await ctx.db
         .query("roundBets")
         .filter((q) => q.eq(q.field("roundId"), game.currentRoundId))
-        .first();
-      betExists = bet !== null;
+        .first()
+      betExists = bet !== null
     }
-  });
+  })
 
-  expect(betExists).toBe(false);
+  expect(betExists).toBe(false)
 
-  let playerAfterCoins: number | null = null;
+  let playerAfterCoins: number | null = null
   await t.run(async (ctx) => {
     const player = await ctx.db
       .query("players")
       .filter((q) => q.eq(q.field("sessionId"), asSessionId("spectator-session-cancel")))
-      .first();
+      .first()
     if (player) {
-      playerAfterCoins = player.coins;
+      playerAfterCoins = player.coins
     }
-  });
+  })
 
-  expect(playerAfterCoins).toBe(expectedAfterPreview + 1);
-});
+  expect(playerAfterCoins).toBe(expectedAfterPreview + 1)
+})
 
 test("cancel fails when no bet exists", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema, modules)
 
-  await seedTestData(t);
+  await seedTestData(t)
 
   const { code } = await t.mutation(api.lobbies.create, {
     sessionId: asSessionId("host-session-nobetcancel"),
     displayName: "HostNoBetCancel",
-  });
+  })
 
   await t.mutation(api.lobbies.join, {
     code,
     sessionId: asSessionId("player-session-nobetcancel"),
     displayName: "PlayerNoBetCancel",
-  });
+  })
 
   await t.mutation(api.lobbies.join, {
     code,
     sessionId: asSessionId("spectator-session-nobetcancel"),
     displayName: "SpectatorNoBetCancel",
-  });
+  })
 
-  const lobby = await t.query(api.lobbies.get, { code });
+  const lobby = await t.query(api.lobbies.get, { code })
 
   await t.mutation(api.games.start, {
     lobbyId: lobby!._id,
     sessionId: asSessionId("host-session-nobetcancel"),
-  });
+  })
 
   await expect(
     t.mutation(api.bets.cancel, {
       lobbyId: lobby!._id,
       sessionId: asSessionId("spectator-session-nobetcancel"),
     }),
-  ).rejects.toThrow("No bet to cancel");
-});
+  ).rejects.toThrow("No bet to cancel")
+})
 
 test("cancel fails when bet is locked in", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema, modules)
 
-  await seedTestData(t);
+  await seedTestData(t)
 
   const { code } = await t.mutation(api.lobbies.create, {
     sessionId: asSessionId("host-session-cannotcancel"),
     displayName: "HostCannotCancel",
-  });
+  })
 
   await t.mutation(api.lobbies.join, {
     code,
     sessionId: asSessionId("player-session-cannotcancel"),
     displayName: "PlayerCannotCancel",
-  });
+  })
 
   await t.mutation(api.lobbies.join, {
     code,
     sessionId: asSessionId("spectator-session-cannotcancel"),
     displayName: "SpectatorCantCancel",
-  });
+  })
 
-  const lobby = await t.query(api.lobbies.get, { code });
+  const lobby = await t.query(api.lobbies.get, { code })
 
   await t.mutation(api.games.start, {
     lobbyId: lobby!._id,
     sessionId: asSessionId("host-session-cannotcancel"),
-  });
+  })
 
-  let turnPlayerSessionId: SessionId | null = null;
+  let turnPlayerSessionId: SessionId | null = null
   await t.run(async (ctx) => {
-    const game = await ctx.db.query("games").first();
+    const game = await ctx.db.query("games").first()
     if (game?.currentRoundId) {
-      const round = await ctx.db.get(game.currentRoundId);
+      const round = await ctx.db.get(game.currentRoundId)
       if (round) {
-        const player = await ctx.db.get(round.turnPlayerId);
+        const player = await ctx.db.get(round.turnPlayerId)
         if (player) {
-          turnPlayerSessionId = player.sessionId as SessionId;
+          turnPlayerSessionId = player.sessionId as SessionId
         }
       }
     }
-  });
+  })
 
-  expect(turnPlayerSessionId).not.toBeNull();
+  expect(turnPlayerSessionId).not.toBeNull()
 
   if (turnPlayerSessionId === "spectator-session-cannotcancel") {
-    return;
+    return
   }
 
   await t.mutation(api.bets.preview, {
     lobbyId: lobby!._id,
     sessionId: asSessionId("spectator-session-cannotcancel"),
     proposedIndex: 0,
-  });
+  })
 
   await t.mutation(api.bets.lockIn, {
     lobbyId: lobby!._id,
     sessionId: asSessionId("spectator-session-cannotcancel"),
-  });
+  })
 
   await expect(
     t.mutation(api.bets.cancel, {
       lobbyId: lobby!._id,
       sessionId: asSessionId("spectator-session-cannotcancel"),
     }),
-  ).rejects.toThrow("Cannot cancel a locked bet");
-});
+  ).rejects.toThrow("Cannot cancel a locked bet")
+})
 
 test("cancel fails after round is resolved", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema, modules)
 
-  await seedTestData(t);
+  await seedTestData(t)
 
   const { code } = await t.mutation(api.lobbies.create, {
     sessionId: asSessionId("host-session-cancelresolved"),
     displayName: "HostCancelResolved",
-  });
+  })
 
   await t.mutation(api.lobbies.join, {
     code,
     sessionId: asSessionId("player-session-cancelresolved"),
     displayName: "PlayerCancelResolved",
-  });
+  })
 
   await t.mutation(api.lobbies.join, {
     code,
     sessionId: asSessionId("spectator-session-cancelresolved"),
     displayName: "SpectatorCancelRes",
-  });
+  })
 
-  const lobby = await t.query(api.lobbies.get, { code });
+  const lobby = await t.query(api.lobbies.get, { code })
 
   await t.mutation(api.games.start, {
     lobbyId: lobby!._id,
     sessionId: asSessionId("host-session-cancelresolved"),
-  });
+  })
 
-  const game = await t.query(api.games.getCurrent, { lobbyId: lobby!._id });
+  const game = await t.query(api.games.getCurrent, { lobbyId: lobby!._id })
 
   await t.run(async (ctx) => {
     if (game?.currentRoundId) {
-      await ctx.db.patch(game.currentRoundId, { phase: "betting" });
+      await ctx.db.patch(game.currentRoundId, { phase: "betting" })
     }
-  });
+  })
 
-  let turnPlayerSessionId: SessionId | null = null;
+  let turnPlayerSessionId: SessionId | null = null
   await t.run(async (ctx) => {
-    const game = await ctx.db.query("games").first();
+    const game = await ctx.db.query("games").first()
     if (game?.currentRoundId) {
-      const round = await ctx.db.get(game.currentRoundId);
+      const round = await ctx.db.get(game.currentRoundId)
       if (round) {
-        const player = await ctx.db.get(round.turnPlayerId);
+        const player = await ctx.db.get(round.turnPlayerId)
         if (player) {
-          turnPlayerSessionId = player.sessionId as SessionId;
+          turnPlayerSessionId = player.sessionId as SessionId
         }
       }
     }
-  });
+  })
 
-  expect(turnPlayerSessionId).not.toBeNull();
+  expect(turnPlayerSessionId).not.toBeNull()
 
   if (turnPlayerSessionId !== "spectator-session-cancelresolved") {
     await t.mutation(api.bets.preview, {
       lobbyId: lobby!._id,
       sessionId: asSessionId("spectator-session-cancelresolved"),
       proposedIndex: 0,
-    });
+    })
   } else {
-    return;
+    return
   }
 
   await t.run(async (ctx) => {
     if (game?.currentRoundId) {
-      await ctx.db.patch(game.currentRoundId, { phase: "resolved" });
+      await ctx.db.patch(game.currentRoundId, { phase: "resolved" })
     }
-  });
+  })
 
   await expect(
     t.mutation(api.bets.cancel, {
       lobbyId: lobby!._id,
       sessionId: asSessionId("spectator-session-cancelresolved"),
     }),
-  ).rejects.toThrow("Cannot cancel bet after round is resolved");
-});
+  ).rejects.toThrow("Cannot cancel bet after round is resolved")
+})
 
 test("preview works during betting phase", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema, modules)
 
-  await seedTestData(t);
+  await seedTestData(t)
 
   const { code } = await t.mutation(api.lobbies.create, {
     sessionId: asSessionId("host-session-betting"),
     displayName: "HostBetting",
-  });
+  })
 
   await t.mutation(api.lobbies.join, {
     code,
     sessionId: asSessionId("player-session-betting"),
     displayName: "PlayerBetting",
-  });
+  })
 
   await t.mutation(api.lobbies.join, {
     code,
     sessionId: asSessionId("spectator-session-betting"),
     displayName: "SpectatorBetting",
-  });
+  })
 
-  const lobby = await t.query(api.lobbies.get, { code });
+  const lobby = await t.query(api.lobbies.get, { code })
 
   await t.mutation(api.games.start, {
     lobbyId: lobby!._id,
     sessionId: asSessionId("host-session-betting"),
-  });
+  })
 
-  const game = await t.query(api.games.getCurrent, { lobbyId: lobby!._id });
+  const game = await t.query(api.games.getCurrent, { lobbyId: lobby!._id })
 
   await t.run(async (ctx) => {
     if (game?.currentRoundId) {
-      await ctx.db.patch(game.currentRoundId, { phase: "betting" });
+      await ctx.db.patch(game.currentRoundId, { phase: "betting" })
     }
-  });
+  })
 
-  let turnPlayerSessionId: SessionId | null = null;
+  let turnPlayerSessionId: SessionId | null = null
   await t.run(async (ctx) => {
-    const game = await ctx.db.query("games").first();
+    const game = await ctx.db.query("games").first()
     if (game?.currentRoundId) {
-      const round = await ctx.db.get(game.currentRoundId);
+      const round = await ctx.db.get(game.currentRoundId)
       if (round) {
-        const player = await ctx.db.get(round.turnPlayerId);
+        const player = await ctx.db.get(round.turnPlayerId)
         if (player) {
-          turnPlayerSessionId = player.sessionId as SessionId;
+          turnPlayerSessionId = player.sessionId as SessionId
         }
       }
     }
-  });
+  })
 
-  expect(turnPlayerSessionId).not.toBeNull();
+  expect(turnPlayerSessionId).not.toBeNull()
 
   if (turnPlayerSessionId !== "spectator-session-betting") {
     const result = await t.mutation(api.bets.preview, {
       lobbyId: lobby!._id,
       sessionId: asSessionId("spectator-session-betting"),
       proposedIndex: 0,
-    });
-    expect(result).toBeNull();
+    })
+    expect(result).toBeNull()
   } else {
     await expect(
       t.mutation(api.bets.preview, {
@@ -1227,62 +1227,62 @@ test("preview works during betting phase", async () => {
         sessionId: asSessionId("spectator-session-betting"),
         proposedIndex: 0,
       }),
-    ).rejects.toThrow("Turn player cannot place bets");
+    ).rejects.toThrow("Turn player cannot place bets")
   }
-});
+})
 
 test("preview works during placing phase", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema, modules)
 
-  await seedTestData(t);
+  await seedTestData(t)
 
   const { code } = await t.mutation(api.lobbies.create, {
     sessionId: asSessionId("host-session-placing"),
     displayName: "HostPlacing",
-  });
+  })
 
   await t.mutation(api.lobbies.join, {
     code,
     sessionId: asSessionId("player-session-placing"),
     displayName: "PlayerPlacing",
-  });
+  })
 
   await t.mutation(api.lobbies.join, {
     code,
     sessionId: asSessionId("spectator-session-placing"),
     displayName: "SpectatorPlacing",
-  });
+  })
 
-  const lobby = await t.query(api.lobbies.get, { code });
+  const lobby = await t.query(api.lobbies.get, { code })
 
   await t.mutation(api.games.start, {
     lobbyId: lobby!._id,
     sessionId: asSessionId("host-session-placing"),
-  });
+  })
 
-  let turnPlayerSessionId: SessionId | null = null;
+  let turnPlayerSessionId: SessionId | null = null
   await t.run(async (ctx) => {
-    const game = await ctx.db.query("games").first();
+    const game = await ctx.db.query("games").first()
     if (game?.currentRoundId) {
-      const round = await ctx.db.get(game.currentRoundId);
+      const round = await ctx.db.get(game.currentRoundId)
       if (round) {
-        const player = await ctx.db.get(round.turnPlayerId);
+        const player = await ctx.db.get(round.turnPlayerId)
         if (player) {
-          turnPlayerSessionId = player.sessionId as SessionId;
+          turnPlayerSessionId = player.sessionId as SessionId
         }
       }
     }
-  });
+  })
 
-  expect(turnPlayerSessionId).not.toBeNull();
+  expect(turnPlayerSessionId).not.toBeNull()
 
   if (turnPlayerSessionId !== "spectator-session-placing") {
     const result = await t.mutation(api.bets.preview, {
       lobbyId: lobby!._id,
       sessionId: asSessionId("spectator-session-placing"),
       proposedIndex: 0,
-    });
-    expect(result).toBeNull();
+    })
+    expect(result).toBeNull()
   } else {
     await expect(
       t.mutation(api.bets.preview, {
@@ -1290,111 +1290,111 @@ test("preview works during placing phase", async () => {
         sessionId: asSessionId("spectator-session-placing"),
         proposedIndex: 0,
       }),
-    ).rejects.toThrow("Turn player cannot place bets");
+    ).rejects.toThrow("Turn player cannot place bets")
   }
-});
+})
 
 test("listForRound returns all bets when showLiveBets is true", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema, modules)
 
-  await seedTestData(t);
+  await seedTestData(t)
 
   const { code } = await t.mutation(api.lobbies.create, {
     sessionId: asSessionId("host-session-listlive"),
     displayName: "HostListLive",
-  });
+  })
 
   await t.mutation(api.lobbies.join, {
     code,
     sessionId: asSessionId("player-session-listlive"),
     displayName: "PlayerListLive",
-  });
+  })
 
   await t.mutation(api.lobbies.join, {
     code,
     sessionId: asSessionId("spectator-session-listlive1"),
     displayName: "SpectatorListLive1",
-  });
+  })
 
   await t.mutation(api.lobbies.join, {
     code,
     sessionId: asSessionId("spectator-session-listlive2"),
     displayName: "SpectatorListLive2",
-  });
+  })
 
-  const lobby = await t.query(api.lobbies.get, { code });
+  const lobby = await t.query(api.lobbies.get, { code })
 
   await t.mutation(api.games.start, {
     lobbyId: lobby!._id,
     sessionId: asSessionId("host-session-listlive"),
-  });
+  })
 
-  let turnPlayerSessionId: SessionId | null = null;
-  let nonTurnSessionId: SessionId | null = null;
+  let turnPlayerSessionId: SessionId | null = null
+  let nonTurnSessionId: SessionId | null = null
   await t.run(async (ctx) => {
-    const game = await ctx.db.query("games").first();
+    const game = await ctx.db.query("games").first()
     if (game?.currentRoundId) {
-      const round = await ctx.db.get(game.currentRoundId);
+      const round = await ctx.db.get(game.currentRoundId)
       if (round) {
-        const player = await ctx.db.get(round.turnPlayerId);
+        const player = await ctx.db.get(round.turnPlayerId)
         if (player) {
-          turnPlayerSessionId = player.sessionId as SessionId;
-          const players = await ctx.db.query("players").collect();
+          turnPlayerSessionId = player.sessionId as SessionId
+          const players = await ctx.db.query("players").collect()
           nonTurnSessionId =
             (players.find((p) => p.sessionId !== turnPlayerSessionId)?.sessionId as SessionId) ||
-            null;
+            null
         }
       }
     }
-  });
+  })
 
-  expect(turnPlayerSessionId).not.toBeNull();
-  expect(nonTurnSessionId).not.toBeNull();
+  expect(turnPlayerSessionId).not.toBeNull()
+  expect(nonTurnSessionId).not.toBeNull()
 
   if (nonTurnSessionId) {
     await t.mutation(api.bets.preview, {
       lobbyId: lobby!._id,
       sessionId: nonTurnSessionId,
       proposedIndex: 0,
-    });
+    })
 
-    const bets = await t.query(api.bets.listForRound, { lobbyId: lobby!._id });
+    const bets = await t.query(api.bets.listForRound, { lobbyId: lobby!._id })
 
-    expect(bets).toHaveLength(1);
-    expect(bets?.[0]?.lockedIn).toBe(false);
-    expect(bets?.[0]?.playerDisplayName).toBeTruthy();
+    expect(bets).toHaveLength(1)
+    expect(bets?.[0]?.lockedIn).toBe(false)
+    expect(bets?.[0]?.playerDisplayName).toBeTruthy()
   }
-});
+})
 
 test("listForRound returns only locked bets when showLiveBets is false", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema, modules)
 
-  await seedTestData(t);
+  await seedTestData(t)
 
   const { code } = await t.mutation(api.lobbies.create, {
     sessionId: asSessionId("host-session-nolive"),
     displayName: "HostNoLive",
-  });
+  })
 
   await t.mutation(api.lobbies.join, {
     code,
     sessionId: asSessionId("player-session-nolive"),
     displayName: "PlayerNoLive",
-  });
+  })
 
   await t.mutation(api.lobbies.join, {
     code,
     sessionId: asSessionId("spectator-session-nolive1"),
     displayName: "SpectatorNoLive1",
-  });
+  })
 
   await t.mutation(api.lobbies.join, {
     code,
     sessionId: asSessionId("spectator-session-nolive2"),
     displayName: "SpectatorNoLive2",
-  });
+  })
 
-  const lobby = await t.query(api.lobbies.get, { code });
+  const lobby = await t.query(api.lobbies.get, { code })
 
   await t.mutation(api.lobbies.updateSettings, {
     code,
@@ -1410,109 +1410,109 @@ test("listForRound returns only locked bets when showLiveBets is false", async (
       minYear: 1950,
       maxYear: 2024,
     },
-  });
+  })
 
   await t.mutation(api.games.start, {
     lobbyId: lobby!._id,
     sessionId: asSessionId("host-session-nolive"),
-  });
+  })
 
-  let turnPlayerSessionId: SessionId | null = null;
-  let nonTurnSessions: SessionId[] = [];
+  let turnPlayerSessionId: SessionId | null = null
+  let nonTurnSessions: SessionId[] = []
   await t.run(async (ctx) => {
-    const game = await ctx.db.query("games").first();
+    const game = await ctx.db.query("games").first()
     if (game?.currentRoundId) {
-      const round = await ctx.db.get(game.currentRoundId);
+      const round = await ctx.db.get(game.currentRoundId)
       if (round) {
-        const player = await ctx.db.get(round.turnPlayerId);
+        const player = await ctx.db.get(round.turnPlayerId)
         if (player) {
-          turnPlayerSessionId = player.sessionId as SessionId;
-          const allPlayers = await ctx.db.query("players").collect();
+          turnPlayerSessionId = player.sessionId as SessionId
+          const allPlayers = await ctx.db.query("players").collect()
           nonTurnSessions = allPlayers
             .filter((p) => p.sessionId !== turnPlayerSessionId)
-            .map((p) => p.sessionId as SessionId);
+            .map((p) => p.sessionId as SessionId)
         }
       }
     }
-  });
+  })
 
-  expect(turnPlayerSessionId).not.toBeNull();
-  expect(nonTurnSessions.length).toBeGreaterThan(0);
+  expect(turnPlayerSessionId).not.toBeNull()
+  expect(nonTurnSessions.length).toBeGreaterThan(0)
 
   for (const sessionId of nonTurnSessions) {
     await t.mutation(api.bets.preview, {
       lobbyId: lobby!._id,
       sessionId,
       proposedIndex: 0,
-    });
+    })
   }
 
   const betsBeforeLock = await t.query(api.bets.listForRound, {
     lobbyId: lobby!._id,
-  });
-  expect(betsBeforeLock).toHaveLength(0);
+  })
+  expect(betsBeforeLock).toHaveLength(0)
 
   for (const sessionId of nonTurnSessions) {
     await t.mutation(api.bets.lockIn, {
       lobbyId: lobby!._id,
       sessionId,
-    });
+    })
   }
 
   const betsAfterLock = await t.query(api.bets.listForRound, {
     lobbyId: lobby!._id,
-  });
+  })
 
-  expect(betsAfterLock).toHaveLength(nonTurnSessions.length);
-  expect(betsAfterLock?.every((bet) => bet.lockedIn === true)).toBe(true);
-  expect(betsAfterLock?.every((bet) => bet.playerDisplayName)).toBeTruthy();
-});
+  expect(betsAfterLock).toHaveLength(nonTurnSessions.length)
+  expect(betsAfterLock?.every((bet) => bet.lockedIn === true)).toBe(true)
+  expect(betsAfterLock?.every((bet) => bet.playerDisplayName)).toBeTruthy()
+})
 
 test("listForRound returns empty array when no bets exist", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema, modules)
 
-  await seedTestData(t);
+  await seedTestData(t)
 
   const { code } = await t.mutation(api.lobbies.create, {
     sessionId: asSessionId("host-session-nobets"),
     displayName: "HostNoBets",
-  });
+  })
 
   await t.mutation(api.lobbies.join, {
     code,
     sessionId: asSessionId("player-session-nobets"),
     displayName: "PlayerNoBets",
-  });
+  })
 
-  const lobby = await t.query(api.lobbies.get, { code });
+  const lobby = await t.query(api.lobbies.get, { code })
 
   await t.mutation(api.games.start, {
     lobbyId: lobby!._id,
     sessionId: asSessionId("host-session-nobets"),
-  });
+  })
 
-  const bets = await t.query(api.bets.listForRound, { lobbyId: lobby!._id });
+  const bets = await t.query(api.bets.listForRound, { lobbyId: lobby!._id })
 
-  expect(bets).toHaveLength(0);
-});
+  expect(bets).toHaveLength(0)
+})
 
 test("listForRound returns empty array when no active game", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema, modules)
 
   const { code } = await t.mutation(api.lobbies.create, {
     sessionId: asSessionId("host-session-nogame"),
     displayName: "HostNoGame",
-  });
+  })
 
   await t.mutation(api.lobbies.join, {
     code,
     sessionId: asSessionId("player-session-nogame"),
     displayName: "PlayerNoGame",
-  });
+  })
 
-  const lobby = await t.query(api.lobbies.get, { code });
+  const lobby = await t.query(api.lobbies.get, { code })
 
-  const bets = await t.query(api.bets.listForRound, { lobbyId: lobby!._id });
+  const bets = await t.query(api.bets.listForRound, { lobbyId: lobby!._id })
 
-  expect(bets).toHaveLength(0);
-});
+  expect(bets).toHaveLength(0)
+})

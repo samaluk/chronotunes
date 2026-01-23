@@ -1,9 +1,9 @@
 #!/usr/bin/env node
-"use strict";
+"use strict"
 
-const scrapeYt = require("scrape-yt");
-const fs = require("fs");
-const path = require("path");
+const scrapeYt = require("scrape-yt")
+const fs = require("fs")
+const path = require("path")
 
 const TEST_TRACKS = [
   { title: "Johnny B. Goode", artist: "Chuck Berry", year: 1958 },
@@ -55,102 +55,102 @@ const TEST_TRACKS = [
   { title: "As It Was", artist: "Harry Styles", year: 2022 },
   { title: "Flowers", artist: "Miley Cyrus", year: 2023 },
   { title: "Dance The Night", artist: "Dua Lipa", year: 2023 },
-];
+]
 
-const BLACKLIST_WORDS = ["lyrics", "cover", "remix", "tribute", "live", "reaction"];
+const BLACKLIST_WORDS = ["lyrics", "cover", "remix", "tribute", "live", "reaction"]
 
 async function searchTrack(title, artist) {
-  const query = `${title} ${artist}`;
-  process.stdout.write(`Searching: "${query}"... `);
+  const query = `${title} ${artist}`
+  process.stdout.write(`Searching: "${query}"... `)
 
   try {
-    const results = await scrapeYt.search(query);
+    const results = await scrapeYt.search(query)
 
     if (!results || results.length === 0) {
-      console.log("No results");
-      return null;
+      console.log("No results")
+      return null
     }
 
     // Score each result
     const scored = results.map((video) => {
-      let score = 0;
-      const titleLower = (video.title || "").toLowerCase();
-      const channelLower = (video.channel?.name || "").toLowerCase();
+      let score = 0
+      const titleLower = (video.title || "").toLowerCase()
+      const channelLower = (video.channel?.name || "").toLowerCase()
 
       // Prefer official channel matches
       if (
         channelLower.includes(artist.toLowerCase()) ||
         channelLower.includes(artist.toLowerCase().split(" ")[0])
       ) {
-        score += 100;
+        score += 100
       }
 
       // Penalize blacklisted words
       for (const word of BLACKLIST_WORDS) {
         if (titleLower.includes(word)) {
-          score -= 50;
+          score -= 50
         }
       }
 
       // Bonus for high views
       if (video.views) {
-        score += Math.log10(video.views + 1) * 10;
+        score += Math.log10(video.views + 1) * 10
       }
 
-      return { video, score };
-    });
+      return { video, score }
+    })
 
     // Sort by score descending
-    scored.sort((a, b) => b.score - a.score);
+    scored.sort((a, b) => b.score - a.score)
 
-    const best = scored[0];
+    const best = scored[0]
     console.log(
       `Found: "${best.video.title}" (score: ${best.score.toFixed(1)}, channel: ${best.video.channel?.name}, views: ${best.video.views?.toLocaleString()})`,
-    );
+    )
 
-    return best.video.id;
+    return best.video.id
   } catch (error) {
-    console.log(`Error: ${error}`);
-    return null;
+    console.log(`Error: ${error}`)
+    return null
   }
 }
 
 async function main() {
-  console.log(`Fetching YouTube video IDs for ${TEST_TRACKS.length} tracks...\n`);
+  console.log(`Fetching YouTube video IDs for ${TEST_TRACKS.length} tracks...\n`)
 
-  const results = [];
+  const results = []
 
   for (let i = 0; i < TEST_TRACKS.length; i++) {
-    const track = TEST_TRACKS[i];
-    process.stdout.write(`${i + 1}/${TEST_TRACKS.length}: `);
+    const track = TEST_TRACKS[i]
+    process.stdout.write(`${i + 1}/${TEST_TRACKS.length}: `)
 
-    const videoId = await searchTrack(track.title, track.artist);
-    results.push({ ...track, videoId });
+    const videoId = await searchTrack(track.title, track.artist)
+    results.push({ ...track, videoId })
 
     // Rate limiting
     if (i < TEST_TRACKS.length - 1) {
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      await new Promise((resolve) => setTimeout(resolve, 1000))
     }
   }
 
-  console.log("\n\nGenerating updated seed file...\n");
+  console.log("\n\nGenerating updated seed file...\n")
 
-  const failedCount = results.filter((r) => !r.videoId).length;
-  console.log(`Failed to find: ${failedCount} tracks\n`);
+  const failedCount = results.filter((r) => !r.videoId).length
+  console.log(`Failed to find: ${failedCount} tracks\n`)
 
   let seedContent = `import { mutation } from "./_generated/server";
 
 const TEST_TRACKS = [
-`;
+`
 
   for (const track of results) {
     if (track.videoId) {
       seedContent += `  { title: "${track.title}", artist: "${track.artist}", year: ${track.year}, videoId: "${track.videoId}" },
-`;
+`
     } else {
       seedContent += `  // FAILED: { title: "${track.title}", artist: "${track.artist}", year: ${track.year}, videoId: null },
-`;
-      console.log(`Could not find video for: "${track.title}" - ${track.artist}`);
+`
+      console.log(`Could not find video for: "${track.title}" - ${track.artist}`)
     }
   }
 
@@ -218,21 +218,21 @@ export const seed = mutation({
     };
   },
 });
-`;
+`
 
-  const seedPath = path.join(process.cwd(), "convex", "seed.ts");
-  fs.writeFileSync(seedPath, seedContent);
-  console.log(`Updated: ${seedPath}`);
+  const seedPath = path.join(process.cwd(), "convex", "seed.ts")
+  fs.writeFileSync(seedPath, seedContent)
+  console.log(`Updated: ${seedPath}`)
 
-  const jsonPath = path.join(process.cwd(), "convex", "youtube-search-results.json");
-  fs.writeFileSync(jsonPath, JSON.stringify(results, null, 2));
-  console.log(`Saved: ${jsonPath}`);
+  const jsonPath = path.join(process.cwd(), "convex", "youtube-search-results.json")
+  fs.writeFileSync(jsonPath, JSON.stringify(results, null, 2))
+  console.log(`Saved: ${jsonPath}`)
 
-  console.log("\n\nSummary:");
-  console.log(`  Total tracks: ${results.length}`);
-  console.log(`  Successfully found: ${results.length - failedCount}`);
-  console.log(`  Failed: ${failedCount}`);
-  console.log(`\nRun 'npx convex run seed:seed' to update the database.`);
+  console.log("\n\nSummary:")
+  console.log(`  Total tracks: ${results.length}`)
+  console.log(`  Successfully found: ${results.length - failedCount}`)
+  console.log(`  Failed: ${failedCount}`)
+  console.log(`\nRun 'npx convex run seed:seed' to update the database.`)
 }
 
-main().catch(console.error);
+main().catch(console.error)

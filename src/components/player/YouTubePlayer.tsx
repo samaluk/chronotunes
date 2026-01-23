@@ -1,29 +1,29 @@
-"use client";
+"use client"
 
-import { AlertTriangle, Loader2 } from "lucide-react";
-import { useTranslations } from "next-intl";
-import { useEffect, useMemo, useState } from "react";
-import ReactPlayer from "react-player";
-import type { Config } from "react-player/types";
-import { useIsMounted, useLocalStorage } from "usehooks-ts";
-import { cn } from "@/lib/utils";
+import { AlertTriangle, Loader2 } from "lucide-react"
+import { useTranslations } from "next-intl"
+import { useEffect, useMemo, useState } from "react"
+import ReactPlayer from "react-player"
+import type { Config } from "react-player/types"
+import { useIsMounted, useLocalStorage } from "usehooks-ts"
+import { cn } from "@/lib/utils"
 
 interface YouTubePlayerProps {
-  youtubeVideoId: string;
-  className?: string;
+  youtubeVideoId: string
+  className?: string
 }
 
-const VOLUME_STORAGE_KEY = "chronotunes-volume";
-const MUTED_STORAGE_KEY = "chronotunes-muted";
+const VOLUME_STORAGE_KEY = "chronotunes-volume"
+const MUTED_STORAGE_KEY = "chronotunes-muted"
 
-type PlayerStatus = "loading" | "playing" | "error";
+type PlayerStatus = "loading" | "playing" | "error"
 
 export function YouTubePlayer({ youtubeVideoId, className }: YouTubePlayerProps): React.ReactNode {
-  const isMounted = useIsMounted();
-  const tPlayer = useTranslations("player");
-  const [status, setStatus] = useState<PlayerStatus>("loading");
-  const [volume, _setVolume] = useLocalStorage(VOLUME_STORAGE_KEY, 80);
-  const [isMuted, _setIsMuted] = useLocalStorage(MUTED_STORAGE_KEY, false);
+  const isMounted = useIsMounted()
+  const tPlayer = useTranslations("player")
+  const [status, setStatus] = useState<PlayerStatus>("loading")
+  const [volume, _setVolume] = useLocalStorage(VOLUME_STORAGE_KEY, 80)
+  const [isMuted, _setIsMuted] = useLocalStorage(MUTED_STORAGE_KEY, false)
 
   const playerConfig: Config = useMemo(
     () => ({
@@ -39,20 +39,20 @@ export function YouTubePlayer({ youtubeVideoId, className }: YouTubePlayerProps)
       file: { attributes: { disablepictureinpicture: "true" } },
     }),
     [],
-  );
+  )
 
   useEffect(() => {
     if (!isMounted()) {
-      return;
+      return
     }
 
     if (!youtubeVideoId) {
-      setStatus("error");
-      return;
+      setStatus("error")
+      return
     }
 
-    setStatus("loading");
-  }, [isMounted, youtubeVideoId]);
+    setStatus("loading")
+  }, [isMounted, youtubeVideoId])
 
   if (status === "error" || !youtubeVideoId) {
     return (
@@ -67,17 +67,17 @@ export function YouTubePlayer({ youtubeVideoId, className }: YouTubePlayerProps)
           <span className="font-medium text-sm">{tPlayer("videoUnavailable")}</span>
         </div>
       </div>
-    );
+    )
   }
 
-  let statusLabel = tPlayer("loadingAudio");
-  let statusTone = "text-muted-foreground";
-  let statusIndicator = <Loader2 className="h-3 w-3 animate-spin text-muted-foreground" />;
+  let statusLabel = tPlayer("loadingAudio")
+  let statusTone = "text-muted-foreground"
+  let statusIndicator = <Loader2 className="h-3 w-3 animate-spin text-muted-foreground" />
 
   if (status === "playing") {
-    statusLabel = tPlayer("playingAudio");
-    statusTone = "text-green-600 dark:text-green-400";
-    statusIndicator = <span className="h-2 w-2 animate-pulse rounded-full bg-green-500" />;
+    statusLabel = tPlayer("playingAudio")
+    statusTone = "text-green-600 dark:text-green-400"
+    statusIndicator = <span className="h-2 w-2 animate-pulse rounded-full bg-green-500" />
   }
 
   return (
@@ -114,5 +114,5 @@ export function YouTubePlayer({ youtubeVideoId, className }: YouTubePlayerProps)
         </output>
       </div>
     </div>
-  );
+  )
 }

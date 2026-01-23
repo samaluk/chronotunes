@@ -1,27 +1,27 @@
-"use client";
+"use client"
 
-import { Coins, HelpCircle, Music, Target, Trophy } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { Card } from "@/components/ui/card";
-import { cn } from "@/lib/utils";
+import { Coins, HelpCircle, Music, Target, Trophy } from "lucide-react"
+import { Badge } from "@/components/ui/badge"
+import { Card } from "@/components/ui/card"
+import { cn } from "@/lib/utils"
 
 interface TimelineCardProps {
-  icon?: "music" | "target" | "trophy" | "help" | "question";
-  iconColor?: "primary" | "amber" | "muted";
-  title?: string;
-  artist?: string;
-  subtitle?: string;
-  year?: number;
-  yearMin?: number;
-  yearMax?: number | null;
-  showYearBadge?: boolean;
-  isNew?: boolean;
-  isLoading?: boolean;
-  isPreview?: boolean;
-  isBetPreview?: boolean;
-  coinCost?: number;
-  playerName?: string;
-  className?: string;
+  icon?: "music" | "target" | "trophy" | "help" | "question"
+  iconColor?: "primary" | "amber" | "muted"
+  title?: string
+  artist?: string
+  subtitle?: string
+  year?: number
+  yearMin?: number
+  yearMax?: number | null
+  showYearBadge?: boolean
+  isNew?: boolean
+  isLoading?: boolean
+  isPreview?: boolean
+  isBetPreview?: boolean
+  coinCost?: number
+  playerName?: string
+  className?: string
 }
 
 export function TimelineCard({
@@ -46,7 +46,7 @@ export function TimelineCard({
     primary: "bg-primary/20 text-primary",
     amber: "bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400",
     muted: "bg-muted text-muted-foreground",
-  };
+  }
 
   const IconComponent = {
     music: Music,
@@ -54,23 +54,23 @@ export function TimelineCard({
     trophy: Trophy,
     help: HelpCircle,
     question: HelpCircle,
-  }[icon];
+  }[icon]
 
   const formatYearRange = (min: number | undefined, max: number | null | undefined): string => {
     if (min !== undefined && max !== undefined) {
       if (max === null) {
-        return `${min} - ∞`;
+        return `${min} - ∞`
       }
-      return `${min} - ${max}`;
+      return `${min} - ${max}`
     }
     if (min !== undefined) {
-      return String(min);
+      return String(min)
     }
     if (year !== undefined) {
-      return String(year);
+      return String(year)
     }
-    return "???";
-  };
+    return "???"
+  }
 
   if (isLoading) {
     return (
@@ -82,7 +82,7 @@ export function TimelineCard({
         </div>
         <div className="h-8 w-12 rounded bg-muted" />
       </Card>
-    );
+    )
   }
 
   return (
@@ -133,5 +133,5 @@ export function TimelineCard({
         </div>
       </div>
     </Card>
-  );
+  )
 }

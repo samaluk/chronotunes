@@ -1,78 +1,78 @@
-"use client";
+"use client"
 
-import { useMutation } from "convex/react";
-import { useSessionId } from "convex-helpers/react/sessions";
-import { Check, ChevronDown, ChevronUp, Settings2, X } from "lucide-react";
-import { useTranslations } from "next-intl";
-import { useEffect, useState } from "react";
-import { toast } from "sonner";
-import { SettingRange } from "@/components/settings/SettingRange";
-import { SettingSlider } from "@/components/settings/SettingSlider";
-import { ToggleSetting } from "@/components/settings/ToggleSetting";
-import { Button } from "@/components/ui/button";
-import { api } from "@/convex/_generated/api";
+import { useMutation } from "convex/react"
+import { useSessionId } from "convex-helpers/react/sessions"
+import { Check, ChevronDown, ChevronUp, Settings2, X } from "lucide-react"
+import { useTranslations } from "next-intl"
+import { useEffect, useState } from "react"
+import { toast } from "sonner"
+import { SettingRange } from "@/components/settings/SettingRange"
+import { SettingSlider } from "@/components/settings/SettingSlider"
+import { ToggleSetting } from "@/components/settings/ToggleSetting"
+import { Button } from "@/components/ui/button"
+import { api } from "@/convex/_generated/api"
 
 interface SettingsPanelProps {
-  code: string;
-  isHost: boolean;
+  code: string
+  isHost: boolean
   currentSettings: {
-    targetTimelineSize: number;
-    startingCoins: number;
-    turnSeconds: number;
-    bettingWindowSeconds: number;
-    allowGuessTitleArtist: boolean;
-    showLiveBets: boolean;
-    allowBetRetraction: boolean;
-    minYear: number;
-    maxYear: number;
-  };
+    targetTimelineSize: number
+    startingCoins: number
+    turnSeconds: number
+    bettingWindowSeconds: number
+    allowGuessTitleArtist: boolean
+    showLiveBets: boolean
+    allowBetRetraction: boolean
+    minYear: number
+    maxYear: number
+  }
 }
 
 interface LobbySettings {
-  targetTimelineSize: number;
-  startingCoins: number;
-  turnSeconds: number;
-  bettingWindowSeconds: number;
-  allowGuessTitleArtist: boolean;
-  showLiveBets: boolean;
-  allowBetRetraction: boolean;
-  minYear: number;
-  maxYear: number;
+  targetTimelineSize: number
+  startingCoins: number
+  turnSeconds: number
+  bettingWindowSeconds: number
+  allowGuessTitleArtist: boolean
+  showLiveBets: boolean
+  allowBetRetraction: boolean
+  minYear: number
+  maxYear: number
 }
 
 export function SettingsPanel({ code, isHost, currentSettings }: SettingsPanelProps) {
-  const t = useTranslations("settings");
+  const t = useTranslations("settings")
 
-  const [sessionId] = useSessionId();
-  const [isExpanded, setIsExpanded] = useState(false);
-  const [optimisticSettings, setOptimisticSettings] = useState(currentSettings);
+  const [sessionId] = useSessionId()
+  const [isExpanded, setIsExpanded] = useState(false)
+  const [optimisticSettings, setOptimisticSettings] = useState(currentSettings)
 
   useEffect(() => {
-    setOptimisticSettings(currentSettings);
-  }, [currentSettings]);
+    setOptimisticSettings(currentSettings)
+  }, [currentSettings])
 
-  const updateSettings = useMutation(api.lobbies.updateSettings);
+  const updateSettings = useMutation(api.lobbies.updateSettings)
 
   const handleSettingChange = <K extends keyof LobbySettings>(
     key: K,
     value: LobbySettings[K],
   ): void => {
-    setOptimisticSettings((prev) => ({ ...prev, [key]: value }));
-  };
+    setOptimisticSettings((prev) => ({ ...prev, [key]: value }))
+  }
 
   const handleCommit = async <K extends keyof LobbySettings>(
     key: K,
     value: LobbySettings[K],
   ): Promise<void> => {
-    if (!sessionId) return;
+    if (!sessionId) return
     try {
-      await updateSettings({ code, settings: { [key]: value }, sessionId });
+      await updateSettings({ code, settings: { [key]: value }, sessionId })
     } catch (error) {
-      const message = error instanceof Error ? error.message : t("failedToSave");
-      toast.error(message);
-      setOptimisticSettings(currentSettings);
+      const message = error instanceof Error ? error.message : t("failedToSave")
+      toast.error(message)
+      setOptimisticSettings(currentSettings)
     }
-  };
+  }
 
   if (!isHost) {
     return (
@@ -133,7 +133,7 @@ export function SettingsPanel({ code, isHost, currentSettings }: SettingsPanelPr
           </div>
         </div>
       </div>
-    );
+    )
   }
 
   return (
@@ -218,8 +218,8 @@ export function SettingsPanel({ code, isHost, currentSettings }: SettingsPanelPr
               enabled={optimisticSettings.allowGuessTitleArtist}
               label={t("allowGuessTitleArtist")}
               onChange={(value) => {
-                handleSettingChange("allowGuessTitleArtist", value);
-                handleCommit("allowGuessTitleArtist", value);
+                handleSettingChange("allowGuessTitleArtist", value)
+                handleCommit("allowGuessTitleArtist", value)
               }}
             />
 
@@ -228,8 +228,8 @@ export function SettingsPanel({ code, isHost, currentSettings }: SettingsPanelPr
               enabled={optimisticSettings.showLiveBets}
               label={t("showLiveBets")}
               onChange={(value) => {
-                handleSettingChange("showLiveBets", value);
-                handleCommit("showLiveBets", value);
+                handleSettingChange("showLiveBets", value)
+                handleCommit("showLiveBets", value)
               }}
             />
 
@@ -238,13 +238,13 @@ export function SettingsPanel({ code, isHost, currentSettings }: SettingsPanelPr
               enabled={optimisticSettings.allowBetRetraction}
               label={t("allowBetRetraction")}
               onChange={(value) => {
-                handleSettingChange("allowBetRetraction", value);
-                handleCommit("allowBetRetraction", value);
+                handleSettingChange("allowBetRetraction", value)
+                handleCommit("allowBetRetraction", value)
               }}
             />
           </div>
         </div>
       )}
     </div>
-  );
+  )
 }

@@ -1,26 +1,26 @@
-"use client";
+"use client"
 
-import { Circle } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { Circle } from "lucide-react"
+import { cn } from "@/lib/utils"
 
 interface PresenceIndicatorProps {
-  online: boolean;
-  className?: string;
-  size?: "sm" | "md" | "lg";
-  showPulse?: boolean;
+  online: boolean
+  className?: string
+  size?: "sm" | "md" | "lg"
+  showPulse?: boolean
 }
 
 const sizeClasses = {
   sm: "h-2 w-2",
   md: "h-3 w-3",
   lg: "h-4 w-4",
-};
+}
 
 const pulseSizeClasses = {
   sm: "h-2 w-2",
   md: "h-3 w-3",
   lg: "h-4 w-4",
-};
+}
 
 export function PresenceIndicator({
   online,
@@ -47,5 +47,5 @@ export function PresenceIndicator({
         )}
       />
     </span>
-  );
+  )
 }

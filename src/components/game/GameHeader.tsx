@@ -1,38 +1,38 @@
-"use client";
+"use client"
 
-import { Check, X } from "lucide-react";
-import { useTranslations } from "next-intl";
-import { memo } from "react";
-import { VolumeSlider } from "@/components/player/VolumeSlider";
-import type { Id } from "@/convex/_generated/dataModel";
-import { cn } from "@/lib/utils";
-import { GameTimer } from "./GameTimer";
+import { Check, X } from "lucide-react"
+import { useTranslations } from "next-intl"
+import { memo } from "react"
+import { VolumeSlider } from "@/components/player/VolumeSlider"
+import type { Id } from "@/convex/_generated/dataModel"
+import { cn } from "@/lib/utils"
+import { GameTimer } from "./GameTimer"
 
 interface TurnPlayer {
-  _id: Id<"players">;
-  displayName: string;
+  _id: Id<"players">
+  displayName: string
 }
 
 interface ResolutionInfo {
-  turnPlayerWasCorrect: boolean;
-  awardedPlayerIds: Id<"players">[];
+  turnPlayerWasCorrect: boolean
+  awardedPlayerIds: Id<"players">[]
 }
 
 interface GameHeaderProps {
-  roundNumber: number;
-  turnPlayer: TurnPlayer | null;
-  isMyTurn: boolean;
-  roundPhase: "placing" | "betting" | "resolved";
-  bettingStartedAt?: number;
-  bettingWindowSeconds?: number;
-  resolution?: ResolutionInfo | null;
+  roundNumber: number
+  turnPlayer: TurnPlayer | null
+  isMyTurn: boolean
+  roundPhase: "placing" | "betting" | "resolved"
+  bettingStartedAt?: number
+  bettingWindowSeconds?: number
+  resolution?: ResolutionInfo | null
 }
 
 const phaseStyles = {
   placing: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400",
   betting: "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400",
   resolved: "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400",
-};
+}
 
 export const GameHeader = memo(function GameHeader({
   roundNumber,
@@ -43,9 +43,9 @@ export const GameHeader = memo(function GameHeader({
   bettingWindowSeconds,
   resolution,
 }: GameHeaderProps): React.ReactNode {
-  const t = useTranslations("game");
-  const tCommon = useTranslations("common");
-  const tPhase = useTranslations("phase");
+  const t = useTranslations("game")
+  const tCommon = useTranslations("common")
+  const tPhase = useTranslations("phase")
 
   return (
     <div className="w-full space-y-4">
@@ -117,5 +117,5 @@ export const GameHeader = memo(function GameHeader({
         <VolumeSlider />
       </div>
     </div>
-  );
-});
+  )
+})

@@ -1,10 +1,10 @@
-"use client";
+"use client"
 
-import { Globe } from "lucide-react";
-import { useLocale, useTranslations } from "next-intl";
-import { memo, useState } from "react";
-import { usePathname, useRouter } from "@/i18n/routing";
-import { cn } from "@/lib/utils";
+import { Globe } from "lucide-react"
+import { useLocale, useTranslations } from "next-intl"
+import { memo, useState } from "react"
+import { usePathname, useRouter } from "@/i18n/routing"
+import { cn } from "@/lib/utils"
 
 const localeNames: Record<string, string> = {
   en: "English",
@@ -13,27 +13,27 @@ const localeNames: Record<string, string> = {
   de: "Deutsch",
   pt: "Português",
   ja: "日本語",
-};
+}
 
-const availableLocales = ["en", "es", "fr", "de", "pt", "ja"];
+const availableLocales = ["en", "es", "fr", "de", "pt", "ja"]
 
 export const LocaleSwitcher = memo(function LocaleSwitcher(): React.ReactNode {
-  const t = useTranslations("locale");
-  const [isOpen, setIsOpen] = useState(false);
-  const router = useRouter();
-  const pathname = usePathname();
-  const locale = useLocale();
+  const t = useTranslations("locale")
+  const [isOpen, setIsOpen] = useState(false)
+  const router = useRouter()
+  const pathname = usePathname()
+  const locale = useLocale()
 
   const handleLocaleChange = (newLocale: string): void => {
-    setIsOpen(false);
+    setIsOpen(false)
     if (newLocale === locale) {
-      return;
+      return
     }
     // Use next-intl's router to navigate to the same path with new locale
-    router.replace(pathname, { locale: newLocale });
-  };
+    router.replace(pathname, { locale: newLocale })
+  }
 
-  const currentLocaleName = localeNames[locale] || localeNames.en;
+  const currentLocaleName = localeNames[locale] || localeNames.en
 
   return (
     <div className="relative">
@@ -77,5 +77,5 @@ export const LocaleSwitcher = memo(function LocaleSwitcher(): React.ReactNode {
         </>
       )}
     </div>
-  );
-});
+  )
+})

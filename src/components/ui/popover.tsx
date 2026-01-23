@@ -1,16 +1,16 @@
-"use client";
+"use client"
 
-import { Popover as PopoverPrimitive } from "@base-ui/react/popover";
-import type * as React from "react";
+import { Popover as PopoverPrimitive } from "@base-ui/react/popover"
+import type * as React from "react"
 
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/utils"
 
 function Popover({ ...props }: PopoverPrimitive.Root.Props) {
-  return <PopoverPrimitive.Root data-slot="popover" {...props} />;
+  return <PopoverPrimitive.Root data-slot="popover" {...props} />
 }
 
 function PopoverTrigger({ ...props }: PopoverPrimitive.Trigger.Props) {
-  return <PopoverPrimitive.Trigger data-slot="popover-trigger" {...props} />;
+  return <PopoverPrimitive.Trigger data-slot="popover-trigger" {...props} />
 }
 
 function PopoverContent({
@@ -41,7 +41,7 @@ function PopoverContent({
         />
       </PopoverPrimitive.Positioner>
     </PopoverPrimitive.Portal>
-  );
+  )
 }
 
 function PopoverHeader({ className, ...props }: React.ComponentProps<"div">) {
@@ -51,7 +51,7 @@ function PopoverHeader({ className, ...props }: React.ComponentProps<"div">) {
       data-slot="popover-header"
       {...props}
     />
-  );
+  )
 }
 
 function PopoverTitle({ className, ...props }: PopoverPrimitive.Title.Props) {
@@ -61,7 +61,7 @@ function PopoverTitle({ className, ...props }: PopoverPrimitive.Title.Props) {
       data-slot="popover-title"
       {...props}
     />
-  );
+  )
 }
 
 function PopoverDescription({ className, ...props }: PopoverPrimitive.Description.Props) {
@@ -71,7 +71,7 @@ function PopoverDescription({ className, ...props }: PopoverPrimitive.Descriptio
       data-slot="popover-description"
       {...props}
     />
-  );
+  )
 }
 
-export { Popover, PopoverContent, PopoverDescription, PopoverHeader, PopoverTitle, PopoverTrigger };
+export { Popover, PopoverContent, PopoverDescription, PopoverHeader, PopoverTitle, PopoverTrigger }
