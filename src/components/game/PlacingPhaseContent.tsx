@@ -8,7 +8,7 @@ import { TurnPlayerTimeline } from "./TurnPlayerTimeline";
 
 interface PlacingPhaseContentProps {
   isMyTurn: boolean;
-  lobbyId: Id<"lobbies">;
+  lobbyId?: Id<"lobbies">;
   me: Doc<"players"> | null;
   players: Doc<"players">[] | null;
   track: {
@@ -53,10 +53,10 @@ export function PlacingPhaseContent({
   if (isMyTurn && lobbyId && me && track) {
     return (
       <TimelinePlacer
-        lobbyId={lobbyId}
-        player={me}
         currentTrack={track}
         existingPreviewIndex={existingPreviewIndex ?? null}
+        lobbyId={lobbyId}
+        player={me}
         revealedTracks={revealedTracks}
       />
     );
@@ -67,25 +67,25 @@ export function PlacingPhaseContent({
     const turnPlayerName = turnPlayer?.displayName ?? "Player";
     return (
       <TurnPlayerTimeline
-        turnPlayerName={turnPlayerName}
+        existingPreviewIndex={existingPreviewIndex ?? null}
+        revealedTracks={revealedTracks}
         timeline={turnPlayerTimeline}
         timelineSize={turnPlayerTimelineSize}
-        revealedTracks={revealedTracks}
-        existingPreviewIndex={existingPreviewIndex ?? null}
+        turnPlayerName={turnPlayerName}
       />
     );
   }
 
   return (
-    <div className="flex flex-col items-center justify-center py-12 space-y-4">
+    <div className="flex flex-col items-center justify-center space-y-4 py-12">
       <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
-        <Music className="h-8 w-8 text-primary animate-pulse" />
+        <Music className="h-8 w-8 animate-pulse text-primary" />
       </div>
-      <div className="text-center space-y-2">
-        <p className="text-lg font-medium">
+      <div className="space-y-2 text-center">
+        <p className="font-medium text-lg">
           {isMyTurn ? tPlacing("placeSong") : tPlacing("playerPlacing")}
         </p>
-        <p className="text-sm text-muted-foreground">
+        <p className="text-muted-foreground text-sm">
           {isMyTurn ? tPlacing("dragDrop") : tPlacing("waitForPlayer")}
         </p>
       </div>

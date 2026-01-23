@@ -178,7 +178,7 @@ export const skipTurn = mutationWithSession({
 
     const result = await createNextRound(ctx, game, lobby);
 
-    if ("gameEnded" in result && result.gameEnded) {
+    if ("gameEnded" in result) {
       return { gameEnded: true, winnerPlayerId: null, noTracksAvailable: true };
     }
 
@@ -231,7 +231,7 @@ export const resolveAndNext = mutationWithSession({
 
     const result = await createNextRound(ctx, game, lobby);
 
-    if ("gameEnded" in result && result.gameEnded) {
+    if ("gameEnded" in result) {
       return {
         gameEnded: true,
         winnerPlayerId: null,

@@ -18,9 +18,10 @@ interface CsvTrackImportItem {
 function parseDurationToMs(durationRaw: string | undefined): number | undefined {
   if (!durationRaw) return undefined;
   const parts = durationRaw.split(":").map(Number);
-  if (parts.length === 2 && !parts.includes(NaN)) {
+  if (parts.length === 2 && !parts.includes(Number.NaN)) {
     return parts[0] * 60 + parts[1];
-  } else if (parts.length === 3 && !parts.includes(NaN)) {
+  }
+  if (parts.length === 3 && !parts.includes(Number.NaN)) {
     return parts[0] * 60 * 60 + parts[1] * 60 + parts[2];
   }
   return undefined;
@@ -31,7 +32,7 @@ function parseYear(dateStrRaw: string | undefined): number {
     return 2000;
   }
   const dateStr = dateStrRaw.replace(/^"|"$/g, "");
-  const year = parseInt(dateStr.split("-")[0], 10);
+  const year = Number.parseInt(dateStr.split("-")[0], 10);
   return Number.isNaN(year) ? 2000 : year;
 }
 
@@ -179,7 +180,7 @@ export const parseAndImportCsv = mutation({
       const spotifyTrackIdRaw = parts[19];
       const mbidRaw = parts[20];
 
-      if (!titleRaw || !artistRaw) continue;
+      if (!(titleRaw && artistRaw)) continue;
 
       const title = titleRaw.replace(/^"|"$/g, "").trim();
       const artist = artistRaw.replace(/^"|"$/g, "").trim();
@@ -213,7 +214,7 @@ export const parseAndImportCsv = mutation({
       throw new ConvexError("No valid tracks found in CSV");
     }
 
-    return ctx.runMutation(api.tracks.importTracksFromCsv, {
+    return ctx.runMutation(api.importTracks.importTracksFromCsv, {
       tracks,
       clearExisting,
     });

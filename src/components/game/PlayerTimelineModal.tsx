@@ -4,6 +4,7 @@ import { useQuery } from "convex/react";
 import { Music } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useMemo } from "react";
+import { useIsMounted } from "usehooks-ts";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { api } from "@/convex/_generated/api.js";
 import type { Doc } from "@/convex/_generated/dataModel";

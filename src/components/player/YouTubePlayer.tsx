@@ -5,7 +5,7 @@ import { useEffect, useMemo, useState } from "react";
 import ReactPlayer from "react-player";
 import type { Config } from "react-player/types";
 import { useLocalStorage } from "usehooks-ts";
-import { useMounted } from "@/lib/hooks/useMounted";
+import { useIsMounted } from "usehooks-ts";
 import { cn } from "@/lib/utils";
 
 interface YouTubePlayerProps {
@@ -17,7 +17,7 @@ const VOLUME_STORAGE_KEY = "chronotunes-volume";
 const MUTED_STORAGE_KEY = "chronotunes-muted";
 
 export function YouTubePlayer({ youtubeVideoId, className }: YouTubePlayerProps): React.ReactNode {
-  const mounted = useMounted();
+  const mounted = useIsMounted();
   const [isReady, setIsReady] = useState(false);
   const [hasError, setHasError] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
