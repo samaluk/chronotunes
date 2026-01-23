@@ -44,6 +44,16 @@ export function MyTimeline({ player }: MyTimelineProps): React.ReactNode {
     isMounted() && trackIds.length > 0 ? { trackIds } : "skip",
   );
 
+  // Must be called before any early returns to maintain consistent hook order
+  const trackMap = useMemo(() => {
+    if (!(tracks && Array.isArray(tracks))) return new Map();
+    return new Map(
+      tracks
+        .filter((track): track is NonNullable<typeof track> => track != null)
+        .map((track) => [track._id, track]),
+    );
+  }, [tracks]);
+
   if (!isMounted()) {
     return (
       <div className="w-full space-y-3">
@@ -77,14 +87,6 @@ export function MyTimeline({ player }: MyTimelineProps): React.ReactNode {
   }
 
   const isLoading = tracks === undefined;
-  const trackMap = useMemo(() => {
-    if (!(tracks && Array.isArray(tracks))) return new Map();
-    return new Map(
-      tracks
-        .filter((track): track is NonNullable<typeof track> => track != null)
-        .map((track) => [track._id, track]),
-    );
-  }, [tracks]);
   const sortedTimeline = sortTimelineByYear(player.timeline);
 
   return (

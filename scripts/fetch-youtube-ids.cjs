@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+"use strict";
 
 const scrapeYt = require("scrape-yt");
 const fs = require("fs");
@@ -77,8 +78,10 @@ async function searchTrack(title, artist) {
       const channelLower = (video.channel?.name || "").toLowerCase();
 
       // Prefer official channel matches
-      if (channelLower.includes(artist.toLowerCase()) || 
-          channelLower.includes(artist.toLowerCase().split(" ")[0])) {
+      if (
+        channelLower.includes(artist.toLowerCase()) ||
+        channelLower.includes(artist.toLowerCase().split(" ")[0])
+      ) {
         score += 100;
       }
 
@@ -101,7 +104,9 @@ async function searchTrack(title, artist) {
     scored.sort((a, b) => b.score - a.score);
 
     const best = scored[0];
-    console.log(`Found: "${best.video.title}" (score: ${best.score.toFixed(1)}, channel: ${best.video.channel?.name}, views: ${best.video.views?.toLocaleString()})`);
+    console.log(
+      `Found: "${best.video.title}" (score: ${best.score.toFixed(1)}, channel: ${best.video.channel?.name}, views: ${best.video.views?.toLocaleString()})`,
+    );
 
     return best.video.id;
   } catch (error) {
@@ -223,7 +228,7 @@ export const seed = mutation({
   fs.writeFileSync(jsonPath, JSON.stringify(results, null, 2));
   console.log(`Saved: ${jsonPath}`);
 
-  console.log(`\n\nSummary:`);
+  console.log("\n\nSummary:");
   console.log(`  Total tracks: ${results.length}`);
   console.log(`  Successfully found: ${results.length - failedCount}`);
   console.log(`  Failed: ${failedCount}`);

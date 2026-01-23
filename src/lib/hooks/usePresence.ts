@@ -20,7 +20,7 @@ interface UsePresenceOptions {
 export function usePresence({
   roomId,
   userId,
-  interval = 15000,
+  interval = 15_000,
 }: UsePresenceOptions): PresenceState[] | null | undefined {
   const convex = useConvex();
   const hasMounted = useRef(false);

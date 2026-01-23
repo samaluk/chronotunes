@@ -41,7 +41,7 @@ export function TurnPlayerTimeline({
   return (
     <div className="w-full space-y-4">
       <div className="flex items-center justify-between">
-        <h3 className="text-sm font-medium text-muted-foreground">
+        <h3 className="font-medium text-muted-foreground text-sm">
           {turnPlayerName}&apos;s Timeline
         </h3>
       </div>
@@ -64,18 +64,18 @@ export function TurnPlayerTimeline({
                   {isBeforePreview && <TimelineCard isNew={true} isPreview={true} />}
                   {revealedTrack ? (
                     <TimelineCard
+                      artist={revealedTrack.artist}
                       icon="music"
                       title={revealedTrack.title}
-                      artist={revealedTrack.artist}
                       year={revealedTrack.year}
                     />
                   ) : (
                     <TimelineCard
                       icon="music"
-                      title="Known Track"
-                      subtitle="From round"
-                      year={entry.year}
                       iconColor="primary"
+                      subtitle="From round"
+                      title="Known Track"
+                      year={entry.year}
                     />
                   )}
                 </div>
@@ -94,9 +94,9 @@ export function TurnPlayerTimeline({
       </div>
 
       {existingPreviewIndex !== null && (
-        <div className="flex items-center justify-center gap-2 p-2 rounded-lg bg-primary/10">
-          <div className="h-2 w-2 rounded-full bg-primary animate-pulse" />
-          <span className="text-xs text-primary font-medium">
+        <div className="flex items-center justify-center gap-2 rounded-lg bg-primary/10 p-2">
+          <div className="h-2 w-2 animate-pulse rounded-full bg-primary" />
+          <span className="font-medium text-primary text-xs">
             Previewing placement at position {existingPreviewIndex + 1}
           </span>
         </div>

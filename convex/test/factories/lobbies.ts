@@ -80,7 +80,7 @@ export async function create(
     });
   });
 
-  if (!lobbyId || !hostPlayerId) {
+  if (!(lobbyId && hostPlayerId)) {
     throw new Error("Failed to create lobby");
   }
 

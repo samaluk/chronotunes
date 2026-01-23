@@ -1,11 +1,7 @@
 "use client";
 
-import { useQuery } from "convex/react";
-import { Music } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useState } from "react";
 import { YouTubePlayer } from "@/components/player/YouTubePlayer";
-import { api } from "@/convex/_generated/api";
 import type { Doc, Id } from "@/convex/_generated/dataModel";
 import { cn } from "@/lib/utils";
 import { BettingPhaseContent } from "./BettingPhaseContent";
@@ -83,6 +79,12 @@ export function CurrentRoundPanel({
   showLiveBets,
 }: CurrentRoundPanelProps): React.ReactNode {
   const t = useTranslations("roundPhase");
+  let phaseBadgeClass = "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400";
+  if (phase === "placing") {
+    phaseBadgeClass = "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400";
+  } else if (phase === "betting") {
+    phaseBadgeClass = "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400";
+  }
 
   const renderPhaseContent = (): React.ReactNode => {
     return (
@@ -97,34 +99,34 @@ export function CurrentRoundPanel({
             case "placing":
               return (
                 <PlacingPhaseContent
+                  existingPreviewIndex={existingPreviewIndex ?? null}
                   isMyTurn={isMyTurn}
                   lobbyId={lobbyId ?? undefined}
                   me={me ?? null}
                   players={players ?? null}
+                  revealedTracks={revealedTracks ?? []}
                   track={track ?? null}
-                  existingPreviewIndex={existingPreviewIndex ?? null}
                   turnPlayerId={turnPlayerId ?? null}
                   turnPlayerTimeline={turnPlayerTimeline ?? []}
                   turnPlayerTimelineSize={turnPlayerTimelineSize ?? 0}
-                  revealedTracks={revealedTracks ?? []}
                 />
               );
 
             case "betting":
               return (
                 <BettingPhaseContent
+                  bettingWindowSeconds={bettingWindowSeconds}
                   lobbyId={lobbyId!}
                   me={me!}
-                  track={track!}
-                  turnPlayerTimeline={turnPlayerTimeline ?? []}
-                  revealedTracks={revealedTracks ?? []}
                   players={players ?? null}
-                  turnPlayerId={turnPlayerId ?? null}
+                  revealedTracks={revealedTracks ?? []}
                   roundStartedAt={roundStartedAt}
-                  turnSeconds={turnSeconds}
-                  bettingWindowSeconds={bettingWindowSeconds}
-                  turnPlayerPlacementIndex={turnPlayerPlacementIndex ?? null}
                   showLiveBets={showLiveBets ?? false}
+                  track={track!}
+                  turnPlayerId={turnPlayerId ?? null}
+                  turnPlayerPlacementIndex={turnPlayerPlacementIndex ?? null}
+                  turnPlayerTimeline={turnPlayerTimeline ?? []}
+                  turnSeconds={turnSeconds}
                 />
               );
 
@@ -132,11 +134,11 @@ export function CurrentRoundPanel({
               return (
                 <ResolvedPhaseContent
                   lobbyId={lobbyId!}
-                  track={track!}
-                  resolution={resolution!}
-                  players={players!}
-                  turnPlayerId={turnPlayerId!}
                   me={me!}
+                  players={players!}
+                  resolution={resolution!}
+                  track={track!}
+                  turnPlayerId={turnPlayerId!}
                 />
               );
 
@@ -154,25 +156,21 @@ export function CurrentRoundPanel({
 
   return (
     <div className="w-full">
-      <div className="rounded-xl bg-card border overflow-hidden">
-        <div className="px-4 py-3 border-b bg-muted/50">
+      <div className="overflow-hidden rounded-xl border bg-card">
+        <div className="border-b bg-muted/50 px-4 py-3">
           <div className="flex items-center justify-between">
-            <span className="text-sm font-medium">{t("placingTitle")}</span>
+            <span className="font-medium text-sm">{t("placingTitle")}</span>
             <span
               className={cn(
-                "inline-flex items-center px-2 py-1 rounded-full text-xs font-medium transition-all duration-300",
-                phase === "placing"
-                  ? "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400"
-                  : phase === "betting"
-                    ? "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400"
-                    : "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400",
+                "inline-flex items-center rounded-full px-2 py-1 font-medium text-xs transition-all duration-300",
+                phaseBadgeClass,
               )}
             >
               {t(phase)}
             </span>
           </div>
         </div>
-        <div className="p-6 transition-all duration-300 animate-in fade-in">
+        <div className="fade-in animate-in p-6 transition-all duration-300">
           {renderPhaseContent()}
         </div>
       </div>

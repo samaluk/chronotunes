@@ -118,7 +118,7 @@ export async function createWithRound(
     await ctx.db.patch(gameId!, { currentRoundId: roundId });
   });
 
-  if (!gameId || !roundId) {
+  if (!(gameId && roundId)) {
     throw new Error("Failed to create game or round");
   }
 
@@ -223,7 +223,7 @@ export async function createInPhase(
     await ctx.db.patch(gameId!, { currentRoundId: roundId });
   });
 
-  if (!gameId || !roundId) {
+  if (!(gameId && roundId)) {
     throw new Error("Failed to create game or round");
   }
 

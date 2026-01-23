@@ -291,7 +291,7 @@ test("start creates game with correct structure", async () => {
   expect(game?.endedAt).toBeUndefined();
 });
 
-async function seedMoreTestTracks(t: ReturnType<typeof convexTest>, count: number = 10) {
+async function seedMoreTestTracks(t: ReturnType<typeof convexTest>, count = 10) {
   await t.run(async (ctx) => {
     for (let i = 0; i < count; i++) {
       const year = 1950 + i * 5;

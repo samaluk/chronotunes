@@ -156,7 +156,7 @@ export default defineSchema({
     artist: v.string(),
     year: v.number(),
     durationMs: v.optional(v.number()),
-    externalIds: externalIds,
+    externalIds,
     links: trackLinks,
     createdAt: v.number(),
     source: v.string(),

@@ -397,6 +397,73 @@ test("preview fails for negative index", async () => {
   }
 });
 
+test("preview fails when betting on the turn player's placement", async () => {
+  const t = convexTest(schema, modules);
+
+  await seedTestData(t);
+
+  const { code } = await t.mutation(api.lobbies.create, {
+    sessionId: asSessionId("host-session-turn-slot"),
+    displayName: "HostTurnSlot",
+  });
+
+  await t.mutation(api.lobbies.join, {
+    code,
+    sessionId: asSessionId("player-session-turn-slot"),
+    displayName: "PlayerTurnSlot",
+  });
+
+  await t.mutation(api.lobbies.join, {
+    code,
+    sessionId: asSessionId("spectator-session-turn-slot"),
+    displayName: "SpectatorTurnSlot",
+  });
+
+  const lobby = await t.query(api.lobbies.get, { code });
+
+  await t.mutation(api.games.start, {
+    lobbyId: lobby!._id,
+    sessionId: asSessionId("host-session-turn-slot"),
+  });
+
+  let nonTurnSessionId: SessionId | null = null;
+  await t.run(async (ctx) => {
+    const game = await ctx.db.query("games").first();
+    if (game?.currentRoundId) {
+      const round = await ctx.db.get(game.currentRoundId);
+      if (round) {
+        const players = await ctx.db.query("players").collect();
+        const nonTurnPlayer = players.find((p) => p._id !== round.turnPlayerId);
+        if (nonTurnPlayer) {
+          nonTurnSessionId = nonTurnPlayer.sessionId as SessionId;
+        }
+
+        await ctx.db.patch(round._id, {
+          phase: "betting",
+          placement: {
+            proposedIndex: 0,
+            submittedAt: Date.now(),
+          },
+        });
+      }
+    }
+  });
+
+  expect(nonTurnSessionId).not.toBeNull();
+
+  if (!nonTurnSessionId) {
+    return;
+  }
+
+  await expect(
+    t.mutation(api.bets.preview, {
+      lobbyId: lobby!._id,
+      sessionId: nonTurnSessionId,
+      proposedIndex: 0,
+    }),
+  ).rejects.toThrow("Cannot bet on the turn player's placement");
+});
+
 test("preview updates existing unlocked bet", async () => {
   const t = convexTest(schema, modules);
 

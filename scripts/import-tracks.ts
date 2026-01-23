@@ -13,9 +13,10 @@ interface TrackData {
 
 function parseDurationToMs(duration: string): number | undefined {
   const parts = duration.split(":").map(Number);
-  if (parts.length === 2 && !parts.includes(NaN)) {
+  if (parts.length === 2 && !parts.includes(Number.NaN)) {
     return parts[0] * 60 + parts[1];
-  } else if (parts.length === 3 && !parts.includes(NaN)) {
+  }
+  if (parts.length === 3 && !parts.includes(Number.NaN)) {
     return parts[0] * 60 * 60 + parts[1] * 60 + parts[2];
   }
   return undefined;
@@ -25,7 +26,7 @@ function parseYear(dateStr: string): number {
   if (!dateStr || dateStr === "0000-00-00") {
     return 2000;
   }
-  const year = parseInt(dateStr.split("-")[0], 10);
+  const year = Number.parseInt(dateStr.split("-")[0], 10);
   return Number.isNaN(year) ? 2000 : year;
 }
 
@@ -91,16 +92,16 @@ async function importTracks(): Promise<void> {
         }),
       });
 
-      if (!response.ok) {
-        console.error(`Failed to import chunk ${i / chunkSize + 1}:`, response.statusText);
-        failed += chunk.length;
-      } else {
+      if (response.ok) {
         const result = await response.json();
         imported += result.importedCount || 0;
         if (result.hasErrors) {
           failed += chunk.length - (result.importedCount || 0);
         }
         process.stdout.write(`\rProgress: ${progress}% (${imported}/${tracks.length} imported)`);
+      } else {
+        console.error(`Failed to import chunk ${i / chunkSize + 1}:`, response.statusText);
+        failed += chunk.length;
       }
     } catch (error) {
       console.error(`\nError importing chunk ${i / chunkSize + 1}:`, error);
@@ -108,7 +109,7 @@ async function importTracks(): Promise<void> {
     }
   }
 
-  console.log(`\n\nImport complete!`);
+  console.log("\n\nImport complete!");
   console.log(`  Imported: ${imported}`);
   console.log(`  Failed: ${failed}`);
   console.log(`  Total: ${tracks.length}`);

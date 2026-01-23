@@ -7,8 +7,8 @@ function Pagination({ className, ...props }: React.ComponentProps<"nav">) {
   return (
     <nav
       aria-label="pagination"
-      data-slot="pagination"
       className={cn("mx-auto flex w-full justify-center", className)}
+      data-slot="pagination"
       {...props}
     />
   );
@@ -17,8 +17,8 @@ function Pagination({ className, ...props }: React.ComponentProps<"nav">) {
 function PaginationContent({ className, ...props }: React.ComponentProps<"ul">) {
   return (
     <ul
+      className={cn("flex items-center gap-1", className)}
       data-slot="pagination-content"
-      className={cn("gap-1 flex items-center", className)}
       {...props}
     />
   );
@@ -36,18 +36,18 @@ type PaginationLinkProps = {
 function PaginationLink({ className, isActive, size = "icon", ...props }: PaginationLinkProps) {
   return (
     <Button
-      variant={isActive ? "outline" : "ghost"}
-      size={size}
       className={cn(className)}
       nativeButton={false}
       render={
         <a
           aria-current={isActive ? "page" : undefined}
-          data-slot="pagination-link"
           data-active={isActive}
+          data-slot="pagination-link"
           {...props}
         />
       }
+      size={size}
+      variant={isActive ? "outline" : "ghost"}
     />
   );
 }
@@ -56,8 +56,8 @@ function PaginationPrevious({ className, ...props }: React.ComponentProps<typeof
   return (
     <PaginationLink
       aria-label="Go to previous page"
-      size="default"
       className={cn("pl-2!", className)}
+      size="default"
       {...props}
     >
       <ChevronLeftIcon data-icon="inline-start" />
@@ -70,8 +70,8 @@ function PaginationNext({ className, ...props }: React.ComponentProps<typeof Pag
   return (
     <PaginationLink
       aria-label="Go to next page"
-      size="default"
       className={cn("pr-2!", className)}
+      size="default"
       {...props}
     >
       <span className="hidden sm:block">Next</span>
@@ -84,11 +84,11 @@ function PaginationEllipsis({ className, ...props }: React.ComponentProps<"span"
   return (
     <span
       aria-hidden
-      data-slot="pagination-ellipsis"
       className={cn(
-        "size-9 items-center justify-center [&_svg:not([class*='size-'])]:size-4 flex items-center justify-center",
+        "flex size-9 items-center items-center justify-center justify-center [&_svg:not([class*='size-'])]:size-4",
         className,
       )}
+      data-slot="pagination-ellipsis"
       {...props}
     >
       <MoreHorizontalIcon />

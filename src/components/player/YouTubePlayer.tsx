@@ -1,11 +1,11 @@
 "use client";
 
-import { AlertTriangle } from "lucide-react";
+import { AlertTriangle, Loader2 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useEffect, useMemo, useState } from "react";
 import ReactPlayer from "react-player";
 import type { Config } from "react-player/types";
-import { useLocalStorage } from "usehooks-ts";
-import { useIsMounted } from "usehooks-ts";
+import { useIsMounted, useLocalStorage } from "usehooks-ts";
 import { cn } from "@/lib/utils";
 
 interface YouTubePlayerProps {
@@ -16,11 +16,12 @@ interface YouTubePlayerProps {
 const VOLUME_STORAGE_KEY = "chronotunes-volume";
 const MUTED_STORAGE_KEY = "chronotunes-muted";
 
+type PlayerStatus = "loading" | "playing" | "error";
+
 export function YouTubePlayer({ youtubeVideoId, className }: YouTubePlayerProps): React.ReactNode {
-  const mounted = useIsMounted();
-  const [isReady, setIsReady] = useState(false);
-  const [hasError, setHasError] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
+  const isMounted = useIsMounted();
+  const tPlayer = useTranslations("player");
+  const [status, setStatus] = useState<PlayerStatus>("loading");
   const [volume, _setVolume] = useLocalStorage(VOLUME_STORAGE_KEY, 80);
   const [isMuted, _setIsMuted] = useLocalStorage(MUTED_STORAGE_KEY, false);
 
@@ -41,72 +42,76 @@ export function YouTubePlayer({ youtubeVideoId, className }: YouTubePlayerProps)
   );
 
   useEffect(() => {
-    if (!mounted || !youtubeVideoId) {
-      setHasError(!mounted || !youtubeVideoId);
-      setIsLoading(false);
+    if (!isMounted()) {
       return;
     }
 
-    setHasError(false);
-    setIsReady(false);
-    setIsLoading(true);
-  }, [mounted, youtubeVideoId]);
+    if (!youtubeVideoId) {
+      setStatus("error");
+      return;
+    }
 
-  if (hasError || !youtubeVideoId) {
+    setStatus("loading");
+  }, [isMounted, youtubeVideoId]);
+
+  if (status === "error" || !youtubeVideoId) {
     return (
       <div
         className={cn(
-          "flex items-center justify-center p-4 rounded-lg bg-destructive/10 border border-destructive/20",
+          "flex items-center justify-center rounded-lg border border-destructive/20 bg-destructive/10 p-4",
           className,
         )}
       >
         <div className="flex items-center gap-2 text-destructive">
           <AlertTriangle className="h-5 w-5" data-testid="alert-icon" />
-          <span className="text-sm font-medium">Video unavailable</span>
+          <span className="font-medium text-sm">{tPlayer("videoUnavailable")}</span>
         </div>
       </div>
     );
   }
 
+  let statusLabel = tPlayer("loadingAudio");
+  let statusTone = "text-muted-foreground";
+  let statusIndicator = <Loader2 className="h-3 w-3 animate-spin text-muted-foreground" />;
+
+  if (status === "playing") {
+    statusLabel = tPlayer("playingAudio");
+    statusTone = "text-green-600 dark:text-green-400";
+    statusIndicator = <span className="h-2 w-2 animate-pulse rounded-full bg-green-500" />;
+  }
+
   return (
     <div className={cn("relative", className)}>
       <div
-        className={cn(
-          "absolute inset-0 pointer-events-none overflow-hidden",
-          "w-[1px] h-[1px] -translate-x-full -translate-y-full",
-        )}
         aria-hidden="true"
+        className={cn(
+          "pointer-events-none absolute inset-0 overflow-hidden",
+          "h-[1px] w-[1px] -translate-x-full -translate-y-full",
+        )}
         data-testid="hidden-youtube-player"
       >
         <ReactPlayer
-          key={youtubeVideoId}
-          src={`https://www.youtube.com/watch?v=${youtubeVideoId}`}
-          playing={true}
-          controls={false}
-          width="1px"
-          height="1px"
-          volume={isMuted ? 0 : volume / 100}
-          muted={isMuted}
-          onReady={() => {
-            setIsReady(true);
-            setIsLoading(false);
-          }}
-          onError={() => {
-            setHasError(true);
-            setIsLoading(false);
-          }}
           config={playerConfig}
+          controls={false}
+          height="1px"
+          key={youtubeVideoId}
+          muted={isMuted}
+          onError={() => setStatus("error")}
+          onPlay={() => setStatus("playing")}
+          onReady={() => setStatus((previous) => (previous === "playing" ? previous : "loading"))}
+          onStart={() => setStatus("playing")}
+          playing={true}
+          src={`https://www.youtube.com/watch?v=${youtubeVideoId}`}
+          volume={isMuted ? 0 : volume / 100}
+          width="1px"
         />
       </div>
 
-      <div className="flex items-center gap-3">
-        {isLoading ? (
-          <span className="text-xs text-muted-foreground">Loading...</span>
-        ) : (
-          <span className="text-xs text-green-600 dark:text-green-400 font-medium">
-            {isReady ? "Playing" : "Ready"}
-          </span>
-        )}
+      <div className="flex items-center gap-2">
+        {statusIndicator}
+        <output aria-live="polite" className={cn("font-medium text-xs", statusTone)}>
+          {statusLabel}
+        </output>
       </div>
     </div>
   );

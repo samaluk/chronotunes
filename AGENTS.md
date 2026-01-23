@@ -54,7 +54,7 @@ pnpm test
 - **NOT ESLint** - this project uses Biome
 - 2 space indentation
 - Double quotes for strings
-- Semicolons required
+- Semicolons as needed (Biome `asNeeded`)
 - Trailing commas in multiline
 
 ### Imports

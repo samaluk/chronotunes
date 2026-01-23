@@ -35,6 +35,7 @@ const createMockPlayer = (overrides = {}) => ({
   timeline: [],
   timelineSize: 0,
   coins: 3,
+  isHost: false,
   ...overrides,
 });
 
@@ -54,11 +55,11 @@ describe("BettingPanel", () => {
         <BettingPanel
           lobbyId={"lobby123" as GenericId<"lobbies">}
           me={player}
-          track={mockTrack}
-          turnPlayerTimeline={[]}
-          revealedTracks={[]}
           players={[]}
+          revealedTracks={[]}
+          track={mockTrack}
           turnPlayerId={null}
+          turnPlayerTimeline={[]}
         />
       </NextIntlClientProvider>,
     );
@@ -74,11 +75,11 @@ describe("BettingPanel", () => {
         <BettingPanel
           lobbyId={"lobby123" as GenericId<"lobbies">}
           me={player}
-          track={mockTrack}
-          turnPlayerTimeline={[]}
-          revealedTracks={[]}
           players={[]}
+          revealedTracks={[]}
+          track={mockTrack}
           turnPlayerId={null}
+          turnPlayerTimeline={[]}
         />
       </NextIntlClientProvider>,
     );
@@ -94,11 +95,11 @@ describe("BettingPanel", () => {
         <BettingPanel
           lobbyId={"lobby123" as GenericId<"lobbies">}
           me={player}
-          track={null}
-          turnPlayerTimeline={[]}
-          revealedTracks={[]}
           players={[]}
+          revealedTracks={[]}
+          track={null}
           turnPlayerId={null}
+          turnPlayerTimeline={[]}
         />
       </NextIntlClientProvider>,
     );
@@ -114,16 +115,42 @@ describe("BettingPanel", () => {
         <BettingPanel
           lobbyId={"lobby123" as GenericId<"lobbies">}
           me={player}
-          track={mockTrack}
-          turnPlayerTimeline={[]}
-          revealedTracks={[]}
           players={[]}
+          revealedTracks={[]}
+          track={mockTrack}
           turnPlayerId={null}
+          turnPlayerTimeline={[]}
         />
       </NextIntlClientProvider>,
     );
 
     expect(screen.getByText("Place Your Bet")).toBeInTheDocument();
     expect(screen.getByText("Choose an open placement slot for the song")).toBeInTheDocument();
+    expect(screen.getByText("Open slot")).toBeInTheDocument();
+    expect(screen.getByText("Don't bet")).toBeInTheDocument();
+  });
+
+  it("marks the turn player's placement slot", () => {
+    const player = createMockPlayer();
+
+    render(
+      <NextIntlClientProvider locale="en" messages={messages}>
+        <BettingPanel
+          lobbyId={"lobby123" as GenericId<"lobbies">}
+          me={player}
+          players={[]}
+          revealedTracks={[]}
+          track={mockTrack}
+          turnPlayerId={null}
+          turnPlayerPlacementIndex={0}
+          turnPlayerTimeline={[]}
+        />
+      </NextIntlClientProvider>,
+    );
+
+    const label = screen.getByText("Turn player's pick");
+    const button = label.closest("button");
+
+    expect(button).toHaveAttribute("aria-disabled", "true");
   });
 });

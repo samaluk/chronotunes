@@ -139,6 +139,8 @@
     "firstPositionBet": "First position",
     "lastPositionBet": "Last position",
     "positionBet": "Position {number}",
+    "openSlot": "Open slot",
+    "playersSlot": "{name}'s slot",
     "failedToPreview": "Failed to preview bet",
     "failedToLockIn": "Failed to lock in bet",
     "beforeYear": "Before {year}",
@@ -146,17 +148,21 @@
     "betweenYears": "Between {year1} and {year2}",
     "failedToCancel": "Failed to cancel bet",
     "turnPlayerPlacement": "Turn player's pick",
+    "turnPlayerPickWithName": "{name}'s pick",
+    "turnPlayerSlotBlocked": "You can't bet on the turn player's pick",
     "slotTaken": "Slot taken",
+    "declineBet": "Don't bet",
     "noBet": "No Bet",
     "betDeclined": "You declined to bet",
     "decliningBet": "Declining bet...",
     "failedToDecline": "Failed to decline bet",
     "useArrowsToMove": "Use arrows to move",
     "enterToConfirm": "Enter to confirm",
-    "turnPlayerCannotBet": "Turn player cannot bet",
+    "pressEnterToConfirm": "Press Enter to confirm",
+    "turnPlayerCannotBet": "It's your turn, you cannot bet",
     "declinedToBet": "You declined to bet",
-    "yourPreview": "Your preview",
-    "tapToPreview": "Tap to preview"
+    "previewDiscarded": "Preview discarded",
+    "yourPreview": "Your preview"
   },
   "phase": {
     "placing": "Placing",
@@ -238,5 +244,10 @@
     "noCardsDescription": "Cards will appear here as the game progresses",
     "placed": "Placed",
     "won": "Won"
+  },
+  "player": {
+    "loadingAudio": "Loading audio...",
+    "playingAudio": "Audio playing",
+    "videoUnavailable": "Video unavailable"
   }
 }

@@ -74,7 +74,7 @@ export const getForRound = query({
 
     const game = await ctx.db.get(lobby.activeGameId);
 
-    if (!game || !game.currentRoundId) {
+    if (!(game && game.currentRoundId)) {
       return null;
     }
 

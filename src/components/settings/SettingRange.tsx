@@ -45,7 +45,7 @@ export function SettingRange({
   return (
     <div className="space-y-2">
       <div className="flex justify-between text-sm">
-        <Label htmlFor={minInputId} className="cursor-pointer">
+        <Label className="cursor-pointer" htmlFor={minInputId}>
           {t(label)}
         </Label>
         <span className="text-muted-foreground">
@@ -54,11 +54,10 @@ export function SettingRange({
       </div>
       <div className="flex items-center gap-4">
         <Slider
+          className="h-2 w-full cursor-pointer appearance-none rounded-lg bg-secondary accent-primary"
           id={`${minInputId}-slider-${maxInputId}`}
-          min={minRange}
           max={maxRange}
-          step={1}
-          value={[minValue, maxValue]}
+          min={minRange}
           onValueChange={(val) => {
             const values = Array.isArray(val) ? val : [val, val];
             const sortedValues = [...values].sort((a, b) => a - b);
@@ -71,7 +70,8 @@ export function SettingRange({
             onMinCommit("minYear", sortedValues[0]);
             onMaxCommit("maxYear", sortedValues[1]);
           }}
-          className="w-full h-2 bg-secondary rounded-lg appearance-none cursor-pointer accent-primary"
+          step={1}
+          value={[minValue, maxValue]}
         />
       </div>
     </div>

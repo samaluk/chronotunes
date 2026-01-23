@@ -24,7 +24,7 @@
   "javascript": {
     "formatter": {
       "quoteStyle": "double",
-      "semicolons": "always",
+      "semicolons": "asNeeded",
       "trailingCommas": "all"
     }
   },
@@ -60,8 +60,5 @@
       }
     }
   },
-  "extends": [
-    "ultracite/biome/core",
-    "ultracite/biome/next"
-  ]
+  "extends": ["ultracite/biome/core", "ultracite/biome/next"]
 }

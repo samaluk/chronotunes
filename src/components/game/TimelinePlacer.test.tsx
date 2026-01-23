@@ -109,10 +109,10 @@ describe("TimelinePlacer", () => {
     render(
       <NextIntlClientProvider locale="en" messages={messages}>
         <TimelinePlacer
-          lobbyId={lobbyId}
-          player={mockPlayer}
           currentTrack={null}
           existingPreviewIndex={null}
+          lobbyId={lobbyId}
+          player={mockPlayer}
           revealedTracks={[]}
         />
       </NextIntlClientProvider>,
@@ -128,10 +128,10 @@ describe("TimelinePlacer", () => {
     render(
       <NextIntlClientProvider locale="en" messages={messages}>
         <TimelinePlacer
-          lobbyId={lobbyId}
-          player={mockPlayer}
           currentTrack={mockTrack}
           existingPreviewIndex={null}
+          lobbyId={lobbyId}
+          player={mockPlayer}
           revealedTracks={[]}
         />
       </NextIntlClientProvider>,
@@ -165,10 +165,10 @@ describe("TimelinePlacer", () => {
     render(
       <NextIntlClientProvider locale="en" messages={messages}>
         <TimelinePlacer
-          lobbyId={lobbyId}
-          player={mockPlayer}
           currentTrack={mockTrack}
           existingPreviewIndex={null}
+          lobbyId={lobbyId}
+          player={mockPlayer}
           revealedTracks={[]}
         />
       </NextIntlClientProvider>,
@@ -194,10 +194,10 @@ describe("TimelinePlacer", () => {
     render(
       <NextIntlClientProvider locale="en" messages={messages}>
         <TimelinePlacer
-          lobbyId={lobbyId}
-          player={mockPlayer}
           currentTrack={mockTrack}
           existingPreviewIndex={null}
+          lobbyId={lobbyId}
+          player={mockPlayer}
           revealedTracks={[]}
         />
       </NextIntlClientProvider>,

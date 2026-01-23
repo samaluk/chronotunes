@@ -41,7 +41,7 @@ describe("checkHostDisconnect", () => {
       const lobby = await ctx.db.query("lobbies").first();
       if (lobby) {
         await ctx.db.patch(lobby._id, {
-          hostTransferDeadline: Date.now() + 60000,
+          hostTransferDeadline: Date.now() + 60_000,
         });
       }
     });

@@ -19,17 +19,17 @@ export function NetworkStatus({ className, showLabel = true }: NetworkStatusProp
   return (
     <div
       className={cn(
-        "flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium transition-all",
+        "flex items-center gap-2 rounded-full px-3 py-1.5 font-medium text-xs transition-all",
         status === "error" && "bg-destructive/10 text-destructive",
         status === "disconnected" && "bg-muted text-muted-foreground",
         status === "connecting" && "bg-primary/10 text-primary",
         status === "reconnecting" &&
-          "bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300",
+          "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300",
         className,
       )}
     >
       <StatusIcon status={status} />
-      {showLabel && <StatusLabel status={status} onRetry={retry} />}
+      {showLabel && <StatusLabel onRetry={retry} status={status} />}
     </div>
   );
 }
@@ -58,12 +58,12 @@ function StatusLabel({ status, onRetry }: { status: ConvexConnectionStatus; onRe
         <span className="flex items-center gap-1.5">
           Reconnecting
           <button
-            type="button"
+            className="underline hover:no-underline"
             onClick={(e) => {
               e.stopPropagation();
               onRetry();
             }}
-            className="underline hover:no-underline"
+            type="button"
           >
             Retry now
           </button>
@@ -76,12 +76,12 @@ function StatusLabel({ status, onRetry }: { status: ConvexConnectionStatus; onRe
         <span className="flex items-center gap-1.5">
           Connection error
           <button
-            type="button"
+            className="underline hover:no-underline"
             onClick={(e) => {
               e.stopPropagation();
               onRetry();
             }}
-            className="underline hover:no-underline"
+            type="button"
           >
             Retry
           </button>
@@ -102,16 +102,16 @@ export function ConnectionBanner() {
   return (
     <div
       className={cn(
-        "fixed bottom-0 left-0 right-0 z-50 flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium",
+        "fixed right-0 bottom-0 left-0 z-50 flex items-center justify-center gap-2 px-4 py-2 font-medium text-sm",
         status === "error" && "bg-destructive text-destructive-foreground",
         status === "disconnected" && "bg-muted text-muted-foreground",
         status === "connecting" && "bg-primary/10 text-primary",
         status === "reconnecting" &&
-          "bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300",
+          "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300",
       )}
     >
       <StatusIcon status={status} />
-      <StatusLabel status={status} onRetry={retry} />
+      <StatusLabel onRetry={retry} status={status} />
     </div>
   );
 }

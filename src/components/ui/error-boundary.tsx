@@ -50,21 +50,21 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
       return (
         <div
           className={cn(
-            "flex flex-col items-center justify-center min-h-[200px] p-6 rounded-xl bg-card border border-destructive/20",
+            "flex min-h-[200px] flex-col items-center justify-center rounded-xl border border-destructive/20 bg-card p-6",
             this.props.className,
           )}
         >
-          <div className="flex items-center gap-3 mb-4">
+          <div className="mb-4 flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-full bg-destructive/10">
               <AlertCircle className="h-5 w-5 text-destructive" />
             </div>
-            <h2 className="text-lg font-semibold">Something went wrong</h2>
+            <h2 className="font-semibold text-lg">Something went wrong</h2>
           </div>
-          <p className="text-sm text-muted-foreground text-center max-w-md mb-4">
+          <p className="mb-4 max-w-md text-center text-muted-foreground text-sm">
             An unexpected error occurred. Please try again or refresh the page.
           </p>
           <Button onClick={this.handleRetry} variant="outline">
-            <RefreshCw className="h-4 w-4 mr-2" />
+            <RefreshCw className="mr-2 h-4 w-4" />
             Try Again
           </Button>
         </div>
@@ -108,21 +108,21 @@ export function AsyncErrorBoundary({
     return (
       <div
         className={cn(
-          "flex flex-col items-center justify-center min-h-[200px] p-6 rounded-xl bg-card border border-destructive/20",
+          "flex min-h-[200px] flex-col items-center justify-center rounded-xl border border-destructive/20 bg-card p-6",
           className,
         )}
       >
-        <div className="flex items-center gap-3 mb-4">
+        <div className="mb-4 flex items-center gap-3">
           <div className="flex h-10 w-10 items-center justify-center rounded-full bg-destructive/10">
             <AlertCircle className="h-5 w-5 text-destructive" />
           </div>
-          <h2 className="text-lg font-semibold">Something went wrong</h2>
+          <h2 className="font-semibold text-lg">Something went wrong</h2>
         </div>
-        <p className="text-sm text-muted-foreground text-center max-w-md mb-4">
+        <p className="mb-4 max-w-md text-center text-muted-foreground text-sm">
           {state.error.message || "An unexpected error occurred."}
         </p>
         <Button onClick={handleRetry} variant="outline">
-          <RefreshCw className="h-4 w-4 mr-2" />
+          <RefreshCw className="mr-2 h-4 w-4" />
           Try Again
         </Button>
       </div>

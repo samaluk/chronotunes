@@ -4,7 +4,7 @@ import { query } from "./_generated/server";
 import { getGameContext, getPlayerBySession } from "./lib/gameContext";
 import { mutationWithSession } from "./lib/sessions";
 
-type BetWithPlayer = {
+interface BetWithPlayer {
   playerId: Id<"players">;
   playerDisplayName: string;
   proposedIndex: number;
@@ -12,7 +12,7 @@ type BetWithPlayer = {
   lockedIn: boolean;
   declinedToBet: boolean;
   status: "pending" | "won" | "lost";
-};
+}
 
 export const preview = mutationWithSession({
   args: { lobbyId: v.id("lobbies"), proposedIndex: v.number() },
@@ -50,6 +50,10 @@ export const preview = mutationWithSession({
       throw new ConvexError("Proposed index is out of range");
     }
 
+    if (round.placement?.proposedIndex === proposedIndex) {
+      throw new ConvexError("Cannot bet on the turn player's placement");
+    }
+
     const existingBet = await ctx.db
       .query("roundBets")
       .filter((q) =>
@@ -85,10 +89,6 @@ export const preview = mutationWithSession({
         lockedIn: false,
         status: "pending",
       });
-
-      await ctx.db.patch(player._id, {
-        coins: player.coins - 1,
-      });
     }
   },
 });
@@ -122,8 +122,20 @@ export const lockIn = mutationWithSession({
       throw new ConvexError("Bet is already locked in");
     }
 
+    if (round.placement?.proposedIndex === existingBet.proposedIndex) {
+      throw new ConvexError("Cannot bet on the turn player's placement");
+    }
+
+    if (player.coins < 1) {
+      throw new ConvexError("Not enough coins to lock in bet");
+    }
+
     await ctx.db.patch(existingBet._id, {
       lockedIn: true,
+    });
+
+    await ctx.db.patch(player._id, {
+      coins: player.coins - 1,
     });
   },
 });
@@ -158,10 +170,6 @@ export const cancel = mutationWithSession({
     }
 
     await ctx.db.delete(existingBet._id);
-
-    await ctx.db.patch(player._id, {
-      coins: player.coins + 1,
-    });
   },
 });
 
@@ -170,13 +178,13 @@ export const listForRound = query({
   handler: async (ctx, args): Promise<BetWithPlayer[]> => {
     const lobby = await ctx.db.get(args.lobbyId);
 
-    if (!(lobby && lobby.activeGameId)) {
+    if (!lobby?.activeGameId) {
       return [];
     }
 
     const game = await ctx.db.get(lobby.activeGameId);
 
-    if (!(game && game.currentRoundId)) {
+    if (!game?.currentRoundId) {
       return [];
     }
 

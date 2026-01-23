@@ -1,12 +1,14 @@
 #!/usr/bin/env node
+"use strict";
 const fs = require("fs");
 const path = require("path");
 
 function parseDurationToMs(duration) {
   const parts = duration.split(":").map(Number);
-  if (parts.length === 2 && !parts.includes(NaN)) {
+  if (parts.length === 2 && !parts.includes(Number.NaN)) {
     return parts[0] * 60 + parts[1];
-  } else if (parts.length === 3 && !parts.includes(NaN)) {
+  }
+  if (parts.length === 3 && !parts.includes(Number.NaN)) {
     return parts[0] * 60 * 60 + parts[1] * 60 + parts[2];
   }
   return undefined;
@@ -16,7 +18,7 @@ function parseYear(dateStr) {
   if (!dateStr || dateStr === "0000-00-00") {
     return 2000;
   }
-  const year = parseInt(dateStr.split("-")[0], 10);
+  const year = Number.parseInt(dateStr.split("-")[0], 10);
   return Number.isNaN(year) ? 2000 : year;
 }
 
@@ -84,8 +86,8 @@ function main() {
   console.log(`\nParsed ${tracks.length} valid tracks\n`);
 
   // Output summary
-  let yearMin = Infinity;
-  let yearMax = -Infinity;
+  let yearMin = Number.POSITIVE_INFINITY;
+  let yearMax = Number.NEGATIVE_INFINITY;
   tracks.forEach((t) => {
     if (t.year < yearMin) yearMin = t.year;
     if (t.year > yearMax) yearMax = t.year;

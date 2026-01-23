@@ -1,4 +1,4 @@
-import { ConvexError, type Infer } from "convex/values";
+import type { Infer } from "convex/values";
 import type { Id } from "../../_generated/dataModel";
 import type { MutationCtx, QueryCtx } from "../../_generated/server";
 import type schema from "../../schema";
@@ -36,7 +36,7 @@ export async function create(
     }
   });
 
-  if (!turnPlayerId || !trackId) {
+  if (!(turnPlayerId && trackId)) {
     throw new Error("Could not determine turnPlayerId or trackId for round");
   }
 
@@ -100,7 +100,7 @@ export async function createInPhase(
     }
   });
 
-  if (!turnPlayerId || !trackId) {
+  if (!(turnPlayerId && trackId)) {
     throw new Error("Could not determine turnPlayerId or trackId for round");
   }
 

@@ -29,7 +29,7 @@ export function SkeletonAvatar({ className }: { className?: string }) {
 
 export function SkeletonPlayerCard({ className }: { className?: string }) {
   return (
-    <div className={cn("flex items-center gap-3 p-3 rounded-lg bg-card border", className)}>
+    <div className={cn("flex items-center gap-3 rounded-lg border bg-card p-3", className)}>
       <SkeletonAvatar />
       <div className="flex-1 space-y-2">
         <Skeleton className="h-4 w-24" />
@@ -58,8 +58,8 @@ export function SkeletonPlayersBar({ count = 4 }: { count?: number }) {
       <div className="flex flex-wrap justify-center gap-2 sm:gap-3">
         {Array.from({ length: count }).map((_, i) => (
           <div
+            className="flex min-w-[140px] items-center gap-2 rounded-lg border bg-card px-3 py-2"
             key={`player-bar-${i}`}
-            className="flex items-center gap-2 px-3 py-2 rounded-lg border bg-card min-w-[140px]"
           >
             <Skeleton className="h-8 w-8 rounded-full" />
             <div className="flex-1 space-y-1">
@@ -83,26 +83,26 @@ export function SkeletonGameHeader({ className }: { className?: string }) {
       <div className="flex items-center justify-center gap-4">
         <Skeleton className="h-8 w-48" />
       </div>
-      <Skeleton className="h-4 w-40 mx-auto" />
+      <Skeleton className="mx-auto h-4 w-40" />
     </div>
   );
 }
 
 export function SkeletonRoundPanel({ className }: { className?: string }) {
   return (
-    <div className={cn("rounded-xl bg-card border overflow-hidden", className)}>
-      <div className="px-4 py-3 border-b bg-muted/50">
+    <div className={cn("overflow-hidden rounded-xl border bg-card", className)}>
+      <div className="border-b bg-muted/50 px-4 py-3">
         <div className="flex items-center justify-between">
           <Skeleton className="h-4 w-24" />
           <Skeleton className="h-5 w-16 rounded-full" />
         </div>
       </div>
-      <div className="p-6 space-y-4">
-        <div className="flex flex-col items-center justify-center py-12 space-y-4">
+      <div className="space-y-4 p-6">
+        <div className="flex flex-col items-center justify-center space-y-4 py-12">
           <Skeleton className="h-16 w-16 rounded-full" />
           <div className="space-y-2 text-center">
-            <Skeleton className="h-5 w-40 mx-auto" />
-            <Skeleton className="h-4 w-56 mx-auto" />
+            <Skeleton className="mx-auto h-5 w-40" />
+            <Skeleton className="mx-auto h-4 w-56" />
           </div>
         </div>
       </div>
@@ -116,7 +116,7 @@ export function SkeletonTimeline({ className }: { className?: string }) {
       <Skeleton className="h-6 w-32" />
       <div className="flex gap-2 overflow-x-auto pb-4">
         {Array.from({ length: 5 }).map((_, i) => (
-          <Skeleton key={`timeline-${i}`} className="h-20 w-16 flex-shrink-0 rounded-lg" />
+          <Skeleton className="h-20 w-16 flex-shrink-0 rounded-lg" key={`timeline-${i}`} />
         ))}
       </div>
     </div>
@@ -127,7 +127,7 @@ export function SkeletonLobbyCode({ className }: { className?: string }) {
   return (
     <div
       className={cn(
-        "flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-6 rounded-xl bg-primary/5 border",
+        "flex flex-col items-start justify-between gap-4 rounded-xl border bg-primary/5 p-6 sm:flex-row sm:items-center",
         className,
       )}
     >
@@ -142,15 +142,15 @@ export function SkeletonLobbyCode({ className }: { className?: string }) {
 
 export function SkeletonBettingPanel({ className }: { className?: string }) {
   return (
-    <div className={cn("rounded-xl bg-card border overflow-hidden", className)}>
-      <div className="px-4 py-3 border-b bg-muted/50">
+    <div className={cn("overflow-hidden rounded-xl border bg-card", className)}>
+      <div className="border-b bg-muted/50 px-4 py-3">
         <Skeleton className="h-5 w-24" />
       </div>
-      <div className="p-6 space-y-4">
+      <div className="space-y-4 p-6">
         <Skeleton className="h-24 w-full rounded-lg" />
         <div className="space-y-2">
           {Array.from({ length: 3 }).map((_, i) => (
-            <Skeleton key={`bet-${i}`} className="h-10 w-full" />
+            <Skeleton className="h-10 w-full" key={`bet-${i}`} />
           ))}
         </div>
         <Skeleton className="h-10 w-full" />
@@ -161,19 +161,19 @@ export function SkeletonBettingPanel({ className }: { className?: string }) {
 
 export function SkeletonResults({ className }: { className?: string }) {
   return (
-    <div className={cn("rounded-xl bg-card border overflow-hidden", className)}>
-      <div className="px-4 py-3 border-b bg-muted/50">
-        <Skeleton className="h-5 w-32 mx-auto" />
+    <div className={cn("overflow-hidden rounded-xl border bg-card", className)}>
+      <div className="border-b bg-muted/50 px-4 py-3">
+        <Skeleton className="mx-auto h-5 w-32" />
       </div>
-      <div className="p-6 space-y-4">
-        <div className="flex flex-col items-center py-8 space-y-4">
+      <div className="space-y-4 p-6">
+        <div className="flex flex-col items-center space-y-4 py-8">
           <Skeleton className="h-16 w-16 rounded-full" />
           <Skeleton className="h-6 w-48" />
           <Skeleton className="h-4 w-64" />
         </div>
         <div className="space-y-2">
           {Array.from({ length: 3 }).map((_, i) => (
-            <Skeleton key={`result-${i}`} className="h-16 w-full rounded-lg" />
+            <Skeleton className="h-16 w-full rounded-lg" key={`result-${i}`} />
           ))}
         </div>
       </div>
@@ -184,9 +184,9 @@ export function SkeletonResults({ className }: { className?: string }) {
 export function SkeletonPage({ className }: { className?: string }) {
   return (
     <div className={cn("flex min-h-screen items-center justify-center", className)}>
-      <div className="text-center space-y-4">
+      <div className="space-y-4 text-center">
         <div className="inline-block h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
-        <Skeleton className="h-4 w-32 mx-auto" />
+        <Skeleton className="mx-auto h-4 w-32" />
       </div>
     </div>
   );

@@ -50,20 +50,20 @@ export function ResolvedPhaseContent({
     setShowResultsModal(true);
   }, []);
 
-  if (!lobbyId || !track || !resolution || !players || !turnPlayerId) {
+  if (!(lobbyId && track && resolution && players && turnPlayerId)) {
     return (
-      <div className="flex flex-col items-center justify-center py-12 space-y-4">
+      <div className="flex flex-col items-center justify-center space-y-4 py-12">
         <div className="flex h-16 w-16 items-center justify-center rounded-full bg-green-100 dark:bg-green-900/30">
           <Music className="h-8 w-8 text-green-600 dark:text-green-400" />
         </div>
-        <div className="text-center space-y-2">
-          <p className="text-lg font-medium">{tResults("roundResults")}</p>
-          <p className="text-sm text-muted-foreground">{tResults("songRevealed")}</p>
+        <div className="space-y-2 text-center">
+          <p className="font-medium text-lg">{tResults("roundResults")}</p>
+          <p className="text-muted-foreground text-sm">{tResults("songRevealed")}</p>
         </div>
         {track?.title && track?.artist && track?.year && (
-          <div className="mt-4 p-4 rounded-lg bg-card border max-w-md w-full text-center">
-            <p className="text-sm text-muted-foreground">{tResults("songWas")}</p>
-            <p className="text-xl font-bold mt-1">
+          <div className="mt-4 w-full max-w-md rounded-lg border bg-card p-4 text-center">
+            <p className="text-muted-foreground text-sm">{tResults("songWas")}</p>
+            <p className="mt-1 font-bold text-xl">
               {track.title} - {track.artist} ({track.year})
             </p>
           </div>
@@ -77,7 +77,11 @@ export function ResolvedPhaseContent({
 
   const resultsContent = (
     <RoundResults
+      bets={roundBets ?? []}
       lobbyId={lobbyId}
+      me={me ?? null}
+      players={players}
+      resolution={resolution}
       track={
         track as {
           _id: typeof track._id;
@@ -86,17 +90,13 @@ export function ResolvedPhaseContent({
           year: number;
         }
       }
-      resolution={resolution}
       turnPlayer={turnPlayer}
-      bets={roundBets ?? []}
-      players={players}
-      me={me ?? null}
     />
   );
 
   return (
     <>
-      <Dialog open={showResultsModal} onOpenChange={setShowResultsModal}>
+      <Dialog onOpenChange={setShowResultsModal} open={showResultsModal}>
         <DialogContent className="max-w-3xl">{resultsContent}</DialogContent>
       </Dialog>
       {!showResultsModal && resultsContent}

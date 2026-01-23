@@ -4,8 +4,8 @@ import { internalMutation } from "./_generated/server";
 
 const presenceComponent = new Presence(components.presence);
 
-const HEARTBEAT_TIMEOUT_MS = 10000;
-const HOST_TRANSFER_DEADLINE_MS = 30000;
+const HEARTBEAT_TIMEOUT_MS = 10_000;
+const HOST_TRANSFER_DEADLINE_MS = 30_000;
 
 export const checkHostDisconnect = internalMutation({
   args: {},

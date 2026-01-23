@@ -1,12 +1,12 @@
 "use client";
 
 import { useQuery } from "convex/react";
-import type { Id } from "@/convex/_generated/dataModel";
 import { useSessionId } from "convex-helpers/react/sessions";
 import { Crown, User } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { SkeletonPlayerList } from "@/components/ui/skeletons";
 import { api } from "@/convex/_generated/api";
+import type { Id } from "@/convex/_generated/dataModel";
 
 interface PlayerListProps {
   lobbyId: Id<"lobbies">;
@@ -34,12 +34,12 @@ export function PlayerList({ lobbyId }: PlayerListProps): React.ReactNode {
   }
 
   if (players.length === 0) {
-    return <div className="text-center py-8 text-muted-foreground">{t("noPlayers")}</div>;
+    return <div className="py-8 text-center text-muted-foreground">{t("noPlayers")}</div>;
   }
 
   return (
     <div className="space-y-3">
-      <h3 className="text-lg font-semibold">
+      <h3 className="font-semibold text-lg">
         {t("title")} ({players.length})
       </h3>
       <div className="grid gap-2">
@@ -47,34 +47,34 @@ export function PlayerList({ lobbyId }: PlayerListProps): React.ReactNode {
           const isCurrentUser = player.sessionId === currentSessionId;
           return (
             <div
+              className="flex items-center gap-3 rounded-lg border bg-card p-3 transition-colors"
               key={player._id}
-              className="flex items-center gap-3 p-3 rounded-lg bg-card border transition-colors"
             >
               <div className="relative">
                 <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
                   <User className="h-5 w-5 text-primary" />
                 </div>
-                <span className="absolute -bottom-0.5 -right-0.5 flex h-3 w-3">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
+                <span className="absolute -right-0.5 -bottom-0.5 flex h-3 w-3">
+                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-400 opacity-75" />
+                  <span className="relative inline-flex h-3 w-3 rounded-full bg-green-500" />
                 </span>
               </div>
-              <div className="flex-1 min-w-0">
+              <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-2">
-                  <span className="font-medium truncate">
+                  <span className="truncate font-medium">
                     {player.displayName}
                     {isCurrentUser && (
-                      <span className="ml-2 text-xs text-muted-foreground">{tCommon("you")}</span>
+                      <span className="ml-2 text-muted-foreground text-xs">{tCommon("you")}</span>
                     )}
                   </span>
                   {player.isHost && (
-                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 text-xs font-medium">
+                    <span className="inline-flex items-center gap-1 rounded-full bg-amber-100 px-2 py-0.5 font-medium text-amber-700 text-xs dark:bg-amber-900/30 dark:text-amber-300">
                       <Crown className="h-3 w-3" />
                       {t("host")}
                     </span>
                   )}
                 </div>
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <div className="flex items-center gap-2 text-muted-foreground text-sm">
                   <span>{t("coins", { count: player.coins })}</span>
                 </div>
               </div>

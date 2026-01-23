@@ -262,16 +262,18 @@ export const updateSettings = mutationWithSession({
     const currentMaxYear = settings.maxYear ?? lobby.settings.maxYear;
     const currentMinYear = settings.minYear ?? lobby.settings.minYear;
 
-    if (settings.minYear !== undefined) {
-      if (settings.minYear < 1900 || settings.minYear > currentMaxYear) {
-        throw new ConvexError("Invalid minimum year");
-      }
+    if (
+      settings.minYear !== undefined &&
+      (settings.minYear < 1900 || settings.minYear > currentMaxYear)
+    ) {
+      throw new ConvexError("Invalid minimum year");
     }
 
-    if (settings.maxYear !== undefined) {
-      if (settings.maxYear > 2030 || settings.maxYear < currentMinYear) {
-        throw new ConvexError("Invalid maximum year");
-      }
+    if (
+      settings.maxYear !== undefined &&
+      (settings.maxYear > 2030 || settings.maxYear < currentMinYear)
+    ) {
+      throw new ConvexError("Invalid maximum year");
     }
 
     await ctx.db.patch(lobby._id, { settings: { ...lobby.settings, ...settings } });

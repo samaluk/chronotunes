@@ -204,14 +204,14 @@ test("importTracks with optional mbid", async () => {
 test("importTracks with optional durationMs", async () => {
   const t = convexTest(schema, modules);
 
-  const tracks = [{ title: "Song", artist: "Artist", year: 1990, durationMs: 180000 }];
+  const tracks = [{ title: "Song", artist: "Artist", year: 1990, durationMs: 180_000 }];
 
   const result = await t.mutation(api.tracks.importTracks, { tracks });
 
   expect(result.importedCount).toBe(1);
 
   const allTracks = await t.query(api.tracks.list);
-  expect(allTracks[0]?.durationMs).toBe(180000);
+  expect(allTracks[0]?.durationMs).toBe(180_000);
 });
 
 test("importTracks trims whitespace from strings", async () => {
@@ -238,7 +238,7 @@ async function seedRoundTestData(t: ReturnType<typeof convexTest>) {
       links: { youtubeUrl: "https://youtube.com/watch?v=video123" },
       createdAt: Date.now(),
       source: "test",
-      durationMs: 210000,
+      durationMs: 210_000,
       mbid: "test-mbid-123",
     });
 
@@ -336,7 +336,7 @@ test("getForRound returns full track info for host", async () => {
   expect(result?.title).toBe("Round Song");
   expect(result?.artist).toBe("Round Artist");
   expect(result?.year).toBe(1985);
-  expect(result?.durationMs).toBe(210000);
+  expect(result?.durationMs).toBe(210_000);
   expect(result?.mbid).toBe("test-mbid-123");
   expect(result?.externalIds.youtubeVideoId).toBe("video123");
   expect(result?.links.youtubeUrl).toBe("https://youtube.com/watch?v=video123");

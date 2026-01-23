@@ -30,12 +30,12 @@ export function VolumeSlider({ className }: VolumeSliderProps): React.ReactNode 
   return (
     <div className={cn("flex items-center gap-2", className)}>
       <Button
-        type="button"
-        onClick={toggleMute}
-        className="shrink-0 p-1.5"
-        variant={"ghost"}
-        size={"icon-lg"}
         aria-label={isMuted ? "Unmute" : "Mute"}
+        className="shrink-0 p-1.5"
+        onClick={toggleMute}
+        size={"icon-lg"}
+        type="button"
+        variant={"ghost"}
       >
         {isMuted ? (
           <VolumeX className="h-4 w-4 text-muted-foreground" />
@@ -45,12 +45,12 @@ export function VolumeSlider({ className }: VolumeSliderProps): React.ReactNode 
       </Button>
 
       <Slider
-        min={0}
-        max={100}
-        value={isMuted ? 0 : volume}
-        onValueChange={(value: number | readonly number[]) => handleVolumeChange(value as number)}
-        className="w-28 h-2"
         aria-label="Volume"
+        className="h-2 w-28"
+        max={100}
+        min={0}
+        onValueChange={(value: number | readonly number[]) => handleVolumeChange(value as number)}
+        value={isMuted ? 0 : volume}
       />
     </div>
   );

@@ -32,7 +32,7 @@ afterEach(() => {
 
 describe("GameResults", () => {
   it("shows empty state when no results found", () => {
-    render(<GameResults lobbyId={mockLobbyId} code="ABC123" />);
+    render(<GameResults code="ABC123" lobbyId={mockLobbyId} />);
 
     expect(screen.getByText("No game results found")).toBeInTheDocument();
   });

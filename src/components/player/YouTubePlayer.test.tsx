@@ -1,6 +1,26 @@
 import { render, screen } from "@testing-library/react";
+import { NextIntlClientProvider } from "next-intl";
+import type { ComponentProps } from "react";
 import { expect, test, vi } from "vitest";
+import messages from "../../../messages/en.json";
 import { YouTubePlayer } from "./YouTubePlayer";
+
+declare global {
+  interface Window {
+    YT: {
+      Player: () => {
+        playVideo: () => void;
+        pauseVideo: () => void;
+        destroy: () => void;
+      };
+      PlayerState: {
+        PLAYING: number;
+        PAUSED: number;
+        ENDED: number;
+      };
+    };
+  }
+}
 
 global.window.YT = {
   Player: vi.fn().mockImplementation(() => ({
@@ -15,62 +35,52 @@ global.window.YT = {
   },
 } as unknown as typeof window.YT;
 
-test("renders with play button initially", () => {
-  render(<YouTubePlayer youtubeVideoId="test-video-id" />);
+type PlayerProps = ComponentProps<typeof YouTubePlayer>;
 
-  expect(screen.getByRole("button", { name: "Play audio" })).toBeInTheDocument();
-});
+const renderPlayer = (props: PlayerProps) => {
+  return render(
+    <NextIntlClientProvider locale="en" messages={messages}>
+      <YouTubePlayer {...props} />
+    </NextIntlClientProvider>,
+  );
+};
 
 test("displays loading state initially", () => {
-  render(<YouTubePlayer youtubeVideoId="test-video-id" />);
+  renderPlayer({ youtubeVideoId: "test-video-id" });
 
-  expect(screen.getByText("Loading audio...")).toBeInTheDocument();
+  expect(screen.getByText(messages.player.loadingAudio)).toBeInTheDocument();
 });
 
 test("displays error state when video ID is empty", () => {
-  render(<YouTubePlayer youtubeVideoId="" />);
+  renderPlayer({ youtubeVideoId: "" });
 
-  expect(screen.getByText("Video unavailable")).toBeInTheDocument();
+  expect(screen.getByText(messages.player.videoUnavailable)).toBeInTheDocument();
 });
 
 test("displays error state when video ID is undefined", () => {
-  render(<YouTubePlayer youtubeVideoId={undefined as unknown as string} />);
+  renderPlayer({ youtubeVideoId: undefined as unknown as string });
 
-  expect(screen.getByText("Video unavailable")).toBeInTheDocument();
-});
-
-test("play button is disabled while loading", () => {
-  render(<YouTubePlayer youtubeVideoId="test-video-id" />);
-
-  const button = screen.getByRole("button", { name: "Play audio" });
-  expect(button).toBeDisabled();
+  expect(screen.getByText(messages.player.videoUnavailable)).toBeInTheDocument();
 });
 
 test("applies custom className", () => {
-  render(<YouTubePlayer youtubeVideoId="test-video-id" className="custom-class" />);
+  renderPlayer({ youtubeVideoId: "test-video-id", className: "custom-class" });
 
-  const container = screen.getByText("Loading audio...").closest("div");
+  const container = screen.getByText(messages.player.loadingAudio).closest("div");
   expect(container?.parentElement).toHaveClass("custom-class");
 });
 
 test("contains hidden YouTube iframe container", () => {
-  render(<YouTubePlayer youtubeVideoId="test-video-id" />);
+  renderPlayer({ youtubeVideoId: "test-video-id" });
 
   const hiddenContainer = screen.getByTestId("hidden-youtube-player");
   expect(hiddenContainer).toHaveClass("w-[1px] h-[1px] -translate-x-full -translate-y-full");
 });
 
-test("renders play icon when not playing", () => {
-  render(<YouTubePlayer youtubeVideoId="test-video-id" />);
-
-  const playIcon = screen.getByTestId("play-icon");
-  expect(playIcon).toBeInTheDocument();
-});
-
 test("error state has correct styling", () => {
-  render(<YouTubePlayer youtubeVideoId="" />);
+  renderPlayer({ youtubeVideoId: "" });
 
-  const errorContainer = screen.getByText("Video unavailable").closest("div");
+  const errorContainer = screen.getByText(messages.player.videoUnavailable).closest("div");
   expect(errorContainer).toHaveClass("text-destructive");
   expect(errorContainer).toHaveClass("flex");
   expect(errorContainer).toHaveClass("items-center");
@@ -78,7 +88,7 @@ test("error state has correct styling", () => {
 });
 
 test("error state contains alert icon", () => {
-  render(<YouTubePlayer youtubeVideoId="" />);
+  renderPlayer({ youtubeVideoId: "" });
 
   const alertIcon = screen.getByTestId("alert-icon");
   expect(alertIcon).toBeInTheDocument();

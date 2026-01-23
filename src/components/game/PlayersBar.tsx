@@ -1,12 +1,12 @@
 "use client";
 
 import { useQuery } from "convex/react";
-import type { Id } from "@/convex/_generated/dataModel";
 import { useSessionId } from "convex-helpers/react/sessions";
 import { Coins, Crown, Music, Star, User, UserRound } from "lucide-react";
+import { memo } from "react";
 import { SkeletonPlayersBar } from "@/components/ui/skeletons";
 import { api } from "@/convex/_generated/api";
-import type { Doc } from "@/convex/_generated/dataModel";
+import type { Doc, Id } from "@/convex/_generated/dataModel";
 import { cn } from "@/lib/utils";
 
 interface PlayersBarProps {
@@ -16,7 +16,7 @@ interface PlayersBarProps {
   onPlayerClick?: (player: Doc<"players">) => void;
 }
 
-export function PlayersBar({
+export const PlayersBar = memo(function PlayersBar({
   lobbyId,
   currentSessionId: propSessionId,
   highlightPlayerId,
@@ -49,18 +49,18 @@ export function PlayersBar({
 
           return (
             <button
-              key={player._id}
-              type="button"
-              onClick={() => onPlayerClick?.(player)}
               className={cn(
-                "relative flex items-center gap-2.5 px-4 py-2.5 rounded-xl border bg-card min-w-[160px] text-left",
+                "relative flex min-w-[160px] items-center gap-2.5 rounded-xl border bg-card px-4 py-2.5 text-left",
                 "transition-all duration-200 hover:shadow-md",
                 isTurnPlayer && "ring-2 ring-amber-500 ring-offset-2 dark:ring-offset-background",
                 onPlayerClick && "cursor-pointer hover:bg-muted/50",
               )}
+              key={player._id}
+              onClick={() => onPlayerClick?.(player)}
+              type="button"
             >
               {isTurnPlayer && (
-                <div className="absolute -top-2 left-1/2 -translate-x-1/2 bg-amber-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm animate-in zoom-in">
+                <div className="zoom-in absolute -top-2 left-1/2 -translate-x-1/2 animate-in rounded-full bg-amber-500 px-2 py-0.5 font-bold text-[10px] text-white shadow-sm">
                   TURN
                 </div>
               )}
@@ -79,27 +79,27 @@ export function PlayersBar({
                   )}
                 </div>
                 {isLeader && (
-                  <div className="absolute -bottom-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-amber-500 text-white">
+                  <div className="absolute -right-1 -bottom-1 flex h-4 w-4 items-center justify-center rounded-full bg-amber-500 text-white">
                     <Crown className="h-2.5 w-2.5" />
                   </div>
                 )}
                 {isHost && !isLeader && (
-                  <div className="absolute -bottom-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-blue-500 text-white">
+                  <div className="absolute -right-1 -bottom-1 flex h-4 w-4 items-center justify-center rounded-full bg-blue-500 text-white">
                     <Star className="h-2.5 w-2.5" />
                   </div>
                 )}
                 {isCurrentUser && !isHost && !isLeader && (
-                  <div className="absolute -bottom-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-white">
+                  <div className="absolute -right-1 -bottom-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-white">
                     <User className="h-2.5 w-2.5" />
                   </div>
                 )}
               </div>
 
-              <div className="flex-1 min-w-0">
+              <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-1.5">
                   <span
                     className={cn(
-                      "text-sm font-semibold truncate",
+                      "truncate font-semibold text-sm",
                       isCurrentUser ? "text-primary" : "text-foreground",
                     )}
                     title={player.displayName}
@@ -107,16 +107,16 @@ export function PlayersBar({
                     {player.displayName}
                   </span>
                   {isCurrentUser && (
-                    <span className="text-[10px] bg-primary/10 text-primary px-1.5 py-0.5 rounded font-medium">
+                    <span className="rounded bg-primary/10 px-1.5 py-0.5 font-medium text-[10px] text-primary">
                       You
                     </span>
                   )}
                 </div>
-                <div className="flex items-center gap-2 mt-0.5 text-xs text-muted-foreground">
+                <div className="mt-0.5 flex items-center gap-2 text-muted-foreground text-xs">
                   <span
                     className={cn(
                       "inline-flex items-center gap-1",
-                      timelineSize > 0 && "text-foreground font-medium",
+                      timelineSize > 0 && "font-medium text-foreground",
                     )}
                   >
                     <Music className="h-3 w-3" />
@@ -135,4 +135,4 @@ export function PlayersBar({
       </div>
     </div>
   );
-}
+});

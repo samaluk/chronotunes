@@ -3,7 +3,7 @@
 import { useQuery } from "convex/react";
 import { useSessionId, useSessionQuery } from "convex-helpers/react/sessions";
 import { Disc, History } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { useIsMounted } from "usehooks-ts";
 import { ErrorBoundary } from "@/components/ui/error-boundary";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -40,9 +40,21 @@ export function GameView({ lobbyId, code }: GameViewProps): React.ReactNode {
   const turnPlayer = players?.find((p) => p._id === currentRound?.turnPlayerId);
 
   const turnPlayerTrackIds = useMemo((): Id<"tracks">[] => {
-    if (!turnPlayer?.timeline) return [];
+    if (!turnPlayer?.timeline) {
+      return [];
+    }
     return turnPlayer.timeline.map((t) => t.trackId);
   }, [turnPlayer]);
+
+  const handlePlayerClick = useCallback((player: Doc<"players">) => {
+    setSelectedPlayerForTimeline(player);
+  }, []);
+
+  const handleModalClose = useCallback((open: boolean) => {
+    if (!open) {
+      setSelectedPlayerForTimeline(null);
+    }
+  }, []);
 
   const revealedTracks = useQuery(
     api.tracks.getPublicByIds,
@@ -94,7 +106,9 @@ export function GameView({ lobbyId, code }: GameViewProps): React.ReactNode {
     year?: number;
     youtubeVideoId?: string;
   } | null => {
-    if (!currentRound?.track) return null;
+    if (!currentRound?.track) {
+      return null;
+    }
     const track = currentRound.track;
     return {
       _id: track.trackId as Id<"tracks">,
@@ -122,7 +136,7 @@ export function GameView({ lobbyId, code }: GameViewProps): React.ReactNode {
           <ErrorBoundary>
             {selectedPlayerForTimeline && (
               <PlayerTimelineModal
-                onOpenChange={(open) => !open && setSelectedPlayerForTimeline(null)}
+                onOpenChange={handleModalClose}
                 open={selectedPlayerForTimeline !== null}
                 player={selectedPlayerForTimeline}
               />
@@ -132,7 +146,7 @@ export function GameView({ lobbyId, code }: GameViewProps): React.ReactNode {
               currentSessionId={sessionId ?? null}
               highlightPlayerId={currentRound?.turnPlayerId ?? null}
               lobbyId={lobbyId}
-              onPlayerClick={(player) => setSelectedPlayerForTimeline(player)}
+              onPlayerClick={handlePlayerClick}
             />
 
             <GameHeader

@@ -100,7 +100,7 @@ export function TimelinePlacer({
   if (!currentTrack) {
     return (
       <div className="flex flex-col items-center justify-center py-8">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
+        <div className="h-8 w-8 animate-spin rounded-full border-primary border-b-2" />
         <p className="mt-4 text-muted-foreground">{t("loadingTrack")}</p>
       </div>
     );
@@ -126,7 +126,7 @@ export function TimelinePlacer({
   return (
     <div className="w-full space-y-4">
       <div className="flex items-center justify-between">
-        <h3 className="text-sm font-medium text-muted-foreground">{t("placeTheSong")}</h3>
+        <h3 className="font-medium text-muted-foreground text-sm">{t("placeTheSong")}</h3>
       </div>
 
       <div className="space-y-2">
@@ -135,27 +135,27 @@ export function TimelinePlacer({
             {idx === selectedIndex && (
               <TimelineCard
                 icon="help"
-                title="New Song"
-                subtitle="Guess the year!"
-                year={currentTrack.year}
                 isNew={true}
                 isPreview={true}
+                subtitle="Guess the year!"
+                title="New Song"
+                year={currentTrack.year}
               />
             )}
             {revealedTrackMap.has(entry.trackId) ? (
               <TimelineCard
+                artist={revealedTrackMap.get(entry.trackId)!.artist}
                 icon="music"
                 title={revealedTrackMap.get(entry.trackId)!.title}
-                artist={revealedTrackMap.get(entry.trackId)!.artist}
                 year={revealedTrackMap.get(entry.trackId)!.year}
               />
             ) : (
               <TimelineCard
                 icon="music"
-                title="Known Track"
-                subtitle="From round"
-                year={entry.year}
                 iconColor="primary"
+                subtitle="From round"
+                title="Known Track"
+                year={entry.year}
               />
             )}
           </div>
@@ -163,21 +163,21 @@ export function TimelinePlacer({
         {maxPosition === selectedIndex && (
           <TimelineCard
             icon="help"
-            title="New Song"
-            subtitle="Guess the year!"
-            year={currentTrack.year}
             isNew={true}
             isPreview={true}
+            subtitle="Guess the year!"
+            title="New Song"
+            year={currentTrack.year}
           />
         )}
       </div>
 
-      <div className="flex items-center justify-between pt-4 border-t">
-        <p className="text-sm text-foreground font-medium">{getPositionLabel(selectedIndex)}</p>
-        <p className="text-xs text-muted-foreground mr-2">↑↓ to move, Enter to confirm</p>
+      <div className="flex items-center justify-between border-t pt-4">
+        <p className="font-medium text-foreground text-sm">{getPositionLabel(selectedIndex)}</p>
+        <p className="mr-2 text-muted-foreground text-xs">↑↓ to move, Enter to confirm</p>
       </div>
 
-      <Button onClick={handleSubmit} disabled={isSubmitting} size="lg" className="w-full">
+      <Button className="w-full" disabled={isSubmitting} onClick={handleSubmit} size="lg">
         {isSubmitting ? (
           <>
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />

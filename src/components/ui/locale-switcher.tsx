@@ -1,13 +1,10 @@
 "use client";
 
 import { Globe } from "lucide-react";
-import { useTranslations } from "next-intl";
-import { useState } from "react";
-import { useLocalStorage } from "usehooks-ts";
-import { useRouter } from "@/i18n/routing";
+import { useLocale, useTranslations } from "next-intl";
+import { memo, useState } from "react";
+import { usePathname, useRouter } from "@/i18n/routing";
 import { cn } from "@/lib/utils";
-
-const LOCALE_STORAGE_KEY = "locale";
 
 const localeNames: Record<string, string> = {
   en: "English",
@@ -20,17 +17,20 @@ const localeNames: Record<string, string> = {
 
 const availableLocales = ["en", "es", "fr", "de", "pt", "ja"];
 
-export function LocaleSwitcher(): React.ReactNode {
-  const [locale, setLocale] = useLocalStorage(LOCALE_STORAGE_KEY, "en");
+export const LocaleSwitcher = memo(function LocaleSwitcher(): React.ReactNode {
   const t = useTranslations("locale");
   const [isOpen, setIsOpen] = useState(false);
   const router = useRouter();
+  const pathname = usePathname();
+  const locale = useLocale();
 
   const handleLocaleChange = (newLocale: string): void => {
     setIsOpen(false);
-    if (newLocale === locale) return;
-    setLocale(newLocale);
-    router.refresh();
+    if (newLocale === locale) {
+      return;
+    }
+    // Use next-intl's router to navigate to the same path with new locale
+    router.replace(pathname, { locale: newLocale });
   };
 
   const currentLocaleName = localeNames[locale] || localeNames.en;
@@ -38,34 +38,34 @@ export function LocaleSwitcher(): React.ReactNode {
   return (
     <div className="relative">
       <button
-        type="button"
-        onClick={() => setIsOpen(!isOpen)}
-        className="inline-flex items-center justify-center rounded-md border border-input bg-background p-2 text-sm font-medium ring-offset-background transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
         aria-label={t("selectLanguage")}
+        className="inline-flex items-center justify-center rounded-md border border-input bg-background p-2 font-medium text-sm ring-offset-background transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+        onClick={() => setIsOpen(!isOpen)}
+        type="button"
       >
-        <Globe className="h-5 w-5 mr-1" />
+        <Globe className="mr-1 h-5 w-5" />
         <span className="hidden sm:inline">{currentLocaleName}</span>
       </button>
 
       {isOpen && (
         <>
-          <div className="fixed inset-0 z-40" onClick={() => setIsOpen(false)} aria-hidden="true" />
-          <div className="absolute right-0 top-full z-50 mt-2 w-40 rounded-md border bg-popover p-1 shadow-lg">
-            <div className="px-2 py-1.5 text-sm font-semibold text-muted-foreground">
+          <div aria-hidden="true" className="fixed inset-0 z-40" onClick={() => setIsOpen(false)} />
+          <div className="absolute top-full right-0 z-50 mt-2 w-40 rounded-md border bg-popover p-1 shadow-lg">
+            <div className="px-2 py-1.5 font-semibold text-muted-foreground text-sm">
               {t("selectLanguage")}
             </div>
             <div className="space-y-1">
               {availableLocales.map((loc) => (
                 <button
-                  key={loc}
-                  type="button"
-                  onClick={() => handleLocaleChange(loc)}
                   className={cn(
                     "flex w-full items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors",
                     loc === locale
-                      ? "bg-accent text-accent-foreground font-medium"
+                      ? "bg-accent font-medium text-accent-foreground"
                       : "hover:bg-accent hover:text-accent-foreground",
                   )}
+                  key={loc}
+                  onClick={() => handleLocaleChange(loc)}
+                  type="button"
                 >
                   {loc === locale && <span className="mr-2 text-primary">✓</span>}
                   {loc !== locale && <span className="w-5" />}
@@ -78,4 +78,4 @@ export function LocaleSwitcher(): React.ReactNode {
       )}
     </div>
   );
-}
+});

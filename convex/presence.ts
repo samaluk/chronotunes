@@ -13,7 +13,7 @@ export const sendHeartbeat = mutation({
     interval: v.optional(v.number()),
   },
   handler: async (ctx, { roomId, userId, sessionId, interval }) => {
-    return await presenceComponent.heartbeat(ctx, roomId, userId, sessionId, interval ?? 15000);
+    return await presenceComponent.heartbeat(ctx, roomId, userId, sessionId, interval ?? 15_000);
   },
 });
 

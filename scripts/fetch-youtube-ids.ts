@@ -237,7 +237,7 @@ export const seed = mutation({
   fs.writeFileSync(jsonPath, JSON.stringify(results, null, 2));
   console.log(`Saved: ${jsonPath}`);
 
-  console.log(`\n\nSummary:`);
+  console.log("\n\nSummary:");
   console.log(`  Total tracks: ${results.length}`);
   console.log(`  Successfully found: ${results.length - failedCount}`);
   console.log(`  Failed: ${failedCount}`);

@@ -1,81 +1,81 @@
-"use client";
+"use client"
 
-import { useQuery } from "convex/react";
-import type { Id } from "@/convex/_generated/dataModel";
-import { useSessionMutation } from "convex-helpers/react/sessions";
-import { Check, Coins, Loader2, Lock, Music, X } from "lucide-react";
-import { useTranslations } from "next-intl";
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { TimelineCard } from "@/components/game/TimelineCard";
-import { YouTubePlayer } from "@/components/player/YouTubePlayer";
-import { Button } from "@/components/ui/button";
-import { api } from "@/convex/_generated/api";
-import { getRevealedTrackMap, sortTimelineByYear } from "@/lib/timeline";
-import { cn } from "@/lib/utils";
+import { useQuery } from "convex/react"
+import { useSessionMutation } from "convex-helpers/react/sessions"
+import { AlertTriangle, Check, Coins, Loader2, Lock, X } from "lucide-react"
+import { useTranslations } from "next-intl"
+import { useCallback, useEffect, useMemo, useRef, useState } from "react"
+import { toast } from "sonner"
+import { Button } from "@/components/ui/button"
+import { api } from "@/convex/_generated/api"
+import type { Id } from "@/convex/_generated/dataModel"
+import { getRevealedTrackMap, sortTimelineByYear } from "@/lib/timeline"
+import { BetZone } from "./BetZone"
+import { BetCoin } from "./bet-coin"
+import { TimelineCard } from "./TimelineCard"
 
 interface TimelineEntry {
-  trackId: Id<"tracks">;
-  year: number;
-  earnedAtRoundNumber: number;
-  earnedBy: "placement" | "bet" | "initial";
+  trackId: Id<"tracks">
+  year: number
+  earnedAtRoundNumber: number
+  earnedBy: "placement" | "bet" | "initial"
 }
 
 interface Player {
-  _id: Id<"players">;
-  displayName: string;
-  timeline: TimelineEntry[];
-  timelineSize: number;
-  coins: number;
-  isHost: boolean;
+  _id: Id<"players">
+  displayName: string
+  timeline: TimelineEntry[]
+  timelineSize: number
+  coins: number
+  isHost: boolean
 }
 
 interface TrackInfo {
-  _id: Id<"tracks">;
-  title?: string;
-  artist?: string;
-  year?: number;
-  youtubeVideoId?: string;
+  _id: Id<"tracks">
+  title?: string
+  artist?: string
+  year?: number
+  youtubeVideoId?: string
 }
 
 interface RevealedTrack {
-  trackId: Id<"tracks">;
-  title: string;
-  artist: string;
-  year: number;
-  youtubeVideoId?: string;
+  trackId: Id<"tracks">
+  title: string
+  artist: string
+  year: number
+  youtubeVideoId?: string
 }
 
 interface BettingPanelProps {
-  lobbyId: Id<"lobbies">;
-  me: Player | null;
-  track: TrackInfo | null;
-  turnPlayerTimeline: TimelineEntry[];
-  revealedTracks: RevealedTrack[];
-  players?: Player[];
-  turnPlayerId?: Id<"players"> | null;
-  roundStartedAt?: number;
-  turnSeconds?: number;
-  bettingWindowSeconds?: number;
-  turnPlayerPlacementIndex?: number | null;
-  phase?: string;
-  showLiveBets?: boolean;
+  lobbyId: Id<"lobbies">
+  me: Player | null
+  track: TrackInfo | null
+  turnPlayerTimeline: TimelineEntry[]
+  revealedTracks: RevealedTrack[]
+  players?: Player[]
+  turnPlayerId?: Id<"players"> | null
+  roundStartedAt?: number
+  turnSeconds?: number
+  bettingWindowSeconds?: number
+  turnPlayerPlacementIndex?: number | null
+  phase?: string
+  showLiveBets?: boolean
 }
 
 interface SlotBetInfo {
-  playerId: Id<"players">;
-  playerDisplayName: string;
-  lockedIn: boolean;
+  playerId: Id<"players">
+  playerDisplayName: string
+  lockedIn: boolean
 }
 
 interface SlotInfo {
-  index: number;
-  yearMin: number;
-  yearMax: number | null;
-  above?: TimelineEntry;
-  below?: TimelineEntry;
-  bets: SlotBetInfo[];
+  index: number
+  above?: TimelineEntry
+  below?: TimelineEntry
+  bets: SlotBetInfo[]
 }
 
+// biome-ignore lint: stateful UI orchestration
 export function BettingPanel({
   lobbyId,
   me,
@@ -84,405 +84,634 @@ export function BettingPanel({
   revealedTracks,
   players,
   turnPlayerId,
+  turnPlayerPlacementIndex,
 }: BettingPanelProps): React.ReactNode {
-  const t = useTranslations("betting");
-  const tCommon = useTranslations("common");
-  const tTimer = useTranslations("timer");
+  const t = useTranslations("betting")
+  const tCommon = useTranslations("common")
+  const tTimer = useTranslations("timer")
 
-  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
-  const [isPreviewing, setIsPreviewing] = useState(false);
-  const [isLockingIn, setIsLockingIn] = useState(false);
-  const [isCancelling, setIsCancelling] = useState(false);
-  const [isResolving, setIsResolving] = useState(false);
+  const [selectedIndex, setSelectedIndex] = useState<number | null>(null)
+  const [isPreviewing, setIsPreviewing] = useState(false)
+  const [isLockingIn, setIsLockingIn] = useState(false)
+  const [isCancelling, setIsCancelling] = useState(false)
+  const [isDeclining, setIsDeclining] = useState(false)
+  const [isResolving, setIsResolving] = useState(false)
+  const [showPreviewDiscarded, setShowPreviewDiscarded] = useState(false)
+  const [shakeSlotIndex, setShakeSlotIndex] = useState<number | null>(null)
 
-  const previewBet = useSessionMutation(api.bets.preview);
-  const lockInBet = useSessionMutation(api.bets.lockIn);
-  const cancelBet = useSessionMutation(api.bets.cancel);
-  const resolveRound = useSessionMutation(api.games.resolveRound);
+  const shakeTimeoutRef = useRef<number | null>(null)
 
-  const existingBets = useQuery(api.bets.listForRound, lobbyId ? { lobbyId } : "skip");
-  const safeBets = existingBets ?? [];
-  const myBet = safeBets.find((bet) => bet.playerId === me?._id) ?? null;
-  const hasLockedBet = myBet?.lockedIn ?? false;
+  const previewBet = useSessionMutation(api.bets.preview)
+  const lockInBet = useSessionMutation(api.bets.lockIn)
+  const cancelBet = useSessionMutation(api.bets.cancel)
+  const declineBet = useSessionMutation(api.rounds.declineBet)
+  const resolveRound = useSessionMutation(api.games.resolveRound)
 
-  const sortedTimeline = sortTimelineByYear(turnPlayerTimeline);
-  const revealedTrackMap = getRevealedTrackMap(revealedTracks);
+  const existingBets = useQuery(api.bets.listForRound, lobbyId ? { lobbyId } : "skip")
+  const safeBets = existingBets ?? []
+  const myBet = safeBets.find((bet) => bet.playerId === me?._id) ?? null
+  const hasLockedBet = myBet?.lockedIn ?? false
+  const hasDeclinedBet = myBet?.declinedToBet ?? false
+  const isTurnPlayer = Boolean(turnPlayerId && me?._id === turnPlayerId)
+  const turnPlayerSlotIndex = turnPlayerPlacementIndex ?? null
 
-  const isHost = players?.find((p) => p._id === me?._id)?.isHost ?? false;
+  const sortedTimeline = sortTimelineByYear(turnPlayerTimeline)
+  const revealedTrackMap = getRevealedTrackMap(revealedTracks)
+
+  const isHost = players?.find((p) => p._id === me?._id)?.isHost ?? false
+  const turnPlayerName = players?.find((player) => player._id === turnPlayerId)?.displayName ?? null
+
+  const canBet = Boolean(me && me.coins >= 1 && !hasLockedBet && !hasDeclinedBet && !isTurnPlayer)
+  const canDecline = Boolean(me && !hasLockedBet && !hasDeclinedBet && !isTurnPlayer)
+  const myPlayerId = me?._id ?? null
+
+  const triggerForbiddenSlotFeedback = useCallback(
+    (index: number) => {
+      setShakeSlotIndex(index)
+      if (shakeTimeoutRef.current !== null) {
+        window.clearTimeout(shakeTimeoutRef.current)
+      }
+      shakeTimeoutRef.current = window.setTimeout(() => {
+        setShakeSlotIndex(null)
+        shakeTimeoutRef.current = null
+      }, 500)
+      toast.error(t("turnPlayerSlotBlocked"), {
+        id: "turn-player-slot-blocked",
+      })
+    },
+    [t],
+  )
+
+  const getSlotLabel = useCallback(
+    (isTurnPlayerSlot: boolean, lockedBet?: SlotBetInfo) => {
+      if (isTurnPlayerSlot) {
+        if (turnPlayerName) {
+          return t("turnPlayerPickWithName", { name: turnPlayerName })
+        }
+        return t("turnPlayerPlacement")
+      }
+
+      if (lockedBet) {
+        return t("playersSlot", { name: lockedBet.playerDisplayName })
+      }
+
+      return t("openSlot")
+    },
+    [t, turnPlayerName],
+  )
+
+  const getSlotState = useCallback(
+    (slot: SlotInfo) => {
+      const slotBetsForIndex = slot.bets
+      const lockedBet = slotBetsForIndex.find((bet) => bet.lockedIn)
+      const isTurnPlayerSlot = turnPlayerSlotIndex !== null && slot.index === turnPlayerSlotIndex
+      const isSelected = selectedIndex === slot.index
+      const isActive = isSelected && !isTurnPlayerSlot
+      const hasLockedBetByOther = slotBetsForIndex.some(
+        (bet) => bet.lockedIn && bet.playerId !== myPlayerId,
+      )
+      const canSelectSlot = canBet && !hasLockedBetByOther && !isTurnPlayerSlot
+      const label = getSlotLabel(isTurnPlayerSlot, lockedBet)
+      const hasMyBet = slotBetsForIndex.some((bet) => bet.playerId === myPlayerId)
+      const showPreviewCoin =
+        isActive && !hasLockedBet && !hasDeclinedBet && Boolean(me) && !hasMyBet
+      const isDisabled = !(canSelectSlot || isActive)
+      const shouldDim = isDisabled && !isTurnPlayerSlot
+
+      return {
+        slotBetsForIndex,
+        isTurnPlayerSlot,
+        isActive,
+        label,
+        showPreviewCoin,
+        isDisabled,
+        shouldDim,
+      }
+    },
+    [
+      turnPlayerSlotIndex,
+      selectedIndex,
+      myPlayerId,
+      canBet,
+      getSlotLabel,
+      hasLockedBet,
+      hasDeclinedBet,
+      me,
+    ],
+  )
 
   const slotBets = useMemo(() => {
-    const map = new Map<number, SlotBetInfo[]>();
+    const map = new Map<number, SlotBetInfo[]>()
     for (const bet of safeBets) {
-      const existing = map.get(bet.proposedIndex) ?? [];
+      if (bet.declinedToBet) {
+        continue
+      }
+      const existing = map.get(bet.proposedIndex) ?? []
       existing.push({
         playerId: bet.playerId,
         playerDisplayName: bet.playerDisplayName,
         lockedIn: bet.lockedIn,
-      });
-      map.set(bet.proposedIndex, existing);
+      })
+      map.set(bet.proposedIndex, existing)
     }
-    return map;
-  }, [safeBets]);
+    return map
+  }, [safeBets])
+
+  const slots = useMemo<SlotInfo[]>(() => {
+    const result: SlotInfo[] = []
+    for (let index = 0; index <= sortedTimeline.length; index += 1) {
+      result.push({
+        index,
+        above: sortedTimeline[index - 1],
+        below: sortedTimeline[index],
+        bets: slotBets.get(index) ?? [],
+      })
+    }
+    return result
+  }, [sortedTimeline, slotBets])
+
+  const getNextIndexForDirection = useCallback(
+    (currentIndex: number, direction: "up" | "down") => {
+      const step = direction === "down" ? 1 : -1
+      const candidateIndex = currentIndex + step
+
+      if (candidateIndex < 0 || candidateIndex >= slots.length) {
+        return null
+      }
+
+      if (turnPlayerSlotIndex === null || candidateIndex !== turnPlayerSlotIndex) {
+        return candidateIndex
+      }
+
+      const skippedIndex = candidateIndex + step
+      if (skippedIndex < 0 || skippedIndex >= slots.length) {
+        triggerForbiddenSlotFeedback(candidateIndex)
+        return null
+      }
+
+      return skippedIndex
+    },
+    [slots.length, triggerForbiddenSlotFeedback, turnPlayerSlotIndex],
+  )
 
   const canResolveRound = useMemo(() => {
-    if (!isHost || !players || !turnPlayerId) return false;
+    if (!(isHost && players && turnPlayerId)) {
+      return false
+    }
 
-    const nonTurnPlayers = players.filter((p) => p._id !== turnPlayerId);
-    if (nonTurnPlayers.length === 0) return false;
+    const nonTurnPlayers = players.filter((p) => p._id !== turnPlayerId)
+    if (nonTurnPlayers.length === 0) {
+      return false
+    }
 
-    const lockedBets = safeBets.filter((bet) => bet.lockedIn);
-    const declinedBets = safeBets.filter((bet) => bet.declinedToBet);
+    const lockedBets = safeBets.filter((bet) => bet.lockedIn)
+    const declinedBets = safeBets.filter((bet) => bet.declinedToBet)
 
     return nonTurnPlayers.every(
       (player) =>
         lockedBets.some((bet) => bet.playerId === player._id) ||
         declinedBets.some((bet) => bet.playerId === player._id),
-    );
-  }, [isHost, players, turnPlayerId, safeBets]);
+    )
+  }, [isHost, players, turnPlayerId, safeBets])
 
   const handleResolveRound = useCallback(async () => {
-    if (!lobbyId) return;
+    if (!lobbyId) {
+      return
+    }
 
-    setIsResolving(true);
+    setIsResolving(true)
     try {
-      await resolveRound({ lobbyId });
+      await resolveRound({ lobbyId })
     } catch (error) {
-      console.error("Failed to resolve round:", error);
+      console.error("Failed to resolve round:", error)
     } finally {
-      setIsResolving(false);
+      setIsResolving(false)
     }
-  }, [resolveRound, lobbyId]);
-
-  const slots = useMemo<SlotInfo[]>(() => {
-    const result: SlotInfo[] = [];
-    for (let index = 0; index <= sortedTimeline.length; index += 1) {
-      const aboveYear = sortedTimeline[index - 1]?.year ?? null;
-      const belowYear = sortedTimeline[index]?.year ?? null;
-
-      let yearMin: number;
-      let yearMax: number | null;
-
-      if (aboveYear === null) {
-        yearMax = belowYear! - 10;
-        yearMin = yearMax - 10;
-      } else if (belowYear === null) {
-        yearMin = aboveYear + 10;
-        yearMax = null;
-      } else {
-        yearMin = Math.round(aboveYear);
-        yearMax = Math.round(belowYear);
-      }
-
-      result.push({
-        index,
-        yearMin,
-        yearMax,
-        above: sortedTimeline[index - 1],
-        below: sortedTimeline[index],
-        bets: slotBets.get(index) ?? [],
-      });
-    }
-    return result;
-  }, [sortedTimeline, slotBets]);
-
-  const canBet = me !== null && me.coins >= 1 && !hasLockedBet;
+  }, [resolveRound, lobbyId])
 
   useEffect(() => {
-    if (myBet && !hasLockedBet) {
-      setSelectedIndex(myBet.proposedIndex);
+    if (myBet && !hasLockedBet && !hasDeclinedBet) {
+      setSelectedIndex(myBet.proposedIndex)
+      return
     }
-    if (!myBet) {
-      setSelectedIndex(null);
-    }
-  }, [myBet?.proposedIndex, myBet, hasLockedBet]);
 
-  const handleSelect = useCallback(
+    setSelectedIndex(null)
+  }, [myBet?.proposedIndex, myBet, hasLockedBet, hasDeclinedBet])
+
+  useEffect(() => {
+    if (selectedIndex === null || !me) {
+      return
+    }
+
+    const slotBetsForIndex = slotBets.get(selectedIndex) ?? []
+    const otherLockedBet = slotBetsForIndex.find((bet) => bet.playerId !== me._id && bet.lockedIn)
+
+    if (otherLockedBet) {
+      setSelectedIndex(null)
+      setShowPreviewDiscarded(true)
+    }
+  }, [selectedIndex, slotBets, me])
+
+  useEffect(() => {
+    if (!showPreviewDiscarded) {
+      return
+    }
+
+    const timeoutId = setTimeout(() => {
+      setShowPreviewDiscarded(false)
+    }, 2500)
+
+    return () => clearTimeout(timeoutId)
+  }, [showPreviewDiscarded])
+
+  useEffect(() => {
+    return () => {
+      if (shakeTimeoutRef.current !== null) {
+        window.clearTimeout(shakeTimeoutRef.current)
+      }
+    }
+  }, [])
+
+  useEffect(() => {
+    if (selectedIndex === null || turnPlayerSlotIndex === null) {
+      return
+    }
+
+    if (selectedIndex === turnPlayerSlotIndex) {
+      setSelectedIndex(null)
+    }
+  }, [selectedIndex, turnPlayerSlotIndex])
+
+  const handlePreview = useCallback(
     async (index: number) => {
-      if (!canBet || !me) return;
-
-      const slotBetsForIndex = slotBets.get(index) ?? [];
-      const otherLockedBet = slotBetsForIndex.find((b) => b.playerId !== me._id && b.lockedIn);
-      if (otherLockedBet) {
-        return;
+      if (!(canBet && me)) {
+        return
       }
 
-      setSelectedIndex(index);
-      setIsPreviewing(true);
+      if (turnPlayerSlotIndex !== null && index === turnPlayerSlotIndex) {
+        triggerForbiddenSlotFeedback(index)
+        return
+      }
+
+      const slotBetsForIndex = slotBets.get(index) ?? []
+      const otherLockedBet = slotBetsForIndex.find((bet) => bet.playerId !== me._id && bet.lockedIn)
+      if (otherLockedBet) {
+        return
+      }
+
+      setSelectedIndex(index)
+      setIsPreviewing(true)
 
       try {
         await previewBet({
           lobbyId,
           proposedIndex: index,
-        });
+        })
       } catch (error) {
-        console.error(t("failedToPreview"), error);
-        setSelectedIndex(null);
-        setIsPreviewing(false);
+        console.error(t("failedToPreview"), error)
+        setSelectedIndex(null)
+      } finally {
+        setIsPreviewing(false)
       }
     },
-    [canBet, me, slotBets, previewBet, lobbyId, t],
-  );
+    [
+      canBet,
+      me,
+      slotBets,
+      previewBet,
+      lobbyId,
+      t,
+      triggerForbiddenSlotFeedback,
+      turnPlayerSlotIndex,
+    ],
+  )
 
   const handleConfirm = useCallback(async () => {
-    if (selectedIndex === null) return;
+    if (!(lobbyId && myBet) || hasLockedBet || hasDeclinedBet) {
+      return
+    }
 
-    setIsLockingIn(true);
+    setIsLockingIn(true)
 
     try {
-      await lockInBet({ lobbyId });
-      setSelectedIndex(null);
+      await lockInBet({ lobbyId })
+      setSelectedIndex(null)
     } catch (error) {
-      console.error(t("failedToLockIn"), error);
+      console.error(t("failedToLockIn"), error)
     } finally {
-      setIsLockingIn(false);
+      setIsLockingIn(false)
     }
-  }, [selectedIndex, lockInBet, lobbyId, t]);
+  }, [lobbyId, myBet, hasLockedBet, hasDeclinedBet, lockInBet, t])
 
   const handleCancel = useCallback(async () => {
-    setIsCancelling(true);
+    if (!(lobbyId && myBet) || myBet.lockedIn || myBet.declinedToBet) {
+      return
+    }
+
+    setIsCancelling(true)
 
     try {
-      await cancelBet({ lobbyId });
-      setSelectedIndex(null);
+      await cancelBet({ lobbyId })
+      setSelectedIndex(null)
     } catch (error) {
-      console.error(t("failedToCancel"), error);
+      console.error(t("failedToCancel"), error)
     } finally {
-      setIsCancelling(false);
+      setIsCancelling(false)
     }
-  }, [cancelBet, lobbyId, t]);
+  }, [lobbyId, myBet, cancelBet, t])
+
+  const handleDecline = useCallback(async () => {
+    if (!(lobbyId && canDecline)) {
+      return
+    }
+
+    setIsDeclining(true)
+
+    try {
+      await declineBet({ lobbyId })
+      setSelectedIndex(null)
+    } catch (error) {
+      console.error(t("failedToDecline"), error)
+    } finally {
+      setIsDeclining(false)
+    }
+  }, [lobbyId, canDecline, declineBet, t])
+
+  const handleSlotClick = useCallback(
+    async (index: number) => {
+      if (isPreviewing || isLockingIn) {
+        return
+      }
+
+      if (turnPlayerSlotIndex !== null && index === turnPlayerSlotIndex) {
+        triggerForbiddenSlotFeedback(index)
+        return
+      }
+
+      if (selectedIndex === index && myBet && !hasLockedBet && !hasDeclinedBet) {
+        await handleConfirm()
+        return
+      }
+
+      await handlePreview(index)
+    },
+    [
+      selectedIndex,
+      myBet,
+      hasLockedBet,
+      hasDeclinedBet,
+      isPreviewing,
+      isLockingIn,
+      handleConfirm,
+      handlePreview,
+      turnPlayerSlotIndex,
+      triggerForbiddenSlotFeedback,
+    ],
+  )
+
+  const handleArrowMove = useCallback(
+    async (direction: "up" | "down") => {
+      if (selectedIndex === null) {
+        return
+      }
+
+      const nextIndex = getNextIndexForDirection(selectedIndex, direction)
+      if (nextIndex === null) {
+        return
+      }
+
+      await handlePreview(nextIndex)
+    },
+    [selectedIndex, getNextIndexForDirection, handlePreview],
+  )
+
+  const handleKeyDown = useCallback(
+    async (event: KeyboardEvent) => {
+      if (!canBet || selectedIndex === null) {
+        return
+      }
+
+      switch (event.key) {
+        case "ArrowDown":
+          event.preventDefault()
+          await handleArrowMove("down")
+          return
+        case "ArrowUp":
+          event.preventDefault()
+          await handleArrowMove("up")
+          return
+        case "Enter":
+          if (hasLockedBet) {
+            return
+          }
+          event.preventDefault()
+          await handleConfirm()
+          return
+        case "Escape":
+          event.preventDefault()
+          await handleCancel()
+          return
+        default:
+          return
+      }
+    },
+    [canBet, selectedIndex, hasLockedBet, handleArrowMove, handleConfirm, handleCancel],
+  )
 
   useEffect(() => {
-    if (!canBet) return;
+    if (!canBet) {
+      return
+    }
 
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (selectedIndex === null) return;
+    window.addEventListener("keydown", handleKeyDown)
+    return () => window.removeEventListener("keydown", handleKeyDown)
+  }, [canBet, handleKeyDown])
 
-      if (e.key === "ArrowDown") {
-        e.preventDefault();
-        const newIndex = Math.min(selectedIndex + 1, slots.length - 1);
-        handleSelect(newIndex);
-      } else if (e.key === "ArrowUp") {
-        e.preventDefault();
-        const newIndex = Math.max(selectedIndex - 1, 0);
-        handleSelect(newIndex);
-      } else if (e.key === "Enter" && selectedIndex !== null && !hasLockedBet) {
-        e.preventDefault();
-        handleConfirm();
-      } else if (e.key === "Escape") {
-        e.preventDefault();
-        handleCancel();
+  const renderTimelineEntry = useCallback(
+    (entry: TimelineEntry): React.ReactNode => {
+      const trackInfo = revealedTrackMap.get(entry.trackId)
+
+      if (trackInfo) {
+        return (
+          <TimelineCard artist={trackInfo.artist} title={trackInfo.title} year={trackInfo.year} />
+        )
       }
-    };
 
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [canBet, selectedIndex, slots, hasLockedBet, handleSelect, handleConfirm, handleCancel]);
-
-  const formatTrackLine = useCallback(
-    (entry: TimelineEntry): string => {
-      const track = revealedTrackMap.get(entry.trackId);
-      if (track) {
-        return `${track.year} · ${track.title} — ${track.artist}`;
-      }
-      return `${entry.year}`;
+      return <TimelineCard title={tCommon("knownTrack")} year={entry.year} />
     },
-    [revealedTrackMap],
-  );
+    [revealedTrackMap, tCommon],
+  )
 
-  const selectedSlot = slots.find((slot) => slot.index === selectedIndex) ?? null;
+  let activityLabel: string | null = null
+  if (isLockingIn) {
+    activityLabel = t("lockingInBet")
+  } else if (isCancelling) {
+    activityLabel = t("cancellingBet")
+  } else if (isDeclining) {
+    activityLabel = t("decliningBet")
+  }
 
   if (!track) {
     return (
       <div className="flex flex-col items-center justify-center py-8">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
+        <div className="h-8 w-8 animate-spin rounded-full border-primary border-b-2" />
         <p className="mt-4 text-muted-foreground">{tCommon("loading")}</p>
       </div>
-    );
+    )
   }
-
-  const trackTitle = track.title?.trim() ? track.title : undefined;
-  const trackArtist = track.artist?.trim() ? track.artist : undefined;
 
   return (
     <div className="w-full space-y-4">
-      {track.youtubeVideoId && (
-        <div className="p-3 rounded-lg bg-muted/30 border">
-          <div className="flex items-center gap-2 mb-2">
-            <Music className="h-4 w-4 text-primary" />
-            <span className="text-xs font-medium text-muted-foreground">{t("nowPlaying")}</span>
-          </div>
-          <YouTubePlayer youtubeVideoId={track.youtubeVideoId} className="w-full" />
-        </div>
-      )}
-
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="text-sm font-medium text-muted-foreground">{t("placeYourBet")}</h3>
-          <p className="text-xs text-muted-foreground mt-1">{t("placeBetDescription")}</p>
+          <h3 className="font-medium text-muted-foreground text-sm">{t("placeYourBet")}</h3>
+          <p className="mt-1 text-muted-foreground text-xs">{t("placeBetDescription")}</p>
         </div>
         <div className="flex items-center gap-2">
           <Coins className="h-4 w-4 text-amber-500" />
-          <span className="text-sm font-medium">{t("betCoins", { count: me?.coins ?? 0 })}</span>
+          <span className="font-medium text-sm">{t("betCoins", { count: me?.coins ?? 0 })}</span>
         </div>
       </div>
 
-      <div className="space-y-3">
-        {slots.map((slot) => {
-          const slotBetsForIndex = slot.bets;
-          const mySlotBet = slotBetsForIndex.find((b) => b.playerId === me?._id);
-          const otherBets = slotBetsForIndex.filter((b) => b.playerId !== me?._id);
-          const isSelected = selectedIndex === slot.index;
-          const hasLockedBetByOther = otherBets.some((b) => b.lockedIn);
-          const canSelectSlot = canBet && !hasLockedBetByOther;
-          const isMyPreview = isSelected && mySlotBet && !mySlotBet.lockedIn;
+      <div className="space-y-4">
+        {(() => {
+          const elements: React.ReactNode[] = []
 
-          return (
-            <div
-              key={`slot-${slot.index}`}
-              className={cn(
-                "w-full rounded-lg border p-4 transition-all",
-                isSelected ? "border-primary bg-primary/10" : "border-border bg-card",
-                !canSelectSlot && "opacity-60",
-              )}
-            >
-              <div className="flex items-start justify-between gap-4 mb-3">
-                <div className="flex items-start gap-3">
-                  <div
-                    className={cn(
-                      "flex h-9 w-9 shrink-0 items-center justify-center rounded-full border",
-                      isSelected
-                        ? "bg-primary text-primary-foreground border-primary"
-                        : "bg-muted text-foreground border-border",
-                    )}
-                  >
-                    <span className="text-sm font-semibold">{slot.index + 1}</span>
-                  </div>
-                  <div className="space-y-1">
-                    <p className="text-sm font-semibold text-foreground">
-                      {slot.yearMin} - {slot.yearMax === null ? "∞" : slot.yearMax}
-                    </p>
-                    <div className="space-y-1 text-xs text-muted-foreground">
-                      {slot.above && (
-                        <div className="flex items-center gap-2">
-                          <span className="truncate">{formatTrackLine(slot.above)}</span>
-                        </div>
-                      )}
-                      {slot.below && (
-                        <div className="flex items-center gap-2">
-                          <span className="truncate">{formatTrackLine(slot.below)}</span>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </div>
-
-                {slotBetsForIndex.length > 0 && (
-                  <div className="flex flex-wrap gap-1">
-                    {slotBetsForIndex.map((bet) => (
-                      <div
-                        key={bet.playerId}
-                        className={cn(
-                          "inline-flex items-center gap-1 rounded-full px-2 py-1 text-xs font-medium",
-                          bet.lockedIn
-                            ? "bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300"
-                            : "bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300",
-                        )}
-                      >
-                        {bet.lockedIn && <Lock className="h-3 w-3" />}
-                        <span>{bet.playerDisplayName}</span>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              <div className="flex flex-wrap gap-2">
-                {isMyPreview && (
-                  <div className="flex-1 min-w-[200px] animate-slideIn">
-                    <TimelineCard
-                      title={trackTitle}
-                      artist={trackArtist}
-                      yearMin={slot.yearMin}
-                      yearMax={slot.yearMax}
-                      playerName={me?.displayName}
-                      isBetPreview
-                      isPreview={false}
-                      coinCost={1}
-                    />
-                  </div>
-                )}
-                {otherBets.map((bet) => (
-                  <div
+          const renderBetZone = (slot: SlotInfo): React.ReactNode => {
+            const slotState = getSlotState(slot)
+            const isOpenSlot =
+              slotState.slotBetsForIndex.length === 0 && !slotState.isTurnPlayerSlot
+            const hasLockedBet = slotState.slotBetsForIndex.some((bet) => bet.lockedIn)
+            const slotCoins = (
+              <>
+                {slotState.slotBetsForIndex.map((bet) => (
+                  <BetCoin
+                    isPreview={bet.playerId === me?._id && !bet.lockedIn}
                     key={bet.playerId}
-                    className={cn("flex-1 min-w-[200px]", !bet.lockedIn && "animate-slideIn")}
-                  >
-                    <TimelineCard
-                      title={trackTitle}
-                      artist={trackArtist}
-                      yearMin={slot.yearMin}
-                      yearMax={slot.yearMax}
-                      playerName={bet.playerDisplayName}
-                      isBetPreview={!bet.lockedIn}
-                      isPreview={bet.lockedIn}
-                    />
-                  </div>
+                    playerName={bet.playerDisplayName}
+                    state={(() => {
+                      if (bet.lockedIn) {
+                        return "locked"
+                      }
+                      if (hasLockedBet) {
+                        return "blocked"
+                      }
+                      return "pending"
+                    })()}
+                  />
                 ))}
-              </div>
+                {slotState.showPreviewCoin && me && (
+                  <BetCoin isPreview playerName={me.displayName} state="pending" />
+                )}
+                {slotState.isTurnPlayerSlot && (
+                  <span className="inline-flex h-7 items-center gap-1.5 rounded-full border border-amber-300 bg-amber-100 px-2 font-medium text-amber-800 text-xs dark:border-amber-700 dark:bg-amber-900/30 dark:text-amber-200">
+                    {tCommon("newSong")}
+                  </span>
+                )}
+              </>
+            )
 
-              {canSelectSlot && !isSelected && (
-                <button
-                  type="button"
-                  onClick={() => handleSelect(slot.index)}
-                  className="mt-3 w-full text-xs text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  {t("tapToPreview")}
-                </button>
-              )}
-            </div>
-          );
-        })}
+            return (
+              <BetZone
+                coins={slotCoins}
+                index={slot.index}
+                isActive={slotState.isActive}
+                isDisabled={slotState.isDisabled}
+                isOpenSlot={isOpenSlot}
+                isShaking={shakeSlotIndex === slot.index}
+                isTurnPlayerSlot={slotState.isTurnPlayerSlot}
+                key={`slot-${slot.index}`}
+                label={slotState.label}
+                onClick={handleSlotClick}
+                shouldDim={slotState.shouldDim}
+              />
+            )
+          }
+
+          const firstSlot = slots[0]
+          if (firstSlot) {
+            elements.push(renderBetZone(firstSlot))
+          }
+
+          sortedTimeline.forEach((entry, index) => {
+            elements.push(
+              <div key={`timeline-entry-${entry.trackId}-${entry.earnedAtRoundNumber}-${index}`}>
+                {renderTimelineEntry(entry)}
+              </div>,
+            )
+
+            const nextSlot = slots[index + 1]
+            if (nextSlot) {
+              elements.push(renderBetZone(nextSlot))
+            }
+          })
+
+          return elements
+        })()}
       </div>
 
-      {selectedSlot && !hasLockedBet && (
-        <div className="flex flex-col gap-3 rounded-lg border bg-muted/30 p-3">
+      {selectedIndex !== null && !hasLockedBet && !hasDeclinedBet && (
+        <div className="rounded-lg border bg-muted/30 p-3">
           <div className="flex items-center justify-between gap-3">
             <div>
-              <p className="text-sm font-medium text-foreground">
-                {selectedSlot.yearMin} -{" "}
-                {selectedSlot.yearMax === null ? "∞" : selectedSlot.yearMax}
-              </p>
-              <p className="text-xs text-muted-foreground">{t("previewMode")}</p>
+              <p className="font-medium text-foreground text-sm">{t("pressEnterToConfirm")}</p>
+              <p className="text-muted-foreground text-xs">{t("useArrowsToMove")}</p>
             </div>
-            <div className="flex items-center gap-2">
-              <Button type="button" size="sm" variant="ghost" onClick={handleCancel}>
-                <X className="mr-1 h-4 w-4" />
-                {tCommon("cancel")}
-              </Button>
-              <Button type="button" size="sm" onClick={handleConfirm}>
-                <Check className="mr-1 h-4 w-4" />
-                {t("confirm")}
-              </Button>
-            </div>
+            <Button onClick={handleCancel} size="sm" type="button" variant="ghost">
+              <X className="mr-1 h-4 w-4" />
+              {tCommon("cancel")}
+            </Button>
           </div>
         </div>
       )}
 
-      <div className="rounded-lg border border-dashed bg-muted/30 p-4">
-        <p className="text-sm font-medium text-foreground">{tCommon("newSong")}</p>
-        <p className="text-xs text-muted-foreground">???</p>
-      </div>
+      {canDecline && (
+        <div className="flex justify-end">
+          <Button
+            disabled={isDeclining}
+            onClick={handleDecline}
+            size="sm"
+            type="button"
+            variant="outline"
+          >
+            <AlertTriangle className="mr-2 h-4 w-4" />
+            {t("declineBet")}
+          </Button>
+        </div>
+      )}
 
-      {!canBet && !hasLockedBet && me && me.coins < 1 && (
+      {showPreviewDiscarded && (
+        <div className="flex items-center gap-2 rounded-lg border border-amber-200 bg-amber-50 p-2 text-amber-700 dark:border-amber-800 dark:bg-amber-950/30 dark:text-amber-200">
+          <AlertTriangle className="h-4 w-4" />
+          <span className="font-medium text-sm">{t("previewDiscarded")}</span>
+        </div>
+      )}
+
+      {isTurnPlayer && (
+        <div className="flex items-center justify-center gap-2 rounded-lg border bg-muted/50 p-3 text-muted-foreground">
+          <Lock className="h-4 w-4" />
+          <span className="text-sm">{t("turnPlayerCannotBet")}</span>
+        </div>
+      )}
+
+      {!(canBet || hasLockedBet || hasDeclinedBet) && me && me.coins < 1 && (
         <div className="flex items-center justify-center gap-2 rounded-lg border bg-muted/50 p-3 text-muted-foreground">
           <Coins className="h-4 w-4" />
           <span className="text-sm">{t("notEnoughCoins")}</span>
         </div>
       )}
 
+      {hasDeclinedBet && (
+        <div className="flex items-center justify-center gap-2 rounded-lg border border-amber-200 bg-amber-50 p-3 text-amber-700 dark:border-amber-800 dark:bg-amber-950/30 dark:text-amber-200">
+          <AlertTriangle className="h-4 w-4" />
+          <span className="font-medium text-sm">{t("declinedToBet")}</span>
+        </div>
+      )}
+
       {hasLockedBet && (
         <div className="flex items-center justify-center gap-2 rounded-lg border border-green-200 bg-green-50 p-3 dark:border-green-800 dark:bg-green-950/30">
           <Check className="h-4 w-4 text-green-600 dark:text-green-400" />
-          <span className="text-sm font-medium text-green-700 dark:text-green-300">
+          <span className="font-medium text-green-700 text-sm dark:text-green-300">
             {t("yourBetLocked")}
           </span>
         </div>
@@ -490,7 +719,7 @@ export function BettingPanel({
 
       {canResolveRound && (
         <div className="flex items-center justify-center gap-2 rounded-lg border border-primary bg-primary/10 p-4">
-          <Button type="button" size="lg" onClick={handleResolveRound} disabled={isResolving}>
+          <Button disabled={isResolving} onClick={handleResolveRound} size="lg" type="button">
             {isResolving ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -500,18 +729,16 @@ export function BettingPanel({
               tTimer("resolveRound")
             )}
           </Button>
-          <p className="text-xs text-muted-foreground">{tTimer("waitingForBets")}</p>
+          <p className="text-muted-foreground text-xs">{tTimer("waitingForBets")}</p>
         </div>
       )}
 
-      {(isPreviewing || isLockingIn || isCancelling) && (
+      {activityLabel && (
         <div className="flex items-center justify-center gap-2 rounded-lg bg-muted/50 p-2">
           <Loader2 className="h-4 w-4 animate-spin" />
-          <span className="text-sm text-muted-foreground">
-            {isPreviewing ? t("placingBet") : isLockingIn ? t("lockingInBet") : t("cancellingBet")}
-          </span>
+          <span className="text-muted-foreground text-sm">{activityLabel}</span>
         </div>
       )}
     </div>
-  );
+  )
 }

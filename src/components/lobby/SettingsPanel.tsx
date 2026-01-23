@@ -77,11 +77,11 @@ export function SettingsPanel({ code, isHost, currentSettings }: SettingsPanelPr
   if (!isHost) {
     return (
       <div className="space-y-3">
-        <h3 className="text-lg font-semibold flex items-center gap-2">
+        <h3 className="flex items-center gap-2 font-semibold text-lg">
           <Settings2 className="h-5 w-5" />
           {t("title")}
         </h3>
-        <div className="p-4 rounded-lg bg-muted text-sm space-y-2">
+        <div className="space-y-2 rounded-lg bg-muted p-4 text-sm">
           <div className="flex justify-between">
             <span className="text-muted-foreground">{t("targetTimelineSize")}</span>
             <span className="font-medium">
@@ -139,11 +139,11 @@ export function SettingsPanel({ code, isHost, currentSettings }: SettingsPanelPr
   return (
     <div className="space-y-3">
       <Button
-        variant="outline"
-        className="w-full flex items-center justify-between"
+        className="flex w-full items-center justify-between"
         onClick={() => setIsExpanded(!isExpanded)}
+        variant="outline"
       >
-        <h3 className="text-lg font-semibold flex items-center gap-2">
+        <h3 className="flex items-center gap-2 font-semibold text-lg">
           <Settings2 className="h-5 w-5" />
           {t("title")}
         </h3>
@@ -151,72 +151,72 @@ export function SettingsPanel({ code, isHost, currentSettings }: SettingsPanelPr
       </Button>
 
       {isExpanded && (
-        <div className="p-4 rounded-lg bg-card border space-y-4">
+        <div className="space-y-4 rounded-lg border bg-card p-4">
           <div className="grid gap-4 sm:grid-cols-2">
             <SettingSlider
               label="targetTimelineSize"
-              value={optimisticSettings.targetTimelineSize}
-              min={5}
               max={15}
-              step={1}
+              min={5}
               onChange={handleSettingChange}
               onCommit={handleCommit}
+              step={1}
               unit="cards"
+              value={optimisticSettings.targetTimelineSize}
             />
 
             <SettingSlider
               label="startingCoins"
-              value={optimisticSettings.startingCoins}
-              min={1}
               max={10}
-              step={1}
+              min={1}
               onChange={handleSettingChange}
               onCommit={handleCommit}
+              step={1}
               unit="coins"
+              value={optimisticSettings.startingCoins}
             />
 
             <SettingSlider
               label="turnSeconds"
-              value={optimisticSettings.turnSeconds}
-              min={15}
               max={120}
-              step={5}
+              min={15}
               onChange={handleSettingChange}
               onCommit={handleCommit}
+              step={5}
               unit="seconds"
+              value={optimisticSettings.turnSeconds}
             />
 
             <SettingSlider
               label="bettingWindowSeconds"
-              value={optimisticSettings.bettingWindowSeconds}
-              min={5}
               max={60}
-              step={5}
+              min={5}
               onChange={handleSettingChange}
               onCommit={handleCommit}
+              step={5}
               unit="seconds"
+              value={optimisticSettings.bettingWindowSeconds}
             />
 
             <div className="sm:col-span-2">
               <SettingRange
                 label="yearRange"
-                minValue={optimisticSettings.minYear}
+                maxRange={2025}
                 maxValue={optimisticSettings.maxYear}
                 minRange={1950}
-                maxRange={2025}
-                onMinChange={handleSettingChange}
+                minValue={optimisticSettings.minYear}
                 onMaxChange={handleSettingChange}
-                onMinCommit={handleCommit}
                 onMaxCommit={handleCommit}
+                onMinChange={handleSettingChange}
+                onMinCommit={handleCommit}
               />
             </div>
           </div>
 
-          <div className="space-y-3 pt-2 border-t">
+          <div className="space-y-3 border-t pt-2">
             <ToggleSetting
-              label={t("allowGuessTitleArtist")}
               description={t("allowGuessTitleArtistDesc")}
               enabled={optimisticSettings.allowGuessTitleArtist}
+              label={t("allowGuessTitleArtist")}
               onChange={(value) => {
                 handleSettingChange("allowGuessTitleArtist", value);
                 handleCommit("allowGuessTitleArtist", value);
@@ -224,9 +224,9 @@ export function SettingsPanel({ code, isHost, currentSettings }: SettingsPanelPr
             />
 
             <ToggleSetting
-              label={t("showLiveBets")}
               description={t("showLiveBetsDesc")}
               enabled={optimisticSettings.showLiveBets}
+              label={t("showLiveBets")}
               onChange={(value) => {
                 handleSettingChange("showLiveBets", value);
                 handleCommit("showLiveBets", value);
@@ -234,9 +234,9 @@ export function SettingsPanel({ code, isHost, currentSettings }: SettingsPanelPr
             />
 
             <ToggleSetting
-              label={t("allowBetRetraction")}
               description={t("allowBetRetractionDesc")}
               enabled={optimisticSettings.allowBetRetraction}
+              label={t("allowBetRetraction")}
               onChange={(value) => {
                 handleSettingChange("allowBetRetraction", value);
                 handleCommit("allowBetRetraction", value);

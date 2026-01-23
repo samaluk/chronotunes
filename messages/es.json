@@ -138,11 +138,16 @@
     "firstPositionBet": "Primera posición",
     "lastPositionBet": "Última posición",
     "positionBet": "Posición {number}",
+    "openSlot": "Espacio abierto",
+    "playersSlot": "Espacio de {name}",
     "failedToPreview": "No se pudo previsualizar la apuesta",
     "failedToLockIn": "No se pudo bloquear la apuesta",
     "failedToCancel": "No se pudo cancelar la apuesta",
     "turnPlayerPlacement": "Selección del jugador",
+    "turnPlayerPickWithName": "Selección de {name}",
+    "turnPlayerSlotBlocked": "No puedes apostar en la selección del jugador",
     "slotTaken": "Espacio ocupado",
+    "declineBet": "No apostar",
     "noBet": "No apostar",
     "betDeclined": "Has decidido no apostar",
     "decliningBet": "No apostar...",
@@ -150,10 +155,11 @@
     "confirmBet": "Confirmar apuesta",
     "useArrowsToMove": "Usa las flechas para moverte",
     "enterToConfirm": "Enter para confirmar",
-    "turnPlayerCannotBet": "El jugador del turno no puede apostar",
+    "pressEnterToConfirm": "Presiona Enter para confirmar",
+    "turnPlayerCannotBet": "Es tu turno, no puedes apostar",
     "declinedToBet": "Has decidido no apostar",
-    "yourPreview": "Tu vista previa",
-    "tapToPreview": "Toca para previsualizar"
+    "previewDiscarded": "Vista previa descartada",
+    "yourPreview": "Tu vista previa"
   },
   "phase": {
     "placing": "Colocando",
@@ -235,5 +241,10 @@
     "noCardsDescription": "Las cartas aparecerán aquí a medida que avance el juego",
     "placed": "Colocada",
     "won": "Ganada"
+  },
+  "player": {
+    "loadingAudio": "Cargando audio...",
+    "playingAudio": "Audio reproduciéndose",
+    "videoUnavailable": "Video no disponible"
   }
 }

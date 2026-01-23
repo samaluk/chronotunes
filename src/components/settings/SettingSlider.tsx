@@ -50,22 +50,22 @@ export function SettingSlider({
   return (
     <div className="space-y-2">
       <div className="flex justify-between text-sm">
-        <Label htmlFor={sliderId} className="cursor-pointer whitespace-nowrap">
+        <Label className="cursor-pointer whitespace-nowrap" htmlFor={sliderId}>
           {["turnSeconds", "targetCards", "bettingWindowSeconds"].includes(label)
             ? t(label, { count: value })
             : t(label)}
         </Label>
-        <span className="text-muted-foreground whitespace-nowrap">{unitLabel}</span>
+        <span className="whitespace-nowrap text-muted-foreground">{unitLabel}</span>
       </div>
       <Slider
+        className="h-2 w-full cursor-pointer appearance-none rounded-lg bg-secondary accent-primary"
         id={sliderId}
-        min={min}
         max={max}
-        step={step}
-        value={value}
+        min={min}
         onValueChange={(val) => onChange(label as keyof LobbySettings, Number(val))}
         onValueCommitted={(val) => onCommit(label as keyof LobbySettings, Number(val))}
-        className="w-full h-2 bg-secondary rounded-lg appearance-none cursor-pointer accent-primary"
+        step={step}
+        value={value}
       />
     </div>
   );

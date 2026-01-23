@@ -1,7 +1,7 @@
 "use client";
 
 import { AlertTriangle, Timer } from "lucide-react";
-import { useEffect, useState } from "react";
+import { memo, useEffect, useState } from "react";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
 
@@ -14,7 +14,7 @@ interface GameTimerProps {
   className?: string;
 }
 
-export function GameTimer({
+export const GameTimer = memo(function GameTimer({
   startedAt,
   totalSeconds,
   lowTimeThreshold = 10,
@@ -57,28 +57,34 @@ export function GameTimer({
       ? Math.max(0, Math.min(100, (timeRemaining / totalSeconds) * 100))
       : null;
 
+  const timerStateClass = (() => {
+    if (isExpired || isOverdue) {
+      return "bg-muted text-muted-foreground";
+    }
+    if (isLowTime) {
+      return "animate-pulse bg-destructive/10 text-destructive";
+    }
+    return "bg-muted";
+  })();
+
   return (
     <div className={className}>
       <div
         className={cn(
-          "inline-flex items-center gap-2 px-4 py-2 rounded-lg font-mono text-lg",
-          isExpired || isOverdue
-            ? "bg-muted text-muted-foreground"
-            : isLowTime
-              ? "bg-destructive/10 text-destructive animate-pulse"
-              : "bg-muted",
+          "inline-flex items-center gap-2 rounded-lg px-4 py-2 font-mono text-lg",
+          timerStateClass,
         )}
       >
         <Timer className={cn("h-5 w-5", isLowTime && "animate-pulse")} />
         <span>{timeRemaining !== null ? formatTime(timeRemaining) : "--:--"}</span>
         {isLowTime && <AlertTriangle className="h-4 w-4 animate-pulse" />}
         {isExpired && variant === "betting" && (
-          <span className="text-xs font-medium ml-1">Time&apos;s up</span>
+          <span className="ml-1 font-medium text-xs">Time&apos;s up</span>
         )}
       </div>
       {showProgress && progressValue !== null && (
-        <Progress value={progressValue} className="h-1.5" />
+        <Progress className="h-1.5" value={progressValue} />
       )}
     </div>
   );
-}
+});

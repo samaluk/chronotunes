@@ -1,6 +1,5 @@
 "use client";
 
-import { useTranslations } from "next-intl";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 
@@ -21,12 +20,12 @@ export function ToggleSetting({
   return (
     <div className="flex items-center justify-between">
       <div className="space-y-0.5">
-        <Label htmlFor={toggleId} className="text-sm cursor-pointer">
+        <Label className="cursor-pointer text-sm" htmlFor={toggleId}>
           {label}
         </Label>
-        <p className="text-xs text-muted-foreground">{description}</p>
+        <p className="text-muted-foreground text-xs">{description}</p>
       </div>
-      <Switch id={toggleId} checked={enabled} onCheckedChange={onChange} />
+      <Switch checked={enabled} id={toggleId} onCheckedChange={onChange} />
     </div>
   );
 }

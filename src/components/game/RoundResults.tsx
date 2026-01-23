@@ -117,31 +117,31 @@ export function RoundResults({
 
   return (
     <div className="space-y-6">
-      <div className="text-center space-y-4">
+      <div className="space-y-4 text-center">
         <div
           className={cn(
-            "mx-auto flex h-20 w-20 items-center justify-center rounded-full transition-all duration-500 transform",
+            "mx-auto flex h-20 w-20 transform items-center justify-center rounded-full transition-all duration-500",
             showCorrectness
               ? resolution.turnPlayerWasCorrect
-                ? "bg-green-100 dark:bg-green-900/30 scale-100"
-                : "bg-red-100 dark:bg-red-900/30 scale-100"
-              : "bg-muted scale-90 opacity-50",
+                ? "scale-100 bg-green-100 dark:bg-green-900/30"
+                : "scale-100 bg-red-100 dark:bg-red-900/30"
+              : "scale-90 bg-muted opacity-50",
           )}
         >
           {showCorrectness ? (
             resolution.turnPlayerWasCorrect ? (
-              <Check className="h-10 w-10 text-green-600 dark:text-green-400 animate-bounce" />
+              <Check className="h-10 w-10 animate-bounce text-green-600 dark:text-green-400" />
             ) : (
-              <X className="h-10 w-10 text-red-600 dark:text-red-400 animate-shake" />
+              <X className="h-10 w-10 animate-shake text-red-600 dark:text-red-400" />
             )
           ) : (
-            <Clock className="h-8 w-8 text-muted-foreground animate-pulse" />
+            <Clock className="h-8 w-8 animate-pulse text-muted-foreground" />
           )}
         </div>
         <div className="space-y-1">
           <p
             className={cn(
-              "text-xl font-bold transition-all duration-300",
+              "font-bold text-xl transition-all duration-300",
               showCorrectness
                 ? resolution.turnPlayerWasCorrect
                   ? "text-green-600 dark:text-green-400"
@@ -155,7 +155,7 @@ export function RoundResults({
                 : t("incorrect")
               : t("revealing")}
           </p>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-muted-foreground text-sm">
             {resolution.turnPlayerWasCorrect
               ? t("placementResult", { name: turnPlayer.displayName, result: "in the valid range" })
               : t("placementResult", {
@@ -167,26 +167,26 @@ export function RoundResults({
       </div>
 
       {showCorrectness && (
-        <Card className="p-4 text-center transition-all duration-300 animate-in fade-in slide-in-from-bottom-2">
-          <p className="text-xs text-muted-foreground uppercase tracking-wide">{t("theSongWas")}</p>
+        <Card className="fade-in slide-in-from-bottom-2 animate-in p-4 text-center transition-all duration-300">
+          <p className="text-muted-foreground text-xs uppercase tracking-wide">{t("theSongWas")}</p>
           <div className="flex items-center justify-between">
-            <Label className="text-lg font-medium text-muted-foreground">Title</Label>
-            <p className="text-2xl font-bold text-foreground">{track.title}</p>
+            <Label className="font-medium text-lg text-muted-foreground">Title</Label>
+            <p className="font-bold text-2xl text-foreground">{track.title}</p>
           </div>
           <div className="flex items-center justify-between">
-            <Label className="text-lg font-medium text-muted-foreground">Artist</Label>
-            <p className="text-2xl font-bold text-foreground">{track.artist}</p>
+            <Label className="font-medium text-lg text-muted-foreground">Artist</Label>
+            <p className="font-bold text-2xl text-foreground">{track.artist}</p>
           </div>
           <div className="flex items-center justify-between">
-            <Label className="text-lg font-medium text-muted-foreground">Year</Label>
-            <p className="text-2xl font-bold text-foreground">{track.year}</p>
+            <Label className="font-medium text-lg text-muted-foreground">Year</Label>
+            <p className="font-bold text-2xl text-foreground">{track.year}</p>
           </div>
         </Card>
       )}
 
       {showCorrectness && (
-        <div className="space-y-3 transition-all duration-500 animate-in fade-in slide-in-from-bottom-4">
-          <div className="flex items-center gap-2 text-sm font-medium">
+        <div className="fade-in slide-in-from-bottom-4 animate-in space-y-3 transition-all duration-500">
+          <div className="flex items-center gap-2 font-medium text-sm">
             <Trophy className="h-4 w-4" />
             <span>Card Awards</span>
           </div>
@@ -197,11 +197,11 @@ export function RoundResults({
               const isMe = player._id === me?._id;
               return (
                 <div
-                  key={playerId}
                   className={cn(
-                    "flex items-center justify-between p-3 rounded-lg border",
-                    isMe ? "bg-primary/5 border-primary/20" : "bg-muted/30",
+                    "flex items-center justify-between rounded-lg border p-3",
+                    isMe ? "border-primary/20 bg-primary/5" : "bg-muted/30",
                   )}
+                  key={playerId}
                 >
                   <div className="flex items-center gap-2">
                     <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10">
@@ -210,9 +210,9 @@ export function RoundResults({
                     <div>
                       <p className="font-medium">
                         {player.displayName}
-                        {isMe && <span className="ml-1 text-xs text-primary">(You)</span>}
+                        {isMe && <span className="ml-1 text-primary text-xs">(You)</span>}
                       </p>
-                      <p className="text-xs text-muted-foreground">
+                      <p className="text-muted-foreground text-xs">
                         Got the card via {playerId === turnPlayer._id ? "placement" : "betting"}
                       </p>
                     </div>
@@ -222,7 +222,7 @@ export function RoundResults({
               );
             })}
             {resolution.awardedPlayerIds.length === 0 && (
-              <p className="text-sm text-muted-foreground text-center py-2">
+              <p className="py-2 text-center text-muted-foreground text-sm">
                 No cards were awarded this round
               </p>
             )}
@@ -232,7 +232,7 @@ export function RoundResults({
 
       {bettingBets.length > 0 && (
         <div className="space-y-3">
-          <div className="flex items-center gap-2 text-sm font-medium">
+          <div className="flex items-center gap-2 font-medium text-sm">
             <Users className="h-4 w-4" />
             <span>Betting Results</span>
           </div>
@@ -243,16 +243,16 @@ export function RoundResults({
               const isMe = player._id === me?._id;
               return (
                 <div
-                  key={bet.playerId}
                   className={cn(
-                    "flex items-center justify-between p-3 rounded-lg border",
+                    "flex items-center justify-between rounded-lg border p-3",
                     bet.status === "won"
-                      ? "bg-green-50 border-green-200 dark:bg-green-950/20 dark:border-green-800"
+                      ? "border-green-200 bg-green-50 dark:border-green-800 dark:bg-green-950/20"
                       : bet.status === "lost"
-                        ? "bg-red-50 border-red-200 dark:bg-red-950/20 dark:border-red-800"
+                        ? "border-red-200 bg-red-50 dark:border-red-800 dark:bg-red-950/20"
                         : "bg-muted/30",
                     isMe && "ring-2 ring-primary/20",
                   )}
+                  key={bet.playerId}
                 >
                   <div className="flex items-center gap-2">
                     <div
@@ -276,9 +276,9 @@ export function RoundResults({
                     <div>
                       <p className="font-medium">
                         {player.displayName}
-                        {isMe && <span className="ml-1 text-xs text-primary">(You)</span>}
+                        {isMe && <span className="ml-1 text-primary text-xs">(You)</span>}
                       </p>
-                      <p className="text-xs text-muted-foreground">
+                      <p className="text-muted-foreground text-xs">
                         Bet on position {bet.proposedIndex + 1}
                       </p>
                     </div>
@@ -304,7 +304,7 @@ export function RoundResults({
         </div>
       )}
 
-      <div className="rounded-lg bg-muted/50 p-3 text-center text-sm text-muted-foreground">
+      <div className="rounded-lg bg-muted/50 p-3 text-center text-muted-foreground text-sm">
         <div className="flex items-center justify-center gap-2">
           <Clock className="h-4 w-4" />
           <span>Resolved at {formatTime(resolution.resolvedAt)}</span>
@@ -312,7 +312,7 @@ export function RoundResults({
       </div>
 
       {isHost && (
-        <Button onClick={handleNextRound} disabled={isResolving} className="w-full" size="lg">
+        <Button className="w-full" disabled={isResolving} onClick={handleNextRound} size="lg">
           {isResolving ? (
             <>
               <Clock className="mr-2 h-4 w-4 animate-spin" />

@@ -74,9 +74,9 @@ export function TimelineCard({
 
   if (isLoading) {
     return (
-      <Card className={cn("flex items-center gap-3 p-3 animate-pulse", className)}>
+      <Card className={cn("flex animate-pulse items-center gap-3 p-3", className)}>
         <div className="h-10 w-10 rounded-full bg-muted" />
-        <div className="flex-1 min-w-0 space-y-2">
+        <div className="min-w-0 flex-1 space-y-2">
           <div className="h-5 w-3/4 rounded bg-muted" />
           <div className="h-4 w-1/2 rounded bg-muted" />
         </div>
@@ -89,8 +89,8 @@ export function TimelineCard({
     <Card
       className={cn(
         "flex flex-row items-center gap-3 p-3 transition-all",
-        isPreview && "bg-primary/10 border-primary border-dashed animate-pulse",
-        isBetPreview && "bg-amber-50 border-amber-200 dark:bg-amber-950/30 dark:border-amber-800",
+        isPreview && "animate-pulse border-primary border-dashed bg-primary/10",
+        isBetPreview && "border-amber-200 bg-amber-50 dark:border-amber-800 dark:bg-amber-950/30",
         className,
       )}
     >
@@ -102,19 +102,19 @@ export function TimelineCard({
       >
         <IconComponent className="h-5 w-5" />
       </div>
-      <div className="flex-1 min-w-0">
-        {title && <p className="font-medium truncate">{title}</p>}
-        {artist && <p className="text-sm text-muted-foreground truncate">{artist}</p>}
+      <div className="min-w-0 flex-1">
+        {title && <p className="truncate font-medium">{title}</p>}
+        {artist && <p className="truncate text-muted-foreground text-sm">{artist}</p>}
         {isBetPreview && playerName && (
-          <p className="text-xs text-muted-foreground mt-1">{playerName}</p>
+          <p className="mt-1 text-muted-foreground text-xs">{playerName}</p>
         )}
       </div>
       <div className="flex flex-col items-end gap-2">
         {isBetPreview && (
           <div className="flex items-center gap-1">
             <Badge
-              variant="outline"
               className="border-amber-200 text-amber-700 dark:border-amber-700 dark:text-amber-400"
+              variant="outline"
             >
               {formatYearRange(yearMin, yearMax)}
             </Badge>
@@ -123,8 +123,8 @@ export function TimelineCard({
         <div className="flex items-center gap-2">
           {isBetPreview && coinCost !== undefined && coinCost > 0 && (
             <Badge
-              variant="outline"
               className="border-amber-200 text-amber-700 dark:border-amber-700 dark:text-amber-400"
+              variant="outline"
             >
               -{coinCost} <Coins className="ml-1 h-3 w-3" />
             </Badge>

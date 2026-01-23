@@ -75,13 +75,13 @@ describe("RoundResults", () => {
   it("displays song title, artist, and year", () => {
     render(
       <RoundResults
-        lobbyId={mockLobbyId}
-        track={mockTrack}
-        resolution={mockResolution}
-        turnPlayer={mockPlayers[0]}
         bets={[]}
-        players={mockPlayers}
+        lobbyId={mockLobbyId}
         me={null}
+        players={mockPlayers}
+        resolution={mockResolution}
+        track={mockTrack}
+        turnPlayer={mockPlayers[0]}
       />,
     );
 
@@ -93,13 +93,13 @@ describe("RoundResults", () => {
   it("shows correct placement result when turn player was correct", () => {
     render(
       <RoundResults
-        lobbyId={mockLobbyId}
-        track={mockTrack}
-        resolution={mockResolution}
-        turnPlayer={mockPlayers[0]}
         bets={[]}
-        players={mockPlayers}
+        lobbyId={mockLobbyId}
         me={null}
+        players={mockPlayers}
+        resolution={mockResolution}
+        track={mockTrack}
+        turnPlayer={mockPlayers[0]}
       />,
     );
 
@@ -114,13 +114,13 @@ describe("RoundResults", () => {
 
     render(
       <RoundResults
-        lobbyId={mockLobbyId}
-        track={mockTrack}
-        resolution={wrongResolution}
-        turnPlayer={mockPlayers[0]}
         bets={[]}
-        players={mockPlayers}
+        lobbyId={mockLobbyId}
         me={null}
+        players={mockPlayers}
+        resolution={wrongResolution}
+        track={mockTrack}
+        turnPlayer={mockPlayers[0]}
       />,
     );
 
@@ -130,13 +130,13 @@ describe("RoundResults", () => {
   it("displays card awards for awarded players", () => {
     render(
       <RoundResults
-        lobbyId={mockLobbyId}
-        track={mockTrack}
-        resolution={mockResolution}
-        turnPlayer={mockPlayers[0]}
         bets={[]}
-        players={mockPlayers}
+        lobbyId={mockLobbyId}
         me={null}
+        players={mockPlayers}
+        resolution={mockResolution}
+        track={mockTrack}
+        turnPlayer={mockPlayers[0]}
       />,
     );
 
@@ -156,13 +156,13 @@ describe("RoundResults", () => {
 
     render(
       <RoundResults
-        lobbyId={mockLobbyId}
-        track={mockTrack}
-        resolution={mockResolution}
-        turnPlayer={mockPlayers[0]}
         bets={bets}
-        players={mockPlayers}
+        lobbyId={mockLobbyId}
         me={null}
+        players={mockPlayers}
+        resolution={mockResolution}
+        track={mockTrack}
+        turnPlayer={mockPlayers[0]}
       />,
     );
 
@@ -182,13 +182,13 @@ describe("RoundResults", () => {
 
     render(
       <RoundResults
-        lobbyId={mockLobbyId}
-        track={mockTrack}
-        resolution={mockResolution}
-        turnPlayer={mockPlayers[0]}
         bets={bets}
-        players={mockPlayers}
+        lobbyId={mockLobbyId}
         me={null}
+        players={mockPlayers}
+        resolution={mockResolution}
+        track={mockTrack}
+        turnPlayer={mockPlayers[0]}
       />,
     );
 
@@ -198,13 +198,13 @@ describe("RoundResults", () => {
   it("shows host controls when user is host", () => {
     render(
       <RoundResults
-        lobbyId={mockLobbyId}
-        track={mockTrack}
-        resolution={mockResolution}
-        turnPlayer={mockPlayers[0]}
         bets={[]}
-        players={mockPlayers}
+        lobbyId={mockLobbyId}
         me={mockPlayers[0]}
+        players={mockPlayers}
+        resolution={mockResolution}
+        track={mockTrack}
+        turnPlayer={mockPlayers[0]}
       />,
     );
 
@@ -214,13 +214,13 @@ describe("RoundResults", () => {
   it("shows waiting state when user is not host", () => {
     render(
       <RoundResults
-        lobbyId={mockLobbyId}
-        track={mockTrack}
-        resolution={mockResolution}
-        turnPlayer={mockPlayers[0]}
         bets={[]}
-        players={mockPlayers}
+        lobbyId={mockLobbyId}
         me={mockPlayers[1]}
+        players={mockPlayers}
+        resolution={mockResolution}
+        track={mockTrack}
+        turnPlayer={mockPlayers[0]}
       />,
     );
 
@@ -230,13 +230,13 @@ describe("RoundResults", () => {
   it("displays resolved timestamp", () => {
     render(
       <RoundResults
-        lobbyId={mockLobbyId}
-        track={mockTrack}
-        resolution={mockResolution}
-        turnPlayer={mockPlayers[0]}
         bets={[]}
-        players={mockPlayers}
+        lobbyId={mockLobbyId}
         me={null}
+        players={mockPlayers}
+        resolution={mockResolution}
+        track={mockTrack}
+        turnPlayer={mockPlayers[0]}
       />,
     );
 
@@ -252,13 +252,13 @@ describe("RoundResults", () => {
 
     render(
       <RoundResults
-        lobbyId={mockLobbyId}
-        track={mockTrack}
-        resolution={noAwardResolution}
-        turnPlayer={mockPlayers[0]}
         bets={[]}
-        players={mockPlayers}
+        lobbyId={mockLobbyId}
         me={null}
+        players={mockPlayers}
+        resolution={noAwardResolution}
+        track={mockTrack}
+        turnPlayer={mockPlayers[0]}
       />,
     );
 
@@ -268,13 +268,13 @@ describe("RoundResults", () => {
   it("highlights current user with (You) indicator", () => {
     render(
       <RoundResults
-        lobbyId={mockLobbyId}
-        track={mockTrack}
-        resolution={mockResolution}
-        turnPlayer={mockPlayers[0]}
         bets={[]}
-        players={mockPlayers}
+        lobbyId={mockLobbyId}
         me={mockPlayers[0]}
+        players={mockPlayers}
+        resolution={mockResolution}
+        track={mockTrack}
+        turnPlayer={mockPlayers[0]}
       />,
     );
 

@@ -1,8 +1,8 @@
 "use client";
 
-import type { Id } from "@/convex/_generated/dataModel";
 import { Music } from "lucide-react";
 import { useTranslations } from "next-intl";
+import type { Id } from "@/convex/_generated/dataModel";
 import { BettingPanel } from "./BettingPanel";
 
 interface BettingPhaseContentProps {
@@ -80,31 +80,31 @@ export function BettingPhaseContent({
   if (lobbyId && me && track && players) {
     return (
       <BettingPanel
+        bettingWindowSeconds={bettingWindowSeconds}
         lobbyId={lobbyId}
         me={me}
-        track={track}
-        turnPlayerTimeline={turnPlayerTimeline}
-        revealedTracks={revealedTracks}
-        players={players}
-        turnPlayerId={turnPlayerId ?? null}
-        roundStartedAt={roundStartedAt}
-        turnSeconds={turnSeconds}
-        bettingWindowSeconds={bettingWindowSeconds}
-        turnPlayerPlacementIndex={turnPlayerPlacementIndex}
         phase="betting"
+        players={players}
+        revealedTracks={revealedTracks}
+        roundStartedAt={roundStartedAt}
         showLiveBets={showLiveBets}
+        track={track}
+        turnPlayerId={turnPlayerId ?? null}
+        turnPlayerPlacementIndex={turnPlayerPlacementIndex}
+        turnPlayerTimeline={turnPlayerTimeline}
+        turnSeconds={turnSeconds}
       />
     );
   }
 
   return (
-    <div className="flex flex-col items-center justify-center py-12 space-y-4">
+    <div className="flex flex-col items-center justify-center space-y-4 py-12">
       <div className="flex h-16 w-16 items-center justify-center rounded-full bg-amber-100 dark:bg-amber-900/30">
         <Music className="h-8 w-8 text-amber-600 dark:text-amber-400" />
       </div>
-      <div className="text-center space-y-2">
-        <p className="text-lg font-medium">{tBetting("placeYourBet")}</p>
-        <p className="text-sm text-muted-foreground">{tBetting("placeBetDescription")}</p>
+      <div className="space-y-2 text-center">
+        <p className="font-medium text-lg">{tBetting("placeYourBet")}</p>
+        <p className="text-muted-foreground text-sm">{tBetting("placeBetDescription")}</p>
       </div>
     </div>
   );

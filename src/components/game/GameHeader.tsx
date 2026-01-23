@@ -1,9 +1,10 @@
 "use client";
 
-import type { Id } from "@/convex/_generated/dataModel";
 import { Check, X } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { memo } from "react";
 import { VolumeSlider } from "@/components/player/VolumeSlider";
+import type { Id } from "@/convex/_generated/dataModel";
 import { cn } from "@/lib/utils";
 import { GameTimer } from "./GameTimer";
 
@@ -27,7 +28,13 @@ interface GameHeaderProps {
   resolution?: ResolutionInfo | null;
 }
 
-export function GameHeader({
+const phaseStyles = {
+  placing: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400",
+  betting: "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400",
+  resolved: "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400",
+};
+
+export const GameHeader = memo(function GameHeader({
   roundNumber,
   turnPlayer,
   isMyTurn,
@@ -42,34 +49,30 @@ export function GameHeader({
 
   return (
     <div className="w-full space-y-4">
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-4 rounded-xl bg-card border">
+      <div className="flex flex-col items-center justify-between gap-4 rounded-xl border bg-card p-4 sm:flex-row">
         <div className="flex items-center gap-3">
           <div className="flex flex-col">
             <div className="flex items-center gap-2">
-              <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+              <span className="font-medium text-muted-foreground text-xs uppercase tracking-wider">
                 {t("round", { number: roundNumber })}
               </span>
               <span
                 className={cn(
-                  "inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium",
-                  roundPhase === "placing"
-                    ? "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400"
-                    : roundPhase === "betting"
-                      ? "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400"
-                      : "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400",
+                  "inline-flex items-center rounded-full px-2 py-0.5 font-medium text-xs",
+                  phaseStyles[roundPhase],
                 )}
               >
                 {tPhase(roundPhase)}
               </span>
             </div>
-            <div className="flex items-center gap-2 mt-1">
+            <div className="mt-1 flex items-center gap-2">
               {turnPlayer && (
                 <>
-                  <span className="text-lg font-semibold">
+                  <span className="font-semibold text-lg">
                     {isMyTurn ? t("yourTurn") : t("playersTurn", { name: turnPlayer.displayName })}
                   </span>
                   {isMyTurn && roundPhase === "placing" && (
-                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-primary/20 text-primary text-xs font-medium animate-pulse">
+                    <span className="inline-flex animate-pulse items-center gap-1 rounded-full bg-primary/20 px-2 py-0.5 font-medium text-primary text-xs">
                       {tCommon("active")}
                     </span>
                   )}
@@ -81,17 +84,17 @@ export function GameHeader({
 
         {roundPhase === "betting" && bettingStartedAt && bettingWindowSeconds && (
           <GameTimer
+            className={isMyTurn ? "bg-amber-50 dark:bg-amber-950/20" : ""}
             startedAt={bettingStartedAt}
             totalSeconds={bettingWindowSeconds}
             variant="betting"
-            className={isMyTurn ? "bg-amber-50 dark:bg-amber-950/20" : ""}
           />
         )}
 
         {roundPhase === "resolved" && resolution && (
           <div
             className={cn(
-              "flex items-center gap-2 px-4 py-2 rounded-lg font-medium",
+              "flex items-center gap-2 rounded-lg px-4 py-2 font-medium",
               resolution.turnPlayerWasCorrect
                 ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
                 : "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400",
@@ -115,4 +118,4 @@ export function GameHeader({
       </div>
     </div>
   );
-}
+});
