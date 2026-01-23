@@ -40,9 +40,6 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# Convex
-convex/_generated
-
 # Keep .env.example for reference
 !.env.example
 
