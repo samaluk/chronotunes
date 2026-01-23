@@ -10,7 +10,7 @@ import { SettingRange } from "@/components/settings/SettingRange";
 import { SettingSlider } from "@/components/settings/SettingSlider";
 import { ToggleSetting } from "@/components/settings/ToggleSetting";
 import { Button } from "@/components/ui/button";
-import { api } from "@/convex/_generated/api.js";
+import { api } from "@/convex/_generated/api";
 
 interface SettingsPanelProps {
   code: string;

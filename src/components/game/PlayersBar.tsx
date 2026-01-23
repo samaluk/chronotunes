@@ -5,7 +5,7 @@ import type { GenericId } from "convex/values";
 import { useSessionId } from "convex-helpers/react/sessions";
 import { Coins, Crown, Music, Star, User, UserRound } from "lucide-react";
 import { SkeletonPlayersBar } from "@/components/ui/skeletons";
-import { api } from "@/convex/_generated/api.js";
+import { api } from "@/convex/_generated/api";
 import type { Doc } from "@/convex/_generated/dataModel";
 import { cn } from "@/lib/utils";
 

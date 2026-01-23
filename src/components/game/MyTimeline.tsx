@@ -5,7 +5,7 @@ import type { GenericId } from "convex/values";
 import { Music } from "lucide-react";
 import { useMemo } from "react";
 import { useIsMounted } from "usehooks-ts";
-import { api } from "@/convex/_generated/api.js";
+import { api } from "@/convex/_generated/api";
 import { sortTimelineByYear } from "@/lib/timeline";
 import { TimelineCard } from "./TimelineCard";
 

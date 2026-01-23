@@ -6,7 +6,7 @@ import { useSessionId } from "convex-helpers/react/sessions";
 import { Crown, User } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { SkeletonPlayerList } from "@/components/ui/skeletons";
-import { api } from "@/convex/_generated/api.js";
+import { api } from "@/convex/_generated/api";
 
 interface PlayerListProps {
   lobbyId: GenericId<"lobbies">;

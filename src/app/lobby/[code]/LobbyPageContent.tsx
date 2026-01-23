@@ -14,7 +14,7 @@ import { StartGameButton } from "@/components/lobby/StartGameButton";
 import { ErrorBoundary } from "@/components/ui/error-boundary";
 import { LocaleSwitcher } from "@/components/ui/locale-switcher";
 import { SkeletonLobbyCode, SkeletonPage, SkeletonPlayerList } from "@/components/ui/skeletons";
-import { api } from "@/convex/_generated/api.js";
+import { api } from "@/convex/_generated/api";
 
 interface LobbyPageContentProps {
   code: string;

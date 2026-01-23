@@ -12,7 +12,7 @@ import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp
 import { Label } from "@/components/ui/label";
 import { LocaleSwitcher } from "@/components/ui/locale-switcher";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
-import { api } from "@/convex/_generated/api.js";
+import { api } from "@/convex/_generated/api";
 
 const DISPLAY_NAME_KEY = "chronotunes-display-name";
 const LOBBY_CODE_LENGTH = 6;

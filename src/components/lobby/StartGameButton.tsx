@@ -6,7 +6,7 @@ import { Play, Users } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
-import { api } from "@/convex/_generated/api.js";
+import { api } from "@/convex/_generated/api";
 
 interface StartGameButtonProps {
   lobbyId: GenericId<"lobbies">;

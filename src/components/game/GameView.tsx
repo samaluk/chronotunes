@@ -8,7 +8,7 @@ import { useMemo, useState } from "react";
 import { useIsMounted } from "usehooks-ts";
 import { ErrorBoundary } from "@/components/ui/error-boundary";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { api } from "@/convex/_generated/api.js";
+import { api } from "@/convex/_generated/api";
 import type { Doc, Id } from "@/convex/_generated/dataModel";
 import { CurrentRoundPanel } from "./CurrentRoundPanel";
 import { GameHeader } from "./GameHeader";
