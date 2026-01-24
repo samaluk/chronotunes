@@ -3,7 +3,7 @@ import type { GenericId } from "convex/values"
 import { NextIntlClientProvider } from "next-intl"
 import { describe, expect, it, vi } from "vitest"
 import messages from "../../../messages/en.json"
-import { BettingPanel } from "./BettingPanel"
+import { BettingPanel } from "./betting-panel"
 
 vi.mock("convex/react", () => ({
   useMutation: vi.fn(() => vi.fn()),

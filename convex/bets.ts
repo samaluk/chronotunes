@@ -1,7 +1,7 @@
 import { ConvexError, v } from "convex/values"
 import type { Doc, Id } from "./_generated/dataModel"
 import { type MutationCtx, query } from "./_generated/server"
-import { getGameContext, getPlayerBySession } from "./lib/gameContext"
+import { getGameContext, getPlayerBySession } from "./lib/game-context"
 import { mutationWithSession } from "./lib/sessions"
 
 interface BetWithPlayer {

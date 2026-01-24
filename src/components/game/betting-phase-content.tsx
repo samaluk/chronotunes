@@ -3,7 +3,7 @@
 import { Music } from "lucide-react"
 import { useTranslations } from "next-intl"
 import type { Id } from "@/convex/_generated/dataModel"
-import { BettingPanel } from "./BettingPanel"
+import { BettingPanel } from "./betting-panel"
 
 interface BettingPhaseContentProps {
   lobbyId: Id<"lobbies">

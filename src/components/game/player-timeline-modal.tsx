@@ -9,7 +9,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { api } from "@/convex/_generated/api"
 import type { Doc } from "@/convex/_generated/dataModel"
 import { sortTimelineByYear } from "@/lib/timeline"
-import { TimelineCard } from "./TimelineCard"
+import { TimelineCard } from "./timeline-card"
 
 interface PlayerTimelineModalProps {
   player: Doc<"players">

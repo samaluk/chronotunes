@@ -1,12 +1,12 @@
 "use client"
 
 import { useTranslations } from "next-intl"
-import { YouTubePlayer } from "@/components/player/YouTubePlayer"
+import { YouTubePlayer } from "@/components/player/you-tube-player"
 import type { Doc, Id } from "@/convex/_generated/dataModel"
 import { cn } from "@/lib/utils"
-import { BettingPhaseContent } from "./BettingPhaseContent"
-import { PlacingPhaseContent } from "./PlacingPhaseContent"
-import { ResolvedPhaseContent } from "./ResolvedPhaseContent"
+import { BettingPhaseContent } from "./betting-phase-content"
+import { PlacingPhaseContent } from "./placing-phase-content"
+import { ResolvedPhaseContent } from "./resolved-phase-content"
 
 export type RoundPhase = "placing" | "betting" | "resolved"
 

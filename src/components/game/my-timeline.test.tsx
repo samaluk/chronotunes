@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react"
 import type { GenericId } from "convex/values"
 import { beforeEach, describe, expect, test, vi } from "vitest"
-import { MyTimeline } from "./MyTimeline"
+import { MyTimeline } from "./my-timeline"
 
 const createMockPlayer = (
   overrides: Partial<{

@@ -1,7 +1,7 @@
 import { cleanup, render, screen } from "@testing-library/react"
 import type { GenericId } from "convex/values"
 import { afterEach, describe, expect, it, vi } from "vitest"
-import { RoundResults } from "./RoundResults"
+import { RoundResults } from "./round-results"
 
 vi.mock("convex/react", () => ({
   useMutation: vi.fn(() => vi.fn()),

@@ -82,7 +82,7 @@ test("selectTrackForRound returns track within year range", async () => {
   const { gameId } = await createGameWithPlayers(t, 1980, 2000)
 
   const track = await t.run(async (ctx) => {
-    const { selectTrackForRound } = await import("./trackSelection")
+    const { selectTrackForRound } = await import("./track-selection")
     return await selectTrackForRound(ctx, {
       gameId,
       minYear: 1980,
@@ -103,7 +103,7 @@ test("selectTrackForRound never returns track already used in game", async () =>
   const { gameId } = await createGameWithPlayers(t, 1980, 2000)
 
   const firstTrack = await t.run(async (ctx) => {
-    const { selectTrackForRound } = await import("./trackSelection")
+    const { selectTrackForRound } = await import("./track-selection")
     return await selectTrackForRound(ctx, {
       gameId,
       minYear: 1980,
@@ -150,7 +150,7 @@ test("selectTrackForRound never returns track already used in game", async () =>
   })
 
   const secondTrack = await t.run(async (ctx) => {
-    const { selectTrackForRound } = await import("./trackSelection")
+    const { selectTrackForRound } = await import("./track-selection")
     return await selectTrackForRound(ctx, {
       gameId,
       minYear: 1980,
@@ -258,7 +258,7 @@ test("selectTrackForRound returns null if no tracks available", async () => {
   }
 
   const track = await t.run(async (ctx) => {
-    const { selectTrackForRound } = await import("./trackSelection")
+    const { selectTrackForRound } = await import("./track-selection")
     return await selectTrackForRound(ctx, {
       gameId,
       minYear: 1980,
@@ -289,7 +289,7 @@ test("selectTrackForRound respects year range boundaries", async () => {
   const { gameId } = await createGameWithPlayers(t, 1985, 1995)
 
   const track = await t.run(async (ctx) => {
-    const { selectTrackForRound } = await import("./trackSelection")
+    const { selectTrackForRound } = await import("./track-selection")
     return await selectTrackForRound(ctx, {
       gameId,
       minYear: 1985,

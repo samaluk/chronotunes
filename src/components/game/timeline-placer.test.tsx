@@ -3,7 +3,7 @@ import type { GenericId } from "convex/values"
 import { NextIntlClientProvider } from "next-intl"
 import { describe, expect, test, vi } from "vitest"
 import messages from "../../../messages/en.json"
-import { TimelinePlacer } from "./TimelinePlacer"
+import { TimelinePlacer } from "./timeline-placer"
 
 vi.mock("@/convex/_generated/api.js", () => ({
   api: {

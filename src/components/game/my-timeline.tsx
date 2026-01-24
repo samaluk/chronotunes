@@ -8,7 +8,7 @@ import { useIsMounted } from "usehooks-ts"
 import { api } from "@/convex/_generated/api"
 import type { Id } from "@/convex/_generated/dataModel"
 import { sortTimelineByYear } from "@/lib/timeline"
-import { TimelineCard } from "./TimelineCard"
+import { TimelineCard } from "./timeline-card"
 
 interface TimelineEntry {
   trackId: Id<"tracks">

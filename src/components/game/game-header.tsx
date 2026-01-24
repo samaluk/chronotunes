@@ -3,10 +3,10 @@
 import { Check, X } from "lucide-react"
 import { useTranslations } from "next-intl"
 import { memo } from "react"
-import { VolumeSlider } from "@/components/player/VolumeSlider"
+import { VolumeSlider } from "@/components/player/volume-slider"
 import type { Id } from "@/convex/_generated/dataModel"
 import { cn } from "@/lib/utils"
-import { GameTimer } from "./GameTimer"
+import { GameTimer } from "./game-timer"
 
 interface TurnPlayer {
   _id: Id<"players">

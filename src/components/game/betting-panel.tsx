@@ -10,9 +10,9 @@ import { Button } from "@/components/ui/button"
 import { api } from "@/convex/_generated/api"
 import type { Id } from "@/convex/_generated/dataModel"
 import { getRevealedTrackMap, sortTimelineByYear } from "@/lib/timeline"
-import { BetZone } from "./BetZone"
 import { BetCoin } from "./bet-coin"
-import { TimelineCard } from "./TimelineCard"
+import { BetZone } from "./bet-zone"
+import { TimelineCard } from "./timeline-card"
 
 interface TimelineEntry {
   trackId: Id<"tracks">

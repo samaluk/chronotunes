@@ -2,7 +2,7 @@
 
 import { useTranslations } from "next-intl"
 import type { Id } from "@/convex/_generated/dataModel"
-import { TimelinePlacementView } from "./TimelinePlacementView"
+import { TimelinePlacementView } from "./timeline-placement-view"
 
 interface TimelineEntry {
   trackId: Id<"tracks">

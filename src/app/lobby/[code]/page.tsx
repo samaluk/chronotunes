@@ -2,7 +2,7 @@
 
 import { useParams } from "next/navigation"
 import type { ReactNode } from "react"
-import { LobbyPageContent } from "./LobbyPageContent"
+import { LobbyPageContent } from "./lobby-page-content"
 
 export default function LobbyPage(): ReactNode {
   const params = useParams()

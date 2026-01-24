@@ -3,8 +3,8 @@
 import { Music } from "lucide-react"
 import { useTranslations } from "next-intl"
 import type { Doc, Id } from "@/convex/_generated/dataModel"
-import { TimelinePlacer } from "./TimelinePlacer"
-import { TurnPlayerTimeline } from "./TurnPlayerTimeline"
+import { TimelinePlacer } from "./timeline-placer"
+import { TurnPlayerTimeline } from "./turn-player-timeline"
 
 interface PlacingPhaseContentProps {
   isMyTurn: boolean

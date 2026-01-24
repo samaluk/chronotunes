@@ -7,7 +7,7 @@ import { useEffect, useState } from "react"
 import { Dialog, DialogContent } from "@/components/ui/dialog"
 import { api } from "@/convex/_generated/api"
 import type { Doc, Id } from "@/convex/_generated/dataModel"
-import { RoundResults } from "./RoundResults"
+import { RoundResults } from "./round-results"
 
 interface ResolvedPhaseContentProps {
   lobbyId: Id<"lobbies">

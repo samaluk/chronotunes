@@ -1,6 +1,6 @@
 import { describe, expect, test } from "vitest"
 import type { Id } from "../_generated/dataModel"
-import { computeValidIndexRange, isPlacementCorrect, type TimelineEntry } from "./gameLogic"
+import { computeValidIndexRange, isPlacementCorrect, type TimelineEntry } from "./game-logic"
 
 function createTimelineEntry(year: number, index: number): TimelineEntry {
   return {

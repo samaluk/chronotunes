@@ -1,7 +1,7 @@
 import * as games from "./games"
 import * as lobbies from "./lobbies"
 import * as players from "./players"
-import * as roundBets from "./roundBets"
+import * as roundBets from "./round-bets"
 import * as rounds from "./rounds"
 import * as tracks from "./tracks"
 

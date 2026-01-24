@@ -3,7 +3,7 @@ import { NextIntlClientProvider } from "next-intl"
 import type { ComponentProps } from "react"
 import { expect, test, vi } from "vitest"
 import messages from "../../../messages/en.json"
-import { YouTubePlayer } from "./YouTubePlayer"
+import { YouTubePlayer } from "./you-tube-player"
 
 declare global {
   interface Window {

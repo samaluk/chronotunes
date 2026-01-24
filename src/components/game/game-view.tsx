@@ -9,12 +9,12 @@ import { ErrorBoundary } from "@/components/ui/error-boundary"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { api } from "@/convex/_generated/api"
 import type { Doc, Id } from "@/convex/_generated/dataModel"
-import { CurrentRoundPanel } from "./CurrentRoundPanel"
-import { GameHeader } from "./GameHeader"
-import { GameResults } from "./GameResults"
-import { MyTimeline } from "./MyTimeline"
-import { PlayersBar } from "./PlayersBar"
-import { PlayerTimelineModal } from "./PlayerTimelineModal"
+import { CurrentRoundPanel } from "./current-round-panel"
+import { GameHeader } from "./game-header"
+import { GameResults } from "./game-results"
+import { MyTimeline } from "./my-timeline"
+import { PlayerTimelineModal } from "./player-timeline-modal"
+import { PlayersBar } from "./players-bar"
 
 interface GameViewProps {
   lobbyId: Id<"lobbies">

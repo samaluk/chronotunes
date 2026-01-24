@@ -4,8 +4,8 @@ import { useTranslations } from "next-intl"
 import type { ReactNode } from "react"
 import type { Id } from "@/convex/_generated/dataModel"
 import { getRevealedTrackMap, sortTimelineByYear } from "@/lib/timeline"
-import { PlacementSlot } from "./PlacementSlot"
-import { TimelineCard } from "./TimelineCard"
+import { PlacementSlot } from "./placement-slot"
+import { TimelineCard } from "./timeline-card"
 
 interface TimelineEntry {
   trackId: Id<"tracks">

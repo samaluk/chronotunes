@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button"
 import { api } from "@/convex/_generated/api"
 import type { Doc, Id } from "@/convex/_generated/dataModel"
 import { sortTimelineByYear } from "@/lib/timeline"
-import { getPlacementPositionLabel, TimelinePlacementView } from "./TimelinePlacementView"
+import { getPlacementPositionLabel, TimelinePlacementView } from "./timeline-placement-view"
 
 interface TrackInfo {
   _id: Id<"tracks">

@@ -1,4 +1,4 @@
-import { LandingPageContent } from "./LandingPageContent"
+import { LandingPageContent } from "./landing-page-content"
 
 export default function HomePage() {
   return <LandingPageContent />

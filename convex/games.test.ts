@@ -1,8 +1,8 @@
 import { convexTest } from "convex-test"
 import { expect, test } from "vitest"
 import { api } from "./_generated/api"
+import type { TimelineEntry } from "./lib/game-logic"
 import { asSessionId } from "./lib/sessions"
-import type { TimelineEntry } from "./lib/gameLogic"
 import schema from "./schema"
 import { modules } from "./test.setup"
 
