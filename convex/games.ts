@@ -1,10 +1,170 @@
 import { ConvexError, v } from "convex/values"
-import type { Id } from "./_generated/dataModel"
-import { query } from "./_generated/server"
+import type { Doc, Id } from "./_generated/dataModel"
+import { type MutationCtx, query } from "./_generated/server"
 import { getGameContext, getLobbyPlayers } from "./lib/gameContext"
 import { computeValidIndexRange, isPlacementCorrect, type TimelineEntry } from "./lib/gameLogic"
 import { createNextRound, shuffleArray } from "./lib/roundManagement"
 import { mutationWithSession } from "./lib/sessions"
+
+const getLobbyOrThrow = async (ctx: MutationCtx, lobbyId: Id<"lobbies">) => {
+  const lobby = await ctx.db.get(lobbyId)
+
+  if (!lobby) {
+    throw new ConvexError("Lobby not found")
+  }
+
+  return lobby
+}
+
+const assertHostSession = (lobby: Doc<"lobbies">, sessionId: string, message: string) => {
+  if (lobby.hostSessionId !== sessionId) {
+    throw new ConvexError(message)
+  }
+}
+
+const assertLobbyStatus = (
+  lobby: Doc<"lobbies">,
+  status: Doc<"lobbies">["status"],
+  message: string,
+) => {
+  if (lobby.status !== status) {
+    throw new ConvexError(message)
+  }
+}
+
+const assertGameActive = (game: Doc<"games">) => {
+  if (game.status !== "active") {
+    throw new ConvexError("Game is not active")
+  }
+}
+
+const createTimelineUpdates = (players: Doc<"players">[]) => {
+  const updates = new Map<
+    Id<"players">,
+    { newTimeline: TimelineEntry[]; newTimelineSize: number }
+  >()
+  for (const player of players) {
+    updates.set(player._id, {
+      newTimeline: [...player.timeline],
+      newTimelineSize: player.timelineSize,
+    })
+  }
+  return updates
+}
+
+const ensureAllNonTurnPlayersActed = (
+  players: Doc<"players">[],
+  turnPlayerId: Id<"players">,
+  lockedBets: Doc<"roundBets">[],
+  declinedBets: Doc<"roundBets">[],
+) => {
+  const nonTurnPlayers = players.filter((player) => player._id !== turnPlayerId)
+
+  const allNonTurnPlayersActed =
+    nonTurnPlayers.length === 0 ||
+    nonTurnPlayers.every(
+      (player) =>
+        lockedBets.some((bet) => bet.playerId === player._id) ||
+        declinedBets.some((bet) => bet.playerId === player._id),
+    )
+
+  if (!allNonTurnPlayersActed) {
+    throw new ConvexError("Not all players have placed bets or declined")
+  }
+}
+
+const applyTurnPlayerPlacement = (
+  timelineUpdates: Map<Id<"players">, { newTimeline: TimelineEntry[]; newTimelineSize: number }>,
+  turnPlayerId: Id<"players">,
+  track: Doc<"tracks">,
+  roundNumber: number,
+  proposedIndex: number,
+  turnPlayerWasCorrect: boolean,
+) => {
+  const awardedPlayerIds: Id<"players">[] = []
+
+  if (turnPlayerWasCorrect) {
+    const turnPlayerUpdate = timelineUpdates.get(turnPlayerId)
+
+    if (!turnPlayerUpdate) {
+      return awardedPlayerIds
+    }
+
+    turnPlayerUpdate.newTimeline.splice(proposedIndex, 0, {
+      trackId: track._id,
+      year: track.year,
+      earnedAtRoundNumber: roundNumber,
+      earnedBy: "placement",
+    })
+
+    turnPlayerUpdate.newTimelineSize += 1
+    awardedPlayerIds.push(turnPlayerId)
+  }
+
+  return awardedPlayerIds
+}
+
+const applyLockedBets = async (
+  ctx: MutationCtx,
+  lockedBets: Doc<"roundBets">[],
+  timelineUpdates: Map<Id<"players">, { newTimeline: TimelineEntry[]; newTimelineSize: number }>,
+  track: Doc<"tracks">,
+  roundNumber: number,
+  validRange: { min: number; max: number },
+  turnPlayerWasCorrect: boolean,
+) => {
+  const awardedPlayerIds: Id<"players">[] = []
+  const coinDeltas: { playerId: Id<"players">; delta: number }[] = []
+
+  for (const bet of lockedBets) {
+    const bettorWasCorrect = isPlacementCorrect(bet.proposedIndex, validRange)
+
+    if (turnPlayerWasCorrect || !bettorWasCorrect) {
+      coinDeltas.push({ playerId: bet.playerId, delta: 0 })
+      await ctx.db.patch(bet._id, { status: "lost" })
+      continue
+    }
+
+    const bettorUpdate = timelineUpdates.get(bet.playerId)
+    if (!bettorUpdate) {
+      coinDeltas.push({ playerId: bet.playerId, delta: 0 })
+      await ctx.db.patch(bet._id, { status: "lost" })
+      continue
+    }
+
+    bettorUpdate.newTimeline.splice(bet.proposedIndex, 0, {
+      trackId: track._id,
+      year: track.year,
+      earnedAtRoundNumber: roundNumber,
+      earnedBy: "bet",
+    })
+
+    bettorUpdate.newTimelineSize += 1
+    awardedPlayerIds.push(bet.playerId)
+    coinDeltas.push({ playerId: bet.playerId, delta: 0 })
+    await ctx.db.patch(bet._id, { status: "won" })
+  }
+
+  return { awardedPlayerIds, coinDeltas }
+}
+
+const applyDeclinedBets = async (ctx: MutationCtx, declinedBets: Doc<"roundBets">[]) => {
+  await Promise.all(declinedBets.map((bet) => ctx.db.patch(bet._id, { status: "lost" })))
+}
+
+const persistTimelineUpdates = async (
+  ctx: MutationCtx,
+  timelineUpdates: Map<Id<"players">, { newTimeline: TimelineEntry[]; newTimelineSize: number }>,
+) => {
+  await Promise.all(
+    Array.from(timelineUpdates.entries(), ([playerId, update]) =>
+      ctx.db.patch(playerId, {
+        timeline: update.newTimeline,
+        timelineSize: update.newTimelineSize,
+      }),
+    ),
+  )
+}
 
 export const start = mutationWithSession({
   args: { lobbyId: v.id("lobbies") },
@@ -12,19 +172,10 @@ export const start = mutationWithSession({
     const { lobbyId } = args
     const { sessionId } = ctx
 
-    const lobby = await ctx.db.get(lobbyId)
+    const lobby = await getLobbyOrThrow(ctx, lobbyId)
 
-    if (!lobby) {
-      throw new ConvexError("Lobby not found")
-    }
-
-    if (lobby.hostSessionId !== sessionId) {
-      throw new ConvexError("Only the host can start the game")
-    }
-
-    if (lobby.status !== "lobby") {
-      throw new ConvexError("Game has already started")
-    }
+    assertHostSession(lobby, sessionId, "Only the host can start the game")
+    assertLobbyStatus(lobby, "lobby", "Game has already started")
 
     const players = await getLobbyPlayers(ctx, lobbyId)
 
@@ -160,21 +311,13 @@ export const skipTurn = mutationWithSession({
     const { lobbyId } = args
     const { sessionId } = ctx
 
-    const lobby = await ctx.db.get(lobbyId)
+    const lobby = await getLobbyOrThrow(ctx, lobbyId)
 
-    if (!lobby) {
-      throw new ConvexError("Lobby not found")
-    }
-
-    if (lobby.hostSessionId !== sessionId) {
-      throw new ConvexError("Only the host can skip a turn")
-    }
+    assertHostSession(lobby, sessionId, "Only the host can skip a turn")
 
     const { game } = await getGameContext(ctx, lobbyId)
 
-    if (game.status !== "active") {
-      throw new ConvexError("Game is not active")
-    }
+    assertGameActive(game)
 
     const result = await createNextRound(ctx, game, lobby)
 
@@ -197,21 +340,13 @@ export const resolveAndNext = mutationWithSession({
     const { lobbyId } = args
     const { sessionId } = ctx
 
-    const lobby = await ctx.db.get(lobbyId)
+    const lobby = await getLobbyOrThrow(ctx, lobbyId)
 
-    if (!lobby) {
-      throw new ConvexError("Lobby not found")
-    }
-
-    if (lobby.hostSessionId !== sessionId) {
-      throw new ConvexError("Only the host can start the next round")
-    }
+    assertHostSession(lobby, sessionId, "Only the host can start the next round")
 
     const { game, round } = await getGameContext(ctx, lobbyId)
 
-    if (game.status !== "active") {
-      throw new ConvexError("Game is not active")
-    }
+    assertGameActive(game)
 
     if (!round) {
       throw new ConvexError("No current round in this game")
@@ -256,21 +391,13 @@ export const resolveRound = mutationWithSession({
     const { lobbyId } = args
     const { sessionId } = ctx
 
-    const lobby = await ctx.db.get(lobbyId)
+    const lobby = await getLobbyOrThrow(ctx, lobbyId)
 
-    if (!lobby) {
-      throw new ConvexError("Lobby not found")
-    }
-
-    if (lobby.hostSessionId !== sessionId) {
-      throw new ConvexError("Only the host can resolve the round")
-    }
+    assertHostSession(lobby, sessionId, "Only the host can resolve the round")
 
     const { game, round } = await getGameContext(ctx, lobbyId)
 
-    if (game.status !== "active") {
-      throw new ConvexError("Game is not active")
-    }
+    assertGameActive(game)
 
     if (!round || round.phase !== "betting" || !round.placement) {
       throw new ConvexError("Cannot resolve round")
@@ -282,13 +409,12 @@ export const resolveRound = mutationWithSession({
       throw new ConvexError("Track not found")
     }
 
-    const turnPlayer = await ctx.db.get(round.turnPlayerId)
+    const players = await getLobbyPlayers(ctx, lobbyId)
+    const turnPlayer = players.find((player) => player._id === round.turnPlayerId)
 
     if (!turnPlayer) {
       throw new ConvexError("Turn player not found")
     }
-
-    const players = await getLobbyPlayers(ctx, lobbyId)
 
     const allBets = await ctx.db
       .query("roundBets")
@@ -298,94 +424,35 @@ export const resolveRound = mutationWithSession({
     const lockedBets = allBets.filter((bet) => bet.lockedIn)
     const declinedBets = allBets.filter((bet) => bet.declinedToBet)
 
-    const nonTurnPlayers = players.filter((p) => p._id !== round.turnPlayerId)
-
-    const allNonTurnPlayersActed =
-      nonTurnPlayers.length === 0 ||
-      nonTurnPlayers.every(
-        (player) =>
-          lockedBets.some((bet) => bet.playerId === player._id) ||
-          declinedBets.some((bet) => bet.playerId === player._id),
-      )
-
-    if (!allNonTurnPlayersActed) {
-      throw new ConvexError("Not all players have placed bets or declined")
-    }
+    ensureAllNonTurnPlayersActed(players, round.turnPlayerId, lockedBets, declinedBets)
 
     const validRange = computeValidIndexRange(turnPlayer.timeline, track.year)
     const turnPlayerWasCorrect = isPlacementCorrect(round.placement.proposedIndex, validRange)
 
-    const coinDeltas: { playerId: Id<"players">; delta: number }[] = []
-    const awardedPlayerIds: Id<"players">[] = []
+    const timelineUpdates = createTimelineUpdates(players)
+    const awardedPlayerIds = applyTurnPlayerPlacement(
+      timelineUpdates,
+      round.turnPlayerId,
+      track,
+      round.roundNumber,
+      round.placement.proposedIndex,
+      turnPlayerWasCorrect,
+    )
 
-    const timelineUpdates = new Map<
-      Id<"players">,
-      { newTimeline: TimelineEntry[]; newTimelineSize: number }
-    >()
+    const lockedBetResults = await applyLockedBets(
+      ctx,
+      lockedBets,
+      timelineUpdates,
+      track,
+      round.roundNumber,
+      validRange,
+      turnPlayerWasCorrect,
+    )
 
-    for (const player of players) {
-      timelineUpdates.set(player._id, {
-        newTimeline: [...player.timeline],
-        newTimelineSize: player.timelineSize,
-      })
-    }
+    awardedPlayerIds.push(...lockedBetResults.awardedPlayerIds)
 
-    if (turnPlayerWasCorrect) {
-      const turnPlayerUpdate = timelineUpdates.get(turnPlayer._id)!
-
-      turnPlayerUpdate.newTimeline.splice(round.placement.proposedIndex, 0, {
-        trackId: track._id,
-        year: track.year,
-        earnedAtRoundNumber: round.roundNumber,
-        earnedBy: "placement",
-      })
-
-      turnPlayerUpdate.newTimelineSize += 1
-      awardedPlayerIds.push(turnPlayer._id)
-    }
-
-    for (const bet of lockedBets) {
-      const bettor = await ctx.db.get(bet.playerId)
-
-      if (!bettor) {
-        continue
-      }
-
-      const bettorWasCorrect = isPlacementCorrect(bet.proposedIndex, validRange)
-
-      if (turnPlayerWasCorrect) {
-        coinDeltas.push({ playerId: bettor._id, delta: 0 })
-        await ctx.db.patch(bet._id, { status: "lost" })
-      } else if (bettorWasCorrect) {
-        const bettorUpdate = timelineUpdates.get(bettor._id)!
-
-        bettorUpdate.newTimeline.splice(bet.proposedIndex, 0, {
-          trackId: track._id,
-          year: track.year,
-          earnedAtRoundNumber: round.roundNumber,
-          earnedBy: "bet",
-        })
-
-        bettorUpdate.newTimelineSize += 1
-        awardedPlayerIds.push(bettor._id)
-        coinDeltas.push({ playerId: bettor._id, delta: 0 })
-        await ctx.db.patch(bet._id, { status: "won" })
-      } else {
-        coinDeltas.push({ playerId: bettor._id, delta: 0 })
-        await ctx.db.patch(bet._id, { status: "lost" })
-      }
-    }
-
-    for (const bet of declinedBets) {
-      await ctx.db.patch(bet._id, { status: "lost" })
-    }
-
-    for (const [playerId, update] of timelineUpdates) {
-      await ctx.db.patch(playerId, {
-        timeline: update.newTimeline,
-        timelineSize: update.newTimelineSize,
-      })
-    }
+    await applyDeclinedBets(ctx, declinedBets)
+    await persistTimelineUpdates(ctx, timelineUpdates)
 
     await ctx.db.patch(round._id, {
       phase: "resolved",
@@ -394,7 +461,7 @@ export const resolveRound = mutationWithSession({
         validIndexMax: validRange.max,
         turnPlayerWasCorrect,
         awardedPlayerIds,
-        coinDeltas,
+        coinDeltas: lockedBetResults.coinDeltas,
         resolvedAt: Date.now(),
       },
     })
@@ -475,19 +542,10 @@ export const playAgain = mutationWithSession({
     const { lobbyId } = args
     const { sessionId } = ctx
 
-    const lobby = await ctx.db.get(lobbyId)
+    const lobby = await getLobbyOrThrow(ctx, lobbyId)
 
-    if (!lobby) {
-      throw new ConvexError("Lobby not found")
-    }
-
-    if (lobby.hostSessionId !== sessionId) {
-      throw new ConvexError("Only the host can restart the game")
-    }
-
-    if (lobby.status !== "finished") {
-      throw new ConvexError("Game is not finished")
-    }
+    assertHostSession(lobby, sessionId, "Only the host can restart the game")
+    assertLobbyStatus(lobby, "finished", "Game is not finished")
 
     await ctx.db.patch(lobbyId, {
       status: "lobby",

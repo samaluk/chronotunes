@@ -78,6 +78,20 @@ describe("checkHostTransfer with presence", () => {
       displayName: "Player2",
     })
 
+    const lobbyInfo = await t.query(api.lobbies.get, { code })
+
+    await t.mutation(api.presence.sendHeartbeat, {
+      roomId: lobbyInfo!._id,
+      userId: "player1-session",
+      sessionId: "player1-session",
+    })
+
+    await t.mutation(api.presence.sendHeartbeat, {
+      roomId: lobbyInfo!._id,
+      userId: "player2-session",
+      sessionId: "player2-session",
+    })
+
     await t.run(async (ctx) => {
       const lobby = await ctx.db.query("lobbies").first()
       if (lobby) {
@@ -155,6 +169,14 @@ describe("checkHostTransfer with presence", () => {
       displayName: "Player1Paused",
     })
 
+    const lobbyInfo = await t.query(api.lobbies.get, { code })
+
+    await t.mutation(api.presence.sendHeartbeat, {
+      roomId: lobbyInfo!._id,
+      userId: "player1-paused",
+      sessionId: "player1-paused",
+    })
+
     await t.run(async (ctx) => {
       const lobby = await ctx.db.query("lobbies").first()
       if (lobby) {
@@ -200,6 +222,14 @@ describe("checkHostTransfer with presence", () => {
       code,
       sessionId: asSessionId("player-clear"),
       displayName: "PlayerClear",
+    })
+
+    const lobbyInfo = await t.query(api.lobbies.get, { code })
+
+    await t.mutation(api.presence.sendHeartbeat, {
+      roomId: lobbyInfo!._id,
+      userId: "player-clear",
+      sessionId: "player-clear",
     })
 
     await t.run(async (ctx) => {

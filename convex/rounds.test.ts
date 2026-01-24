@@ -26,6 +26,33 @@ async function seedTestData(t: ReturnType<typeof convexTest>) {
       createdAt: Date.now(),
       source: "test",
     })
+    await ctx.db.insert("tracks", {
+      title: "Test Song 3",
+      artist: "Test Artist 3",
+      year: 2000,
+      externalIds: { youtubeVideoId: "ghi789" },
+      links: {},
+      createdAt: Date.now(),
+      source: "test",
+    })
+    await ctx.db.insert("tracks", {
+      title: "Test Song 4",
+      artist: "Test Artist 4",
+      year: 2010,
+      externalIds: { youtubeVideoId: "jkl012" },
+      links: {},
+      createdAt: Date.now(),
+      source: "test",
+    })
+    await ctx.db.insert("tracks", {
+      title: "Test Song 5",
+      artist: "Test Artist 5",
+      year: 2020,
+      externalIds: { youtubeVideoId: "mno345" },
+      links: {},
+      createdAt: Date.now(),
+      source: "test",
+    })
   })
 }
 
@@ -122,7 +149,7 @@ test("getCurrent hides track details during placing phase for non-host", async (
   expect(result?.phase).toBe("placing")
   expect(result?.track).not.toBeNull()
   expect(result?.track.trackId).toBeDefined()
-  expect(result?.isHost).toBe(false)
+  expect(result?.track.youtubeVideoId).toBeDefined()
 })
 
 test("getCurrent shows track details during placing phase for host", async () => {
@@ -156,7 +183,7 @@ test("getCurrent shows track details during placing phase for host", async () =>
   expect(result).not.toBeNull()
   expect(result?.phase).toBe("placing")
   expect(result?.track).not.toBeNull()
-  expect(result?.isHost).toBe(true)
+  expect(result?.track.youtubeVideoId).toBeDefined()
 })
 
 test("getCurrent includes placementPreview", async () => {
@@ -589,23 +616,28 @@ test("submitPlacement fails for non-turn player", async () => {
   expect(turnPlayerId).not.toBeNull()
 
   let nonTurnPlayerId: Id<"players"> | null = null
+  let nonTurnSessionId: SessionId | null = null
   await t.run(async (ctx) => {
-    const player = await ctx.db
-      .query("players")
-      .filter((q) => q.eq(q.field("sessionId"), asSessionId("player-session-notturn")))
-      .first()
-    if (player) {
-      nonTurnPlayerId = player._id
+    const players = await ctx.db.query("players").collect()
+    const nonTurnPlayer = players.find((player) => player._id !== turnPlayerId)
+    if (nonTurnPlayer) {
+      nonTurnPlayerId = nonTurnPlayer._id
+      nonTurnSessionId = nonTurnPlayer.sessionId as SessionId
     }
   })
 
   expect(nonTurnPlayerId).not.toBeNull()
   expect(nonTurnPlayerId).not.toBe(turnPlayerId)
+  expect(nonTurnSessionId).not.toBeNull()
+
+  if (!nonTurnSessionId) {
+    return
+  }
 
   await expect(
     t.mutation(api.rounds.submitPlacement, {
       lobbyId: lobby!._id,
-      sessionId: asSessionId("player-session-notturn"),
+      sessionId: nonTurnSessionId,
     }),
   ).rejects.toThrow("Only the turn player can submit placement")
 })

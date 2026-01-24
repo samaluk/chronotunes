@@ -1,6 +1,7 @@
 import { ConvexError, v } from "convex/values"
 import { vSessionId } from "convex-helpers/server/sessions"
-import { query } from "./_generated/server"
+import type { Doc } from "./_generated/dataModel"
+import { type MutationCtx, query } from "./_generated/server"
 import { mutationWithSession } from "./lib/sessions"
 
 const LOBBY_CODE_CHARS = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"
@@ -17,6 +18,33 @@ const DEFAULT_SETTINGS = {
   minYear: 1950,
   maxYear: 2025,
 } as const
+
+const normalizeLobbyCode = (code: string) => code.trim().toUpperCase()
+
+const assertDisplayName = (displayName: string) => {
+  if (displayName.length < 1 || displayName.length > 20) {
+    throw new ConvexError("Display name must be between 1 and 20 characters")
+  }
+}
+
+const getLobbyByCode = async (ctx: MutationCtx, code: string) => {
+  const lobby = await ctx.db
+    .query("lobbies")
+    .filter((q) => q.eq(q.field("code"), normalizeLobbyCode(code)))
+    .first()
+
+  if (!lobby) {
+    throw new ConvexError("Lobby not found")
+  }
+
+  return lobby
+}
+
+const assertHost = (lobby: Doc<"lobbies">, sessionId: string, message: string) => {
+  if (lobby.hostSessionId !== sessionId) {
+    throw new ConvexError(message)
+  }
+}
 
 function generateLobbyCode(): string {
   let code = ""
@@ -41,9 +69,7 @@ export const create = mutationWithSession({
     const { displayName } = args
     const { sessionId } = ctx
 
-    if (displayName.length < 1 || displayName.length > 20) {
-      throw new ConvexError("Display name must be between 1 and 20 characters")
-    }
+    assertDisplayName(displayName)
 
     let code: string
     const maxAttempts = 10
@@ -92,18 +118,9 @@ export const join = mutationWithSession({
     const { code, displayName } = args
     const { sessionId } = ctx
 
-    if (displayName.length < 1 || displayName.length > 20) {
-      throw new ConvexError("Display name must be between 1 and 20 characters")
-    }
+    assertDisplayName(displayName)
 
-    const lobby = await ctx.db
-      .query("lobbies")
-      .filter((q) => q.eq(q.field("code"), code.toUpperCase()))
-      .first()
-
-    if (!lobby) {
-      throw new ConvexError("Lobby not found")
-    }
+    const lobby = await getLobbyByCode(ctx, code)
 
     if (lobby.status !== "lobby") {
       throw new ConvexError("Cannot join lobby that is not in lobby status")
@@ -143,14 +160,7 @@ export const leave = mutationWithSession({
     const { code } = args
     const { sessionId } = ctx
 
-    const lobby = await ctx.db
-      .query("lobbies")
-      .filter((q) => q.eq(q.field("code"), code.toUpperCase()))
-      .first()
-
-    if (!lobby) {
-      throw new ConvexError("Lobby not found")
-    }
+    const lobby = await getLobbyByCode(ctx, code)
 
     const player = await ctx.db
       .query("players")
@@ -189,7 +199,7 @@ export const get = query({
 
     const lobby = await ctx.db
       .query("lobbies")
-      .filter((q) => q.eq(q.field("code"), code.toUpperCase()))
+      .filter((q) => q.eq(q.field("code"), normalizeLobbyCode(code)))
       .first()
 
     return lobby
@@ -208,6 +218,67 @@ const lobbySettingsValidator = v.object({
   maxYear: v.number(),
 })
 
+const validateTargetTimelineSize = (value?: number) => {
+  if (value && (value < 5 || value > 15)) {
+    throw new ConvexError("Target timeline size must be between 5 and 15")
+  }
+}
+
+const validateStartingCoins = (value?: number) => {
+  if (value !== undefined && (value < 1 || value > 10)) {
+    throw new ConvexError("Starting coins must be between 1 and 10")
+  }
+}
+
+const validateTurnSeconds = (value?: number) => {
+  if (value && (value < 15 || value > 120)) {
+    throw new ConvexError("Turn seconds must be between 15 and 120")
+  }
+}
+
+const validateBettingWindowSeconds = (value?: number) => {
+  if (value && (value < 5 || value > 60)) {
+    throw new ConvexError("Betting window seconds must be between 5 and 60")
+  }
+}
+
+const validateYearRange = (
+  settings: Partial<Doc<"lobbies">["settings"]>,
+  currentSettings: Doc<"lobbies">["settings"],
+) => {
+  const currentMaxYear = settings.maxYear ?? currentSettings.maxYear
+  const currentMinYear = settings.minYear ?? currentSettings.minYear
+
+  if (
+    settings.minYear !== undefined &&
+    (settings.minYear < 1900 || settings.minYear > currentMaxYear)
+  ) {
+    throw new ConvexError("Invalid minimum year")
+  }
+
+  if (
+    settings.maxYear !== undefined &&
+    (settings.maxYear > 2030 || settings.maxYear < currentMinYear)
+  ) {
+    throw new ConvexError("Invalid maximum year")
+  }
+}
+
+const validateSettingsUpdate = (
+  settings: Partial<Doc<"lobbies">["settings"]> | undefined,
+  currentSettings: Doc<"lobbies">["settings"],
+) => {
+  if (!settings) {
+    return
+  }
+
+  validateTargetTimelineSize(settings.targetTimelineSize)
+  validateStartingCoins(settings.startingCoins)
+  validateTurnSeconds(settings.turnSeconds)
+  validateBettingWindowSeconds(settings.bettingWindowSeconds)
+  validateYearRange(settings, currentSettings)
+}
+
 export const updateSettings = mutationWithSession({
   args: {
     code: v.string(),
@@ -217,64 +288,15 @@ export const updateSettings = mutationWithSession({
     const { code, settings } = args
     const { sessionId } = ctx
 
-    const lobby = await ctx.db
-      .query("lobbies")
-      .filter((q) => q.eq(q.field("code"), code.toUpperCase()))
-      .first()
+    const lobby = await getLobbyByCode(ctx, code)
 
-    if (!lobby) {
-      throw new ConvexError("Lobby not found")
-    }
-
-    if (lobby.hostSessionId !== sessionId) {
-      throw new ConvexError("Only the host can update settings")
-    }
+    assertHost(lobby, sessionId, "Only the host can update settings")
 
     if (lobby.status !== "lobby") {
       throw new ConvexError("Cannot update settings for a lobby that is not in lobby status")
     }
 
-    if (
-      settings?.targetTimelineSize &&
-      (settings.targetTimelineSize < 5 || settings.targetTimelineSize > 15)
-    ) {
-      throw new ConvexError("Target timeline size must be between 5 and 15")
-    }
-
-    if (
-      settings.startingCoins !== undefined &&
-      (settings.startingCoins < 1 || settings.startingCoins > 10)
-    ) {
-      throw new ConvexError("Starting coins must be between 1 and 10")
-    }
-
-    if (settings.turnSeconds && (settings.turnSeconds < 15 || settings.turnSeconds > 120)) {
-      throw new ConvexError("Turn seconds must be between 15 and 120")
-    }
-
-    if (
-      settings.bettingWindowSeconds &&
-      (settings.bettingWindowSeconds < 5 || settings.bettingWindowSeconds > 60)
-    ) {
-      throw new ConvexError("Betting window seconds must be between 5 and 60")
-    }
-
-    const currentMaxYear = settings.maxYear ?? lobby.settings.maxYear
-    const currentMinYear = settings.minYear ?? lobby.settings.minYear
-
-    if (
-      settings.minYear !== undefined &&
-      (settings.minYear < 1900 || settings.minYear > currentMaxYear)
-    ) {
-      throw new ConvexError("Invalid minimum year")
-    }
-
-    if (
-      settings.maxYear !== undefined &&
-      (settings.maxYear > 2030 || settings.maxYear < currentMinYear)
-    ) {
-      throw new ConvexError("Invalid maximum year")
-    }
+    validateSettingsUpdate(settings, lobby.settings)
 
     await ctx.db.patch(lobby._id, { settings: { ...lobby.settings, ...settings } })
   },
@@ -289,18 +311,9 @@ export const transferHost = mutationWithSession({
     const { code, newHostSessionId } = args
     const { sessionId } = ctx
 
-    const lobby = await ctx.db
-      .query("lobbies")
-      .filter((q) => q.eq(q.field("code"), code.toUpperCase()))
-      .first()
+    const lobby = await getLobbyByCode(ctx, code)
 
-    if (!lobby) {
-      throw new ConvexError("Lobby not found")
-    }
-
-    if (lobby.hostSessionId !== sessionId) {
-      throw new ConvexError("Only the host can transfer host privileges")
-    }
+    assertHost(lobby, sessionId, "Only the host can transfer host privileges")
 
     if (sessionId === newHostSessionId) {
       throw new ConvexError("Cannot transfer host to yourself")

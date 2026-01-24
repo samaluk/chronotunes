@@ -102,7 +102,7 @@ const createMockTrack = (
 
 const lobbyId = "lobby123" as GenericId<"lobbies">
 const placeSongHeadingText = "Place the Song"
-const placeOnTimelineText = "Place on timeline"
+const placeOnTimelineText = /Place on timeline/i
 const confirmPlacementText = "Confirm Placement"
 
 describe("TimelinePlacer", () => {
@@ -176,7 +176,7 @@ describe("TimelinePlacer", () => {
       </NextIntlClientProvider>,
     )
 
-    expect(screen.getByText("Known Track")).toBeInTheDocument()
+    expect(screen.getAllByText("Known Track")).toHaveLength(2)
   })
 
   test("displays confirm placement button", () => {

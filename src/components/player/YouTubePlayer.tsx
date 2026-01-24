@@ -23,6 +23,7 @@ type PlayerStatus = "loading" | "playing" | "error"
 export function YouTubePlayer({ youtubeVideoId, className }: YouTubePlayerProps): React.ReactNode {
   const isMounted = useIsMounted()
   const tPlayer = useTranslations("player")
+  const mounted = isMounted()
   const [status, setStatus] = useState<PlayerStatus>("loading")
   const [volume, _setVolume] = useLocalStorage(VOLUME_STORAGE_KEY, 80)
   const [isMuted, _setIsMuted] = useLocalStorage(MUTED_STORAGE_KEY, false)
@@ -46,7 +47,7 @@ export function YouTubePlayer({ youtubeVideoId, className }: YouTubePlayerProps)
   )
 
   useEffect(() => {
-    if (!isMounted()) {
+    if (!mounted) {
       return
     }
 
@@ -56,10 +57,10 @@ export function YouTubePlayer({ youtubeVideoId, className }: YouTubePlayerProps)
     }
 
     setStatus("loading")
-  }, [isMounted, youtubeVideoId])
+  }, [mounted, youtubeVideoId])
 
   useEffect(() => {
-    if (!isMounted()) {
+    if (!mounted) {
       return
     }
 
@@ -75,11 +76,35 @@ export function YouTubePlayer({ youtubeVideoId, className }: YouTubePlayerProps)
     updateMobileState()
     mediaQuery.addEventListener("change", updateMobileState)
     return () => mediaQuery.removeEventListener("change", updateMobileState)
-  }, [isMounted])
+  }, [mounted])
 
   const handleEnableAudio = useCallback(() => {
     setHasUserInitiated(true)
   }, [])
+
+  const statusInfo = useMemo(() => {
+    if (isMobile && !hasUserInitiated) {
+      return {
+        label: tPlayer("tapToEnableAudio"),
+        tone: "text-amber-600 dark:text-amber-400",
+        indicator: <span className="h-2 w-2 animate-pulse rounded-full bg-amber-500" />,
+      }
+    }
+
+    if (status === "playing") {
+      return {
+        label: tPlayer("playingAudio"),
+        tone: "text-green-600 dark:text-green-400",
+        indicator: <span className="h-2 w-2 animate-pulse rounded-full bg-green-500" />,
+      }
+    }
+
+    return {
+      label: tPlayer("loadingAudio"),
+      tone: "text-muted-foreground",
+      indicator: <Loader2 className="h-3 w-3 animate-spin text-muted-foreground" />,
+    }
+  }, [hasUserInitiated, isMobile, status, tPlayer])
 
   if (status === "error" || !youtubeVideoId) {
     return (
@@ -95,22 +120,6 @@ export function YouTubePlayer({ youtubeVideoId, className }: YouTubePlayerProps)
         </div>
       </div>
     )
-  }
-
-  let statusLabel = tPlayer("loadingAudio")
-  let statusTone = "text-muted-foreground"
-  let statusIndicator = <Loader2 className="h-3 w-3 animate-spin text-muted-foreground" />
-
-  if (status === "playing") {
-    statusLabel = tPlayer("playingAudio")
-    statusTone = "text-green-600 dark:text-green-400"
-    statusIndicator = <span className="h-2 w-2 animate-pulse rounded-full bg-green-500" />
-  }
-
-  if (isMobile && !hasUserInitiated) {
-    statusLabel = tPlayer("tapToEnableAudio")
-    statusTone = "text-amber-600 dark:text-amber-400"
-    statusIndicator = <span className="h-2 w-2 animate-pulse rounded-full bg-amber-500" />
   }
 
   const isEffectivelyMuted = isMuted || (isMobile && !hasUserInitiated)
@@ -143,9 +152,9 @@ export function YouTubePlayer({ youtubeVideoId, className }: YouTubePlayerProps)
       </div>
 
       <div className="flex items-center gap-2">
-        {statusIndicator}
-        <output aria-live="polite" className={cn("font-medium text-xs", statusTone)}>
-          {statusLabel}
+        {statusInfo.indicator}
+        <output aria-live="polite" className={cn("font-medium text-xs", statusInfo.tone)}>
+          {statusInfo.label}
         </output>
         {isMobile && !hasUserInitiated && (
           <Button

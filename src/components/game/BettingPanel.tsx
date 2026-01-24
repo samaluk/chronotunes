@@ -75,6 +75,354 @@ interface SlotInfo {
   bets: SlotBetInfo[]
 }
 
+interface SlotState {
+  slotBetsForIndex: SlotBetInfo[]
+  isTurnPlayerSlot: boolean
+  isActive: boolean
+  label: string
+  showPreviewCoin: boolean
+  isDisabled: boolean
+  shouldDim: boolean
+}
+
+interface BettingHeaderProps {
+  betCoinsLabel: string
+  title: string
+  description: string
+}
+
+interface BettingTimelineProps {
+  slots: SlotInfo[]
+  sortedTimeline: TimelineEntry[]
+  getSlotState: (slot: SlotInfo) => SlotState
+  shakeSlotIndex: number | null
+  canBet: boolean
+  hasLockedBet: boolean
+  hasDeclinedBet: boolean
+  selectedIndex: number | null
+  me: Player | null
+  renderTimelineEntry: (entry: TimelineEntry) => React.ReactNode
+  onSlotClick: (index: number) => void
+  tCommon: ReturnType<typeof useTranslations>
+}
+
+interface BettingActionsProps {
+  selectedIndex: number | null
+  hasLockedBet: boolean
+  hasDeclinedBet: boolean
+  isLockingIn: boolean
+  isPreviewing: boolean
+  onCancel: () => void
+  onConfirm: () => void
+  t: ReturnType<typeof useTranslations>
+  tCommon: ReturnType<typeof useTranslations>
+}
+
+interface BettingStatusProps {
+  canDecline: boolean
+  isDeclining: boolean
+  onDecline: () => void
+  showPreviewDiscarded: boolean
+  isTurnPlayer: boolean
+  canBet: boolean
+  hasLockedBet: boolean
+  hasDeclinedBet: boolean
+  coins: number
+  t: ReturnType<typeof useTranslations>
+}
+
+interface ResolveRoundPanelProps {
+  canResolveRound: boolean
+  isResolving: boolean
+  onResolveRound: () => void
+  tTimer: ReturnType<typeof useTranslations>
+}
+
+const buildSlotBets = (
+  safeBets: Array<{
+    playerId: Id<"players">
+    playerDisplayName: string
+    lockedIn: boolean
+    declinedToBet: boolean
+    proposedIndex: number
+  }>,
+) => {
+  const map = new Map<number, SlotBetInfo[]>()
+  for (const bet of safeBets) {
+    if (bet.declinedToBet) {
+      continue
+    }
+    const existing = map.get(bet.proposedIndex) ?? []
+    existing.push({
+      playerId: bet.playerId,
+      playerDisplayName: bet.playerDisplayName,
+      lockedIn: bet.lockedIn,
+    })
+    map.set(bet.proposedIndex, existing)
+  }
+  return map
+}
+
+const buildSlots = (sortedTimeline: TimelineEntry[], slotBets: Map<number, SlotBetInfo[]>) => {
+  const result: SlotInfo[] = []
+  for (let index = 0; index <= sortedTimeline.length; index += 1) {
+    result.push({
+      index,
+      above: sortedTimeline[index - 1],
+      below: sortedTimeline[index],
+      bets: slotBets.get(index) ?? [],
+    })
+  }
+  return result
+}
+
+function BettingHeader({ betCoinsLabel, title, description }: BettingHeaderProps): React.ReactNode {
+  return (
+    <div className="flex items-center justify-between">
+      <div>
+        <h3 className="font-medium text-muted-foreground text-sm">{title}</h3>
+        <p className="mt-1 text-muted-foreground text-xs">{description}</p>
+      </div>
+      <div className="flex items-center gap-2">
+        <Coins className="h-4 w-4 text-amber-500" />
+        <span className="font-medium text-sm">{betCoinsLabel}</span>
+      </div>
+    </div>
+  )
+}
+
+function BettingTimeline({
+  slots,
+  sortedTimeline,
+  getSlotState,
+  shakeSlotIndex,
+  canBet,
+  hasLockedBet,
+  hasDeclinedBet,
+  selectedIndex,
+  me,
+  renderTimelineEntry,
+  onSlotClick,
+  tCommon,
+}: BettingTimelineProps): React.ReactNode {
+  const elements: React.ReactNode[] = []
+
+  const renderBetZone = (slot: SlotInfo): React.ReactNode => {
+    const slotState = getSlotState(slot)
+    const isOpenSlot = slotState.slotBetsForIndex.length === 0 && !slotState.isTurnPlayerSlot
+    const shouldPulse =
+      canBet && isOpenSlot && !hasLockedBet && !hasDeclinedBet && selectedIndex !== slot.index
+    const slotHasLockedBet = slotState.slotBetsForIndex.some((bet) => bet.lockedIn)
+    const slotCoins = (
+      <>
+        {slotState.slotBetsForIndex.map((bet) => (
+          <BetCoin
+            isPreview={bet.playerId === me?._id && !bet.lockedIn}
+            key={bet.playerId}
+            playerName={bet.playerDisplayName}
+            state={(() => {
+              if (bet.lockedIn) {
+                return "locked"
+              }
+              if (slotHasLockedBet) {
+                return "blocked"
+              }
+              return "pending"
+            })()}
+          />
+        ))}
+        {slotState.showPreviewCoin && me && (
+          <BetCoin isPreview playerName={me.displayName} state="pending" />
+        )}
+        {slotState.isTurnPlayerSlot && (
+          <span className="inline-flex h-7 items-center gap-1.5 rounded-full border border-amber-300 bg-amber-100 px-2 font-medium text-amber-800 text-xs dark:border-amber-700 dark:bg-amber-900/30 dark:text-amber-200">
+            {tCommon("newSong")}
+          </span>
+        )}
+      </>
+    )
+
+    return (
+      <BetZone
+        coins={slotCoins}
+        index={slot.index}
+        isActive={slotState.isActive}
+        isDisabled={slotState.isDisabled}
+        isOpenSlot={isOpenSlot}
+        isShaking={shakeSlotIndex === slot.index}
+        isTurnPlayerSlot={slotState.isTurnPlayerSlot}
+        key={`slot-${slot.index}`}
+        label={slotState.label}
+        onClick={onSlotClick}
+        shouldDim={slotState.shouldDim}
+        shouldPulse={shouldPulse}
+      />
+    )
+  }
+
+  const firstSlot = slots[0]
+  if (firstSlot) {
+    elements.push(renderBetZone(firstSlot))
+  }
+
+  sortedTimeline.forEach((entry, index) => {
+    elements.push(
+      <div key={`timeline-entry-${entry.trackId}-${entry.earnedAtRoundNumber}-${index}`}>
+        {renderTimelineEntry(entry)}
+      </div>,
+    )
+
+    const nextSlot = slots[index + 1]
+    if (nextSlot) {
+      elements.push(renderBetZone(nextSlot))
+    }
+  })
+
+  return <div className="space-y-4">{elements}</div>
+}
+
+function BettingActions({
+  selectedIndex,
+  hasLockedBet,
+  hasDeclinedBet,
+  isLockingIn,
+  isPreviewing,
+  onCancel,
+  onConfirm,
+  t,
+  tCommon,
+}: BettingActionsProps): React.ReactNode {
+  if (selectedIndex === null || hasLockedBet || hasDeclinedBet) {
+    return null
+  }
+
+  return (
+    <div className="rounded-lg border bg-muted/30 p-3">
+      <div className="flex items-center justify-between gap-3">
+        <div>
+          <p className="hidden font-medium text-foreground text-sm sm:block">
+            {t("pressEnterToConfirm")}
+          </p>
+          <p className="hidden text-muted-foreground text-xs sm:block">{t("useArrowsToMove")}</p>
+          <p className="font-medium text-foreground text-sm sm:hidden">{t("tapConfirmToLock")}</p>
+          <p className="text-muted-foreground text-xs sm:hidden">{t("tapSlotToPreview")}</p>
+        </div>
+        <div className="flex items-center gap-2">
+          <Button onClick={onCancel} size="sm" type="button" variant="ghost">
+            <X className="mr-1 h-4 w-4" />
+            {tCommon("cancel")}
+          </Button>
+          <Button
+            disabled={isLockingIn || isPreviewing}
+            onClick={onConfirm}
+            size="sm"
+            type="button"
+          >
+            <Check className="mr-1 h-4 w-4" />
+            {t("confirmBet")}
+          </Button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function BettingStatus({
+  canDecline,
+  isDeclining,
+  onDecline,
+  showPreviewDiscarded,
+  isTurnPlayer,
+  canBet,
+  hasLockedBet,
+  hasDeclinedBet,
+  coins,
+  t,
+}: BettingStatusProps): React.ReactNode {
+  return (
+    <>
+      {canDecline && (
+        <div className="flex justify-end">
+          <Button
+            disabled={isDeclining}
+            onClick={onDecline}
+            size="sm"
+            type="button"
+            variant="outline"
+          >
+            <AlertTriangle className="mr-2 h-4 w-4" />
+            {t("declineBet")}
+          </Button>
+        </div>
+      )}
+
+      {showPreviewDiscarded && (
+        <div className="flex items-center gap-2 rounded-lg border border-amber-200 bg-amber-50 p-2 text-amber-700 dark:border-amber-800 dark:bg-amber-950/30 dark:text-amber-200">
+          <AlertTriangle className="h-4 w-4" />
+          <span className="font-medium text-sm">{t("previewDiscarded")}</span>
+        </div>
+      )}
+
+      {isTurnPlayer && (
+        <div className="flex items-center justify-center gap-2 rounded-lg border bg-muted/50 p-3 text-muted-foreground">
+          <Lock className="h-4 w-4" />
+          <span className="text-sm">{t("turnPlayerCannotBet")}</span>
+        </div>
+      )}
+
+      {!(canBet || hasLockedBet || hasDeclinedBet) && coins < 1 && (
+        <div className="flex items-center justify-center gap-2 rounded-lg border bg-muted/50 p-3 text-muted-foreground">
+          <Coins className="h-4 w-4" />
+          <span className="text-sm">{t("notEnoughCoins")}</span>
+        </div>
+      )}
+
+      {hasDeclinedBet && (
+        <div className="flex items-center justify-center gap-2 rounded-lg border border-amber-200 bg-amber-50 p-3 text-amber-700 dark:border-amber-800 dark:bg-amber-950/30 dark:text-amber-200">
+          <AlertTriangle className="h-4 w-4" />
+          <span className="font-medium text-sm">{t("declinedToBet")}</span>
+        </div>
+      )}
+
+      {hasLockedBet && (
+        <div className="flex items-center justify-center gap-2 rounded-lg border border-green-200 bg-green-50 p-3 dark:border-green-800 dark:bg-green-950/30">
+          <Check className="h-4 w-4 text-green-600 dark:text-green-400" />
+          <span className="font-medium text-green-700 text-sm dark:text-green-300">
+            {t("yourBetLocked")}
+          </span>
+        </div>
+      )}
+    </>
+  )
+}
+
+function ResolveRoundPanel({
+  canResolveRound,
+  isResolving,
+  onResolveRound,
+  tTimer,
+}: ResolveRoundPanelProps): React.ReactNode {
+  if (!canResolveRound) {
+    return null
+  }
+
+  return (
+    <div className="flex items-center justify-center gap-2 rounded-lg border border-primary bg-primary/10 p-4">
+      <Button disabled={isResolving} onClick={onResolveRound} size="lg" type="button">
+        {isResolving ? (
+          <>
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            {tTimer("resolvingRound")}
+          </>
+        ) : (
+          tTimer("resolveRound")
+        )}
+      </Button>
+      <p className="text-muted-foreground text-xs">{tTimer("waitingForBets")}</p>
+    </div>
+  )
+}
+
 // biome-ignore lint: stateful UI orchestration
 export function BettingPanel({
   lobbyId,
@@ -200,35 +548,8 @@ export function BettingPanel({
     ],
   )
 
-  const slotBets = useMemo(() => {
-    const map = new Map<number, SlotBetInfo[]>()
-    for (const bet of safeBets) {
-      if (bet.declinedToBet) {
-        continue
-      }
-      const existing = map.get(bet.proposedIndex) ?? []
-      existing.push({
-        playerId: bet.playerId,
-        playerDisplayName: bet.playerDisplayName,
-        lockedIn: bet.lockedIn,
-      })
-      map.set(bet.proposedIndex, existing)
-    }
-    return map
-  }, [safeBets])
-
-  const slots = useMemo<SlotInfo[]>(() => {
-    const result: SlotInfo[] = []
-    for (let index = 0; index <= sortedTimeline.length; index += 1) {
-      result.push({
-        index,
-        above: sortedTimeline[index - 1],
-        below: sortedTimeline[index],
-        bets: slotBets.get(index) ?? [],
-      })
-    }
-    return result
-  }, [sortedTimeline, slotBets])
+  const slotBets = useMemo(() => buildSlotBets(safeBets), [safeBets])
+  const slots = useMemo(() => buildSlots(sortedTimeline, slotBets), [sortedTimeline, slotBets])
 
   const getNextIndexForDirection = useCallback(
     (currentIndex: number, direction: "up" | "down") => {
@@ -450,18 +771,7 @@ export function BettingPanel({
 
       await handlePreview(index)
     },
-    [
-      selectedIndex,
-      myBet,
-      hasLockedBet,
-      hasDeclinedBet,
-      isPreviewing,
-      isLockingIn,
-      handleConfirm,
-      handlePreview,
-      turnPlayerSlotIndex,
-      triggerForbiddenSlotFeedback,
-    ],
+    [isPreviewing, isLockingIn, handlePreview, turnPlayerSlotIndex, triggerForbiddenSlotFeedback],
   )
 
   const handleArrowMove = useCallback(
@@ -503,7 +813,7 @@ export function BettingPanel({
           return
       }
     },
-    [canBet, selectedIndex, hasLockedBet, handleArrowMove, handleConfirm, handleCancel],
+    [canBet, selectedIndex, handleArrowMove, handleCancel],
   )
 
   useEffect(() => {
@@ -550,202 +860,58 @@ export function BettingPanel({
 
   return (
     <div className="w-full space-y-4">
-      <div className="flex items-center justify-between">
-        <div>
-          <h3 className="font-medium text-muted-foreground text-sm">{t("placeYourBet")}</h3>
-          <p className="mt-1 text-muted-foreground text-xs">{t("placeBetDescription")}</p>
-        </div>
-        <div className="flex items-center gap-2">
-          <Coins className="h-4 w-4 text-amber-500" />
-          <span className="font-medium text-sm">{t("betCoins", { count: me?.coins ?? 0 })}</span>
-        </div>
-      </div>
+      <BettingHeader
+        betCoinsLabel={t("betCoins", { count: me?.coins ?? 0 })}
+        description={t("placeBetDescription")}
+        title={t("placeYourBet")}
+      />
 
-      <div className="space-y-4">
-        {(() => {
-          const elements: React.ReactNode[] = []
+      <BettingTimeline
+        canBet={canBet}
+        getSlotState={getSlotState}
+        hasDeclinedBet={hasDeclinedBet}
+        hasLockedBet={hasLockedBet}
+        me={me}
+        onSlotClick={handleSlotClick}
+        renderTimelineEntry={renderTimelineEntry}
+        selectedIndex={selectedIndex}
+        shakeSlotIndex={shakeSlotIndex}
+        slots={slots}
+        sortedTimeline={sortedTimeline}
+        tCommon={tCommon}
+      />
 
-          const renderBetZone = (slot: SlotInfo): React.ReactNode => {
-            const slotState = getSlotState(slot)
-            const isOpenSlot =
-              slotState.slotBetsForIndex.length === 0 && !slotState.isTurnPlayerSlot
-            const shouldPulse =
-              canBet &&
-              isOpenSlot &&
-              !hasLockedBet &&
-              !hasDeclinedBet &&
-              selectedIndex !== slot.index
-            const slotHasLockedBet = slotState.slotBetsForIndex.some((bet) => bet.lockedIn)
-            const slotCoins = (
-              <>
-                {slotState.slotBetsForIndex.map((bet) => (
-                  <BetCoin
-                    isPreview={bet.playerId === me?._id && !bet.lockedIn}
-                    key={bet.playerId}
-                    playerName={bet.playerDisplayName}
-                    state={(() => {
-                      if (bet.lockedIn) {
-                        return "locked"
-                      }
-                      if (slotHasLockedBet) {
-                        return "blocked"
-                      }
-                      return "pending"
-                    })()}
-                  />
-                ))}
-                {slotState.showPreviewCoin && me && (
-                  <BetCoin isPreview playerName={me.displayName} state="pending" />
-                )}
-                {slotState.isTurnPlayerSlot && (
-                  <span className="inline-flex h-7 items-center gap-1.5 rounded-full border border-amber-300 bg-amber-100 px-2 font-medium text-amber-800 text-xs dark:border-amber-700 dark:bg-amber-900/30 dark:text-amber-200">
-                    {tCommon("newSong")}
-                  </span>
-                )}
-              </>
-            )
+      <BettingActions
+        hasDeclinedBet={hasDeclinedBet}
+        hasLockedBet={hasLockedBet}
+        isLockingIn={isLockingIn}
+        isPreviewing={isPreviewing}
+        onCancel={handleCancel}
+        onConfirm={handleConfirm}
+        selectedIndex={selectedIndex}
+        t={t}
+        tCommon={tCommon}
+      />
 
-            return (
-              <BetZone
-                coins={slotCoins}
-                index={slot.index}
-                isActive={slotState.isActive}
-                isDisabled={slotState.isDisabled}
-                isOpenSlot={isOpenSlot}
-                isShaking={shakeSlotIndex === slot.index}
-                isTurnPlayerSlot={slotState.isTurnPlayerSlot}
-                key={`slot-${slot.index}`}
-                label={slotState.label}
-                onClick={handleSlotClick}
-                shouldDim={slotState.shouldDim}
-                shouldPulse={shouldPulse}
-              />
-            )
-          }
+      <BettingStatus
+        canBet={canBet}
+        canDecline={canDecline}
+        coins={me?.coins ?? 0}
+        hasDeclinedBet={hasDeclinedBet}
+        hasLockedBet={hasLockedBet}
+        isDeclining={isDeclining}
+        isTurnPlayer={isTurnPlayer}
+        onDecline={handleDecline}
+        showPreviewDiscarded={showPreviewDiscarded}
+        t={t}
+      />
 
-          const firstSlot = slots[0]
-          if (firstSlot) {
-            elements.push(renderBetZone(firstSlot))
-          }
-
-          sortedTimeline.forEach((entry, index) => {
-            elements.push(
-              <div key={`timeline-entry-${entry.trackId}-${entry.earnedAtRoundNumber}-${index}`}>
-                {renderTimelineEntry(entry)}
-              </div>,
-            )
-
-            const nextSlot = slots[index + 1]
-            if (nextSlot) {
-              elements.push(renderBetZone(nextSlot))
-            }
-          })
-
-          return elements
-        })()}
-      </div>
-
-      {selectedIndex !== null && !hasLockedBet && !hasDeclinedBet && (
-        <div className="rounded-lg border bg-muted/30 p-3">
-          <div className="flex items-center justify-between gap-3">
-            <div>
-              <p className="hidden font-medium text-foreground text-sm sm:block">
-                {t("pressEnterToConfirm")}
-              </p>
-              <p className="hidden text-muted-foreground text-xs sm:block">
-                {t("useArrowsToMove")}
-              </p>
-              <p className="font-medium text-foreground text-sm sm:hidden">
-                {t("tapConfirmToLock")}
-              </p>
-              <p className="text-muted-foreground text-xs sm:hidden">{t("tapSlotToPreview")}</p>
-            </div>
-            <div className="flex items-center gap-2">
-              <Button onClick={handleCancel} size="sm" type="button" variant="ghost">
-                <X className="mr-1 h-4 w-4" />
-                {tCommon("cancel")}
-              </Button>
-              <Button
-                disabled={isLockingIn || isPreviewing}
-                onClick={handleConfirm}
-                size="sm"
-                type="button"
-              >
-                <Check className="mr-1 h-4 w-4" />
-                {t("confirmBet")}
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {canDecline && (
-        <div className="flex justify-end">
-          <Button
-            disabled={isDeclining}
-            onClick={handleDecline}
-            size="sm"
-            type="button"
-            variant="outline"
-          >
-            <AlertTriangle className="mr-2 h-4 w-4" />
-            {t("declineBet")}
-          </Button>
-        </div>
-      )}
-
-      {showPreviewDiscarded && (
-        <div className="flex items-center gap-2 rounded-lg border border-amber-200 bg-amber-50 p-2 text-amber-700 dark:border-amber-800 dark:bg-amber-950/30 dark:text-amber-200">
-          <AlertTriangle className="h-4 w-4" />
-          <span className="font-medium text-sm">{t("previewDiscarded")}</span>
-        </div>
-      )}
-
-      {isTurnPlayer && (
-        <div className="flex items-center justify-center gap-2 rounded-lg border bg-muted/50 p-3 text-muted-foreground">
-          <Lock className="h-4 w-4" />
-          <span className="text-sm">{t("turnPlayerCannotBet")}</span>
-        </div>
-      )}
-
-      {!(canBet || hasLockedBet || hasDeclinedBet) && me && me.coins < 1 && (
-        <div className="flex items-center justify-center gap-2 rounded-lg border bg-muted/50 p-3 text-muted-foreground">
-          <Coins className="h-4 w-4" />
-          <span className="text-sm">{t("notEnoughCoins")}</span>
-        </div>
-      )}
-
-      {hasDeclinedBet && (
-        <div className="flex items-center justify-center gap-2 rounded-lg border border-amber-200 bg-amber-50 p-3 text-amber-700 dark:border-amber-800 dark:bg-amber-950/30 dark:text-amber-200">
-          <AlertTriangle className="h-4 w-4" />
-          <span className="font-medium text-sm">{t("declinedToBet")}</span>
-        </div>
-      )}
-
-      {hasLockedBet && (
-        <div className="flex items-center justify-center gap-2 rounded-lg border border-green-200 bg-green-50 p-3 dark:border-green-800 dark:bg-green-950/30">
-          <Check className="h-4 w-4 text-green-600 dark:text-green-400" />
-          <span className="font-medium text-green-700 text-sm dark:text-green-300">
-            {t("yourBetLocked")}
-          </span>
-        </div>
-      )}
-
-      {canResolveRound && (
-        <div className="flex items-center justify-center gap-2 rounded-lg border border-primary bg-primary/10 p-4">
-          <Button disabled={isResolving} onClick={handleResolveRound} size="lg" type="button">
-            {isResolving ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                {tTimer("resolvingRound")}
-              </>
-            ) : (
-              tTimer("resolveRound")
-            )}
-          </Button>
-          <p className="text-muted-foreground text-xs">{tTimer("waitingForBets")}</p>
-        </div>
-      )}
+      <ResolveRoundPanel
+        canResolveRound={canResolveRound}
+        isResolving={isResolving}
+        onResolveRound={handleResolveRound}
+        tTimer={tTimer}
+      />
 
       {activityLabel && (
         <div className="flex items-center justify-center gap-2 rounded-lg bg-muted/50 p-2">

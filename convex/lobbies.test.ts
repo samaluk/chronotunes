@@ -21,7 +21,7 @@ describe("lobbies", () => {
       sessionId: asSessionId("test-session-456"),
       displayName: "AnotherHost",
     })
-    expect(result.code).toMatch(/^[A-Z2345679]+$/)
+    expect(result.code).toMatch(/^[A-Z23456789]+$/)
   })
 
   test("create lobby creates lobby with status lobby", async () => {

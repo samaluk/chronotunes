@@ -64,9 +64,14 @@ vi.mock("convex/react", () => ({
   useQuery: vi.fn(),
 }))
 
+vi.mock("usehooks-ts", () => ({
+  useIsMounted: () => () => true,
+}))
+
 vi.mock("react", () => ({
   useEffect: vi.fn((fn) => fn()),
   useState: vi.fn(() => [true, vi.fn()]),
+  useMemo: vi.fn((fn) => fn()),
 }))
 
 import { useQuery } from "convex/react"
@@ -88,7 +93,7 @@ describe("MyTimeline", () => {
     expect(screen.queryByText("Place songs on your timeline to collect cards")).not.toBeNull()
   })
 
-  test("displays card count correctly", () => {
+  test("does not show card count when populated", () => {
     const mockPlayer = createMockPlayer({
       timeline: [
         {
@@ -101,11 +106,11 @@ describe("MyTimeline", () => {
       timelineSize: 1,
     })
 
-    mockUseQuery.mockReturnValue([])
+    mockUseQuery.mockReturnValue([createMockTrack("track1", "Test Song", "Test Artist", 1990)])
 
     render(<MyTimeline player={mockPlayer} />)
 
-    expect(screen.queryByText("1 card")).not.toBeNull()
+    expect(screen.queryByText(/card/i)).toBeNull()
   })
 
   test("displays multiple cards correctly", () => {
@@ -155,10 +160,9 @@ describe("MyTimeline", () => {
 
     mockUseQuery.mockReturnValue([createMockTrack("track1", "Test Song", "Test Artist", 1990)])
 
-    render(<MyTimeline player={mockPlayer} />)
+    const { container } = render(<MyTimeline player={mockPlayer} />)
 
-    const placementElements = screen.getAllByText("Placed yourself")
-    expect(placementElements.length).toBeGreaterThanOrEqual(1)
+    expect(container.querySelector(".lucide-target")).not.toBeNull()
   })
 
   test("shows bet indicator for cards earned by bet", () => {
@@ -176,10 +180,9 @@ describe("MyTimeline", () => {
 
     mockUseQuery.mockReturnValue([createMockTrack("track1", "Test Song", "Test Artist", 1990)])
 
-    render(<MyTimeline player={mockPlayer} />)
+    const { container } = render(<MyTimeline player={mockPlayer} />)
 
-    const betElements = screen.getAllByText("Won from bet")
-    expect(betElements.length).toBeGreaterThanOrEqual(1)
+    expect(container.querySelector(".lucide-trophy")).not.toBeNull()
   })
 
   test("displays year for each card", () => {

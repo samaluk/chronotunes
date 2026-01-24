@@ -65,6 +65,62 @@ interface RoundResultsProps {
   me: Doc<"players"> | null
 }
 
+const getCorrectnessStyles = (showCorrectness: boolean, isCorrect: boolean) => {
+  if (!showCorrectness) {
+    return {
+      container: "scale-90 bg-muted opacity-50",
+      text: "text-foreground",
+      icon: <Clock className="h-8 w-8 animate-pulse text-muted-foreground" />,
+      label: "revealing",
+    }
+  }
+
+  if (isCorrect) {
+    return {
+      container: "scale-100 bg-green-100 dark:bg-green-900/30",
+      text: "text-green-600 dark:text-green-400",
+      icon: <Check className="h-10 w-10 animate-bounce text-green-600 dark:text-green-400" />,
+      label: "correct",
+    }
+  }
+
+  return {
+    container: "scale-100 bg-red-100 dark:bg-red-900/30",
+    text: "text-red-600 dark:text-red-400",
+    icon: <X className="h-10 w-10 animate-shake text-red-600 dark:text-red-400" />,
+    label: "incorrect",
+  }
+}
+
+const getBetStatusStyles = (status: BetWithPlayer["status"]) => {
+  switch (status) {
+    case "won":
+      return {
+        container: "border-green-200 bg-green-50 dark:border-green-800 dark:bg-green-950/20",
+        badge: "bg-green-100 text-green-600 dark:bg-green-900/50 dark:text-green-400",
+        label: "Won",
+        labelClass: "text-green-600 dark:text-green-400",
+        icon: <Check className="h-4 w-4" />,
+      }
+    case "lost":
+      return {
+        container: "border-red-200 bg-red-50 dark:border-red-800 dark:bg-red-950/20",
+        badge: "bg-red-100 text-red-600 dark:bg-red-900/50 dark:text-red-400",
+        label: "Lost",
+        labelClass: "text-red-600 dark:text-red-400",
+        icon: <X className="h-4 w-4" />,
+      }
+    default:
+      return {
+        container: "bg-muted/30",
+        badge: "bg-muted",
+        label: "Pending",
+        labelClass: "",
+        icon: <Clock className="h-4 w-4" />,
+      }
+  }
+}
+
 export function RoundResults({
   lobbyId,
   track,
@@ -112,8 +168,11 @@ export function RoundResults({
     return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
   }
 
-  const turnPlayerBet = getBetForPlayer(turnPlayer._id)
-  const _didTurnPlayerWinCard = resolution.turnPlayerWasCorrect || turnPlayerBet?.status === "won"
+  const isTurnPlayerCorrect = resolution.turnPlayerWasCorrect
+  const correctnessStyles = getCorrectnessStyles(showCorrectness, isTurnPlayerCorrect)
+  const placementResultText = isTurnPlayerCorrect
+    ? t("placementResult", { name: turnPlayer.displayName, result: "in the valid range" })
+    : t("placementResult", { name: turnPlayer.displayName, result: "outside the valid range" })
 
   return (
     <div className="space-y-6">
@@ -121,48 +180,18 @@ export function RoundResults({
         <div
           className={cn(
             "mx-auto flex h-20 w-20 transform items-center justify-center rounded-full transition-all duration-500",
-            showCorrectness
-              ? resolution.turnPlayerWasCorrect
-                ? "scale-100 bg-green-100 dark:bg-green-900/30"
-                : "scale-100 bg-red-100 dark:bg-red-900/30"
-              : "scale-90 bg-muted opacity-50",
+            correctnessStyles.container,
           )}
         >
-          {showCorrectness ? (
-            resolution.turnPlayerWasCorrect ? (
-              <Check className="h-10 w-10 animate-bounce text-green-600 dark:text-green-400" />
-            ) : (
-              <X className="h-10 w-10 animate-shake text-red-600 dark:text-red-400" />
-            )
-          ) : (
-            <Clock className="h-8 w-8 animate-pulse text-muted-foreground" />
-          )}
+          {correctnessStyles.icon}
         </div>
         <div className="space-y-1">
           <p
-            className={cn(
-              "font-bold text-xl transition-all duration-300",
-              showCorrectness
-                ? resolution.turnPlayerWasCorrect
-                  ? "text-green-600 dark:text-green-400"
-                  : "text-red-600 dark:text-red-400"
-                : "text-foreground",
-            )}
+            className={cn("font-bold text-xl transition-all duration-300", correctnessStyles.text)}
           >
-            {showCorrectness
-              ? resolution.turnPlayerWasCorrect
-                ? t("correct")
-                : t("incorrect")
-              : t("revealing")}
+            {t(correctnessStyles.label)}
           </p>
-          <p className="text-muted-foreground text-sm">
-            {resolution.turnPlayerWasCorrect
-              ? t("placementResult", { name: turnPlayer.displayName, result: "in the valid range" })
-              : t("placementResult", {
-                  name: turnPlayer.displayName,
-                  result: "outside the valid range",
-                })}
-          </p>
+          <p className="text-muted-foreground text-sm">{placementResultText}</p>
         </div>
       </div>
 
@@ -245,15 +274,12 @@ export function RoundResults({
                 return null
               }
               const isMe = player._id === me?._id
+              const statusStyles = getBetStatusStyles(bet.status)
               return (
                 <div
                   className={cn(
                     "flex items-center justify-between rounded-lg border p-3",
-                    bet.status === "won"
-                      ? "border-green-200 bg-green-50 dark:border-green-800 dark:bg-green-950/20"
-                      : bet.status === "lost"
-                        ? "border-red-200 bg-red-50 dark:border-red-800 dark:bg-red-950/20"
-                        : "bg-muted/30",
+                    statusStyles.container,
                     isMe && "ring-2 ring-primary/20",
                   )}
                   key={bet.playerId}
@@ -262,20 +288,10 @@ export function RoundResults({
                     <div
                       className={cn(
                         "flex h-8 w-8 items-center justify-center rounded-full",
-                        bet.status === "won"
-                          ? "bg-green-100 text-green-600 dark:bg-green-900/50 dark:text-green-400"
-                          : bet.status === "lost"
-                            ? "bg-red-100 text-red-600 dark:bg-red-900/50 dark:text-red-400"
-                            : "bg-muted",
+                        statusStyles.badge,
                       )}
                     >
-                      {bet.status === "won" ? (
-                        <Check className="h-4 w-4" />
-                      ) : bet.status === "lost" ? (
-                        <X className="h-4 w-4" />
-                      ) : (
-                        <Clock className="h-4 w-4" />
-                      )}
+                      {statusStyles.icon}
                     </div>
                     <div>
                       <p className="font-medium">
@@ -288,17 +304,8 @@ export function RoundResults({
                     </div>
                   </div>
                   <div className="text-right">
-                    <p
-                      className={cn(
-                        "font-medium",
-                        bet.status === "won"
-                          ? "text-green-600 dark:text-green-400"
-                          : bet.status === "lost"
-                            ? "text-red-600 dark:text-red-400"
-                            : "",
-                      )}
-                    >
-                      {bet.status === "won" ? "Won" : bet.status === "lost" ? "Lost" : "Pending"}
+                    <p className={cn("font-medium", statusStyles.labelClass)}>
+                      {statusStyles.label}
                     </p>
                   </div>
                 </div>

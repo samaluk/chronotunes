@@ -13,21 +13,43 @@ vi.mock("convex-helpers/react/sessions", () => ({
   SessionProvider: ({ children }: { children: React.ReactNode }) => children,
 }))
 
+vi.mock("next-intl", () => ({
+  useTranslations: () => (key: string) => key,
+}))
+
+let useStateCallCount = 0
+
 vi.mock("react", () => ({
   useState: vi.fn((initial) => {
+    useStateCallCount += 1
+    if (useStateCallCount === 2) {
+      return [true, vi.fn()]
+    }
     if (typeof initial === "function") {
       return [initial(), vi.fn()]
     }
     return [initial, vi.fn()]
   }),
+  useEffect: vi.fn((fn) => fn()),
+  useMemo: vi.fn((fn) => fn()),
 }))
 
 afterEach(() => {
   cleanup()
+  useStateCallCount = 0
 })
+
+const mockLobbyId = "lobby123" as GenericId<"lobbies">
+const now = Date.now()
+const startNextRoundRegex = /Start Next Round/i
+const waitingForHostRegex = /Waiting for host to start next round/i
+const resolvedAtRegex = /Resolved at/i
 
 const createMockPlayer = (overrides = {}) => ({
   _id: "player1" as GenericId<"players">,
+  _creationTime: now,
+  lobbyId: mockLobbyId,
+  createdAt: now,
   displayName: "TestPlayer",
   timeline: [],
   timelineSize: 0,
@@ -37,7 +59,6 @@ const createMockPlayer = (overrides = {}) => ({
   ...overrides,
 })
 
-const mockLobbyId = "lobby123" as GenericId<"lobbies">
 const mockPlayers = [
   createMockPlayer({
     _id: "player1" as GenericId<"players">,
@@ -68,7 +89,7 @@ const mockResolution = {
   turnPlayerWasCorrect: true,
   awardedPlayerIds: ["player1"] as GenericId<"players">[],
   coinDeltas: [],
-  resolvedAt: Date.now(),
+  resolvedAt: now,
 }
 
 describe("RoundResults", () => {
@@ -103,7 +124,7 @@ describe("RoundResults", () => {
       />,
     )
 
-    expect(screen.getByText("Placement Correct!")).toBeInTheDocument()
+    expect(screen.getByText("correct")).toBeInTheDocument()
   })
 
   it("shows incorrect placement result when turn player was wrong", () => {
@@ -124,7 +145,7 @@ describe("RoundResults", () => {
       />,
     )
 
-    expect(screen.getByText("Placement Incorrect")).toBeInTheDocument()
+    expect(screen.getByText("incorrect")).toBeInTheDocument()
   })
 
   it("displays card awards for awarded players", () => {
@@ -150,6 +171,7 @@ describe("RoundResults", () => {
         playerId: "player2" as GenericId<"players">,
         playerDisplayName: "Player2",
         proposedIndex: 0,
+        declinedToBet: false,
         status: "lost" as const,
       },
     ]
@@ -176,6 +198,7 @@ describe("RoundResults", () => {
         playerId: "player2" as GenericId<"players">,
         playerDisplayName: "Player2",
         proposedIndex: 0,
+        declinedToBet: false,
         status: "won" as const,
       },
     ]
@@ -208,7 +231,7 @@ describe("RoundResults", () => {
       />,
     )
 
-    expect(screen.getByRole("button", { name: /Start Next Round/i })).toBeInTheDocument()
+    expect(screen.getByRole("button", { name: startNextRoundRegex })).toBeInTheDocument()
   })
 
   it("shows waiting state when user is not host", () => {
@@ -224,7 +247,7 @@ describe("RoundResults", () => {
       />,
     )
 
-    expect(screen.getByText(/Waiting for host to start next round/i)).toBeInTheDocument()
+    expect(screen.getByText(waitingForHostRegex)).toBeInTheDocument()
   })
 
   it("displays resolved timestamp", () => {
@@ -240,7 +263,7 @@ describe("RoundResults", () => {
       />,
     )
 
-    expect(screen.getByText(/Resolved at/i)).toBeInTheDocument()
+    expect(screen.getByText(resolvedAtRegex)).toBeInTheDocument()
   })
 
   it("shows message when no cards were awarded", () => {

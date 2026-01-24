@@ -15,6 +15,80 @@ interface CsvTrackImportItem {
   mbid?: string
 }
 
+const normalizeText = (value: string | undefined) => value?.replace(/^"|"$/g, "").trim()
+
+const buildExternalIds = (track: CsvTrackImportItem) => ({
+  ...(track.spotifyTrackId ? { spotifyTrackId: track.spotifyTrackId.trim() } : {}),
+  ...(track.youtubeVideoId ? { youtubeVideoId: track.youtubeVideoId.trim() } : {}),
+})
+
+const buildLinks = (track: CsvTrackImportItem) => ({
+  ...(track.spotifyTrackId
+    ? {
+        spotifyUrl: `https://open.spotify.com/track/${track.spotifyTrackId}`,
+      }
+    : {}),
+})
+
+const parseCsvTracks = (csvContent: string) => {
+  const lines = csvContent.trim().split("\n")
+  const tracks: CsvTrackImportItem[] = []
+
+  for (let i = 1; i < lines.length; i++) {
+    const line = lines[i]?.trim()
+    if (!line) {
+      continue
+    }
+
+    const parts = line.split("|")
+    if (parts.length < 12) {
+      continue
+    }
+
+    const titleRaw = parts[1]
+    const artistRaw = parts[2]
+    const yearRaw = parts[11]
+    const durationRaw = parts[7]
+    const spotifyTrackIdRaw = parts[19]
+    const mbidRaw = parts[20]
+
+    if (!(titleRaw && artistRaw)) {
+      continue
+    }
+
+    const title = normalizeText(titleRaw)
+    const artist = normalizeText(artistRaw)
+    const year = parseYear(normalizeText(yearRaw))
+    const durationMs = parseDurationToMs(normalizeText(durationRaw))
+    const spotifyTrackId = normalizeText(spotifyTrackIdRaw)
+    const mbid = normalizeText(mbidRaw)
+
+    if (!(title && artist)) {
+      continue
+    }
+
+    const trackItem: CsvTrackImportItem = {
+      title,
+      artist,
+      year,
+    }
+
+    if (spotifyTrackId) {
+      trackItem.spotifyTrackId = spotifyTrackId
+    }
+    if (durationMs !== undefined) {
+      trackItem.durationMs = durationMs
+    }
+    if (mbid) {
+      trackItem.mbid = mbid
+    }
+
+    tracks.push(trackItem)
+  }
+
+  return tracks
+}
+
 function parseDurationToMs(durationRaw: string | undefined): number | undefined {
   if (!durationRaw) {
     return undefined
@@ -33,7 +107,7 @@ function parseYear(dateStrRaw: string | undefined): number {
   if (!dateStrRaw || dateStrRaw === "0000-00-00") {
     return 2000
   }
-  const dateStr = dateStrRaw.replace(/^"|"$/g, "")
+  const dateStr = normalizeText(dateStrRaw) ?? dateStrRaw
   const year = Number.parseInt(dateStr.split("-")[0], 10)
   return Number.isNaN(year) ? 2000 : year
 }
@@ -93,14 +167,11 @@ export const importTracksFromCsv = mutation({
     let deletedCount = 0
     if (clearExisting) {
       const existingTracks = await ctx.db.query("tracks").collect()
-      for (const track of existingTracks) {
-        await ctx.db.delete(track._id)
-        deletedCount++
-      }
+      await Promise.all(existingTracks.map((track) => ctx.db.delete(track._id)))
+      deletedCount = existingTracks.length
     }
 
     const importedIds: string[] = []
-    const skippedIds: string[] = []
     const now = Date.now()
     let hasErrors = false
 
@@ -112,17 +183,8 @@ export const importTracksFromCsv = mutation({
           title: track.title.trim(),
           artist: track.artist.trim(),
           year: track.year,
-          externalIds: {
-            ...(track.spotifyTrackId ? { spotifyTrackId: track.spotifyTrackId.trim() } : {}),
-            ...(track.youtubeVideoId ? { youtubeVideoId: track.youtubeVideoId.trim() } : {}),
-          },
-          links: {
-            ...(track.spotifyTrackId
-              ? {
-                  spotifyUrl: `https://open.spotify.com/track/${track.spotifyTrackId}`,
-                }
-              : {}),
-          },
+          externalIds: buildExternalIds(track),
+          links: buildLinks(track),
           createdAt: now,
           source: "import",
           ...(track.mbid ? { mbid: track.mbid.trim() } : {}),
@@ -140,7 +202,7 @@ export const importTracksFromCsv = mutation({
       message: hasErrors ? "Import completed with some errors" : "Import completed successfully",
       importedCount: importedIds.length,
       deletedCount,
-      skippedCount: skippedIds.length,
+      skippedCount: 0,
       trackIds: importedIds,
       hasErrors,
     }
@@ -165,64 +227,13 @@ export const parseAndImportCsv = mutation({
   }> => {
     const { csvContent, clearExisting } = args
 
-    const lines = csvContent.trim().split("\n")
-    const tracks: CsvTrackImportItem[] = []
-
-    for (let i = 1; i < lines.length; i++) {
-      const line = lines[i].trim()
-      if (!line) {
-        continue
-      }
-
-      const parts = line.split("|")
-      if (parts.length < 12) {
-        continue
-      }
-
-      const titleRaw = parts[1]
-      const artistRaw = parts[2]
-      const yearRaw = parts[11]
-      const durationRaw = parts[7]
-      const spotifyTrackIdRaw = parts[19]
-      const mbidRaw = parts[20]
-
-      if (!(titleRaw && artistRaw)) {
-        continue
-      }
-
-      const title = titleRaw.replace(/^"|"$/g, "").trim()
-      const artist = artistRaw.replace(/^"|"$/g, "").trim()
-      const year = parseYear(yearRaw?.replace(/^"|"$/g, ""))
-      const durationMs = parseDurationToMs(durationRaw?.replace(/^"|"$/g, ""))
-      const spotifyTrackId = spotifyTrackIdRaw?.replace(/^"|"$/g, "").trim()
-      const mbid = mbidRaw?.replace(/^"|"$/g, "").trim()
-
-      if (title && artist) {
-        const trackItem: CsvTrackImportItem = {
-          title,
-          artist,
-          year,
-        }
-
-        if (spotifyTrackId) {
-          trackItem.spotifyTrackId = spotifyTrackId
-        }
-        if (durationMs !== undefined) {
-          trackItem.durationMs = durationMs
-        }
-        if (mbid) {
-          trackItem.mbid = mbid
-        }
-
-        tracks.push(trackItem)
-      }
-    }
+    const tracks = parseCsvTracks(csvContent)
 
     if (tracks.length === 0) {
       throw new ConvexError("No valid tracks found in CSV")
     }
 
-    return ctx.runMutation(api.importTracks.importTracksFromCsv, {
+    return await ctx.runMutation(api.importTracks.importTracksFromCsv, {
       tracks,
       clearExisting,
     })

@@ -46,7 +46,7 @@ export function TimelinePlacer({
   const [selectedIndex, setSelectedIndex] = useState<number>(existingPreviewIndex ?? 0)
   const [isSubmitting, setIsSubmitting] = useState(false)
 
-  const _setPlacementPreview = useSessionMutation(api.rounds.setPlacementPreview)
+  const setPlacementPreview = useSessionMutation(api.rounds.setPlacementPreview)
   const submitPlacement = useSessionMutation(api.rounds.submitPlacement)
 
   const sortedTimeline = sortTimelineByYear(player.timeline)
@@ -85,26 +85,41 @@ export function TimelinePlacer({
   handleSubmitRef.current = handleSubmit
 
   useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "ArrowUp") {
-        e.preventDefault()
+    if (existingPreviewIndex !== null) {
+      setSelectedIndex(existingPreviewIndex)
+    }
+  }, [existingPreviewIndex])
+
+  const handleKeyDown = useCallback(
+    (event: KeyboardEvent) => {
+      if (event.key === "ArrowUp") {
+        event.preventDefault()
         moveSelection("up")
-      } else if (e.key === "ArrowDown") {
-        e.preventDefault()
+        return
+      }
+
+      if (event.key === "ArrowDown") {
+        event.preventDefault()
         moveSelection("down")
-      } else if (e.key === "Enter") {
-        e.preventDefault()
+        return
+      }
+
+      if (event.key === "Enter") {
+        event.preventDefault()
         handleSubmitRef.current()
       }
-    }
+    },
+    [moveSelection],
+  )
 
+  useEffect(() => {
     window.addEventListener("keydown", handleKeyDown)
     return () => window.removeEventListener("keydown", handleKeyDown)
-  }, [moveSelection])
+  }, [handleKeyDown])
 
   useEffect(() => {
     const updatePreview = async () => {
-      await _setPlacementPreview({
+      await setPlacementPreview({
         lobbyId,
         proposedIndex: selectedIndex,
       })
@@ -113,7 +128,7 @@ export function TimelinePlacer({
     updatePreview().catch((error) => {
       console.error("Failed to update placement preview:", error)
     })
-  }, [lobbyId, selectedIndex, _setPlacementPreview])
+  }, [lobbyId, selectedIndex, setPlacementPreview])
 
   if (!currentTrack) {
     return (

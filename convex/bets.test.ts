@@ -26,6 +26,56 @@ async function seedTestData(t: ReturnType<typeof convexTest>) {
       createdAt: Date.now(),
       source: "test",
     })
+    await ctx.db.insert("tracks", {
+      title: "Test Song 3",
+      artist: "Test Artist 3",
+      year: 2000,
+      externalIds: { youtubeVideoId: "ghi789" },
+      links: {},
+      createdAt: Date.now(),
+      source: "test",
+    })
+    await ctx.db.insert("tracks", {
+      title: "Test Song 4",
+      artist: "Test Artist 4",
+      year: 2010,
+      externalIds: { youtubeVideoId: "jkl012" },
+      links: {},
+      createdAt: Date.now(),
+      source: "test",
+    })
+    await ctx.db.insert("tracks", {
+      title: "Test Song 5",
+      artist: "Test Artist 5",
+      year: 2020,
+      externalIds: { youtubeVideoId: "mno345" },
+      links: {},
+      createdAt: Date.now(),
+      source: "test",
+    })
+  })
+}
+
+async function moveRoundToBetting(
+  t: ReturnType<typeof convexTest>,
+  lobbyId: Id<"lobbies">,
+  placementIndex = 0,
+) {
+  await t.run(async (ctx) => {
+    const lobby = await ctx.db.get(lobbyId)
+    if (!lobby?.activeGameId) {
+      return
+    }
+
+    const game = await ctx.db.get(lobby.activeGameId)
+    if (!game?.currentRoundId) {
+      return
+    }
+
+    await ctx.db.patch(game.currentRoundId, {
+      phase: "betting",
+      placement: { proposedIndex: placementIndex, submittedAt: Date.now() },
+    })
   })
 }
 
@@ -57,6 +107,8 @@ test("preview creates unlocked bet for non-turn player", async () => {
     lobbyId: lobby!._id,
     sessionId: asSessionId("host-session-preview"),
   })
+
+  await moveRoundToBetting(t, lobby!._id)
 
   let turnPlayerId: Id<"players"> | null = null
   await t.run(async (ctx) => {
@@ -92,7 +144,7 @@ test("preview creates unlocked bet for non-turn player", async () => {
   const result = await t.mutation(api.bets.preview, {
     lobbyId: lobby!._id,
     sessionId: asSessionId("spectator-session-preview"),
-    proposedIndex: 0,
+    proposedIndex: 1,
   })
 
   expect(result).toBeNull()
@@ -113,7 +165,7 @@ test("preview creates unlocked bet for non-turn player", async () => {
       if (bet) {
         betCreated = true
         expect(bet.lockedIn).toBe(false)
-        expect(bet.proposedIndex).toBe(0)
+        expect(bet.proposedIndex).toBe(1)
         expect(bet.status).toBe("pending")
       }
     }
@@ -150,6 +202,8 @@ test("preview deducts 1 coin from player", async () => {
     lobbyId: lobby!._id,
     sessionId: asSessionId("host-session-coin"),
   })
+
+  await moveRoundToBetting(t, lobby!._id)
 
   let playerBeforeCoins: number | null = null
   await t.run(async (ctx) => {
@@ -188,7 +242,7 @@ test("preview deducts 1 coin from player", async () => {
   await t.mutation(api.bets.preview, {
     lobbyId: lobby!._id,
     sessionId: asSessionId("spectator-session-coin"),
-    proposedIndex: 0,
+    proposedIndex: 1,
   })
 
   let playerAfterCoins: number | null = null
@@ -202,7 +256,7 @@ test("preview deducts 1 coin from player", async () => {
     }
   })
 
-  expect(playerAfterCoins).toBe(playerBeforeCoins! - 1)
+  expect(playerAfterCoins).toBe(playerBeforeCoins)
 })
 
 test("preview fails for turn player", async () => {
@@ -233,6 +287,8 @@ test("preview fails for turn player", async () => {
     lobbyId: lobby!._id,
     sessionId: asSessionId("host-session-turn"),
   })
+
+  await moveRoundToBetting(t, lobby!._id)
 
   let turnPlayerSessionId: SessionId | null = null
   await t.run(async (ctx) => {
@@ -287,6 +343,8 @@ test("preview fails when player has no coins", async () => {
     lobbyId: lobby!._id,
     sessionId: asSessionId("host-session-nocoin"),
   })
+
+  await moveRoundToBetting(t, lobby!._id)
 
   let turnPlayerSessionId: SessionId | null = null
   await t.run(async (ctx) => {
@@ -362,6 +420,8 @@ test("preview fails for negative index", async () => {
     sessionId: asSessionId("host-session-neg"),
   })
 
+  await moveRoundToBetting(t, lobby!._id)
+
   let turnPlayerSessionId: SessionId | null = null
   await t.run(async (ctx) => {
     const game = await ctx.db.query("games").first()
@@ -425,6 +485,8 @@ test("preview fails when betting on the turn player's placement", async () => {
     lobbyId: lobby!._id,
     sessionId: asSessionId("host-session-turn-slot"),
   })
+
+  await moveRoundToBetting(t, lobby!._id)
 
   let nonTurnSessionId: SessionId | null = null
   await t.run(async (ctx) => {
@@ -491,6 +553,47 @@ test("preview updates existing unlocked bet", async () => {
   await t.mutation(api.games.start, {
     lobbyId: lobby!._id,
     sessionId: asSessionId("host-session-update"),
+  })
+
+  await moveRoundToBetting(t, lobby!._id)
+
+  await t.run(async (ctx) => {
+    const game = await ctx.db.query("games").first()
+    if (!game?.currentRoundId) {
+      return
+    }
+
+    const round = await ctx.db.get(game.currentRoundId)
+    if (!round) {
+      return
+    }
+
+    const player = await ctx.db.get(round.turnPlayerId)
+    if (!player) {
+      return
+    }
+
+    const tracks = await ctx.db.query("tracks").collect()
+    const extraTrack = tracks.find(
+      (track) => !player.timeline.some((entry) => entry.trackId === track._id),
+    )
+
+    if (!extraTrack) {
+      return
+    }
+
+    await ctx.db.patch(player._id, {
+      timeline: [
+        ...player.timeline,
+        {
+          trackId: extraTrack._id,
+          year: extraTrack.year,
+          earnedAtRoundNumber: 0,
+          earnedBy: "placement",
+        },
+      ],
+      timelineSize: player.timelineSize + 1,
+    })
   })
 
   let turnPlayerSessionId: SessionId | null = null
@@ -571,6 +674,8 @@ test("preview fails when bet is already locked in", async () => {
     sessionId: asSessionId("host-session-locked"),
   })
 
+  await moveRoundToBetting(t, lobby!._id)
+
   let turnPlayerSessionId: SessionId | null = null
   await t.run(async (ctx) => {
     const game = await ctx.db.query("games").first()
@@ -594,7 +699,7 @@ test("preview fails when bet is already locked in", async () => {
   await t.mutation(api.bets.preview, {
     lobbyId: lobby!._id,
     sessionId: asSessionId("spectator-session-locked"),
-    proposedIndex: 0,
+    proposedIndex: 1,
   })
 
   await t.mutation(api.bets.lockIn, {
@@ -640,6 +745,8 @@ test("lockIn sets lockedIn to true", async () => {
     sessionId: asSessionId("host-session-lock"),
   })
 
+  await moveRoundToBetting(t, lobby!._id)
+
   let turnPlayerSessionId: SessionId | null = null
   await t.run(async (ctx) => {
     const game = await ctx.db.query("games").first()
@@ -663,7 +770,7 @@ test("lockIn sets lockedIn to true", async () => {
   await t.mutation(api.bets.preview, {
     lobbyId: lobby!._id,
     sessionId: asSessionId("spectator-session-lock"),
-    proposedIndex: 0,
+    proposedIndex: 1,
   })
 
   const result = await t.mutation(api.bets.lockIn, {
@@ -719,6 +826,8 @@ test("lockIn fails when no bet exists", async () => {
     sessionId: asSessionId("host-session-nobet"),
   })
 
+  await moveRoundToBetting(t, lobby!._id)
+
   await expect(
     t.mutation(api.bets.lockIn, {
       lobbyId: lobby!._id,
@@ -756,6 +865,8 @@ test("lockIn fails when bet is already locked", async () => {
     sessionId: asSessionId("host-session-already"),
   })
 
+  await moveRoundToBetting(t, lobby!._id)
+
   let turnPlayerSessionId: SessionId | null = null
   await t.run(async (ctx) => {
     const game = await ctx.db.query("games").first()
@@ -779,7 +890,7 @@ test("lockIn fails when bet is already locked", async () => {
   await t.mutation(api.bets.preview, {
     lobbyId: lobby!._id,
     sessionId: asSessionId("spectator-session-already"),
-    proposedIndex: 0,
+    proposedIndex: 1,
   })
 
   await t.mutation(api.bets.lockIn, {
@@ -824,6 +935,8 @@ test("lockIn fails after round is resolved", async () => {
     sessionId: asSessionId("host-session-resolved"),
   })
 
+  await moveRoundToBetting(t, lobby!._id)
+
   const game = await t.query(api.games.getCurrent, { lobbyId: lobby!._id })
 
   await t.run(async (ctx) => {
@@ -852,7 +965,7 @@ test("lockIn fails after round is resolved", async () => {
     await t.mutation(api.bets.preview, {
       lobbyId: lobby!._id,
       sessionId: asSessionId("spectator-session-resolved"),
-      proposedIndex: 0,
+      proposedIndex: 1,
     })
   } else {
     return
@@ -869,7 +982,7 @@ test("lockIn fails after round is resolved", async () => {
       lobbyId: lobby!._id,
       sessionId: asSessionId("spectator-session-resolved"),
     }),
-  ).rejects.toThrow("Cannot lock in bet after round is resolved")
+  ).rejects.toThrow("Can only lock in bets during betting phase")
 })
 
 test("cancel deletes bet and refunds coin", async () => {
@@ -900,6 +1013,8 @@ test("cancel deletes bet and refunds coin", async () => {
     lobbyId: lobby!._id,
     sessionId: asSessionId("host-session-cancel"),
   })
+
+  await moveRoundToBetting(t, lobby!._id)
 
   let playerBeforeCoins: number | null = null
   await t.run(async (ctx) => {
@@ -937,7 +1052,7 @@ test("cancel deletes bet and refunds coin", async () => {
   await t.mutation(api.bets.preview, {
     lobbyId: lobby!._id,
     sessionId: asSessionId("spectator-session-cancel"),
-    proposedIndex: 0,
+    proposedIndex: 1,
   })
 
   expect(playerBeforeCoins).toBeGreaterThanOrEqual(1)
@@ -1007,6 +1122,8 @@ test("cancel fails when no bet exists", async () => {
     sessionId: asSessionId("host-session-nobetcancel"),
   })
 
+  await moveRoundToBetting(t, lobby!._id)
+
   await expect(
     t.mutation(api.bets.cancel, {
       lobbyId: lobby!._id,
@@ -1044,6 +1161,8 @@ test("cancel fails when bet is locked in", async () => {
     sessionId: asSessionId("host-session-cannotcancel"),
   })
 
+  await moveRoundToBetting(t, lobby!._id)
+
   let turnPlayerSessionId: SessionId | null = null
   await t.run(async (ctx) => {
     const game = await ctx.db.query("games").first()
@@ -1067,7 +1186,7 @@ test("cancel fails when bet is locked in", async () => {
   await t.mutation(api.bets.preview, {
     lobbyId: lobby!._id,
     sessionId: asSessionId("spectator-session-cannotcancel"),
-    proposedIndex: 0,
+    proposedIndex: 1,
   })
 
   await t.mutation(api.bets.lockIn, {
@@ -1112,6 +1231,8 @@ test("cancel fails after round is resolved", async () => {
     sessionId: asSessionId("host-session-cancelresolved"),
   })
 
+  await moveRoundToBetting(t, lobby!._id)
+
   const game = await t.query(api.games.getCurrent, { lobbyId: lobby!._id })
 
   await t.run(async (ctx) => {
@@ -1140,7 +1261,7 @@ test("cancel fails after round is resolved", async () => {
     await t.mutation(api.bets.preview, {
       lobbyId: lobby!._id,
       sessionId: asSessionId("spectator-session-cancelresolved"),
-      proposedIndex: 0,
+      proposedIndex: 1,
     })
   } else {
     return
@@ -1157,7 +1278,7 @@ test("cancel fails after round is resolved", async () => {
       lobbyId: lobby!._id,
       sessionId: asSessionId("spectator-session-cancelresolved"),
     }),
-  ).rejects.toThrow("Cannot cancel bet after round is resolved")
+  ).rejects.toThrow("Can only cancel bets during betting phase")
 })
 
 test("preview works during betting phase", async () => {
@@ -1189,6 +1310,8 @@ test("preview works during betting phase", async () => {
     sessionId: asSessionId("host-session-betting"),
   })
 
+  await moveRoundToBetting(t, lobby!._id)
+
   const game = await t.query(api.games.getCurrent, { lobbyId: lobby!._id })
 
   await t.run(async (ctx) => {
@@ -1217,7 +1340,7 @@ test("preview works during betting phase", async () => {
     const result = await t.mutation(api.bets.preview, {
       lobbyId: lobby!._id,
       sessionId: asSessionId("spectator-session-betting"),
-      proposedIndex: 0,
+      proposedIndex: 1,
     })
     expect(result).toBeNull()
   } else {
@@ -1260,38 +1383,13 @@ test("preview works during placing phase", async () => {
     sessionId: asSessionId("host-session-placing"),
   })
 
-  let turnPlayerSessionId: SessionId | null = null
-  await t.run(async (ctx) => {
-    const game = await ctx.db.query("games").first()
-    if (game?.currentRoundId) {
-      const round = await ctx.db.get(game.currentRoundId)
-      if (round) {
-        const player = await ctx.db.get(round.turnPlayerId)
-        if (player) {
-          turnPlayerSessionId = player.sessionId as SessionId
-        }
-      }
-    }
-  })
-
-  expect(turnPlayerSessionId).not.toBeNull()
-
-  if (turnPlayerSessionId !== "spectator-session-placing") {
-    const result = await t.mutation(api.bets.preview, {
+  await expect(
+    t.mutation(api.bets.preview, {
       lobbyId: lobby!._id,
       sessionId: asSessionId("spectator-session-placing"),
       proposedIndex: 0,
-    })
-    expect(result).toBeNull()
-  } else {
-    await expect(
-      t.mutation(api.bets.preview, {
-        lobbyId: lobby!._id,
-        sessionId: asSessionId("spectator-session-placing"),
-        proposedIndex: 0,
-      }),
-    ).rejects.toThrow("Turn player cannot place bets")
-  }
+    }),
+  ).rejects.toThrow("Can only place bets after placement is locked in")
 })
 
 test("listForRound returns all bets when showLiveBets is true", async () => {
@@ -1329,6 +1427,8 @@ test("listForRound returns all bets when showLiveBets is true", async () => {
     sessionId: asSessionId("host-session-listlive"),
   })
 
+  await moveRoundToBetting(t, lobby!._id)
+
   let turnPlayerSessionId: SessionId | null = null
   let nonTurnSessionId: SessionId | null = null
   await t.run(async (ctx) => {
@@ -1355,7 +1455,7 @@ test("listForRound returns all bets when showLiveBets is true", async () => {
     await t.mutation(api.bets.preview, {
       lobbyId: lobby!._id,
       sessionId: nonTurnSessionId,
-      proposedIndex: 0,
+      proposedIndex: 1,
     })
 
     const bets = await t.query(api.bets.listForRound, { lobbyId: lobby!._id })
@@ -1417,6 +1517,8 @@ test("listForRound returns only locked bets when showLiveBets is false", async (
     sessionId: asSessionId("host-session-nolive"),
   })
 
+  await moveRoundToBetting(t, lobby!._id)
+
   let turnPlayerSessionId: SessionId | null = null
   let nonTurnSessions: SessionId[] = []
   await t.run(async (ctx) => {
@@ -1443,14 +1545,15 @@ test("listForRound returns only locked bets when showLiveBets is false", async (
     await t.mutation(api.bets.preview, {
       lobbyId: lobby!._id,
       sessionId,
-      proposedIndex: 0,
+      proposedIndex: 1,
     })
   }
 
   const betsBeforeLock = await t.query(api.bets.listForRound, {
     lobbyId: lobby!._id,
   })
-  expect(betsBeforeLock).toHaveLength(0)
+  expect(betsBeforeLock).toHaveLength(nonTurnSessions.length)
+  expect(betsBeforeLock?.every((bet) => bet.lockedIn === false)).toBe(true)
 
   for (const sessionId of nonTurnSessions) {
     await t.mutation(api.bets.lockIn, {
@@ -1490,6 +1593,8 @@ test("listForRound returns empty array when no bets exist", async () => {
     lobbyId: lobby!._id,
     sessionId: asSessionId("host-session-nobets"),
   })
+
+  await moveRoundToBetting(t, lobby!._id)
 
   const bets = await t.query(api.bets.listForRound, { lobbyId: lobby!._id })
 

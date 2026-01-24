@@ -1,6 +1,6 @@
 import { ConvexError, v } from "convex/values"
-import type { Id } from "./_generated/dataModel"
-import { query } from "./_generated/server"
+import type { Doc, Id } from "./_generated/dataModel"
+import { type MutationCtx, query } from "./_generated/server"
 import { getGameContext, getPlayerBySession } from "./lib/gameContext"
 import { mutationWithSession } from "./lib/sessions"
 
@@ -14,6 +14,57 @@ interface BetWithPlayer {
   status: "pending" | "won" | "lost"
 }
 
+const requireBettingRound = (
+  round: Doc<"rounds"> | null | undefined,
+  message: string,
+): Doc<"rounds"> => {
+  if (!round || round.phase !== "betting") {
+    throw new ConvexError(message)
+  }
+  return round
+}
+
+const assertCanBet = (player: Doc<"players">, round: Doc<"rounds">) => {
+  if (round.turnPlayerId === player._id) {
+    throw new ConvexError("Turn player cannot place bets")
+  }
+
+  if (player.coins < 1) {
+    throw new ConvexError("Not enough coins to place a bet")
+  }
+}
+
+const assertValidProposedIndex = (proposedIndex: number, timelineLength: number) => {
+  if (proposedIndex < 0) {
+    throw new ConvexError("Proposed index cannot be negative")
+  }
+
+  if (proposedIndex > timelineLength) {
+    throw new ConvexError("Proposed index is out of range")
+  }
+}
+
+const assertNotTurnPlacement = (round: Doc<"rounds">, proposedIndex: number) => {
+  if (round.placement?.proposedIndex === proposedIndex) {
+    throw new ConvexError("Cannot bet on the turn player's placement")
+  }
+}
+
+const getBetForPlayer = (ctx: MutationCtx, roundId: Id<"rounds">, playerId: Id<"players">) => {
+  return ctx.db
+    .query("roundBets")
+    .withIndex("by_round_and_player", (q) => q.eq("roundId", roundId).eq("playerId", playerId))
+    .first()
+}
+
+const getLockedBetForSlot = (ctx: MutationCtx, roundId: Id<"rounds">, proposedIndex: number) => {
+  return ctx.db
+    .query("roundBets")
+    .withIndex("by_round", (q) => q.eq("roundId", roundId))
+    .filter((q) => q.eq(q.field("proposedIndex"), proposedIndex))
+    .first()
+}
+
 export const preview = mutationWithSession({
   args: { lobbyId: v.id("lobbies"), proposedIndex: v.number() },
   handler: async (ctx, args) => {
@@ -21,75 +72,54 @@ export const preview = mutationWithSession({
     const { sessionId } = ctx
 
     const { round } = await getGameContext(ctx, lobbyId)
-
-    if (!round || round.phase !== "betting") {
-      throw new ConvexError("Can only place bets after placement is locked in")
-    }
+    const bettingRound = requireBettingRound(
+      round,
+      "Can only place bets after placement is locked in",
+    )
 
     const player = await getPlayerBySession(ctx, lobbyId, sessionId)
 
-    if (round.turnPlayerId === player._id) {
-      throw new ConvexError("Turn player cannot place bets")
-    }
+    assertCanBet(player, bettingRound)
 
-    if (player.coins < 1) {
-      throw new ConvexError("Not enough coins to place a bet")
-    }
-
-    if (proposedIndex < 0) {
-      throw new ConvexError("Proposed index cannot be negative")
-    }
-
-    const turnPlayer = await ctx.db.get(round.turnPlayerId)
+    const turnPlayer = await ctx.db.get(bettingRound.turnPlayerId)
 
     if (!turnPlayer) {
       throw new ConvexError("Turn player not found")
     }
 
-    if (proposedIndex > turnPlayer.timeline.length) {
-      throw new ConvexError("Proposed index is out of range")
-    }
+    assertValidProposedIndex(proposedIndex, turnPlayer.timeline.length)
+    assertNotTurnPlacement(bettingRound, proposedIndex)
 
-    if (round.placement?.proposedIndex === proposedIndex) {
-      throw new ConvexError("Cannot bet on the turn player's placement")
-    }
-
-    const existingBet = await ctx.db
-      .query("roundBets")
-      .filter((q) =>
-        q.and(q.eq(q.field("roundId"), round._id), q.eq(q.field("playerId"), player._id)),
-      )
-      .first()
+    const existingBet = await getBetForPlayer(ctx, bettingRound._id, player._id)
 
     if (existingBet?.lockedIn) {
       throw new ConvexError("Cannot change a locked bet")
     }
 
-    const slotBet = await ctx.db
-      .query("roundBets")
-      .withIndex("by_round", (q) => q.eq("roundId", round._id))
-      .filter((q) => q.eq(q.field("proposedIndex"), proposedIndex))
-      .first()
+    const slotBet = await getLockedBetForSlot(ctx, bettingRound._id, proposedIndex)
 
     if (slotBet && slotBet.playerId !== player._id && slotBet.lockedIn) {
       throw new ConvexError("That placement slot is already taken")
     }
 
+    const now = Date.now()
+
     if (existingBet) {
       await ctx.db.patch(existingBet._id, {
         proposedIndex,
-        placedAt: Date.now(),
+        placedAt: now,
       })
-    } else {
-      await ctx.db.insert("roundBets", {
-        roundId: round._id,
-        playerId: player._id,
-        proposedIndex,
-        placedAt: Date.now(),
-        lockedIn: false,
-        status: "pending",
-      })
+      return
     }
+
+    await ctx.db.insert("roundBets", {
+      roundId: bettingRound._id,
+      playerId: player._id,
+      proposedIndex,
+      placedAt: now,
+      lockedIn: false,
+      status: "pending",
+    })
   },
 })
 
@@ -100,19 +130,11 @@ export const lockIn = mutationWithSession({
     const { sessionId } = ctx
 
     const { round } = await getGameContext(ctx, lobbyId)
-
-    if (!round || round.phase !== "betting") {
-      throw new ConvexError("Can only lock in bets during betting phase")
-    }
+    const bettingRound = requireBettingRound(round, "Can only lock in bets during betting phase")
 
     const player = await getPlayerBySession(ctx, lobbyId, sessionId)
 
-    const existingBet = await ctx.db
-      .query("roundBets")
-      .filter((q) =>
-        q.and(q.eq(q.field("roundId"), round._id), q.eq(q.field("playerId"), player._id)),
-      )
-      .first()
+    const existingBet = await getBetForPlayer(ctx, bettingRound._id, player._id)
 
     if (!existingBet) {
       throw new ConvexError("No bet to lock in")
@@ -122,9 +144,7 @@ export const lockIn = mutationWithSession({
       throw new ConvexError("Bet is already locked in")
     }
 
-    if (round.placement?.proposedIndex === existingBet.proposedIndex) {
-      throw new ConvexError("Cannot bet on the turn player's placement")
-    }
+    assertNotTurnPlacement(bettingRound, existingBet.proposedIndex)
 
     if (player.coins < 1) {
       throw new ConvexError("Not enough coins to lock in bet")
@@ -147,19 +167,11 @@ export const cancel = mutationWithSession({
     const { sessionId } = ctx
 
     const { round } = await getGameContext(ctx, lobbyId)
-
-    if (!round || round.phase !== "betting") {
-      throw new ConvexError("Can only cancel bets during betting phase")
-    }
+    const bettingRound = requireBettingRound(round, "Can only cancel bets during betting phase")
 
     const player = await getPlayerBySession(ctx, lobbyId, sessionId)
 
-    const existingBet = await ctx.db
-      .query("roundBets")
-      .filter((q) =>
-        q.and(q.eq(q.field("roundId"), round._id), q.eq(q.field("playerId"), player._id)),
-      )
-      .first()
+    const existingBet = await getBetForPlayer(ctx, bettingRound._id, player._id)
 
     if (!existingBet) {
       throw new ConvexError("No bet to cancel")
@@ -203,21 +215,24 @@ export const listForRound = query({
       return []
     }
 
-    const showLiveBets = lobby.settings.showLiveBets
+    let betsToReturn = bets
 
-    const filteredBets = showLiveBets
-      ? bets
-      : bets.filter((bet) => bet.lockedIn || bet.declinedToBet)
+    if (round.phase !== "betting" && !lobby.settings.showLiveBets) {
+      betsToReturn = bets.filter((bet) => bet.lockedIn || bet.declinedToBet)
+    }
 
-    const betsToReturn = round.phase === "betting" ? bets : filteredBets
+    const players = await Promise.all(betsToReturn.map((bet) => ctx.db.get(bet.playerId)))
+    const playersById = new Map(players.filter(Boolean).map((player) => [player!._id, player!]))
 
-    const betsWithPlayers: BetWithPlayer[] = []
+    return betsToReturn
+      .map((bet) => {
+        const player = playersById.get(bet.playerId)
 
-    for (const bet of betsToReturn) {
-      const player = await ctx.db.get(bet.playerId)
+        if (!player) {
+          return null
+        }
 
-      if (player) {
-        betsWithPlayers.push({
+        return {
           playerId: bet.playerId,
           playerDisplayName: player.displayName,
           proposedIndex: bet.proposedIndex,
@@ -225,10 +240,8 @@ export const listForRound = query({
           lockedIn: bet.lockedIn,
           declinedToBet: bet.declinedToBet ?? false,
           status: bet.status,
-        })
-      }
-    }
-
-    return betsWithPlayers
+        }
+      })
+      .filter((bet): bet is BetWithPlayer => bet !== null)
   },
 })

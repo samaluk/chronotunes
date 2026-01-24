@@ -25,10 +25,12 @@ export const checkHostDisconnect = internalMutation({
 
       const hostPresence = await presenceComponent.listUser(ctx, lobby.hostSessionId, false)
 
-      const isHostOnline =
-        hostPresence.length > 0 &&
-        (hostPresence[0] as { lastSeen?: number }).lastSeen !== undefined &&
-        (hostPresence[0] as { lastSeen?: number }).lastSeen! > cutoffTime
+      const isHostOnline = hostPresence.some(
+        (presence) =>
+          presence.online &&
+          (presence as { lastDisconnected?: number }).lastDisconnected !== undefined &&
+          (presence as { lastDisconnected?: number }).lastDisconnected! < cutoffTime,
+      )
 
       if (!isHostOnline) {
         const hostTransferDeadline = now + HOST_TRANSFER_DEADLINE_MS
@@ -73,10 +75,12 @@ export const checkHostTransfer = internalMutation({
 
       for (const player of players) {
         const presence = await presenceComponent.listUser(ctx, player.sessionId, false)
-        const isOnline =
-          presence.length > 0 &&
-          (presence[0] as { lastSeen?: number }).lastSeen !== undefined &&
-          (presence[0] as { lastSeen?: number }).lastSeen! > cutoffTime
+        const isOnline = presence.some(
+          (entry) =>
+            entry.online &&
+            (entry as { lastDisconnected?: number }).lastDisconnected !== undefined &&
+            (entry as { lastDisconnected?: number }).lastDisconnected! < cutoffTime,
+        )
 
         if (isOnline) {
           onlinePlayers.push(player)
