@@ -49,7 +49,7 @@ export async function create(
   return { id: playerId!, record: data }
 }
 
-export async function createHost(
+export function createHost(
   t: TestContext,
   lobbyId: Id<"lobbies">,
   sessionId: string,
@@ -88,7 +88,7 @@ export async function createMany(
   return results
 }
 
-export async function createWithTimeline(
+export function createWithTimeline(
   t: TestContext,
   lobbyId: Id<"lobbies">,
   timeline: Player["timeline"],
@@ -101,7 +101,7 @@ export async function createWithTimeline(
   })
 }
 
-export async function createWithCoins(
+export function createWithCoins(
   t: TestContext,
   lobbyId: Id<"lobbies">,
   coins: number,

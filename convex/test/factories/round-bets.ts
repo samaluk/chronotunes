@@ -40,7 +40,7 @@ export async function create(
   return { id: betId, record: data }
 }
 
-export async function createLocked(
+export function createLocked(
   t: TestContext,
   roundId: Id<"rounds">,
   playerId: Id<"players">,

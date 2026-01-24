@@ -27,6 +27,24 @@ interface LobbySettings {
   maxYear: number
 }
 
+const getUnitLabel = (
+  label: string,
+  value: number,
+  unit: string,
+  t: ReturnType<typeof useTranslations>,
+): string => {
+  switch (label) {
+    case "turnSeconds":
+      return t("turnSeconds", { count: value })
+    case "targetCards":
+      return t("targetCards", { count: value })
+    case "bettingWindowSeconds":
+      return t("bettingWindowSeconds", { count: value })
+    default:
+      return `${value} ${unit}`
+  }
+}
+
 export function SettingSlider({
   label,
   value,
@@ -39,14 +57,7 @@ export function SettingSlider({
 }: SettingSliderProps): React.ReactNode {
   const t = useTranslations("settings")
   const sliderId = `slider-${label}`
-  const unitLabel =
-    label === "turnSeconds"
-      ? t("turnSeconds", { count: value })
-      : label === "targetCards"
-        ? t("targetCards", { count: value })
-        : label === "bettingWindowSeconds"
-          ? t("bettingWindowSeconds", { count: value })
-          : `${value} ${unit}`
+  const unitLabel = getUnitLabel(label, value, unit, t)
   return (
     <div className="space-y-2">
       <div className="flex justify-between text-sm">

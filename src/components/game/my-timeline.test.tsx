@@ -3,6 +3,8 @@ import type { GenericId } from "convex/values"
 import { beforeEach, describe, expect, test, vi } from "vitest"
 import { MyTimeline } from "./my-timeline"
 
+const CARD_REGEX = /card/i
+
 const createMockPlayer = (
   overrides: Partial<{
     timeline: Array<{
@@ -110,7 +112,7 @@ describe("MyTimeline", () => {
 
     render(<MyTimeline player={mockPlayer} />)
 
-    expect(screen.queryByText(/card/i)).toBeNull()
+    expect(screen.queryByText(CARD_REGEX)).toBeNull()
   })
 
   test("displays multiple cards correctly", () => {

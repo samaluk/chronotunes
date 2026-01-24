@@ -24,11 +24,17 @@ interface Player {
   timelineSize: number
 }
 
-interface Track {
-  _id: Id<"tracks">
-  title: string
-  artist: string
-  year: number
+const getEarnedByLabel = (earnedBy: TimelineEntry["earnedBy"]): string => {
+  switch (earnedBy) {
+    case "placement":
+      return "Placed yourself"
+    case "bet":
+      return "Won from bet"
+    case "initial":
+      return "Initial placement"
+    default:
+      return "Unknown"
+  }
 }
 
 interface MyTimelineProps {
@@ -112,15 +118,7 @@ export function MyTimeline({ player }: MyTimelineProps): React.ReactNode {
                   icon="music"
                   iconColor="muted"
                   key={`${entry.trackId}-${entry.earnedAtRoundNumber}`}
-                  subtitle={
-                    entry.earnedBy === "placement"
-                      ? "Placed yourself"
-                      : entry.earnedBy === "bet"
-                        ? "Won from bet"
-                        : entry.earnedBy === "initial"
-                          ? "Initial placement"
-                          : "Unknown"
-                  }
+                  subtitle={getEarnedByLabel(entry.earnedBy)}
                   title="Unknown Track"
                   year={entry.year}
                 />

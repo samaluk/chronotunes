@@ -44,7 +44,7 @@ export const getPlacementPositionLabel = (
     return t("beforeYear", { year: firstYear })
   }
   if (index === timeline.length) {
-    const lastYear = timeline[timeline.length - 1]?.year
+    const lastYear = timeline.at(-1)?.year ?? 0
     return t("afterYear", { year: lastYear })
   }
   const yearBefore = timeline[index - 1]?.year
@@ -72,7 +72,7 @@ export function TimelinePlacementView({
       isDisabled={isDisabled}
       key={`slot-${index}`}
       label={getPlacementPositionLabel(t, sortedTimeline, index)}
-      onClick={onSlotClick ?? (() => {})}
+      onClick={onSlotClick ?? (() => undefined)}
     />
   )
 

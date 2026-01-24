@@ -46,6 +46,8 @@ function StatusIcon({ status }: { status: ConvexConnectionStatus }) {
       return <WifiOff className="h-3.5 w-3.5" />
     case "connected":
       return <CheckCircle2 className="h-3.5 w-3.5" />
+    default:
+      return null
   }
 }
 
@@ -89,6 +91,8 @@ function StatusLabel({ status, onRetry }: { status: ConvexConnectionStatus; onRe
       )
     case "connected":
       return <span>Connected</span>
+    default:
+      return null
   }
 }
 

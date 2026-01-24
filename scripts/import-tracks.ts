@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-import * as fs from "node:fs"
-import * as path from "node:path"
+import { existsSync, readFileSync } from "node:fs"
+import { join } from "node:path"
 
 interface TrackData {
   title: string
@@ -30,27 +30,16 @@ function parseYear(dateStr: string): number {
   return Number.isNaN(year) ? 2000 : year
 }
 
-async function importTracks(): Promise<void> {
-  const csvPath = path.join(process.cwd(), "convex", "HITSTER - Español Temazos.csv")
-
-  if (!fs.existsSync(csvPath)) {
-    console.error("CSV file not found:", csvPath)
-    process.exit(1)
-  }
-
-  const csvContent = fs.readFileSync(csvPath, "utf-8")
-  const lines = csvContent.trim().split("\n")
+function parseTracks(lines: string[]): TrackData[] {
   const tracks: TrackData[] = []
 
-  console.log(`Parsing ${lines.length - 1} tracks from CSV...`)
-
-  for (let i = 1; i < lines.length; i++) {
-    const line = lines[i].trim()
-    if (!line) {
+  for (const line of lines.slice(1)) {
+    const trimmed = line.trim()
+    if (!trimmed) {
       continue
     }
 
-    const parts = line.split("|")
+    const parts = trimmed.split("|")
     if (parts.length < 12) {
       continue
     }
@@ -62,20 +51,82 @@ async function importTracks(): Promise<void> {
     const spotifyTrackId = parts[19]?.replace(/^"|"$/g, "").trim() || undefined
     const mbid = parts[20]?.replace(/^"|"$/g, "").trim() || undefined
 
-    if (title && artist) {
-      const track: TrackData = { title, artist, year }
-      if (spotifyTrackId) {
-        track.spotifyTrackId = spotifyTrackId
-      }
-      if (durationMs !== undefined) {
-        track.durationMs = durationMs
-      }
-      if (mbid) {
-        track.mbid = mbid
-      }
-      tracks.push(track)
+    if (!(title && artist)) {
+      continue
     }
+
+    const track: TrackData = { title, artist, year }
+    if (spotifyTrackId) {
+      track.spotifyTrackId = spotifyTrackId
+    }
+    if (durationMs !== undefined) {
+      track.durationMs = durationMs
+    }
+    if (mbid) {
+      track.mbid = mbid
+    }
+    tracks.push(track)
   }
+
+  return tracks
+}
+
+function buildCsvContent(chunk: TrackData[], startIndex: number): string {
+  return chunk
+    .map(
+      (track, index) =>
+        `${startIndex + index}|"${track.title}","${track.artist}",0,0,0,0,00:00,0,0,0,0,${track.year},0,0,0,0,0,0,0,${track.spotifyTrackId || ""},${track.mbid || ""}`,
+    )
+    .join("\n")
+}
+
+async function importChunk(
+  chunk: TrackData[],
+  startIndex: number,
+  totalTracks: number,
+  clearExisting: boolean,
+): Promise<{ imported: number; failed: number; progress: number }> {
+  const progress = Math.round(((startIndex + chunk.length) / totalTracks) * 100)
+
+  try {
+    const response = await fetch("http://127.0.0.1:3210/api/tracks/parseAndImportCsv", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        csvContent: buildCsvContent(chunk, startIndex),
+        clearExisting,
+      }),
+    })
+
+    if (!response.ok) {
+      console.error(`Failed to import chunk ${startIndex / chunk.length + 1}:`, response.statusText)
+      return { imported: 0, failed: chunk.length, progress }
+    }
+
+    const result = await response.json()
+    const imported = result.importedCount || 0
+    const failed = result.hasErrors ? chunk.length - imported : 0
+
+    return { imported, failed, progress }
+  } catch (error) {
+    console.error(`\nError importing chunk ${startIndex / chunk.length + 1}:`, error)
+    return { imported: 0, failed: chunk.length, progress }
+  }
+}
+
+async function importTracks(): Promise<void> {
+  const csvPath = join(process.cwd(), "convex", "HITSTER - Español Temazos.csv")
+
+  if (!existsSync(csvPath)) {
+    console.error("CSV file not found:", csvPath)
+    process.exit(1)
+  }
+
+  const csvContent = readFileSync(csvPath, "utf-8")
+  const lines = csvContent.trim().split("\n")
+  const tracks = parseTracks(lines)
+
+  console.log(`Parsing ${lines.length - 1} tracks from CSV...`)
 
   console.log(`Parsed ${tracks.length} valid tracks`)
 
@@ -85,38 +136,11 @@ async function importTracks(): Promise<void> {
 
   for (let i = 0; i < tracks.length; i += chunkSize) {
     const chunk = tracks.slice(i, i + chunkSize)
-    const progress = Math.round(((i + chunk.length) / tracks.length) * 100)
+    const result = await importChunk(chunk, i, tracks.length, i === 0)
 
-    try {
-      const response = await fetch("http://127.0.0.1:3210/api/tracks/parseAndImportCsv", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          csvContent: chunk
-            .map(
-              (t) =>
-                `${i}|"${t.title}","${t.artist}",0,0,0,0,00:00,0,0,0,0,${t.year},0,0,0,0,0,0,0,${t.spotifyTrackId || ""},${t.mbid || ""}`,
-            )
-            .join("\n"),
-          clearExisting: i === 0,
-        }),
-      })
-
-      if (response.ok) {
-        const result = await response.json()
-        imported += result.importedCount || 0
-        if (result.hasErrors) {
-          failed += chunk.length - (result.importedCount || 0)
-        }
-        process.stdout.write(`\rProgress: ${progress}% (${imported}/${tracks.length} imported)`)
-      } else {
-        console.error(`Failed to import chunk ${i / chunkSize + 1}:`, response.statusText)
-        failed += chunk.length
-      }
-    } catch (error) {
-      console.error(`\nError importing chunk ${i / chunkSize + 1}:`, error)
-      failed += chunk.length
-    }
+    imported += result.imported
+    failed += result.failed
+    process.stdout.write(`\rProgress: ${result.progress}% (${imported}/${tracks.length} imported)`)
   }
 
   console.log("\n\nImport complete!")

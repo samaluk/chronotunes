@@ -5,6 +5,8 @@ import { asSessionId } from "./lib/sessions"
 import schema from "./schema"
 import { modules } from "./test.setup"
 
+const LOBBY_CODE_REGEX = /^[A-Z23456789]+$/
+
 describe("lobbies", () => {
   test("create lobby generates 6-char code", async () => {
     const t = convexTest(schema, modules)
@@ -21,7 +23,7 @@ describe("lobbies", () => {
       sessionId: asSessionId("test-session-456"),
       displayName: "AnotherHost",
     })
-    expect(result.code).toMatch(/^[A-Z23456789]+$/)
+    expect(result.code).toMatch(LOBBY_CODE_REGEX)
   })
 
   test("create lobby creates lobby with status lobby", async () => {

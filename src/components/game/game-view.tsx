@@ -16,6 +16,49 @@ import { MyTimeline } from "./my-timeline"
 import { PlayerTimelineModal } from "./player-timeline-modal"
 import { PlayersBar } from "./players-bar"
 
+interface CurrentRound {
+  _id: Id<"rounds">
+  _creationTime: number
+  gameId: Id<"games">
+  roundNumber: number
+  turnPlayerId: Id<"players">
+  phase: "placing" | "betting" | "resolved"
+  startedAt: number
+  placementPreview?: {
+    proposedIndex: number
+    updatedAt: number
+  }
+  placement?: {
+    proposedIndex: number
+    submittedAt: number
+  }
+  guess?: {
+    guessedTitle?: string
+    guessedArtist?: string
+    isCorrect: boolean
+    awardedCoin: boolean
+    submittedAt: number
+  }
+  resolution?: {
+    validIndexMin: number
+    validIndexMax: number
+    turnPlayerWasCorrect: boolean
+    awardedPlayerIds: Id<"players">[]
+    coinDeltas: Array<{
+      playerId: Id<"players">
+      delta: number
+    }>
+    resolvedAt: number
+  }
+  track: {
+    trackId: Id<"tracks">
+    title?: string
+    artist?: string
+    year?: number
+    youtubeVideoId?: string
+  }
+}
+
 interface GameViewProps {
   lobbyId: Id<"lobbies">
   code: string
@@ -28,7 +71,7 @@ interface GameViewContentProps {
   players: Doc<"players">[]
   me: Doc<"players"> | null
   game: Doc<"games">
-  currentRound: any
+  currentRound: CurrentRound
   revealedTracks: Array<{
     trackId: Id<"tracks">
     title: string
@@ -48,7 +91,7 @@ interface ActiveGameViewProps {
   players: Doc<"players">[]
   me: Doc<"players"> | null
   game: Doc<"games">
-  currentRound: any
+  currentRound: CurrentRound
   revealedTracks: Array<{
     trackId: Id<"tracks">
     title: string
@@ -88,7 +131,7 @@ function GameTabs({
   lobby: Doc<"lobbies">
   players: Doc<"players">[]
   me: Doc<"players"> | null
-  currentRound: any
+  currentRound: CurrentRound
   revealedTracks: Array<{
     trackId: Id<"tracks">
     title: string

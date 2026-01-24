@@ -17,6 +17,40 @@ const DEFAULT_SETTINGS = {
   maxYear: 2025,
 } as const
 
+interface LobbySettings {
+  targetTimelineSize: number
+  startingCoins: number
+  turnSeconds: number
+  bettingWindowSeconds: number
+  allowGuessTitleArtist: boolean
+  showLiveBets: boolean
+  allowBetRetraction: boolean
+  minYear: number
+  maxYear: number
+}
+
+const resolvePlayerOverrides = (
+  override: PlayerOverrides | undefined,
+  index: number,
+  settings: LobbySettings,
+): Required<
+  Pick<PlayerOverrides, "sessionId" | "displayName" | "coins" | "timeline" | "timelineSize">
+> => {
+  const sessionId = override?.sessionId ?? `player-${index + 1}-session`
+  const displayName = override?.displayName ?? `Player ${index + 1}`
+  const coins = override?.coins ?? settings.startingCoins
+  const timeline = override?.timeline ?? []
+  const timelineSize = override?.timelineSize ?? timeline.length
+
+  return {
+    sessionId,
+    displayName,
+    coins,
+    timeline,
+    timelineSize,
+  }
+}
+
 function generateLobbyCode(): string {
   let code = ""
   const randomValues = new Uint8Array(LOBBY_CODE_LENGTH)
@@ -97,7 +131,7 @@ export async function createWithPlayers(
   playerCount: number,
   options: {
     hostDisplayName?: string
-    playerOverrides?: LobbyOverrides["players"][]
+    playerOverrides?: PlayerOverrides[]
     settings?: LobbyOverrides["settings"]
   } = {},
 ): Promise<FactoryResult<"lobbies"> & { playerIds: Id<"players">[] }> {
@@ -143,32 +177,18 @@ export async function createWithPlayers(
     )
 
     for (let i = 0; i < playerCount; i++) {
-      const override = options.playerOverrides?.[i] as PlayerOverrides | undefined
-      const pSessionId =
-        override && typeof override.sessionId === "string"
-          ? override.sessionId
-          : `player-${i + 1}-session`
-      const pDisplayName =
-        override && typeof override.displayName === "string"
-          ? override.displayName
-          : `Player ${i + 1}`
-      const pCoins =
-        override && typeof override.coins === "number" ? override.coins : settings.startingCoins
-      const pTimeline = override && Array.isArray(override.timeline) ? override.timeline : []
-      const pTimelineSize =
-        override && typeof override.timelineSize === "number"
-          ? override.timelineSize
-          : pTimeline.length
+      const override = options.playerOverrides?.[i]
+      const playerData = resolvePlayerOverrides(override, i, settings)
 
       playerIds.push(
         await ctx.db.insert("players", {
           lobbyId,
-          sessionId: pSessionId,
-          displayName: pDisplayName,
+          sessionId: playerData.sessionId,
+          displayName: playerData.displayName,
           isHost: false,
-          coins: pCoins,
-          timeline: pTimeline,
-          timelineSize: pTimelineSize,
+          coins: playerData.coins,
+          timeline: playerData.timeline,
+          timelineSize: playerData.timelineSize,
           createdAt: Date.now(),
         }),
       )
@@ -192,7 +212,7 @@ export async function createWithGame(
   playerCount: number,
   options: {
     hostDisplayName?: string
-    playerOverrides?: LobbyOverrides["players"][]
+    playerOverrides?: PlayerOverrides[]
     settings?: LobbyOverrides["settings"]
   } = {},
 ): Promise<

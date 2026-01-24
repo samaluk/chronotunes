@@ -42,10 +42,11 @@ export function SettingRange({
   const t = useTranslations("settings")
   const minInputId = `min-${label.replace(/\s+/g, "-").toLowerCase()}`
   const maxInputId = `max-${label.replace(/\s+/g, "-").toLowerCase()}`
+  const sliderId = `${minInputId}-slider-${maxInputId}`
   return (
     <div className="space-y-2">
       <div className="flex justify-between text-sm">
-        <Label className="cursor-pointer" htmlFor={minInputId}>
+        <Label className="cursor-pointer" htmlFor={sliderId}>
           {t(label)}
         </Label>
         <span className="text-muted-foreground">
@@ -55,7 +56,7 @@ export function SettingRange({
       <div className="flex items-center gap-4">
         <Slider
           className="h-2 w-full cursor-pointer appearance-none rounded-lg bg-secondary accent-primary"
-          id={`${minInputId}-slider-${maxInputId}`}
+          id={sliderId}
           max={maxRange}
           min={minRange}
           onValueChange={(val) => {

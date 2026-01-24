@@ -423,7 +423,6 @@ function ResolveRoundPanel({
   )
 }
 
-// biome-ignore lint: stateful UI orchestration
 export function BettingPanel({
   lobbyId,
   me,

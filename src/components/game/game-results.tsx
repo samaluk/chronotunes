@@ -66,6 +66,16 @@ export function GameResults({ lobbyId, code: _code }: GameResultsProps): React.R
     return `${minutes}m ${seconds}s`
   }
 
+  const getRankBadgeClass = (rank: number): string => {
+    const rankStyles = [
+      "bg-amber-100 text-amber-700 dark:bg-amber-900/50 dark:text-amber-300",
+      "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300",
+      "bg-orange-100 text-orange-700 dark:bg-orange-900/50 dark:text-orange-300",
+    ]
+
+    return rankStyles[rank] ?? "bg-muted text-muted-foreground"
+  }
+
   const songHistory = rounds
     .filter((r) => r.track)
     .sort((a, b) => a.roundNumber - b.roundNumber)
@@ -130,13 +140,7 @@ export function GameResults({ lobbyId, code: _code }: GameResultsProps): React.R
                   <div
                     className={cn(
                       "flex h-10 w-10 items-center justify-center rounded-full font-bold",
-                      index === 0
-                        ? "bg-amber-100 text-amber-700 dark:bg-amber-900/50 dark:text-amber-300"
-                        : index === 1
-                          ? "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300"
-                          : index === 2
-                            ? "bg-orange-100 text-orange-700 dark:bg-orange-900/50 dark:text-orange-300"
-                            : "bg-muted text-muted-foreground",
+                      getRankBadgeClass(index),
                     )}
                   >
                     {index + 1}

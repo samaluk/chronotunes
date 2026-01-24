@@ -6,7 +6,6 @@ import { useTranslations } from "next-intl"
 import { useEffect, useMemo, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
-import { Label } from "@/components/ui/label"
 import { api } from "@/convex/_generated/api"
 import type { Doc, Id } from "@/convex/_generated/dataModel"
 import { cn } from "@/lib/utils"
@@ -157,10 +156,6 @@ export function RoundResults({
     return players.find((p) => p._id === playerId) as Player | undefined
   }
 
-  const getBetForPlayer = (playerId: Id<"players">): BetWithPlayer | undefined => {
-    return bets.find((b) => b.playerId === playerId)
-  }
-
   const bettingBets = useMemo(() => bets.filter((bet) => !bet.declinedToBet), [bets])
 
   const formatTime = (timestamp: number): string => {
@@ -199,15 +194,15 @@ export function RoundResults({
         <Card className="fade-in slide-in-from-bottom-2 animate-in p-4 text-center transition-all duration-300">
           <p className="text-muted-foreground text-xs uppercase tracking-wide">{t("theSongWas")}</p>
           <div className="flex items-center justify-between">
-            <Label className="font-medium text-lg text-muted-foreground">Title</Label>
+            <span className="font-medium text-lg text-muted-foreground">Title</span>
             <p className="font-bold text-2xl text-foreground">{track.title}</p>
           </div>
           <div className="flex items-center justify-between">
-            <Label className="font-medium text-lg text-muted-foreground">Artist</Label>
+            <span className="font-medium text-lg text-muted-foreground">Artist</span>
             <p className="font-bold text-2xl text-foreground">{track.artist}</p>
           </div>
           <div className="flex items-center justify-between">
-            <Label className="font-medium text-lg text-muted-foreground">Year</Label>
+            <span className="font-medium text-lg text-muted-foreground">Year</span>
             <p className="font-bold text-2xl text-foreground">{track.year}</p>
           </div>
         </Card>

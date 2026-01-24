@@ -1,5 +1,6 @@
 import type { Infer } from "convex/values"
 import type { Id } from "../../_generated/dataModel"
+import type { MutationCtx, QueryCtx } from "../../_generated/server"
 import type schema from "../../schema"
 import type { TestContext } from "./types"
 
@@ -43,7 +44,7 @@ export async function create(
 
   let gameId: Id<"games"> | null = null
 
-  await t.run(async (ctx: any) => {
+  await t.run(async (ctx: MutationCtx) => {
     gameId = await ctx.db.insert("games", data)
     await ctx.db.patch(lobbyId, { status: "in_game", activeGameId: gameId })
   })
@@ -67,7 +68,7 @@ export async function createWithRound(
   const turnPlayerId = options.gameOverrides?.turnPlayerId ?? turnOrder[0]!
   let trackId: Id<"tracks"> | undefined
 
-  await t.run(async (ctx: any) => {
+  await t.run(async (ctx: QueryCtx) => {
     const track = await ctx.db.query("tracks").first()
     trackId = track?._id
   })
@@ -109,7 +110,7 @@ export async function createWithRound(
   let gameId: Id<"games"> | null = null
   let roundId: Id<"rounds"> | null = null
 
-  await t.run(async (ctx: any) => {
+  await t.run(async (ctx: MutationCtx) => {
     gameId = await ctx.db.insert("games", gameData)
     await ctx.db.patch(lobbyId, { status: "in_game", activeGameId: gameId })
 
@@ -150,12 +151,12 @@ export async function createInPhase(
   let playerIds = options.playerIds
 
   if (!playerIds) {
-    await t.run(async (ctx: any) => {
+    await t.run(async (ctx: QueryCtx) => {
       const players = await ctx.db
         .query("players")
-        .filter((q: any) => q.eq(q.field("lobbyId"), lobbyId))
+        .filter((q) => q.eq(q.field("lobbyId"), lobbyId))
         .collect()
-      playerIds = players.map((p: any) => p._id)
+      playerIds = players.map((player) => player._id)
     })
   }
 
@@ -166,7 +167,7 @@ export async function createInPhase(
   const turnPlayerId = playerIds[0]!
   let trackId: Id<"tracks"> | undefined
 
-  await t.run(async (ctx: any) => {
+  await t.run(async (ctx: QueryCtx) => {
     const track = await ctx.db.query("tracks").first()
     trackId = track?._id
   })
@@ -214,7 +215,7 @@ export async function createInPhase(
   let gameId: Id<"games"> | null = null
   let roundId: Id<"rounds"> | null = null
 
-  await t.run(async (ctx: any) => {
+  await t.run(async (ctx: MutationCtx) => {
     gameId = await ctx.db.insert("games", gameData)
     await ctx.db.patch(lobbyId, { status: "in_game", activeGameId: gameId })
 
@@ -241,7 +242,7 @@ export async function findCurrent(
 ): Promise<{ id: Id<"games">; record: Game } | null> {
   let result: { id: Id<"games">; record: Game } | null = null
 
-  await t.run(async (ctx: any) => {
+  await t.run(async (ctx: QueryCtx) => {
     const lobby = await ctx.db.get(lobbyId)
     if (lobby?.activeGameId) {
       const game = await ctx.db.get(lobby.activeGameId)
@@ -260,7 +261,7 @@ export async function findById(
 ): Promise<{ id: Id<"games">; record: Game } | null> {
   let result: { id: Id<"games">; record: Game } | null = null
 
-  await t.run(async (ctx: any) => {
+  await t.run(async (ctx: QueryCtx) => {
     const game = await ctx.db.get(gameId)
     if (game) {
       result = { id: game._id, record: game as Game }

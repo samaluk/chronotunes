@@ -43,7 +43,7 @@ export function usePresence({
         clearInterval(intervalRef.current)
       }
       if (sessionTokenRef.current) {
-        void disconnect({ sessionToken: sessionTokenRef.current })
+        disconnect({ sessionToken: sessionTokenRef.current }).catch(() => undefined)
       }
     }
   }, [disconnect])
@@ -64,7 +64,7 @@ export function usePresence({
       }
     }
 
-    void sendHeartbeat()
+    sendHeartbeat().catch(() => undefined)
 
     intervalRef.current = setInterval(sendHeartbeat, interval)
 
@@ -95,7 +95,7 @@ export function usePresence({
           await disconnect({ sessionToken: sessionTokenRef.current })
         }
       } else {
-        void sendHeartbeat()
+        sendHeartbeat().catch(() => undefined)
         intervalRef.current = setInterval(sendHeartbeat, interval)
       }
     }
@@ -110,7 +110,7 @@ export function usePresence({
       window.removeEventListener("beforeunload", handleUnload)
 
       if (hasMounted.current && sessionTokenRef.current) {
-        void disconnect({ sessionToken: sessionTokenRef.current })
+        disconnect({ sessionToken: sessionTokenRef.current }).catch(() => undefined)
       }
     }
   }, [heartbeat, disconnect, baseUrl, interval, roomId, userId])

@@ -172,8 +172,9 @@ export function LandingPageContent() {
                     <InputOTP
                       className="w-full"
                       containerClassName="w-full"
-                      maxLength={6}
+                      id="joinCode"
                       inputMode="text"
+                      maxLength={6}
                       onChange={(value) => setJoinCode(value)}
                       value={joinCode}
                     >

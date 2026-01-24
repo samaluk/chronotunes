@@ -6,7 +6,7 @@ import { asSessionId } from "./lib/sessions"
 import schema from "./schema"
 import { modules } from "./test.setup"
 
-const { register, schema: presenceSchema, modules: presenceModules } = presenceTest
+const { register } = presenceTest
 
 describe("checkHostDisconnect", () => {
   test("skips lobbies without deadline", async () => {

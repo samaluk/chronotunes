@@ -2,7 +2,7 @@ import { customAction, customMutation, customQuery } from "convex-helpers/server
 import { runSessionFunctions, type SessionId, SessionIdArg } from "convex-helpers/server/sessions"
 import { action, mutation, query } from "../_generated/server"
 
-export type { SessionId }
+export type { SessionId } from "convex-helpers/server/sessions"
 
 /**
  * Helper to cast a string to SessionId for testing purposes.
@@ -34,7 +34,7 @@ export function asSessionId(id: string): SessionId {
  */
 export const queryWithSession = customQuery(query, {
   args: { ...SessionIdArg },
-  input: async (ctx, { sessionId }) => {
+  input: (ctx, { sessionId }) => {
     return { ctx: { ...ctx, sessionId }, args: {} }
   },
 })
@@ -59,7 +59,7 @@ export const queryWithSession = customQuery(query, {
  */
 export const mutationWithSession = customMutation(mutation, {
   args: { ...SessionIdArg },
-  input: async (ctx, { sessionId }) => {
+  input: (ctx, { sessionId }) => {
     return { ctx: { ...ctx, sessionId }, args: {} }
   },
 })
@@ -70,7 +70,7 @@ export const mutationWithSession = customMutation(mutation, {
  */
 export const actionWithSession = customAction(action, {
   args: { ...SessionIdArg },
-  input: async (ctx, { sessionId }) => {
+  input: (ctx, { sessionId }) => {
     return {
       ctx: {
         ...ctx,

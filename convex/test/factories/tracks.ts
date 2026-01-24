@@ -71,7 +71,7 @@ export async function createMany(
   return results
 }
 
-export async function createWithYear(
+export function createWithYear(
   t: TestContext,
   year: number,
   overrides: TrackOverrides = {},
@@ -79,7 +79,7 @@ export async function createWithYear(
   return create(t, { ...overrides, year })
 }
 
-export async function createForTimeline(
+export function createForTimeline(
   t: TestContext,
   year: number,
   title: string,

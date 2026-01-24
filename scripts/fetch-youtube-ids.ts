@@ -56,6 +56,9 @@ const TEST_TRACKS = [
 
 const BLACKLIST_WORDS = ["lyrics", "cover", "remix", "tribute", "live", "reaction", "behind"]
 
+type TrackSeed = (typeof TEST_TRACKS)[number]
+type TrackResult = TrackSeed & { videoId: string | null }
+
 async function searchTrack(title: string, artist: string, retryCount = 0): Promise<string | null> {
   const query = `${title} ${artist} official video`
   process.stdout.write(`Searching: "${query}"... `)
@@ -127,7 +130,7 @@ async function main() {
 
   console.log(`Fetching YouTube video IDs for ${TEST_TRACKS.length} tracks...\n`)
 
-  const results = []
+  const results: TrackResult[] = []
 
   for (let i = 0; i < TEST_TRACKS.length; i++) {
     const track = TEST_TRACKS[i]

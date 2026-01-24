@@ -41,7 +41,7 @@ export function useConvexStatus(): UseConvexStatusReturn {
 
     let mounted = true
 
-    const checkConnection = async () => {
+    const checkConnection = () => {
       try {
         setStatus("connected")
         setError(null)

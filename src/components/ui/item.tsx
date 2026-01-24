@@ -1,25 +1,24 @@
 import { mergeProps } from "@base-ui/react/merge-props"
 import { useRender } from "@base-ui/react/use-render"
 import { cva, type VariantProps } from "class-variance-authority"
-import type * as React from "react"
+import type { ComponentProps } from "react"
 import { Separator } from "@/components/ui/separator"
 import { cn } from "@/lib/utils"
 
-function ItemGroup({ className, ...props }: React.ComponentProps<"div">) {
+function ItemGroup({ className, ...props }: ComponentProps<"ul">) {
   return (
-    <div
+    <ul
       className={cn(
         "group/item-group flex w-full flex-col gap-4 has-[[data-size=sm]]:gap-2.5 has-[[data-size=xs]]:gap-2",
         className,
       )}
       data-slot="item-group"
-      role="list"
       {...props}
     />
   )
 }
 
-function ItemSeparator({ className, ...props }: React.ComponentProps<typeof Separator>) {
+function ItemSeparator({ className, ...props }: ComponentProps<typeof Separator>) {
   return (
     <Separator
       className={cn("my-2", className)}

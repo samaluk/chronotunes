@@ -1,12 +1,12 @@
 "use client"
 
 import { cva, type VariantProps } from "class-variance-authority"
-import { useMemo } from "react"
+import { type ComponentProps, useMemo } from "react"
 import { Label } from "@/components/ui/label"
 import { Separator } from "@/components/ui/separator"
 import { cn } from "@/lib/utils"
 
-function FieldSet({ className, ...props }: React.ComponentProps<"fieldset">) {
+function FieldSet({ className, ...props }: ComponentProps<"fieldset">) {
   return (
     <fieldset
       className={cn(
@@ -23,7 +23,7 @@ function FieldLegend({
   className,
   variant = "legend",
   ...props
-}: React.ComponentProps<"legend"> & { variant?: "legend" | "label" }) {
+}: ComponentProps<"legend"> & { variant?: "legend" | "label" }) {
   return (
     <legend
       className={cn(
@@ -37,7 +37,7 @@ function FieldLegend({
   )
 }
 
-function FieldGroup({ className, ...props }: React.ComponentProps<"div">) {
+function FieldGroup({ className, ...props }: ComponentProps<"div">) {
   return (
     <div
       className={cn(
@@ -69,13 +69,12 @@ function Field({
   className,
   orientation = "vertical",
   ...props
-}: React.ComponentProps<"div"> & VariantProps<typeof fieldVariants>) {
+}: ComponentProps<"fieldset"> & VariantProps<typeof fieldVariants>) {
   return (
-    <div
+    <fieldset
       className={cn(fieldVariants({ orientation }), className)}
       data-orientation={orientation}
       data-slot="field"
-      role="group"
       {...props}
     />
   )

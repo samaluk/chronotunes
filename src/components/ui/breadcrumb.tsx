@@ -1,14 +1,14 @@
 import { mergeProps } from "@base-ui/react/merge-props"
 import { useRender } from "@base-ui/react/use-render"
 import { ChevronRightIcon, MoreHorizontalIcon } from "lucide-react"
-import type * as React from "react"
+import type { ComponentProps } from "react"
 import { cn } from "@/lib/utils"
 
-function Breadcrumb({ className, ...props }: React.ComponentProps<"nav">) {
+function Breadcrumb({ className, ...props }: ComponentProps<"nav">) {
   return <nav aria-label="breadcrumb" className={cn(className)} data-slot="breadcrumb" {...props} />
 }
 
-function BreadcrumbList({ className, ...props }: React.ComponentProps<"ol">) {
+function BreadcrumbList({ className, ...props }: ComponentProps<"ol">) {
   return (
     <ol
       className={cn(
@@ -21,7 +21,7 @@ function BreadcrumbList({ className, ...props }: React.ComponentProps<"ol">) {
   )
 }
 
-function BreadcrumbItem({ className, ...props }: React.ComponentProps<"li">) {
+function BreadcrumbItem({ className, ...props }: ComponentProps<"li">) {
   return (
     <li
       className={cn("inline-flex items-center gap-1.5", className)}
@@ -47,20 +47,19 @@ function BreadcrumbLink({ className, render, ...props }: useRender.ComponentProp
   })
 }
 
-function BreadcrumbPage({ className, ...props }: React.ComponentProps<"span">) {
+function BreadcrumbPage({ className, ...props }: ComponentProps<"span">) {
   return (
     <span
       aria-current="page"
       aria-disabled="true"
       className={cn("font-normal text-foreground", className)}
       data-slot="breadcrumb-page"
-      role="link"
       {...props}
     />
   )
 }
 
-function BreadcrumbSeparator({ children, className, ...props }: React.ComponentProps<"li">) {
+function BreadcrumbSeparator({ children, className, ...props }: ComponentProps<"li">) {
   return (
     <li
       aria-hidden="true"
@@ -74,7 +73,7 @@ function BreadcrumbSeparator({ children, className, ...props }: React.ComponentP
   )
 }
 
-function BreadcrumbEllipsis({ className, ...props }: React.ComponentProps<"span">) {
+function BreadcrumbEllipsis({ className, ...props }: ComponentProps<"span">) {
   return (
     <span
       aria-hidden="true"
