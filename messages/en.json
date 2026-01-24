@@ -116,6 +116,12 @@
     "betweenYears": "Between {year1} and {year2}",
     "emptyTimeline": "Place on timeline",
     "confirmPlacement": "Confirm Placement",
+    "useArrowsToMove": "Use arrows to move",
+    "pressEnterToConfirm": "Press Enter to confirm",
+    "tapButtonsToMove": "Tap the buttons to move",
+    "tapConfirmToPlace": "Tap confirm to place",
+    "moveUp": "Move up",
+    "moveDown": "Move down",
     "submitting": "Submitting...",
     "dropHere": "Drop here",
     "loadingTrack": "Loading track..."
@@ -159,6 +165,8 @@
     "useArrowsToMove": "Use arrows to move",
     "enterToConfirm": "Enter to confirm",
     "pressEnterToConfirm": "Press Enter to confirm",
+    "tapSlotToPreview": "Tap a slot to preview",
+    "tapConfirmToLock": "Tap confirm to lock in",
     "turnPlayerCannotBet": "It's your turn, you cannot bet",
     "declinedToBet": "You declined to bet",
     "previewDiscarded": "Preview discarded",
@@ -248,6 +256,7 @@
   "player": {
     "loadingAudio": "Loading audio...",
     "playingAudio": "Audio playing",
+    "tapToEnableAudio": "Tap to enable audio",
     "videoUnavailable": "Video unavailable"
   }
 }

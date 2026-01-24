@@ -1,7 +1,7 @@
 "use client"
 
 import { useSessionMutation } from "convex-helpers/react/sessions"
-import { Check, Loader2 } from "lucide-react"
+import { ArrowDown, ArrowUp, Check, Loader2 } from "lucide-react"
 import { useTranslations } from "next-intl"
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { Button } from "@/components/ui/button"
@@ -55,6 +55,20 @@ export function TimelinePlacer({
     [revealedTracks],
   )
   const maxPosition = sortedTimeline.length
+  const isAtTop = selectedIndex <= 0
+  const isAtBottom = selectedIndex >= maxPosition
+
+  const moveSelection = useCallback(
+    (direction: "up" | "down") => {
+      setSelectedIndex((prev) => {
+        if (direction === "up") {
+          return Math.max(0, prev - 1)
+        }
+        return Math.min(maxPosition, prev + 1)
+      })
+    },
+    [maxPosition],
+  )
 
   const handleSubmit = useCallback(async () => {
     setIsSubmitting(true)
@@ -76,10 +90,10 @@ export function TimelinePlacer({
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "ArrowUp") {
         e.preventDefault()
-        setSelectedIndex((prev) => Math.max(0, prev - 1))
+        moveSelection("up")
       } else if (e.key === "ArrowDown") {
         e.preventDefault()
-        setSelectedIndex((prev) => Math.min(maxPosition, prev + 1))
+        moveSelection("down")
       } else if (e.key === "Enter") {
         e.preventDefault()
         handleSubmitRef.current()
@@ -88,12 +102,18 @@ export function TimelinePlacer({
 
     window.addEventListener("keydown", handleKeyDown)
     return () => window.removeEventListener("keydown", handleKeyDown)
-  }, [maxPosition])
+  }, [moveSelection])
 
   useEffect(() => {
-    void _setPlacementPreview({
-      lobbyId,
-      proposedIndex: selectedIndex,
+    const updatePreview = async () => {
+      await _setPlacementPreview({
+        lobbyId,
+        proposedIndex: selectedIndex,
+      })
+    }
+
+    updatePreview().catch((error) => {
+      console.error("Failed to update placement preview:", error)
     })
   }, [lobbyId, selectedIndex, _setPlacementPreview])
 
@@ -124,7 +144,7 @@ export function TimelinePlacer({
   }
 
   return (
-    <div className="w-full space-y-4">
+    <div className="w-full space-y-4 pb-24 sm:pb-0">
       <div className="flex items-center justify-between">
         <h3 className="font-medium text-muted-foreground text-sm">{t("placeTheSong")}</h3>
       </div>
@@ -174,7 +194,14 @@ export function TimelinePlacer({
 
       <div className="flex items-center justify-between border-t pt-4">
         <p className="font-medium text-foreground text-sm">{getPositionLabel(selectedIndex)}</p>
-        <p className="mr-2 text-muted-foreground text-xs">↑↓ to move, Enter to confirm</p>
+        <div className="text-right">
+          <p className="hidden text-muted-foreground text-xs sm:block">{t("useArrowsToMove")}</p>
+          <p className="hidden text-muted-foreground text-xs sm:block">
+            {t("pressEnterToConfirm")}
+          </p>
+          <p className="text-muted-foreground text-xs sm:hidden">{t("tapButtonsToMove")}</p>
+          <p className="text-muted-foreground text-xs sm:hidden">{t("tapConfirmToPlace")}</p>
+        </div>
       </div>
 
       <Button className="w-full" disabled={isSubmitting} onClick={handleSubmit} size="lg">
@@ -190,6 +217,40 @@ export function TimelinePlacer({
           </>
         )}
       </Button>
+      <div className="fixed inset-x-0 bottom-0 z-40 border-t bg-background/95 px-4 py-3 pb-[calc(env(safe-area-inset-bottom)+0.75rem)] backdrop-blur sm:hidden">
+        <div className="mx-auto flex w-full max-w-lg items-center gap-3">
+          <Button
+            aria-label={t("moveUp")}
+            disabled={isAtTop}
+            onClick={() => moveSelection("up")}
+            size="icon-lg"
+            type="button"
+            variant="outline"
+          >
+            <ArrowUp className="h-5 w-5" />
+          </Button>
+          <Button
+            aria-label={t("moveDown")}
+            disabled={isAtBottom}
+            onClick={() => moveSelection("down")}
+            size="icon-lg"
+            type="button"
+            variant="outline"
+          >
+            <ArrowDown className="h-5 w-5" />
+          </Button>
+          <Button
+            className="flex-1"
+            disabled={isSubmitting}
+            onClick={handleSubmit}
+            size="lg"
+            type="button"
+          >
+            <Check className="mr-2 h-4 w-4" />
+            {t("confirmPlacement")}
+          </Button>
+        </div>
+      </div>
     </div>
   )
 }

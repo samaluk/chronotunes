@@ -12,6 +12,7 @@ interface BetZoneProps {
   isOpenSlot: boolean
   shouldDim: boolean
   isShaking: boolean
+  shouldPulse?: boolean
   coins: ReactNode
   onClick: (index: number) => void
 }
@@ -25,6 +26,7 @@ export function BetZone({
   isOpenSlot,
   shouldDim,
   isShaking,
+  shouldPulse = false,
   coins,
   onClick,
 }: BetZoneProps): ReactNode {
@@ -43,6 +45,7 @@ export function BetZone({
         isButtonDisabled && "cursor-not-allowed",
         shouldDim && "opacity-60",
         isShaking && "animate-shake",
+        shouldPulse && "animate-pulse border-primary/30 ring-1 ring-primary/15",
       )}
       disabled={isButtonDisabled}
       onClick={() => onClick(index)}

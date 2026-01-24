@@ -173,6 +173,7 @@ export function LandingPageContent() {
                       className="w-full"
                       containerClassName="w-full"
                       maxLength={6}
+                      inputMode="text"
                       onChange={(value) => setJoinCode(value)}
                       value={joinCode}
                     >

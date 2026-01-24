@@ -116,6 +116,12 @@
     "betweenYears": "Entre {year1} y {year2}",
     "emptyTimeline": "Colocar en la línea temporal",
     "confirmPlacement": "Confirmar colocación",
+    "useArrowsToMove": "Usa las flechas para moverte",
+    "pressEnterToConfirm": "Presiona Enter para confirmar",
+    "tapButtonsToMove": "Toca los botones para moverte",
+    "tapConfirmToPlace": "Toca confirmar para colocar",
+    "moveUp": "Mover arriba",
+    "moveDown": "Mover abajo",
     "submitting": "Enviando...",
     "dropHere": "Suelta aquí",
     "loadingTrack": "Cargando canción..."
@@ -156,6 +162,8 @@
     "useArrowsToMove": "Usa las flechas para moverte",
     "enterToConfirm": "Enter para confirmar",
     "pressEnterToConfirm": "Presiona Enter para confirmar",
+    "tapSlotToPreview": "Toca un espacio para previsualizar",
+    "tapConfirmToLock": "Toca confirmar para bloquear",
     "turnPlayerCannotBet": "Es tu turno, no puedes apostar",
     "declinedToBet": "Has decidido no apostar",
     "previewDiscarded": "Vista previa descartada",
@@ -245,6 +253,7 @@
   "player": {
     "loadingAudio": "Cargando audio...",
     "playingAudio": "Audio reproduciéndose",
+    "tapToEnableAudio": "Toca para activar el audio",
     "videoUnavailable": "Video no disponible"
   }
 }
