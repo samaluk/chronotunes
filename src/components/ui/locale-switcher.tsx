@@ -1,36 +1,36 @@
 "use client"
 
 import { Globe } from "lucide-react"
+import type { Locale } from "next-intl"
 import { useLocale, useTranslations } from "next-intl"
-import { memo, useState } from "react"
-import { usePathname, useRouter } from "@/i18n/routing"
+import { memo, useState, useTransition } from "react"
+import { useLocaleAction } from "@/i18n/locale-action"
 import { cn } from "@/lib/utils"
 
 const localeNames: Record<string, string> = {
   en: "English",
   es: "Español",
-  fr: "Français",
-  de: "Deutsch",
-  pt: "Português",
-  ja: "日本語",
 }
 
-const availableLocales = ["en", "es", "fr", "de", "pt", "ja"]
+const availableLocales = ["en", "es"] as const
 
 export const LocaleSwitcher = memo(function LocaleSwitcher(): React.ReactNode {
   const t = useTranslations("locale")
   const [isOpen, setIsOpen] = useState(false)
-  const router = useRouter()
-  const pathname = usePathname()
   const locale = useLocale()
+  const changeLocaleAction = useLocaleAction()
+  const [isPending, startTransition] = useTransition()
 
   const handleLocaleChange = (newLocale: string): void => {
     setIsOpen(false)
     if (newLocale === locale) {
       return
     }
-    // Use next-intl's router to navigate to the same path with new locale
-    router.replace(pathname, { locale: newLocale })
+    startTransition(() => {
+      changeLocaleAction(newLocale as Locale).catch((error) => {
+        console.error("Failed to change locale", error)
+      })
+    })
   }
 
   const currentLocaleName = localeNames[locale] || localeNames.en
@@ -40,6 +40,7 @@ export const LocaleSwitcher = memo(function LocaleSwitcher(): React.ReactNode {
       <button
         aria-label={t("selectLanguage")}
         className="inline-flex items-center justify-center rounded-md border border-input bg-background p-2 font-medium text-sm ring-offset-background transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+        disabled={isPending}
         onClick={() => setIsOpen(!isOpen)}
         type="button"
       >

@@ -89,9 +89,9 @@ Browser-based multiplayer music game inspired by Hitster:
 - **Next.js** (App Router) + **TypeScript**.
 - **Tailwind CSS v4** + **shadcn/ui** for fast, accessible component styling.
 - **next-intl** for internationalization:
-  - Locale in URL path (e.g., `/en/lobby/ABC123`, `/es/lobby/ABC123`)
-  - Default locale: `en`
-  - Supported locales: `en`, `es`, `fr`, `de`, `pt`, `ja`
+  - Cookie-based locale with no URL prefix
+  - Default locale: `es`
+  - Supported locales: `en`, `es`
   - Server and client component support via `getTranslations` and `useTranslations`
 - No global state library initially; rely on:
   - Convex React client
@@ -109,28 +109,24 @@ Browser-based multiplayer music game inspired by Hitster:
 
 - **logtape** or equivalent for structured logs in Convex functions.
 
-### 2.4 Repo Structure (Turborepo)
+### 2.4 Repo Structure
 
-- `apps/web` – Next.js frontend.
-- `apps/convex` – Convex schema + functions.
-- `packages/ui` – shared shadcn components/styles.
-- `packages/shared` – shared types, constants, telemetry utilities, track metadata helpers, etc.
+- `src/app` – Next.js App Router pages and layouts.
+- `src/components` – UI and feature components.
+- `src/i18n` – next-intl configuration.
+- `src/lib` – shared utilities and hooks.
+- `convex` – Convex schema and functions.
 
 ### 2.5 Internationalization (next-intl)
 
 File structure for i18n:
 ```
-i18n/
+src/i18n/
   request.ts         # getRequestConfig for next-intl
   routing.ts         # defineRouting with supported locales
 messages/
-  en.json            # English (default)
-  es.json            # Spanish
-  fr.json            # French
-  de.json            # German
-  pt.json            # Portuguese
-  ja.json            # Japanese
-middleware.ts        # Locale detection and routing
+  en.json            # English
+  es.json            # Spanish (default)
 ```
 
 Translation key organization (namespaced by feature):

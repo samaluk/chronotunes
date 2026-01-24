@@ -32,9 +32,9 @@ Browser-based multiplayer music timeline game. Hitster clone with YouTube audio.
 - just (command runner for local backend)
 
 ### Internationalization
-- next-intl (i18n with App Router)
-- Default locale: en
-- Supported locales: en, es, fr, de, pt, ja (expandable)
+- next-intl (cookie-based locale)
+- Default locale: es
+- Supported locales: en, es
 
 ### Utilities
 - nuqs (URL query param state, if needed)
@@ -69,7 +69,7 @@ reset-local-backend:
 
 # Run convex CLI against local backend
 convex *ARGS:
-    npx convex {{ARGS}} --admin-key 0135d8598650f8f5cb0f30c34ec2e2bb62793bc28717c8eb6fb577996d50be5f4281b59181095f71f82fe3f1e6a8db7527a619e5c4678205752ab7b1fe9ccc16 --url "http://127.0.0.1:3210"
+    npx convex {{ARGS}} --url "http://127.0.0.1:3210"
 ```
 
 ### Development Workflow
@@ -191,18 +191,24 @@ export default defineConfig({
 ## Project Structure
 ```
 chronotunes/
-├── app/
-│   ├── [locale]/                 # i18n locale segment
+├── src/
+│   ├── app/
 │   │   ├── page.tsx              # Landing
 │   │   ├── lobby/[code]/page.tsx # Lobby + game
-│   │   └── layout.tsx            # Locale layout with NextIntlClientProvider
-│   ├── layout.tsx                # Root layout
-│   └── providers.tsx
-├── components/
-│   ├── ui/                       # shadcn
-│   ├── lobby/
-│   ├── game/
-│   └── player/                   # YouTube wrapper
+│   │   ├── layout.tsx            # Root layout with NextIntlClientProvider
+│   │   └── providers.tsx
+│   ├── components/
+│   │   ├── ui/                   # shadcn
+│   │   ├── lobby/
+│   │   ├── game/
+│   │   ├── player/               # YouTube wrapper
+│   │   └── settings/
+│   ├── i18n/
+│   │   ├── request.ts            # getRequestConfig for next-intl
+│   │   └── routing.ts            # Locale routing config
+│   └── lib/
+│       ├── session.ts            # Client sessionId
+│       └── hooks/
 ├── convex/
 │   ├── schema.ts
 │   ├── lib/                      # sessionWrapper, gameLogic
@@ -211,21 +217,10 @@ chronotunes/
 │   ├── games.ts
 │   ├── rounds.ts
 │   ├── bets.ts
-│   ├── tracks.ts
-│   └── presence.ts
-├── i18n/
-│   ├── request.ts                # getRequestConfig for next-intl
-│   └── routing.ts                # Locale routing config
-├── messages/
-│   ├── en.json                   # English translations
-│   ├── es.json                   # Spanish
-│   ├── fr.json                   # French
-│   ├── de.json                   # German
-│   ├── pt.json                   # Portuguese
-│   └── ja.json                   # Japanese
-└── lib/
-    ├── session.ts                # Client sessionId
-    └── hooks/
+│   └── tracks.ts
+└── messages/
+    ├── en.json                   # English translations
+    └── es.json                   # Spanish (default)
 ```
 
 ## Data Model
@@ -399,9 +394,8 @@ First player with timelineSize >= targetTimelineSize wins.
 - [ ] next-themes + sonner
 - [ ] Session ID client util (localStorage)
 - [ ] typescript-go config
-- [ ] next-intl setup (i18n/request.ts, i18n/routing.ts, middleware.ts)
+- [ ] next-intl setup (src/i18n/request.ts, src/i18n/routing.ts)
 - [ ] messages/en.json with initial translation keys
-- [ ] app/[locale] structure with NextIntlClientProvider
 
 ### Phase 2: Lobby
 - [ ] lobbies.create mutation + tests
@@ -462,7 +456,7 @@ First player with timelineSize >= targetTimelineSize wins.
 
 | Area | Decision |
 |------|----------|
-| Structure | Monorepo, convex/ at root |
+| Structure | Single repo with `src/` for app code |
 | Timeline | Embedded array (max 10) |
 | Queries | Decoupled (6+ queries) |
 | State | No client lib, Convex only |
@@ -472,7 +466,7 @@ First player with timelineSize >= targetTimelineSize wins.
 | Audio | YouTube IFrame, all clients load video |
 | Tracks | Deferred, manual import for MVP |
 | Host failover | 30s timer, auto-transfer |
-| i18n | next-intl, locale in URL path |
+| i18n | next-intl, cookie-based locale |
 
 ## Unresolved Questions
 

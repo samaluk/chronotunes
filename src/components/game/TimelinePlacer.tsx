@@ -1,14 +1,14 @@
 "use client"
 
 import { useSessionMutation } from "convex-helpers/react/sessions"
-import { ArrowDown, ArrowUp, Check, Loader2 } from "lucide-react"
+import { Check, Loader2 } from "lucide-react"
 import { useTranslations } from "next-intl"
-import { useCallback, useEffect, useMemo, useRef, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { api } from "@/convex/_generated/api"
 import type { Doc, Id } from "@/convex/_generated/dataModel"
 import { sortTimelineByYear } from "@/lib/timeline"
-import { TimelineCard } from "./TimelineCard"
+import { getPlacementPositionLabel, TimelinePlacementView } from "./TimelinePlacementView"
 
 interface TrackInfo {
   _id: Id<"tracks">
@@ -50,13 +50,7 @@ export function TimelinePlacer({
   const submitPlacement = useSessionMutation(api.rounds.submitPlacement)
 
   const sortedTimeline = sortTimelineByYear(player.timeline)
-  const revealedTrackMap = useMemo(
-    () => new Map(revealedTracks.map((track) => [track.trackId, track])),
-    [revealedTracks],
-  )
   const maxPosition = sortedTimeline.length
-  const isAtTop = selectedIndex <= 0
-  const isAtBottom = selectedIndex >= maxPosition
 
   const moveSelection = useCallback(
     (direction: "up" | "down") => {
@@ -69,6 +63,10 @@ export function TimelinePlacer({
     },
     [maxPosition],
   )
+
+  const handleSlotClick = useCallback((index: number) => {
+    setSelectedIndex(index)
+  }, [])
 
   const handleSubmit = useCallback(async () => {
     setIsSubmitting(true)
@@ -126,71 +124,23 @@ export function TimelinePlacer({
     )
   }
 
-  const getPositionLabel = (index: number): string => {
-    if (index === 0 && maxPosition === 0) {
-      return t("emptyTimeline")
-    }
-    if (index === 0) {
-      const firstYear = sortedTimeline[0]?.year
-      return t("beforeYear", { year: firstYear })
-    }
-    if (index === maxPosition) {
-      const lastYear = sortedTimeline[maxPosition - 1]?.year
-      return t("afterYear", { year: lastYear })
-    }
-    const yearBefore = sortedTimeline[index - 1]?.year
-    const yearAfter = sortedTimeline[index]?.year
-    return t("betweenYears", { year1: yearBefore, year2: yearAfter })
-  }
+  const getPositionLabel = (index: number): string =>
+    getPlacementPositionLabel(t, sortedTimeline, index)
 
   return (
-    <div className="w-full space-y-4 pb-24 sm:pb-0">
+    <div className="w-full space-y-4">
       <div className="flex items-center justify-between">
         <h3 className="font-medium text-muted-foreground text-sm">{t("placeTheSong")}</h3>
       </div>
 
-      <div className="space-y-2">
-        {sortedTimeline.map((entry, idx) => (
-          <div key={`${entry.trackId}-${entry.earnedAtRoundNumber}-${idx}`}>
-            {idx === selectedIndex && (
-              <TimelineCard
-                icon="help"
-                isNew={true}
-                isPreview={true}
-                subtitle="Guess the year!"
-                title="New Song"
-                year={currentTrack.year}
-              />
-            )}
-            {revealedTrackMap.has(entry.trackId) ? (
-              <TimelineCard
-                artist={revealedTrackMap.get(entry.trackId)!.artist}
-                icon="music"
-                title={revealedTrackMap.get(entry.trackId)!.title}
-                year={revealedTrackMap.get(entry.trackId)!.year}
-              />
-            ) : (
-              <TimelineCard
-                icon="music"
-                iconColor="primary"
-                subtitle="From round"
-                title="Known Track"
-                year={entry.year}
-              />
-            )}
-          </div>
-        ))}
-        {maxPosition === selectedIndex && (
-          <TimelineCard
-            icon="help"
-            isNew={true}
-            isPreview={true}
-            subtitle="Guess the year!"
-            title="New Song"
-            year={currentTrack.year}
-          />
-        )}
-      </div>
+      <TimelinePlacementView
+        badgeLabel={t("yourPickWithName", { name: player.displayName })}
+        isDisabled={isSubmitting}
+        onSlotClick={handleSlotClick}
+        revealedTracks={revealedTracks}
+        selectedIndex={selectedIndex}
+        timeline={player.timeline}
+      />
 
       <div className="flex items-center justify-between border-t pt-4">
         <p className="font-medium text-foreground text-sm">{getPositionLabel(selectedIndex)}</p>
@@ -217,40 +167,6 @@ export function TimelinePlacer({
           </>
         )}
       </Button>
-      <div className="fixed inset-x-0 bottom-0 z-40 border-t bg-background/95 px-4 py-3 pb-[calc(env(safe-area-inset-bottom)+0.75rem)] backdrop-blur sm:hidden">
-        <div className="mx-auto flex w-full max-w-lg items-center gap-3">
-          <Button
-            aria-label={t("moveUp")}
-            disabled={isAtTop}
-            onClick={() => moveSelection("up")}
-            size="icon-lg"
-            type="button"
-            variant="outline"
-          >
-            <ArrowUp className="h-5 w-5" />
-          </Button>
-          <Button
-            aria-label={t("moveDown")}
-            disabled={isAtBottom}
-            onClick={() => moveSelection("down")}
-            size="icon-lg"
-            type="button"
-            variant="outline"
-          >
-            <ArrowDown className="h-5 w-5" />
-          </Button>
-          <Button
-            className="flex-1"
-            disabled={isSubmitting}
-            onClick={handleSubmit}
-            size="lg"
-            type="button"
-          >
-            <Check className="mr-2 h-4 w-4" />
-            {t("confirmPlacement")}
-          </Button>
-        </div>
-      </div>
     </div>
   )
 }

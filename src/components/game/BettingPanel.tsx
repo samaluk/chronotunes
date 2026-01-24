@@ -124,7 +124,6 @@ export function BettingPanel({
   const canBet = Boolean(me && me.coins >= 1 && !hasLockedBet && !hasDeclinedBet && !isTurnPlayer)
   const canDecline = Boolean(me && !hasLockedBet && !hasDeclinedBet && !isTurnPlayer)
   const myPlayerId = me?._id ?? null
-  const showMobileActionBar = selectedIndex !== null && !hasLockedBet && !hasDeclinedBet
 
   const triggerForbiddenSlotFeedback = useCallback(
     (index: number) => {
@@ -449,11 +448,6 @@ export function BettingPanel({
         return
       }
 
-      if (selectedIndex === index && myBet && !hasLockedBet && !hasDeclinedBet) {
-        await handleConfirm()
-        return
-      }
-
       await handlePreview(index)
     },
     [
@@ -500,13 +494,6 @@ export function BettingPanel({
         case "ArrowUp":
           event.preventDefault()
           await handleArrowMove("up")
-          return
-        case "Enter":
-          if (hasLockedBet) {
-            return
-          }
-          event.preventDefault()
-          await handleConfirm()
           return
         case "Escape":
           event.preventDefault()
@@ -562,7 +549,7 @@ export function BettingPanel({
   }
 
   return (
-    <div className={`w-full space-y-4 ${showMobileActionBar ? "pb-24 sm:pb-0" : ""}`}>
+    <div className="w-full space-y-4">
       <div className="flex items-center justify-between">
         <div>
           <h3 className="font-medium text-muted-foreground text-sm">{t("placeYourBet")}</h3>
@@ -673,10 +660,21 @@ export function BettingPanel({
               </p>
               <p className="text-muted-foreground text-xs sm:hidden">{t("tapSlotToPreview")}</p>
             </div>
-            <Button onClick={handleCancel} size="sm" type="button" variant="ghost">
-              <X className="mr-1 h-4 w-4" />
-              {tCommon("cancel")}
-            </Button>
+            <div className="flex items-center gap-2">
+              <Button onClick={handleCancel} size="sm" type="button" variant="ghost">
+                <X className="mr-1 h-4 w-4" />
+                {tCommon("cancel")}
+              </Button>
+              <Button
+                disabled={isLockingIn || isPreviewing}
+                onClick={handleConfirm}
+                size="sm"
+                type="button"
+              >
+                <Check className="mr-1 h-4 w-4" />
+                {t("confirmBet")}
+              </Button>
+            </div>
           </div>
         </div>
       )}
@@ -753,33 +751,6 @@ export function BettingPanel({
         <div className="flex items-center justify-center gap-2 rounded-lg bg-muted/50 p-2">
           <Loader2 className="h-4 w-4 animate-spin" />
           <span className="text-muted-foreground text-sm">{activityLabel}</span>
-        </div>
-      )}
-      {showMobileActionBar && (
-        <div className="fixed inset-x-0 bottom-0 z-40 border-t bg-background/95 px-4 py-3 pb-[calc(env(safe-area-inset-bottom)+0.75rem)] backdrop-blur sm:hidden">
-          <div className="mx-auto flex w-full max-w-lg items-center gap-3">
-            <Button
-              className="flex-1"
-              disabled={isCancelling || isLockingIn}
-              onClick={handleCancel}
-              size="lg"
-              type="button"
-              variant="outline"
-            >
-              <X className="mr-2 h-4 w-4" />
-              {tCommon("cancel")}
-            </Button>
-            <Button
-              className="flex-1"
-              disabled={isLockingIn}
-              onClick={handleConfirm}
-              size="lg"
-              type="button"
-            >
-              <Check className="mr-2 h-4 w-4" />
-              {t("confirmBet")}
-            </Button>
-          </div>
         </div>
       )}
     </div>

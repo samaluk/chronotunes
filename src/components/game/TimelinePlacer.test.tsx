@@ -101,6 +101,9 @@ const createMockTrack = (
 })
 
 const lobbyId = "lobby123" as GenericId<"lobbies">
+const placeSongHeadingText = "Place the Song"
+const placeOnTimelineText = "Place on timeline"
+const confirmPlacementText = "Confirm Placement"
 
 describe("TimelinePlacer", () => {
   test("renders loading state when track is null", () => {
@@ -137,9 +140,8 @@ describe("TimelinePlacer", () => {
       </NextIntlClientProvider>,
     )
 
-    expect(screen.getByRole("heading", { name: /place the song/i })).toBeInTheDocument()
-    expect(screen.getByText("New Song")).toBeInTheDocument()
-    expect(screen.getByText("Guess the year!")).toBeInTheDocument()
+    expect(screen.getByRole("heading", { name: placeSongHeadingText })).toBeInTheDocument()
+    expect(screen.getByRole("button", { name: placeOnTimelineText })).toBeInTheDocument()
   })
 
   test("renders timeline with existing cards", () => {
@@ -174,7 +176,7 @@ describe("TimelinePlacer", () => {
       </NextIntlClientProvider>,
     )
 
-    expect(screen.getByText("New Song")).toBeInTheDocument()
+    expect(screen.getByText("Known Track")).toBeInTheDocument()
   })
 
   test("displays confirm placement button", () => {
@@ -203,6 +205,6 @@ describe("TimelinePlacer", () => {
       </NextIntlClientProvider>,
     )
 
-    expect(screen.getByRole("button", { name: /confirm placement/i })).toBeInTheDocument()
+    expect(screen.getByRole("button", { name: confirmPlacementText })).toBeInTheDocument()
   })
 })
