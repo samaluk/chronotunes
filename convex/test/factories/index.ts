@@ -28,7 +28,7 @@ import {
   create as createRoundBet,
   findAllInRound as findAllRoundBetsInRound,
   findByPlayerAndRound as findRoundBetByPlayerAndRound,
-} from "./round-bets"
+} from "./round_bets"
 import {
   create as createRound,
   createInPhase as createRoundInPhase,

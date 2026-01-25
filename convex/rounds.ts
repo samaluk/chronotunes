@@ -1,5 +1,5 @@
 import { ConvexError, v } from "convex/values"
-import { getGameContext, getLobbyPlayers, getPlayerBySession } from "./lib/game-context"
+import { getGameContext, getLobbyPlayers, getPlayerBySession } from "./lib/game_context"
 import { mutationWithSession, queryWithSession } from "./lib/sessions"
 
 export const getCurrent = queryWithSession({

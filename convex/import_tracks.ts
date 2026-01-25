@@ -233,7 +233,7 @@ export const parseAndImportCsv = mutation({
       throw new ConvexError("No valid tracks found in CSV")
     }
 
-    return await ctx.runMutation(api.importTracks.importTracksFromCsv, {
+    return await ctx.runMutation(api.import_tracks.importTracksFromCsv, {
       tracks,
       clearExisting,
     })

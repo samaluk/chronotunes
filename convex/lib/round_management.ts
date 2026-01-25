@@ -1,6 +1,6 @@
 import type { Doc, Id } from "../_generated/dataModel"
 import type { MutationCtx } from "../_generated/server"
-import { selectTrackForRound } from "./track-selection"
+import { selectTrackForRound } from "./track_selection"
 
 interface SelectedTrack {
   trackId: Id<"tracks">

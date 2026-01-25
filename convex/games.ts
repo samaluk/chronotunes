@@ -1,9 +1,9 @@
 import { ConvexError, v } from "convex/values"
 import type { Doc, Id } from "./_generated/dataModel"
 import { type MutationCtx, query } from "./_generated/server"
-import { getGameContext, getLobbyPlayers } from "./lib/game-context"
-import { computeValidIndexRange, isPlacementCorrect, type TimelineEntry } from "./lib/game-logic"
-import { createNextRound, shuffleArray } from "./lib/round-management"
+import { getGameContext, getLobbyPlayers } from "./lib/game_context"
+import { computeValidIndexRange, isPlacementCorrect, type TimelineEntry } from "./lib/game_logic"
+import { createNextRound, shuffleArray } from "./lib/round_management"
 import { mutationWithSession } from "./lib/sessions"
 
 const getLobbyOrThrow = async (ctx: MutationCtx, lobbyId: Id<"lobbies">) => {

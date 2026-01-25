@@ -18,7 +18,7 @@ describe("checkHostDisconnect", () => {
       displayName: "HostNoDeadline",
     })
 
-    await t.mutation(internal.hostDisconnect.checkHostTransfer, {})
+    await t.mutation(internal.host_disconnect.checkHostTransfer, {})
 
     const lobby = await t.run(async (ctx) => {
       const lobbies = await ctx.db.query("lobbies").collect()
@@ -46,7 +46,7 @@ describe("checkHostDisconnect", () => {
       }
     })
 
-    await t.mutation(internal.hostDisconnect.checkHostTransfer, {})
+    await t.mutation(internal.host_disconnect.checkHostTransfer, {})
 
     const lobby = await t.run(async (ctx) => {
       const lobbies = await ctx.db.query("lobbies").collect()
@@ -101,7 +101,7 @@ describe("checkHostTransfer with presence", () => {
       }
     })
 
-    await t.mutation(internal.hostDisconnect.checkHostTransfer, {})
+    await t.mutation(internal.host_disconnect.checkHostTransfer, {})
 
     const players = await t.run(async (ctx) => {
       const allPlayers = await ctx.db.query("players").collect()
@@ -144,7 +144,7 @@ describe("checkHostTransfer with presence", () => {
       }
     })
 
-    await t.mutation(internal.hostDisconnect.checkHostTransfer, {})
+    await t.mutation(internal.host_disconnect.checkHostTransfer, {})
 
     const lobby = await t.run(async (ctx) => {
       const lobbies = await ctx.db.query("lobbies").collect()
@@ -200,7 +200,7 @@ describe("checkHostTransfer with presence", () => {
       }
     })
 
-    await t.mutation(internal.hostDisconnect.checkHostTransfer, {})
+    await t.mutation(internal.host_disconnect.checkHostTransfer, {})
 
     const game = await t.run(async (ctx) => {
       const games = await ctx.db.query("games").collect()
@@ -241,7 +241,7 @@ describe("checkHostTransfer with presence", () => {
       }
     })
 
-    await t.mutation(internal.hostDisconnect.checkHostTransfer, {})
+    await t.mutation(internal.host_disconnect.checkHostTransfer, {})
 
     const lobby = await t.run(async (ctx) => {
       const lobbies = await ctx.db.query("lobbies").collect()
@@ -274,7 +274,7 @@ describe("checkHostTransfer with presence", () => {
       }
     })
 
-    await t.mutation(internal.hostDisconnect.checkHostTransfer)
+    await t.mutation(internal.host_disconnect.checkHostTransfer)
 
     await t.mutation(api.lobbies.leave, {
       code,
