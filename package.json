@@ -12,6 +12,7 @@
     "test:once": "vitest run",
     "test:debug": "vitest --inspect-brk --no-file-parallelism",
     "test:coverage": "vitest run --coverage --coverage.reporter=text",
+    "test:ui": "vitest --ui --coverage",
     "biome": "biome",
     "next:typegen": "tsc -p tsconfig.json --noEmit",
     "convex:typegen": "convex codegen --url http://127.0.0.1:3210 2>/dev/null || true",
