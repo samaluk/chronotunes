@@ -2,18 +2,15 @@
 
 import { useQuery } from "convex/react"
 import { useSessionId, useSessionQuery } from "convex-helpers/react/sessions"
-import { Disc, History } from "lucide-react"
 import { useCallback, useMemo } from "react"
 import { useIsMounted } from "usehooks-ts"
 import { ErrorBoundary } from "@/components/ui/error-boundary"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { api } from "@/convex/_generated/api"
 import type { Doc, Id } from "@/convex/_generated/dataModel"
 import { BettingPhaseContent } from "./betting-phase-content"
 import { GameHeader } from "./game-header"
 import { GameProvider, useGame } from "./game-provider"
 import { GameResults } from "./game-results"
-import { MyTimeline } from "./my-timeline"
 import { PlacingPhaseContent } from "./placing-phase-content"
 import { PlayerTimelineModal } from "./player-timeline-modal"
 import { PlayersBar } from "./players-bar"
@@ -26,76 +23,6 @@ function LoadingSkeleton(): React.ReactNode {
       <div className="h-12 animate-pulse rounded-lg bg-muted" />
       <div className="h-64 animate-pulse rounded-lg bg-muted" />
     </div>
-  )
-}
-
-function GameTabs(): React.ReactNode {
-  const { state } = useGame()
-  const { phase } = state
-
-  const phaseBadgeClass = useMemo(() => {
-    switch (phase) {
-      case "placing":
-        return "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400"
-      case "betting":
-        return "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400"
-      case "resolved":
-        return "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
-      default:
-        return "bg-muted text-muted-foreground"
-    }
-  }, [phase])
-
-  return (
-    <Tabs className="w-full" defaultValue="round">
-      <TabsList
-        className="h-auto w-full justify-start gap-6 rounded-none border-b bg-transparent p-0"
-        variant="line"
-      >
-        <TabsTrigger
-          className="px-0 pb-2 text-muted-foreground hover:text-foreground data-[active]:border-primary data-[active]:text-foreground"
-          value="round"
-        >
-          <Disc className="mr-2 h-4 w-4" />
-          Current Round
-        </TabsTrigger>
-        <TabsTrigger
-          className="px-0 pb-2 text-muted-foreground hover:text-foreground data-[active]:border-primary data-[active]:text-foreground"
-          value="timeline"
-        >
-          <History className="mr-2 h-4 w-4" />
-          My Timeline
-        </TabsTrigger>
-      </TabsList>
-
-      <TabsContent className="mt-4" value="round">
-        <ErrorBoundary>
-          <div className="w-full">
-            <div className="overflow-hidden rounded-xl border bg-card">
-              <div className="border-b bg-muted/50 px-4 py-3">
-                <div className="flex items-center justify-between">
-                  <span className="font-medium text-sm">Current Round</span>
-                  <span
-                    className={`inline-flex items-center rounded-full px-2 py-1 font-medium text-xs transition-all duration-300 ${phaseBadgeClass}`}
-                  >
-                    {phase}
-                  </span>
-                </div>
-              </div>
-              <div className="fade-in animate-in p-6 transition-all duration-300">
-                <PhaseContent />
-              </div>
-            </div>
-          </div>
-        </ErrorBoundary>
-      </TabsContent>
-
-      <TabsContent className="mt-4" value="timeline">
-        <ErrorBoundary>
-          <MyTimeline />
-        </ErrorBoundary>
-      </TabsContent>
-    </Tabs>
   )
 }
 
@@ -141,7 +68,15 @@ function ActiveGameView(): React.ReactNode {
         <GamePlayersBar />
         <GameHeader />
       </ErrorBoundary>
-      <GameTabs />
+      <ErrorBoundary>
+        <div className="w-full">
+          <div className="overflow-hidden rounded-xl border bg-card">
+            <div className="fade-in animate-in p-6 transition-all duration-300">
+              <PhaseContent />
+            </div>
+          </div>
+        </div>
+      </ErrorBoundary>
     </>
   )
 }
