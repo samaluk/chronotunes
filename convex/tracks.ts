@@ -202,7 +202,7 @@ export const importTracks = mutation({
         createdAt: now,
         source: "import",
         ...(track.mbid ? { mbid: track.mbid.trim() } : {}),
-        ...(track.durationMs !== undefined ? { durationMs: track.durationMs } : {}),
+        ...(track.durationMs === undefined ? {} : { durationMs: track.durationMs }),
       })
 
       importedIds.push(trackId)

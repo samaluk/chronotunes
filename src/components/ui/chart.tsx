@@ -10,7 +10,15 @@ import {
   useId,
   useMemo,
 } from "react"
-import { Legend, type LegendProps, ResponsiveContainer, Tooltip } from "recharts"
+import {
+  type DefaultLegendContentProps,
+  Legend,
+  type LegendPayload,
+  ResponsiveContainer,
+  Tooltip,
+  type TooltipContentProps,
+  type TooltipPayloadEntry,
+} from "recharts"
 import { cn } from "@/lib/utils"
 
 // Format: { THEME_NAME: CSS_SELECTOR }
@@ -26,8 +34,8 @@ export type ChartConfig = {
   )
 }
 
-type TooltipPayloadItem = NonNullable<ComponentProps<typeof Tooltip>["payload"]>[number]
-type LegendPayloadItem = NonNullable<LegendProps["payload"]>[number]
+type TooltipPayloadItem = TooltipPayloadEntry
+type LegendPayloadItem = LegendPayload
 
 interface ChartContextProps {
   config: ChartConfig
@@ -117,7 +125,7 @@ function ChartTooltipContent({
   color,
   nameKey,
   labelKey,
-}: ComponentProps<typeof Tooltip> &
+}: TooltipContentProps &
   ComponentProps<"div"> & {
     hideLabel?: boolean
     hideIndicator?: boolean
@@ -181,7 +189,7 @@ function ChartTooltipContent({
                   "flex w-full flex-wrap items-stretch gap-2 [&>svg]:h-2.5 [&>svg]:w-2.5 [&>svg]:text-muted-foreground",
                   indicator === "dot" && "items-center",
                 )}
-                key={item.dataKey}
+                key={String(item.dataKey ?? item.name ?? index)}
               >
                 {formatter && item?.value !== undefined && item.name ? (
                   formatter(item.value, item.name, item, index, item.payload)
@@ -248,7 +256,7 @@ function ChartLegendContent({
   verticalAlign = "bottom",
   nameKey,
 }: ComponentProps<"div"> &
-  Pick<LegendProps, "payload" | "verticalAlign"> & {
+  Pick<DefaultLegendContentProps, "payload" | "verticalAlign"> & {
     hideIcon?: boolean
     nameKey?: string
   }) {
@@ -324,9 +332,9 @@ function getPayloadConfigFromPayload(config: ChartConfig, payload: unknown, key:
 
 export {
   ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
   ChartLegend,
   ChartLegendContent,
   ChartStyle,
+  ChartTooltip,
+  ChartTooltipContent,
 }

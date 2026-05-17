@@ -372,15 +372,7 @@ test("preview fails when player has no coins", async () => {
     }
   })
 
-  if (turnPlayerSessionId !== "spectator-session-nocoin") {
-    await expect(
-      t.mutation(api.bets.preview, {
-        lobbyId: lobby!._id,
-        sessionId: asSessionId("spectator-session-nocoin"),
-        proposedIndex: 0,
-      }),
-    ).rejects.toThrow("Not enough coins to place a bet")
-  } else {
+  if (turnPlayerSessionId === "spectator-session-nocoin") {
     await expect(
       t.mutation(api.bets.preview, {
         lobbyId: lobby!._id,
@@ -388,6 +380,14 @@ test("preview fails when player has no coins", async () => {
         proposedIndex: 0,
       }),
     ).rejects.toThrow("Turn player cannot place bets")
+  } else {
+    await expect(
+      t.mutation(api.bets.preview, {
+        lobbyId: lobby!._id,
+        sessionId: asSessionId("spectator-session-nocoin"),
+        proposedIndex: 0,
+      }),
+    ).rejects.toThrow("Not enough coins to place a bet")
   }
 })
 
@@ -438,15 +438,7 @@ test("preview fails for negative index", async () => {
 
   expect(turnPlayerSessionId).not.toBeNull()
 
-  if (turnPlayerSessionId !== "spectator-session-neg") {
-    await expect(
-      t.mutation(api.bets.preview, {
-        lobbyId: lobby!._id,
-        sessionId: asSessionId("spectator-session-neg"),
-        proposedIndex: -1,
-      }),
-    ).rejects.toThrow("Proposed index cannot be negative")
-  } else {
+  if (turnPlayerSessionId === "spectator-session-neg") {
     await expect(
       t.mutation(api.bets.preview, {
         lobbyId: lobby!._id,
@@ -454,6 +446,14 @@ test("preview fails for negative index", async () => {
         proposedIndex: -1,
       }),
     ).rejects.toThrow("Turn player cannot place bets")
+  } else {
+    await expect(
+      t.mutation(api.bets.preview, {
+        lobbyId: lobby!._id,
+        sessionId: asSessionId("spectator-session-neg"),
+        proposedIndex: -1,
+      }),
+    ).rejects.toThrow("Proposed index cannot be negative")
   }
 })
 
@@ -961,15 +961,14 @@ test("lockIn fails after round is resolved", async () => {
 
   expect(turnPlayerSessionId).not.toBeNull()
 
-  if (turnPlayerSessionId !== "spectator-session-resolved") {
-    await t.mutation(api.bets.preview, {
-      lobbyId: lobby!._id,
-      sessionId: asSessionId("spectator-session-resolved"),
-      proposedIndex: 1,
-    })
-  } else {
+  if (turnPlayerSessionId === "spectator-session-resolved") {
     return
   }
+  await t.mutation(api.bets.preview, {
+    lobbyId: lobby!._id,
+    sessionId: asSessionId("spectator-session-resolved"),
+    proposedIndex: 1,
+  })
 
   await t.run(async (ctx) => {
     if (game?.currentRoundId) {
@@ -1257,15 +1256,14 @@ test("cancel fails after round is resolved", async () => {
 
   expect(turnPlayerSessionId).not.toBeNull()
 
-  if (turnPlayerSessionId !== "spectator-session-cancelresolved") {
-    await t.mutation(api.bets.preview, {
-      lobbyId: lobby!._id,
-      sessionId: asSessionId("spectator-session-cancelresolved"),
-      proposedIndex: 1,
-    })
-  } else {
+  if (turnPlayerSessionId === "spectator-session-cancelresolved") {
     return
   }
+  await t.mutation(api.bets.preview, {
+    lobbyId: lobby!._id,
+    sessionId: asSessionId("spectator-session-cancelresolved"),
+    proposedIndex: 1,
+  })
 
   await t.run(async (ctx) => {
     if (game?.currentRoundId) {
@@ -1336,14 +1334,7 @@ test("preview works during betting phase", async () => {
 
   expect(turnPlayerSessionId).not.toBeNull()
 
-  if (turnPlayerSessionId !== "spectator-session-betting") {
-    const result = await t.mutation(api.bets.preview, {
-      lobbyId: lobby!._id,
-      sessionId: asSessionId("spectator-session-betting"),
-      proposedIndex: 1,
-    })
-    expect(result).toBeNull()
-  } else {
+  if (turnPlayerSessionId === "spectator-session-betting") {
     await expect(
       t.mutation(api.bets.preview, {
         lobbyId: lobby!._id,
@@ -1351,6 +1342,13 @@ test("preview works during betting phase", async () => {
         proposedIndex: 0,
       }),
     ).rejects.toThrow("Turn player cannot place bets")
+  } else {
+    const result = await t.mutation(api.bets.preview, {
+      lobbyId: lobby!._id,
+      sessionId: asSessionId("spectator-session-betting"),
+      proposedIndex: 1,
+    })
+    expect(result).toBeNull()
   }
 })
 

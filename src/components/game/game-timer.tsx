@@ -6,12 +6,12 @@ import { Progress } from "@/components/ui/progress"
 import { cn } from "@/lib/utils"
 
 interface GameTimerProps {
-  startedAt: number
-  totalSeconds: number
+  className?: string
   lowTimeThreshold?: number
   showProgress?: boolean
+  startedAt: number
+  totalSeconds: number
   variant?: "betting" | "turn"
-  className?: string
 }
 
 export const GameTimer = memo(function GameTimer({
@@ -52,7 +52,7 @@ export const GameTimer = memo(function GameTimer({
   const isLowTime = timeRemaining !== null && timeRemaining > 0 && timeRemaining <= lowTimeThreshold
   const isOverdue = variant === "turn" && timeRemaining !== null && timeRemaining <= -60
   const progressValue =
-    timeRemaining !== null ? Math.max(0, Math.min(100, (timeRemaining / totalSeconds) * 100)) : null
+    timeRemaining === null ? null : Math.max(0, Math.min(100, (timeRemaining / totalSeconds) * 100))
 
   const timerStateClass = (() => {
     if (isExpired || isOverdue) {
@@ -73,7 +73,7 @@ export const GameTimer = memo(function GameTimer({
         )}
       >
         <Timer className={cn("h-5 w-5", isLowTime && "animate-pulse")} />
-        <span>{timeRemaining !== null ? formatTime(timeRemaining) : "--:--"}</span>
+        <span>{timeRemaining === null ? "--:--" : formatTime(timeRemaining)}</span>
         {isLowTime && <AlertTriangle className="h-4 w-4 animate-pulse" />}
         {isExpired && variant === "betting" && (
           <span className="ml-1 font-medium text-xs">Time&apos;s up</span>

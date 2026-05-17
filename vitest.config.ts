@@ -16,10 +16,10 @@ export default defineConfig({
         },
         resolve: {
           alias: {
-            "@/convex": path.resolve(__dirname, "convex"),
-            "@/convex/*": path.resolve(__dirname, "convex/*"),
-            "@": path.resolve(__dirname, "src"),
-            "@/*": path.resolve(__dirname, "src/*"),
+            "@/convex": path.resolve(import.meta.dirname, "convex"),
+            "@/convex/*": path.resolve(import.meta.dirname, "convex/*"),
+            "@": path.resolve(import.meta.dirname, "src"),
+            "@/*": path.resolve(import.meta.dirname, "src/*"),
           },
         },
       },

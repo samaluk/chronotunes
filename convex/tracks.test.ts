@@ -429,7 +429,7 @@ test("getPublic returns null for non-existent round", async () => {
   const t = convexTest(schema, modules)
 
   const result = await t.query(api.tracks.getPublic, {
-    roundId: "1234567890;rounds" as Id<"rounds">,
+    roundId: "99999999999999999999999999999999rounds" as Id<"rounds">,
   })
 
   expect(result).toBeNull()

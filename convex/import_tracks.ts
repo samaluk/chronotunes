@@ -6,13 +6,13 @@ const MIN_YEAR = 1900
 const MAX_YEAR = 2030
 
 interface CsvTrackImportItem {
-  title: string
   artist: string
-  year: number
-  spotifyTrackId?: string
-  youtubeVideoId?: string
   durationMs?: number
   mbid?: string
+  spotifyTrackId?: string
+  title: string
+  year: number
+  youtubeVideoId?: string
 }
 
 const normalizeText = (value: string | undefined) => value?.replace(/^"|"$/g, "").trim()
@@ -188,7 +188,7 @@ export const importTracksFromCsv = mutation({
           createdAt: now,
           source: "import",
           ...(track.mbid ? { mbid: track.mbid.trim() } : {}),
-          ...(track.durationMs !== undefined ? { durationMs: track.durationMs } : {}),
+          ...(track.durationMs === undefined ? {} : { durationMs: track.durationMs }),
         })
 
         importedIds.push(trackId)
