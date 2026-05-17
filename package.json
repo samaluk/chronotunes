@@ -63,7 +63,7 @@
     "@types/react-dom": "^19",
     "@vitest/coverage-v8": "^4.0.18",
     "@vitest/ui": "^4.0.18",
-    "convex-test": "^0.0.43",
+    "convex-test": "^0.0.52",
     "jsdom": "^28.0.0",
     "lefthook": "^2.0.15",
     "scrape-youtube": "^2.4.0",
