@@ -31,7 +31,7 @@ importers:
         version: 1.38.0(react@19.2.4)
       convex-helpers:
         specifier: ^0.1.111
-        version: 0.1.114(@standard-schema/spec@1.1.0)(convex@1.38.0(react@19.2.4))(hono@4.12.19)(react@19.2.4)(typescript@5.9.3)(zod@3.25.76)
+        version: 0.1.117(@standard-schema/spec@1.1.0)(convex@1.38.0(react@19.2.4))(hono@4.12.19)(react@19.2.4)(typescript@5.9.3)(zod@3.25.76)
       date-fns:
         specifier: ^4.1.0
         version: 4.1.0
@@ -2306,15 +2306,15 @@ packages:
   convert-source-map@2.0.0:
     resolution: {integrity: sha512-Kvp459HrV2FEJ1CAsi1Ku+MY3kasH19TFykTz2xWmMeq6bk2NU3XXvfJ+Q61m0xktWwt+1HSYf3JZsTms3aRJg==}
 
-  convex-helpers@0.1.114:
-    resolution: {integrity: sha512-elEdh+gG6BDv2dWIWVvBeJPbHnDQS5+WexUuwlGVJXz1EbMkXz/UIQwFIfLMZIXUwW6ot4JYf/1JJKNStrE6lg==}
+  convex-helpers@0.1.117:
+    resolution: {integrity: sha512-0C0o3ajQdf9FeAO3L/QRTw7W6e1cliIjDTEuh63SXSfm2mMMWD8hHzbbdXJAxTncatLmyGGLfp6qHYn3bP/u+g==}
     hasBin: true
     peerDependencies:
       '@standard-schema/spec': ^1.0.0
       convex: ^1.32.0
       hono: ^4.0.5
       react: ^17.0.2 || ^18.0.0 || ^19.0.0
-      typescript: ^5.5
+      typescript: ^5.5 || ^6.0.0
       zod: ^3.25.0 || ^4.0.0
     peerDependenciesMeta:
       '@standard-schema/spec':
@@ -6248,7 +6248,7 @@ snapshots:
 
   convert-source-map@2.0.0: {}
 
-  convex-helpers@0.1.114(@standard-schema/spec@1.1.0)(convex@1.38.0(react@19.2.4))(hono@4.12.19)(react@19.2.4)(typescript@5.9.3)(zod@3.25.76):
+  convex-helpers@0.1.117(@standard-schema/spec@1.1.0)(convex@1.38.0(react@19.2.4))(hono@4.12.19)(react@19.2.4)(typescript@5.9.3)(zod@3.25.76):
     dependencies:
       convex: 1.38.0(react@19.2.4)
     optionalDependencies:
