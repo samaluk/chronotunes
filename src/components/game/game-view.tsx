@@ -3,107 +3,21 @@
 import { useQuery } from "convex/react"
 import { useSessionId, useSessionQuery } from "convex-helpers/react/sessions"
 import { Disc, History } from "lucide-react"
-import { useCallback, useMemo, useState } from "react"
+import { useCallback, useMemo } from "react"
 import { useIsMounted } from "usehooks-ts"
 import { ErrorBoundary } from "@/components/ui/error-boundary"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { api } from "@/convex/_generated/api"
 import type { Doc, Id } from "@/convex/_generated/dataModel"
-import { CurrentRoundPanel } from "./current-round-panel"
+import { BettingPhaseContent } from "./betting-phase-content"
 import { GameHeader } from "./game-header"
+import { GameProvider, useGame } from "./game-provider"
 import { GameResults } from "./game-results"
 import { MyTimeline } from "./my-timeline"
+import { PlacingPhaseContent } from "./placing-phase-content"
 import { PlayerTimelineModal } from "./player-timeline-modal"
 import { PlayersBar } from "./players-bar"
-
-interface CurrentRound {
-  _id: Id<"rounds">
-  _creationTime: number
-  gameId: Id<"games">
-  roundNumber: number
-  turnPlayerId: Id<"players">
-  phase: "placing" | "betting" | "resolved"
-  startedAt: number
-  placementPreview?: {
-    proposedIndex: number
-    updatedAt: number
-  }
-  placement?: {
-    proposedIndex: number
-    submittedAt: number
-  }
-  guess?: {
-    guessedTitle?: string
-    guessedArtist?: string
-    isCorrect: boolean
-    awardedCoin: boolean
-    submittedAt: number
-  }
-  resolution?: {
-    validIndexMin: number
-    validIndexMax: number
-    turnPlayerWasCorrect: boolean
-    awardedPlayerIds: Id<"players">[]
-    coinDeltas: Array<{
-      playerId: Id<"players">
-      delta: number
-    }>
-    resolvedAt: number
-  }
-  track: {
-    trackId: Id<"tracks">
-    title?: string
-    artist?: string
-    year?: number
-    youtubeVideoId?: string
-  }
-}
-
-interface GameViewProps {
-  lobbyId: Id<"lobbies">
-  code: string
-}
-
-interface GameViewContentProps {
-  lobbyId: Id<"lobbies">
-  code: string
-  lobby: Doc<"lobbies">
-  players: Doc<"players">[]
-  me: Doc<"players"> | null
-  game: Doc<"games">
-  currentRound: CurrentRound
-  revealedTracks: Array<{
-    trackId: Id<"tracks">
-    title: string
-    artist: string
-    year: number
-    youtubeVideoId?: string
-  }>
-  sessionId: string | null
-  selectedPlayerForTimeline: Doc<"players"> | null
-  onPlayerClick: (player: Doc<"players">) => void
-  onModalClose: (open: boolean) => void
-}
-
-interface ActiveGameViewProps {
-  lobbyId: Id<"lobbies">
-  lobby: Doc<"lobbies">
-  players: Doc<"players">[]
-  me: Doc<"players"> | null
-  game: Doc<"games">
-  currentRound: CurrentRound
-  revealedTracks: Array<{
-    trackId: Id<"tracks">
-    title: string
-    artist: string
-    year: number
-    youtubeVideoId?: string
-  }>
-  sessionId: string | null
-  selectedPlayerForTimeline: Doc<"players"> | null
-  onPlayerClick: (player: Doc<"players">) => void
-  onModalClose: (open: boolean) => void
-}
+import { ResolvedPhaseContent } from "./resolved-phase-content"
 
 function LoadingSkeleton(): React.ReactNode {
   return (
@@ -115,43 +29,22 @@ function LoadingSkeleton(): React.ReactNode {
   )
 }
 
-function GameTabs({
-  lobbyId,
-  lobby,
-  players,
-  me,
-  currentRound,
-  revealedTracks,
-  isMyTurn,
-  roundPhase,
-  trackInfo,
-  turnPlayer,
-}: {
-  lobbyId: Id<"lobbies">
-  lobby: Doc<"lobbies">
-  players: Doc<"players">[]
-  me: Doc<"players"> | null
-  currentRound: CurrentRound
-  revealedTracks: Array<{
-    trackId: Id<"tracks">
-    title: string
-    artist: string
-    year: number
-    youtubeVideoId?: string
-  }>
-  isMyTurn: boolean
-  roundPhase: "placing" | "betting" | "resolved"
-  trackInfo: {
-    _id: Id<"tracks">
-    title?: string
-    artist?: string
-    year?: number
-    youtubeVideoId?: string
-  } | null
-  turnPlayer: Doc<"players"> | undefined
-}): React.ReactNode {
-  const turnPlayerPlacementIndex =
-    currentRound?.phase === "betting" ? (currentRound?.placement?.proposedIndex ?? null) : null
+function GameTabs(): React.ReactNode {
+  const { state } = useGame()
+  const { phase } = state
+
+  const phaseBadgeClass = useMemo(() => {
+    switch (phase) {
+      case "placing":
+        return "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400"
+      case "betting":
+        return "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400"
+      case "resolved":
+        return "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
+      default:
+        return "bg-muted text-muted-foreground"
+    }
+  }, [phase])
 
   return (
     <Tabs className="w-full" defaultValue="round">
@@ -177,147 +70,109 @@ function GameTabs({
 
       <TabsContent className="mt-4" value="round">
         <ErrorBoundary>
-          <CurrentRoundPanel
-            bettingWindowSeconds={lobby?.settings?.bettingWindowSeconds}
-            existingPreviewIndex={currentRound?.placementPreview?.proposedIndex ?? null}
-            isMyTurn={isMyTurn}
-            lobbyId={lobbyId}
-            me={me ?? null}
-            phase={roundPhase}
-            players={players ?? null}
-            resolution={currentRound?.resolution ?? null}
-            revealedTracks={revealedTracks ?? []}
-            roundStartedAt={currentRound?.startedAt}
-            showLiveBets={lobby?.settings?.showLiveBets ?? false}
-            track={trackInfo}
-            turnPlayerId={currentRound?.turnPlayerId ?? null}
-            turnPlayerPlacementIndex={turnPlayerPlacementIndex}
-            turnPlayerTimeline={turnPlayer?.timeline ?? []}
-            turnPlayerTimelineSize={turnPlayer?.timelineSize ?? 0}
-            turnSeconds={lobby?.settings?.turnSeconds}
-          />
+          <div className="w-full">
+            <div className="overflow-hidden rounded-xl border bg-card">
+              <div className="border-b bg-muted/50 px-4 py-3">
+                <div className="flex items-center justify-between">
+                  <span className="font-medium text-sm">Current Round</span>
+                  <span
+                    className={`inline-flex items-center rounded-full px-2 py-1 font-medium text-xs transition-all duration-300 ${phaseBadgeClass}`}
+                  >
+                    {phase}
+                  </span>
+                </div>
+              </div>
+              <div className="fade-in animate-in p-6 transition-all duration-300">
+                <PhaseContent />
+              </div>
+            </div>
+          </div>
         </ErrorBoundary>
       </TabsContent>
 
       <TabsContent className="mt-4" value="timeline">
         <ErrorBoundary>
-          <MyTimeline player={me ?? null} />
+          <MyTimeline />
         </ErrorBoundary>
       </TabsContent>
     </Tabs>
   )
 }
 
-function ActiveGameView({
-  lobbyId,
-  lobby,
-  players,
-  me,
-  game,
-  currentRound,
-  revealedTracks,
-  sessionId,
-  selectedPlayerForTimeline,
-  onPlayerClick,
-  onModalClose,
-}: ActiveGameViewProps): React.ReactNode {
-  const turnPlayer = players.find((player) => player._id === currentRound.turnPlayerId)
-  const isMyTurn = currentRound.turnPlayerId === me?._id
-  const roundPhase = (currentRound.phase ?? "placing") as "placing" | "betting" | "resolved"
-  const turnPlayerSummary = turnPlayer
-    ? {
-        _id: turnPlayer._id,
-        displayName: turnPlayer.displayName,
-      }
-    : null
+function PhaseContent(): React.ReactNode {
+  const { state } = useGame()
+  const { phase } = state
 
-  const trackInfo = useMemo((): {
-    _id: Id<"tracks">
-    title?: string
-    artist?: string
-    year?: number
-    youtubeVideoId?: string
-  } | null => {
-    if (!currentRound?.track) {
-      return null
-    }
-    const track = currentRound.track
-    const youtubeVideoId = (track.youtubeVideoId as string | undefined) ?? undefined
-    return {
-      _id: track.trackId as Id<"tracks">,
-      youtubeVideoId,
-      ...("title" in track
-        ? {
-            title: track.title,
-            artist: track.artist,
-            year: track.year,
-          }
-        : {}),
-    }
-  }, [currentRound?.track])
+  switch (phase) {
+    case "placing":
+      return <PlacingPhaseContent />
+    case "betting":
+      return <BettingPhaseContent />
+    case "resolved":
+      return <ResolvedPhaseContent />
+    default:
+      return (
+        <div className="flex flex-col items-center justify-center py-12">
+          <p className="text-muted-foreground">Waiting for round to start...</p>
+        </div>
+      )
+  }
+}
+
+function ActiveGameView(): React.ReactNode {
+  const { state, actions } = useGame()
+  const { selectedPlayerForTimeline } = state
+  const { handleModalClose } = actions
 
   return (
     <>
       <ErrorBoundary>
         {selectedPlayerForTimeline && (
           <PlayerTimelineModal
-            onOpenChange={onModalClose}
+            onOpenChange={(open) => {
+              if (!open) {
+                handleModalClose()
+              }
+            }}
             open={selectedPlayerForTimeline !== null}
             player={selectedPlayerForTimeline}
           />
         )}
-
-        <PlayersBar
-          currentSessionId={sessionId}
-          highlightPlayerId={currentRound?.turnPlayerId ?? null}
-          lobbyId={lobbyId}
-          onPlayerClick={onPlayerClick}
-        />
-
-        <GameHeader
-          bettingStartedAt={roundPhase === "betting" ? currentRound?.startedAt : undefined}
-          bettingWindowSeconds={
-            roundPhase === "betting" ? lobby?.settings?.bettingWindowSeconds : undefined
-          }
-          isMyTurn={isMyTurn}
-          resolution={roundPhase === "resolved" ? (currentRound?.resolution ?? null) : null}
-          roundNumber={game.currentRoundNumber ?? 1}
-          roundPhase={roundPhase}
-          turnPlayer={turnPlayerSummary}
-        />
+        <GamePlayersBar />
+        <GameHeader />
       </ErrorBoundary>
-
-      <GameTabs
-        currentRound={currentRound}
-        isMyTurn={isMyTurn}
-        lobby={lobby}
-        lobbyId={lobbyId}
-        me={me}
-        players={players}
-        revealedTracks={revealedTracks}
-        roundPhase={roundPhase}
-        trackInfo={trackInfo}
-        turnPlayer={turnPlayer}
-      />
+      <GameTabs />
     </>
   )
 }
 
-function GameViewContent({
-  lobbyId,
-  code,
-  lobby,
-  players,
-  me,
-  game,
-  currentRound,
-  revealedTracks,
-  sessionId,
-  selectedPlayerForTimeline,
-  onPlayerClick,
-  onModalClose,
-}: GameViewContentProps): React.ReactNode {
-  const isGameFinished = game.status === "finished"
+function GamePlayersBar(): React.ReactNode {
+  const { state, actions, meta } = useGame()
+  const { currentRound } = state
+  const { setSelectedPlayerForTimeline } = actions
+  const { sessionId, lobbyId } = meta
+
+  const handlePlayerClick = useCallback(
+    (player: Doc<"players">) => {
+      setSelectedPlayerForTimeline(player)
+    },
+    [setSelectedPlayerForTimeline],
+  )
+
+  return (
+    <PlayersBar
+      currentSessionId={sessionId}
+      highlightPlayerId={currentRound?.turnPlayerId ?? null}
+      lobbyId={lobbyId}
+      onPlayerClick={handlePlayerClick}
+    />
+  )
+}
+
+function GameContent(): React.ReactNode {
+  const { state, meta } = useGame()
+  const { isGameFinished } = state
+  const { code, lobbyId } = meta
 
   return (
     <div className="w-full space-y-4">
@@ -326,31 +181,21 @@ function GameViewContent({
           <GameResults code={code} lobbyId={lobbyId} />
         </ErrorBoundary>
       ) : (
-        <ActiveGameView
-          currentRound={currentRound}
-          game={game}
-          lobby={lobby}
-          lobbyId={lobbyId}
-          me={me}
-          onModalClose={onModalClose}
-          onPlayerClick={onPlayerClick}
-          players={players}
-          revealedTracks={revealedTracks}
-          selectedPlayerForTimeline={selectedPlayerForTimeline}
-          sessionId={sessionId}
-        />
+        <ActiveGameView />
       )}
     </div>
   )
+}
+
+interface GameViewProps {
+  code: string
+  lobbyId: Id<"lobbies">
 }
 
 export function GameView({ lobbyId, code }: GameViewProps): React.ReactNode {
   const [sessionId] = useSessionId()
   const isMounted = useIsMounted()
   const mounted = isMounted()
-  const [selectedPlayerForTimeline, setSelectedPlayerForTimeline] = useState<Doc<"players"> | null>(
-    null,
-  )
 
   const lobby = useQuery(api.lobbies.get, mounted && code ? { code } : "skip")
   const players = useQuery(api.players.list, mounted && lobbyId ? { lobbyId } : "skip")
@@ -369,16 +214,6 @@ export function GameView({ lobbyId, code }: GameViewProps): React.ReactNode {
     }
     return turnPlayer.timeline.map((t) => t.trackId)
   }, [turnPlayer])
-
-  const handlePlayerClick = useCallback((player: Doc<"players">) => {
-    setSelectedPlayerForTimeline(player)
-  }, [])
-
-  const handleModalClose = useCallback((open: boolean) => {
-    if (!open) {
-      setSelectedPlayerForTimeline(null)
-    }
-  }, [])
 
   const revealedTracks = useQuery(
     api.tracks.getPublicByIds,
@@ -419,19 +254,18 @@ export function GameView({ lobbyId, code }: GameViewProps): React.ReactNode {
   }
 
   return (
-    <GameViewContent
+    <GameProvider
       code={code}
       currentRound={currentRound}
       game={game}
       lobby={lobby}
       lobbyId={lobbyId}
       me={me ?? null}
-      onModalClose={handleModalClose}
-      onPlayerClick={handlePlayerClick}
       players={players}
       revealedTracks={revealedTracks ?? []}
-      selectedPlayerForTimeline={selectedPlayerForTimeline}
       sessionId={sessionId ?? null}
-    />
+    >
+      <GameContent />
+    </GameProvider>
   )
 }
