@@ -1,76 +1,89 @@
-"use client"
+"use client";
 
-import { useQuery } from "convex/react"
-import { useSessionId, useSessionMutation } from "convex-helpers/react/sessions"
-import { Copy, LogOut, Music, Users } from "lucide-react"
-import { useRouter } from "next/navigation"
-import { useTranslations } from "next-intl"
-import { useEffect, useState } from "react"
-import { toast } from "sonner"
-import { GameView } from "@/components/game/game-view"
-import { PlayerList } from "@/components/lobby/player-list"
-import { SettingsPanel } from "@/components/lobby/settings-panel"
-import { StartGameButton } from "@/components/lobby/start-game-button"
-import { ErrorBoundary } from "@/components/ui/error-boundary"
-import { LocaleSwitcher } from "@/components/ui/locale-switcher"
-import { SkeletonLobbyCode, SkeletonPage, SkeletonPlayerList } from "@/components/ui/skeletons"
-import { api } from "@/convex/_generated/api"
+import {
+  useSessionId,
+  useSessionMutation,
+} from "convex-helpers/react/sessions";
+import { useQuery } from "convex/react";
+import { Copy, LogOut, Music, Users } from "lucide-react";
+import { useTranslations } from "next-intl";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
+
+import { GameView } from "@/components/game/game-view";
+import { PlayerList } from "@/components/lobby/player-list";
+import { SettingsPanel } from "@/components/lobby/settings-panel";
+import { StartGameButton } from "@/components/lobby/start-game-button";
+import { ErrorBoundary } from "@/components/ui/error-boundary";
+import { LocaleSwitcher } from "@/components/ui/locale-switcher";
+import {
+  SkeletonLobbyCode,
+  SkeletonPage,
+  SkeletonPlayerList,
+} from "@/components/ui/skeletons";
+import { api } from "@/convex/_generated/api";
 
 interface LobbyPageContentProps {
-  code: string
+  code: string;
 }
 
-export function LobbyPageContent({ code }: LobbyPageContentProps): React.ReactNode {
-  const t = useTranslations("lobby")
-  const tCommon = useTranslations("common")
+export function LobbyPageContent({
+  code,
+}: LobbyPageContentProps): React.ReactNode {
+  const t = useTranslations("lobby");
+  const tCommon = useTranslations("common");
 
-  const router = useRouter()
-  const [sessionId] = useSessionId()
-  const [mounted, setMounted] = useState(false)
+  const router = useRouter();
+  const [sessionId] = useSessionId();
+  const [mounted, setMounted] = useState(false);
 
-  const lobby = useQuery(api.lobbies.get, mounted && code ? { code } : "skip")
+  const lobby = useQuery(api.lobbies.get, mounted && code ? { code } : "skip");
   const players = useQuery(
     api.players.list,
-    mounted && lobby?._id ? { lobbyId: lobby._id } : "skip",
-  )
+    mounted && lobby?._id ? { lobbyId: lobby._id } : "skip"
+  );
   const me = useQuery(
     api.players.getMe,
-    mounted && lobby?._id && sessionId ? { lobbyId: lobby._id, sessionId } : "skip",
-  )
-  const leaveLobby = useSessionMutation(api.lobbies.leave)
+    mounted && lobby?._id && sessionId
+      ? { lobbyId: lobby._id, sessionId }
+      : "skip"
+  );
+  const leaveLobby = useSessionMutation(api.lobbies.leave);
 
   useEffect(() => {
-    setMounted(true)
-  }, [])
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     if (mounted && lobby === null && code) {
-      toast.error(t("lobbyNotFound"))
-      router.push("/")
+      toast.error(t("lobbyNotFound"));
+      router.push("/");
     }
-  }, [mounted, lobby, code, router, t])
+  }, [mounted, lobby, code, router, t]);
 
   const handleCopyCode = (): void => {
-    navigator.clipboard.writeText(code)
-    toast.success(tCommon("copied"), { description: t("copiedToClipboard") })
-  }
+    navigator.clipboard.writeText(code);
+    toast.success(tCommon("copied"), { description: t("copiedToClipboard") });
+  };
 
   const handleLeaveLobby = async (): Promise<void> => {
     if (!sessionId) {
-      return
+      return;
     }
     try {
-      await leaveLobby({ code })
-      toast.success(t("leftLobby"))
-      router.push("/")
+      await leaveLobby({ code });
+      toast.success(t("leftLobby"));
+      router.push("/");
     } catch (error) {
-      const message = error instanceof Error ? error.message : t("failedToLeave")
-      toast.error(message)
+      const message =
+        error instanceof Error ? error.message : t("failedToLeave");
+      toast.error(message);
     }
-  }
+  };
 
   if (!mounted) {
-    return <SkeletonPage />
+    return <SkeletonPage />;
   }
 
   if (!code) {
@@ -80,7 +93,7 @@ export function LobbyPageContent({ code }: LobbyPageContentProps): React.ReactNo
           <p className="text-destructive">{t("invalidLobbyCode")}</p>
         </div>
       </div>
-    )
+    );
   }
 
   if (lobby === undefined || players === undefined) {
@@ -95,7 +108,9 @@ export function LobbyPageContent({ code }: LobbyPageContentProps): React.ReactNo
                 </div>
                 <div>
                   <h1 className="font-bold text-xl">{t("title")}</h1>
-                  <p className="text-muted-foreground text-sm">{t("subtitle")}</p>
+                  <p className="text-muted-foreground text-sm">
+                    {t("subtitle")}
+                  </p>
                 </div>
               </div>
             </div>
@@ -108,7 +123,7 @@ export function LobbyPageContent({ code }: LobbyPageContentProps): React.ReactNo
           </div>
         </main>
       </div>
-    )
+    );
   }
 
   if (lobby === null) {
@@ -125,11 +140,11 @@ export function LobbyPageContent({ code }: LobbyPageContentProps): React.ReactNo
           </button>
         </div>
       </div>
-    )
+    );
   }
 
-  const isHost = me?.isHost ?? false
-  const isInGame = lobby.status === "in_game"
+  const isHost = me?.isHost ?? false;
+  const isInGame = lobby.status === "in_game";
 
   return (
     <div className="flex min-h-screen flex-col bg-background">
@@ -147,7 +162,9 @@ export function LobbyPageContent({ code }: LobbyPageContentProps): React.ReactNo
             </div>
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-2 rounded-md bg-muted/50 px-3 py-1.5">
-                <code className="font-bold font-mono text-lg tracking-widest">{code}</code>
+                <code className="font-bold font-mono text-lg tracking-widest">
+                  {code}
+                </code>
                 <button
                   className="inline-flex h-8 w-8 items-center justify-center rounded-md transition-colors hover:bg-background"
                   onClick={handleCopyCode}
@@ -182,10 +199,18 @@ export function LobbyPageContent({ code }: LobbyPageContentProps): React.ReactNo
                 <ErrorBoundary>
                   <PlayerList lobbyId={lobby._id} />
                 </ErrorBoundary>
-                <StartGameButton isHost={isHost} lobbyId={lobby._id} playerCount={players.length} />
+                <StartGameButton
+                  isHost={isHost}
+                  lobbyId={lobby._id}
+                  playerCount={players.length}
+                />
               </div>
               <div className="space-y-6">
-                <SettingsPanel code={code} currentSettings={lobby.settings} isHost={isHost} />
+                <SettingsPanel
+                  code={code}
+                  currentSettings={lobby.settings}
+                  isHost={isHost}
+                />
               </div>
             </div>
           )}
@@ -197,5 +222,5 @@ export function LobbyPageContent({ code }: LobbyPageContentProps): React.ReactNo
         </div>
       </main>
     </div>
-  )
+  );
 }

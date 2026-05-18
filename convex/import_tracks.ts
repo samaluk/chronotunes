@@ -1,241 +1,263 @@
-import { ConvexError, v } from "convex/values"
-import { api } from "./_generated/api"
-import { mutation } from "./_generated/server"
+import { ConvexError, v } from "convex/values";
 
-const MIN_YEAR = 1900
-const MAX_YEAR = 2030
+import { api } from "./_generated/api";
+import { mutation } from "./_generated/server";
+
+const MIN_YEAR = 1900;
+const MAX_YEAR = 2030;
 
 interface CsvTrackImportItem {
-  artist: string
-  durationMs?: number
-  mbid?: string
-  spotifyTrackId?: string
-  title: string
-  year: number
-  youtubeVideoId?: string
+  artist: string;
+  durationMs?: number;
+  mbid?: string;
+  spotifyTrackId?: string;
+  title: string;
+  year: number;
+  youtubeVideoId?: string;
 }
 
-const normalizeText = (value: string | undefined) => value?.replace(/^"|"$/g, "").trim()
+const normalizeText = (value: string | undefined) =>
+  value?.replaceAll(/^"|"$/g, "").trim();
 
 const buildExternalIds = (track: CsvTrackImportItem) => ({
-  ...(track.spotifyTrackId ? { spotifyTrackId: track.spotifyTrackId.trim() } : {}),
-  ...(track.youtubeVideoId ? { youtubeVideoId: track.youtubeVideoId.trim() } : {}),
-})
-
-const buildLinks = (track: CsvTrackImportItem) => ({
   ...(track.spotifyTrackId
+    ? { spotifyTrackId: track.spotifyTrackId.trim() }
+    : {}),
+  ...(track.youtubeVideoId
+    ? { youtubeVideoId: track.youtubeVideoId.trim() }
+    : {}),
+});
+
+const buildLinks = (track: CsvTrackImportItem) =>
+  track.spotifyTrackId
     ? {
         spotifyUrl: `https://open.spotify.com/track/${track.spotifyTrackId}`,
       }
-    : {}),
-})
+    : {};
 
 const parseCsvTracks = (csvContent: string) => {
-  const lines = csvContent.trim().split("\n")
-  const tracks: CsvTrackImportItem[] = []
+  const lines = csvContent.trim().split("\n");
+  const tracks: CsvTrackImportItem[] = [];
 
   for (let i = 1; i < lines.length; i++) {
-    const line = lines[i]?.trim()
+    const line = lines[i]?.trim();
     if (!line) {
-      continue
+      continue;
     }
 
-    const parts = line.split("|")
+    const parts = line.split("|");
     if (parts.length < 12) {
-      continue
+      continue;
     }
 
-    const titleRaw = parts[1]
-    const artistRaw = parts[2]
-    const yearRaw = parts[11]
-    const durationRaw = parts[7]
-    const spotifyTrackIdRaw = parts[19]
-    const mbidRaw = parts[20]
+    const titleRaw = parts[1];
+    const artistRaw = parts[2];
+    const yearRaw = parts[11];
+    const durationRaw = parts[7];
+    const spotifyTrackIdRaw = parts[19];
+    const mbidRaw = parts[20];
 
     if (!(titleRaw && artistRaw)) {
-      continue
+      continue;
     }
 
-    const title = normalizeText(titleRaw)
-    const artist = normalizeText(artistRaw)
-    const year = parseYear(normalizeText(yearRaw))
-    const durationMs = parseDurationToMs(normalizeText(durationRaw))
-    const spotifyTrackId = normalizeText(spotifyTrackIdRaw)
-    const mbid = normalizeText(mbidRaw)
+    const title = normalizeText(titleRaw);
+    const artist = normalizeText(artistRaw);
+    const year = parseYear(normalizeText(yearRaw));
+    const durationMs = parseDurationToMs(normalizeText(durationRaw));
+    const spotifyTrackId = normalizeText(spotifyTrackIdRaw);
+    const mbid = normalizeText(mbidRaw);
 
     if (!(title && artist)) {
-      continue
+      continue;
     }
 
     const trackItem: CsvTrackImportItem = {
-      title,
       artist,
+      title,
       year,
-    }
+    };
 
     if (spotifyTrackId) {
-      trackItem.spotifyTrackId = spotifyTrackId
+      trackItem.spotifyTrackId = spotifyTrackId;
     }
     if (durationMs !== undefined) {
-      trackItem.durationMs = durationMs
+      trackItem.durationMs = durationMs;
     }
     if (mbid) {
-      trackItem.mbid = mbid
+      trackItem.mbid = mbid;
     }
 
-    tracks.push(trackItem)
+    tracks.push(trackItem);
   }
 
-  return tracks
-}
+  return tracks;
+};
 
-function parseDurationToMs(durationRaw: string | undefined): number | undefined {
+function parseDurationToMs(
+  durationRaw: string | undefined
+): number | undefined {
   if (!durationRaw) {
-    return undefined
+    return;
   }
-  const parts = durationRaw.split(":").map(Number)
+  const parts = durationRaw.split(":").map(Number);
   if (parts.length === 2 && !parts.includes(Number.NaN)) {
-    return parts[0] * 60 + parts[1]
+    return parts[0] * 60 + parts[1];
   }
   if (parts.length === 3 && !parts.includes(Number.NaN)) {
-    return parts[0] * 60 * 60 + parts[1] * 60 + parts[2]
+    return parts[0] * 60 * 60 + parts[1] * 60 + parts[2];
   }
-  return undefined
+  return;
 }
 
 function parseYear(dateStrRaw: string | undefined): number {
   if (!dateStrRaw || dateStrRaw === "0000-00-00") {
-    return 2000
+    return 2000;
   }
-  const dateStr = normalizeText(dateStrRaw) ?? dateStrRaw
-  const year = Number.parseInt(dateStr.split("-")[0], 10)
-  return Number.isNaN(year) ? 2000 : year
+  const dateStr = normalizeText(dateStrRaw) ?? dateStrRaw;
+  const year = Number.parseInt(dateStr.split("-")[0], 10);
+  return Number.isNaN(year) ? 2000 : year;
 }
 
 function validateTrackItem(item: CsvTrackImportItem): void {
   if (!item.title || item.title.trim().length === 0) {
-    throw new ConvexError("Track title is required")
+    throw new ConvexError("Track title is required");
   }
 
   if (!item.artist || item.artist.trim().length === 0) {
-    throw new ConvexError("Track artist is required")
+    throw new ConvexError("Track artist is required");
   }
 
   if (item.year < MIN_YEAR || item.year > MAX_YEAR) {
-    throw new ConvexError(`Track year must be between ${MIN_YEAR} and ${MAX_YEAR}`)
+    throw new ConvexError(
+      `Track year must be between ${MIN_YEAR} and ${MAX_YEAR}`
+    );
   }
 
-  if (item.youtubeVideoId !== undefined && item.youtubeVideoId.trim().length === 0) {
-    throw new ConvexError("YouTube video ID must be a non-empty string if provided")
+  if (
+    item.youtubeVideoId !== undefined &&
+    item.youtubeVideoId.trim().length === 0
+  ) {
+    throw new ConvexError(
+      "YouTube video ID must be a non-empty string if provided"
+    );
   }
 
   if (item.mbid !== undefined && item.mbid.trim().length === 0) {
-    throw new ConvexError("MusicBrainz ID must be a non-empty string if provided")
+    throw new ConvexError(
+      "MusicBrainz ID must be a non-empty string if provided"
+    );
   }
 
   if (item.durationMs !== undefined && item.durationMs < 0) {
-    throw new ConvexError("Duration must be a non-negative number if provided")
+    throw new ConvexError("Duration must be a non-negative number if provided");
   }
 }
 
 export const importTracksFromCsv = mutation({
   args: {
+    clearExisting: v.optional(v.boolean()),
     tracks: v.array(
       v.object({
-        title: v.string(),
         artist: v.string(),
-        year: v.number(),
-        spotifyTrackId: v.optional(v.string()),
-        youtubeVideoId: v.optional(v.string()),
         durationMs: v.optional(v.number()),
         mbid: v.optional(v.string()),
-      }),
+        spotifyTrackId: v.optional(v.string()),
+        title: v.string(),
+        year: v.number(),
+        youtubeVideoId: v.optional(v.string()),
+      })
     ),
-    clearExisting: v.optional(v.boolean()),
   },
   handler: async (ctx, args) => {
-    const { tracks, clearExisting } = args
+    const { tracks, clearExisting } = args;
 
     if (tracks.length === 0) {
-      throw new ConvexError("At least one track must be provided")
+      throw new ConvexError("At least one track must be provided");
     }
 
     if (tracks.length > 1000) {
-      throw new ConvexError("Cannot import more than 1000 tracks at once")
+      throw new ConvexError("Cannot import more than 1000 tracks at once");
     }
 
-    let deletedCount = 0
+    let deletedCount = 0;
     if (clearExisting) {
-      const existingTracks = await ctx.db.query("tracks").collect()
-      await Promise.all(existingTracks.map((track) => ctx.db.delete(track._id)))
-      deletedCount = existingTracks.length
+      const existingTracks = await ctx.db.query("tracks").collect();
+      await Promise.all(
+        existingTracks.map((track) => ctx.db.delete(track._id))
+      );
+      deletedCount = existingTracks.length;
     }
 
-    const importedIds: string[] = []
-    const now = Date.now()
-    let hasErrors = false
+    const importedIds: string[] = [];
+    const now = Date.now();
+    let hasErrors = false;
 
     for (const track of tracks) {
       try {
-        validateTrackItem(track)
+        validateTrackItem(track);
 
         const trackId = await ctx.db.insert("tracks", {
-          title: track.title.trim(),
           artist: track.artist.trim(),
-          year: track.year,
+          createdAt: now,
           externalIds: buildExternalIds(track),
           links: buildLinks(track),
-          createdAt: now,
           source: "import",
+          title: track.title.trim(),
+          year: track.year,
           ...(track.mbid ? { mbid: track.mbid.trim() } : {}),
-          ...(track.durationMs === undefined ? {} : { durationMs: track.durationMs }),
-        })
+          ...(track.durationMs === undefined
+            ? {}
+            : { durationMs: track.durationMs }),
+        });
 
-        importedIds.push(trackId)
+        importedIds.push(trackId);
       } catch (error) {
-        hasErrors = true
-        console.error(`Failed to import track "${track.title}":`, error)
+        hasErrors = true;
+        console.error(`Failed to import track "${track.title}":`, error);
       }
     }
 
     return {
-      message: hasErrors ? "Import completed with some errors" : "Import completed successfully",
-      importedCount: importedIds.length,
       deletedCount,
+      hasErrors,
+      importedCount: importedIds.length,
+      message: hasErrors
+        ? "Import completed with some errors"
+        : "Import completed successfully",
       skippedCount: 0,
       trackIds: importedIds,
-      hasErrors,
-    }
+    };
   },
-})
+});
 
 export const parseAndImportCsv = mutation({
   args: {
-    csvContent: v.string(),
     clearExisting: v.optional(v.boolean()),
+    csvContent: v.string(),
   },
   handler: async (
     ctx,
-    args,
+    args
   ): Promise<{
-    message: string
-    importedCount: number
-    deletedCount: number
-    skippedCount: number
-    trackIds: string[]
-    hasErrors: boolean
+    message: string;
+    importedCount: number;
+    deletedCount: number;
+    skippedCount: number;
+    trackIds: string[];
+    hasErrors: boolean;
   }> => {
-    const { csvContent, clearExisting } = args
+    const { csvContent, clearExisting } = args;
 
-    const tracks = parseCsvTracks(csvContent)
+    const tracks = parseCsvTracks(csvContent);
 
     if (tracks.length === 0) {
-      throw new ConvexError("No valid tracks found in CSV")
+      throw new ConvexError("No valid tracks found in CSV");
     }
 
     return await ctx.runMutation(api.import_tracks.importTracksFromCsv, {
-      tracks,
       clearExisting,
-    })
+      tracks,
+    });
   },
-})
+});

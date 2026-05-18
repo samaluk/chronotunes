@@ -1,20 +1,21 @@
-"use client"
+"use client";
 
-import { useConvex, useMutation, useQuery } from "convex/react"
-import { useEffect, useMemo, useRef } from "react"
-import { api } from "@/convex/_generated/api"
+import { useConvex, useMutation, useQuery } from "convex/react";
+import { useEffect, useMemo, useRef } from "react";
+
+import { api } from "@/convex/_generated/api";
 
 interface PresenceState {
-  userId: string
-  online: boolean
-  lastDisconnected: number
-  data?: unknown
+  data?: unknown;
+  lastDisconnected: number;
+  online: boolean;
+  userId: string;
 }
 
 interface UsePresenceOptions {
-  roomId: string
-  userId: string
-  interval?: number
+  interval?: number;
+  roomId: string;
+  userId: string;
 }
 
 export function usePresence({
@@ -22,125 +23,128 @@ export function usePresence({
   userId,
   interval = 15_000,
 }: UsePresenceOptions): PresenceState[] | null | undefined {
-  const convex = useConvex()
-  const hasMounted = useRef(false)
-  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
-  const sessionTokenRef = useRef<string | null>(null)
-  const roomTokenRef = useRef<string | null>(null)
-  const sessionIdRef = useRef(crypto.randomUUID())
+  const convex = useConvex();
+  const hasMounted = useRef(false);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const sessionTokenRef = useRef<string | null>(null);
+  const roomTokenRef = useRef<string | null>(null);
+  const sessionIdRef = useRef(crypto.randomUUID());
 
-  const heartbeat = useMutation(api.presence.sendHeartbeat)
-  const disconnect = useMutation(api.presence.disconnectPresence)
-  const baseUrl = convex.url
+  const heartbeat = useMutation(api.presence.sendHeartbeat);
+  const disconnect = useMutation(api.presence.disconnectPresence);
+  const baseUrl = convex.url;
 
   useEffect(() => {
-    sessionIdRef.current = crypto.randomUUID()
-    sessionTokenRef.current = null
-    roomTokenRef.current = null
+    sessionIdRef.current = crypto.randomUUID();
+    sessionTokenRef.current = null;
+    roomTokenRef.current = null;
 
     return () => {
       if (intervalRef.current) {
-        clearInterval(intervalRef.current)
+        clearInterval(intervalRef.current);
       }
       if (sessionTokenRef.current) {
-        disconnect({ sessionToken: sessionTokenRef.current }).catch(() => undefined)
+        disconnect({ sessionToken: sessionTokenRef.current }).catch(() => {});
       }
-    }
-  }, [disconnect])
+    };
+  }, [disconnect]);
 
   useEffect(() => {
     const sendHeartbeat = async () => {
       try {
         const result = await heartbeat({
-          roomId,
-          userId,
-          sessionId: sessionIdRef.current,
           interval,
-        })
-        sessionTokenRef.current = result.sessionToken
-        roomTokenRef.current = result.roomToken
+          roomId,
+          sessionId: sessionIdRef.current,
+          userId,
+        });
+        sessionTokenRef.current = result.sessionToken;
+        roomTokenRef.current = result.roomToken;
       } catch {
         // Silently fail, will retry on next interval
       }
-    }
+    };
 
-    sendHeartbeat().catch(() => undefined)
+    sendHeartbeat().catch(() => {});
 
-    intervalRef.current = setInterval(sendHeartbeat, interval)
+    intervalRef.current = setInterval(sendHeartbeat, interval);
 
     const handleUnload = () => {
       if (sessionTokenRef.current) {
         const blob = new Blob(
           [
             JSON.stringify({
-              path: "presence:disconnectPresence",
               args: { sessionToken: sessionTokenRef.current },
+              path: "presence:disconnectPresence",
             }),
           ],
-          { type: "application/json" },
-        )
-        navigator.sendBeacon(`${baseUrl}/api/mutation`, blob)
+          { type: "application/json" }
+        );
+        navigator.sendBeacon(`${baseUrl}/api/mutation`, blob);
       }
-    }
+    };
 
-    window.addEventListener("beforeunload", handleUnload)
+    window.addEventListener("beforeunload", handleUnload);
 
     const handleVisibility = async () => {
       if (document.hidden) {
         if (intervalRef.current) {
-          clearInterval(intervalRef.current)
-          intervalRef.current = null
+          clearInterval(intervalRef.current);
+          intervalRef.current = null;
         }
         if (sessionTokenRef.current) {
-          await disconnect({ sessionToken: sessionTokenRef.current })
+          await disconnect({ sessionToken: sessionTokenRef.current });
         }
       } else {
-        sendHeartbeat().catch(() => undefined)
-        intervalRef.current = setInterval(sendHeartbeat, interval)
+        sendHeartbeat().catch(() => {});
+        intervalRef.current = setInterval(sendHeartbeat, interval);
       }
-    }
+    };
 
-    document.addEventListener("visibilitychange", handleVisibility)
+    document.addEventListener("visibilitychange", handleVisibility);
 
     return () => {
       if (intervalRef.current) {
-        clearInterval(intervalRef.current)
+        clearInterval(intervalRef.current);
       }
-      document.removeEventListener("visibilitychange", handleVisibility)
-      window.removeEventListener("beforeunload", handleUnload)
+      document.removeEventListener("visibilitychange", handleVisibility);
+      window.removeEventListener("beforeunload", handleUnload);
 
       if (hasMounted.current && sessionTokenRef.current) {
-        disconnect({ sessionToken: sessionTokenRef.current }).catch(() => undefined)
+        disconnect({ sessionToken: sessionTokenRef.current }).catch(() => {});
       }
-    }
-  }, [heartbeat, disconnect, baseUrl, interval, roomId, userId])
+    };
+  }, [heartbeat, disconnect, baseUrl, interval, roomId, userId]);
 
   useEffect(() => {
-    hasMounted.current = true
-  }, [])
+    hasMounted.current = true;
+  }, []);
 
   const state = useQuery(
     api.presence.getPresenceList,
-    roomTokenRef.current ? { roomToken: roomTokenRef.current } : "skip",
-  )
+    roomTokenRef.current ? { roomToken: roomTokenRef.current } : "skip"
+  );
 
   return useMemo(() => {
     if (!state) {
-      return state
+      return state;
     }
-    return state.slice().sort((a, b) => {
+    return [...state].toSorted((a, b) => {
       if (a.userId === userId) {
-        return -1
+        return -1;
       }
       if (b.userId === userId) {
-        return 1
+        return 1;
       }
-      return 0
-    })
-  }, [state, userId])
+      return 0;
+    });
+  }, [state, userId]);
 }
 
-export function useIsOnline(userId: string, presence: PresenceState[] | null | undefined): boolean {
-  const myPresence = presence?.find((p) => p.userId === userId)
-  return myPresence?.online ?? false
+export function useIsOnline(
+  userId: string,
+  presence: PresenceState[] | null | undefined
+): boolean {
+  const myPresence = presence?.find((p) => p.userId === userId);
+  return myPresence?.online ?? false;
 }

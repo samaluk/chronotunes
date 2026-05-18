@@ -1,107 +1,108 @@
-import type { SystemTableNames } from "convex/server"
-import type { convexTest } from "convex-test"
-import type { Id, TableNames } from "../../_generated/dataModel"
+import type { convexTest } from "convex-test";
+import type { SystemTableNames } from "convex/server";
 
-export type TestContext = ReturnType<typeof convexTest>
+import type { Id, TableNames } from "../../_generated/dataModel";
+
+export type TestContext = ReturnType<typeof convexTest>;
 
 export interface FactoryResult<T extends TableNames | SystemTableNames> {
-  id: Id<T>
-  record: Record<string, unknown>
+  id: Id<T>;
+  record: Record<string, unknown>;
 }
 
 export interface CreateManyOptions {
-  startIndex?: number
+  startIndex?: number;
 }
 
-export type GamePhase = "placing" | "betting" | "resolved"
-export type GameStatus = "active" | "paused" | "finished"
-export type LobbyStatus = "lobby" | "in_game" | "finished"
-export type BetStatus = "pending" | "won" | "lost"
+export type GamePhase = "placing" | "betting" | "resolved";
+export type GameStatus = "active" | "paused" | "finished";
+export type LobbyStatus = "lobby" | "in_game" | "finished";
+export type BetStatus = "pending" | "won" | "lost";
 
 export interface TimelineEntry {
-  trackId: Id<"tracks">
-  year: number
-  earnedAtRoundNumber: number
-  earnedBy: "placement" | "bet"
+  earnedAtRoundNumber: number;
+  earnedBy: "placement" | "bet";
+  trackId: Id<"tracks">;
+  year: number;
 }
 
 export interface PlayerOverrides {
-  sessionId?: string
-  displayName?: string
-  isHost?: boolean
-  coins?: number
-  timeline?: TimelineEntry[]
-  timelineSize?: number
+  coins?: number;
+  displayName?: string;
+  isHost?: boolean;
+  sessionId?: string;
+  timeline?: TimelineEntry[];
+  timelineSize?: number;
 }
 
 export interface LobbyOverrides {
-  code?: string
-  hostSessionId?: string
-  status?: LobbyStatus
+  code?: string;
+  hostSessionId?: string;
+  players?: PlayerOverrides[];
   settings?: {
-    targetTimelineSize?: number
-    startingCoins?: number
-    turnSeconds?: number
-    bettingWindowSeconds?: number
-    allowGuessTitleArtist?: boolean
-    showLiveBets?: boolean
-    allowBetRetraction?: boolean
-    minYear?: number
-    maxYear?: number
-  }
-  players?: PlayerOverrides[]
+    targetTimelineSize?: number;
+    startingCoins?: number;
+    turnSeconds?: number;
+    bettingWindowSeconds?: number;
+    allowGuessTitleArtist?: boolean;
+    showLiveBets?: boolean;
+    allowBetRetraction?: boolean;
+    minYear?: number;
+    maxYear?: number;
+  };
+  status?: LobbyStatus;
 }
 
 export interface GameOverrides {
-  status?: GameStatus
-  currentRoundNumber?: number
-  turnOrder?: Id<"players">[]
-  turnPlayerId?: Id<"players">
+  currentRoundNumber?: number;
+  status?: GameStatus;
+  turnOrder?: Id<"players">[];
+  turnPlayerId?: Id<"players">;
 }
 
 export interface RoundOverrides {
-  roundNumber?: number
-  phase?: GamePhase
-  trackId?: Id<"tracks">
-  turnPlayerId?: Id<"players">
-  placement?: {
-    proposedIndex: number
-    submittedAt: number
-  }
-  placementPreview?: {
-    proposedIndex: number
-    updatedAt: number
-  }
   guess?: {
-    guessedTitle?: string
-    guessedArtist?: string
-    isCorrect: boolean
-    awardedCoin: boolean
-    submittedAt: number
-  }
+    guessedTitle?: string;
+    guessedArtist?: string;
+    isCorrect: boolean;
+    awardedCoin: boolean;
+    submittedAt: number;
+  };
+  phase?: GamePhase;
+  placement?: {
+    proposedIndex: number;
+    submittedAt: number;
+  };
+  placementPreview?: {
+    proposedIndex: number;
+    updatedAt: number;
+  };
   resolution?: {
-    validIndexMin: number
-    validIndexMax: number
-    turnPlayerWasCorrect: boolean
-    awardedPlayerIds: Id<"players">[]
-    coinDeltas: Array<{
-      playerId: Id<"players">
-      delta: number
-    }>
-    resolvedAt: number
-  }
+    validIndexMin: number;
+    validIndexMax: number;
+    turnPlayerWasCorrect: boolean;
+    awardedPlayerIds: Id<"players">[];
+    coinDeltas: {
+      playerId: Id<"players">;
+      delta: number;
+    }[];
+    resolvedAt: number;
+  };
+  roundNumber?: number;
+  trackId?: Id<"tracks">;
+  turnPlayerId?: Id<"players">;
 }
 
 export interface BetOverrides {
-  proposedIndex?: number
-  lockedIn?: boolean
-  status?: BetStatus
+  lockedIn?: boolean;
+  proposedIndex?: number;
+  status?: BetStatus;
 }
 
 export function withIndex(str: string, index: number): string {
-  return str.replace("{n}", String(index))
+  return str.replace("{n}", String(index));
 }
 
 export function uuid(): string {
-  return `session-${crypto.randomUUID().slice(0, 8)}`
+  return `session-${crypto.randomUUID().slice(0, 8)}`;
 }

@@ -1,16 +1,16 @@
-import { Skeleton } from "@/components/ui/skeleton"
-import { cn } from "@/lib/utils"
+import { Skeleton } from "@/components/ui/skeleton";
+import { cn } from "@/lib/utils";
 
 export function SkeletonCard({ className }: { className?: string }) {
-  return <Skeleton className={cn("h-32 w-full rounded-xl", className)} />
+  return <Skeleton className={cn("h-32 w-full rounded-xl", className)} />;
 }
 
 export function SkeletonButton({ className }: { className?: string }) {
-  return <Skeleton className={cn("h-10 w-24 rounded-md", className)} />
+  return <Skeleton className={cn("h-10 w-24 rounded-md", className)} />;
 }
 
 export function SkeletonText({ className }: { className?: string }) {
-  return <Skeleton className={cn("h-4 w-full", className)} />
+  return <Skeleton className={cn("h-4 w-full", className)} />;
 }
 
 export function SkeletonParagraph({ className }: { className?: string }) {
@@ -20,23 +20,28 @@ export function SkeletonParagraph({ className }: { className?: string }) {
       <Skeleton className="h-4 w-4/5" />
       <Skeleton className="h-4 w-3/5" />
     </div>
-  )
+  );
 }
 
 export function SkeletonAvatar({ className }: { className?: string }) {
-  return <Skeleton className={cn("h-10 w-10 rounded-full", className)} />
+  return <Skeleton className={cn("h-10 w-10 rounded-full", className)} />;
 }
 
 export function SkeletonPlayerCard({ className }: { className?: string }) {
   return (
-    <div className={cn("flex items-center gap-3 rounded-lg border bg-card p-3", className)}>
+    <div
+      className={cn(
+        "flex items-center gap-3 rounded-lg border bg-card p-3",
+        className
+      )}
+    >
       <SkeletonAvatar />
       <div className="flex-1 space-y-2">
         <Skeleton className="h-4 w-24" />
         <Skeleton className="h-3 w-16" />
       </div>
     </div>
-  )
+  );
 }
 
 export function SkeletonPlayerList({ count = 4 }: { count?: number }) {
@@ -49,7 +54,7 @@ export function SkeletonPlayerList({ count = 4 }: { count?: number }) {
         ))}
       </div>
     </div>
-  )
+  );
 }
 
 export function SkeletonPlayersBar({ count = 4 }: { count?: number }) {
@@ -70,7 +75,7 @@ export function SkeletonPlayersBar({ count = 4 }: { count?: number }) {
         ))}
       </div>
     </div>
-  )
+  );
 }
 
 export function SkeletonGameHeader({ className }: { className?: string }) {
@@ -85,7 +90,7 @@ export function SkeletonGameHeader({ className }: { className?: string }) {
       </div>
       <Skeleton className="mx-auto h-4 w-40" />
     </div>
-  )
+  );
 }
 
 export function SkeletonRoundPanel({ className }: { className?: string }) {
@@ -107,7 +112,7 @@ export function SkeletonRoundPanel({ className }: { className?: string }) {
         </div>
       </div>
     </div>
-  )
+  );
 }
 
 export function SkeletonTimeline({ className }: { className?: string }) {
@@ -116,11 +121,14 @@ export function SkeletonTimeline({ className }: { className?: string }) {
       <Skeleton className="h-6 w-32" />
       <div className="flex gap-2 overflow-x-auto pb-4">
         {Array.from({ length: 5 }).map((_, i) => (
-          <Skeleton className="h-20 w-16 flex-shrink-0 rounded-lg" key={`timeline-${i}`} />
+          <Skeleton
+            className="h-20 w-16 flex-shrink-0 rounded-lg"
+            key={`timeline-${i}`}
+          />
         ))}
       </div>
     </div>
-  )
+  );
 }
 
 export function SkeletonLobbyCode({ className }: { className?: string }) {
@@ -128,7 +136,7 @@ export function SkeletonLobbyCode({ className }: { className?: string }) {
     <div
       className={cn(
         "flex flex-col items-start justify-between gap-4 rounded-xl border bg-primary/5 p-6 sm:flex-row sm:items-center",
-        className,
+        className
       )}
     >
       <div className="space-y-2">
@@ -137,7 +145,7 @@ export function SkeletonLobbyCode({ className }: { className?: string }) {
       </div>
       <SkeletonButton />
     </div>
-  )
+  );
 }
 
 export function SkeletonBettingPanel({ className }: { className?: string }) {
@@ -156,7 +164,7 @@ export function SkeletonBettingPanel({ className }: { className?: string }) {
         <Skeleton className="h-10 w-full" />
       </div>
     </div>
-  )
+  );
 }
 
 export function SkeletonResults({ className }: { className?: string }) {
@@ -178,16 +186,18 @@ export function SkeletonResults({ className }: { className?: string }) {
         </div>
       </div>
     </div>
-  )
+  );
 }
 
 export function SkeletonPage({ className }: { className?: string }) {
   return (
-    <div className={cn("flex min-h-screen items-center justify-center", className)}>
+    <div
+      className={cn("flex min-h-screen items-center justify-center", className)}
+    >
       <div className="space-y-4 text-center">
         <div className="inline-block h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
         <Skeleton className="mx-auto h-4 w-32" />
       </div>
     </div>
-  )
+  );
 }

@@ -1,57 +1,62 @@
-"use client"
+"use client";
 
-import { AlertCircle, RefreshCw } from "lucide-react"
-import React, { type ReactNode } from "react"
-import { Button } from "@/components/ui/button"
-import { cn } from "@/lib/utils"
+import { AlertCircle, RefreshCw } from "lucide-react";
+import React from "react";
+import type { ReactNode } from "react";
+
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 interface ErrorBoundaryState {
-  hasError: boolean
-  error: Error | null
-  errorInfo: string | null
+  error: Error | null;
+  errorInfo: string | null;
+  hasError: boolean;
 }
 
 interface ErrorBoundaryProps {
-  children: ReactNode
-  fallback?: ReactNode
-  onError?: (error: Error, errorInfo: string) => void
-  className?: string
+  children: ReactNode;
+  className?: string;
+  fallback?: ReactNode;
+  onError?: (error: Error, errorInfo: string) => void;
 }
 
-export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundaryState> {
+export class ErrorBoundary extends React.Component<
+  ErrorBoundaryProps,
+  ErrorBoundaryState
+> {
   constructor(props: ErrorBoundaryProps) {
-    super(props)
-    this.state = { hasError: false, error: null, errorInfo: null }
+    super(props);
+    this.state = { error: null, errorInfo: null, hasError: false };
   }
 
   static getDerivedStateFromError(error: Error): Partial<ErrorBoundaryState> {
-    return { hasError: true, error }
+    return { error, hasError: true };
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    console.error("ErrorBoundary caught an error:", error, errorInfo)
-    const errorInfoString: string | null = errorInfo.componentStack || null
-    this.setState({ errorInfo: errorInfoString })
+    console.error("ErrorBoundary caught an error:", error, errorInfo);
+    const errorInfoString: string | null = errorInfo.componentStack || null;
+    this.setState({ errorInfo: errorInfoString });
     if (this.props.onError) {
-      this.props.onError(error, errorInfo.componentStack || "")
+      this.props.onError(error, errorInfo.componentStack || "");
     }
   }
 
   handleRetry = (): void => {
-    this.setState({ hasError: false, error: null, errorInfo: null })
-  }
+    this.setState({ error: null, errorInfo: null, hasError: false });
+  };
 
   render(): ReactNode {
     if (this.state.hasError) {
       if (this.props.fallback) {
-        return this.props.fallback
+        return this.props.fallback;
       }
 
       return (
         <div
           className={cn(
             "flex min-h-[200px] flex-col items-center justify-center rounded-xl border border-destructive/20 bg-card p-6",
-            this.props.className,
+            this.props.className
           )}
         >
           <div className="mb-4 flex items-center gap-3">
@@ -68,22 +73,22 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
             Try Again
           </Button>
         </div>
-      )
+      );
     }
 
-    return this.props.children
+    return this.props.children;
   }
 }
 
 interface AsyncErrorBoundaryState {
-  hasError: boolean
-  error: Error | null
+  error: Error | null;
+  hasError: boolean;
 }
 
 interface AsyncErrorBoundaryProps {
-  children: ReactNode
-  fallback?: (error: Error, retry: () => void) => ReactNode
-  className?: string
+  children: ReactNode;
+  className?: string;
+  fallback?: (error: Error, retry: () => void) => ReactNode;
 }
 
 export function AsyncErrorBoundary({
@@ -92,24 +97,24 @@ export function AsyncErrorBoundary({
   className,
 }: AsyncErrorBoundaryProps): React.ReactNode {
   const [state, setState] = React.useState<AsyncErrorBoundaryState>({
-    hasError: false,
     error: null,
-  })
+    hasError: false,
+  });
 
   const handleRetry = (): void => {
-    setState({ hasError: false, error: null })
-  }
+    setState({ error: null, hasError: false });
+  };
 
   if (state.hasError && state.error) {
     if (fallback) {
-      return fallback(state.error, handleRetry)
+      return fallback(state.error, handleRetry);
     }
 
     return (
       <div
         className={cn(
           "flex min-h-[200px] flex-col items-center justify-center rounded-xl border border-destructive/20 bg-card p-6",
-          className,
+          className
         )}
       >
         <div className="mb-4 flex items-center gap-3">
@@ -126,8 +131,8 @@ export function AsyncErrorBoundary({
           Try Again
         </Button>
       </div>
-    )
+    );
   }
 
-  return <>{children}</>
+  return <>{children}</>;
 }

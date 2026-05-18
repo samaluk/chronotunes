@@ -1,49 +1,60 @@
-"use client"
+"use client";
 
-import { useTranslations } from "next-intl"
-import { Label } from "@/components/ui/label"
-import { Slider } from "@/components/ui/slider"
+import { useTranslations } from "next-intl";
+
+import { Label } from "@/components/ui/label";
+import { Slider } from "@/components/ui/slider";
 
 interface SettingSliderProps {
-  label: string
-  value: number
-  min: number
-  max: number
-  step: number
-  onChange: <K extends keyof LobbySettings>(key: K, value: LobbySettings[K]) => void
-  onCommit: <K extends keyof LobbySettings>(key: K, value: LobbySettings[K]) => void
-  unit: string
+  label: string;
+  max: number;
+  min: number;
+  onChange: <K extends keyof LobbySettings>(
+    key: K,
+    value: LobbySettings[K]
+  ) => void;
+  onCommit: <K extends keyof LobbySettings>(
+    key: K,
+    value: LobbySettings[K]
+  ) => void;
+  step: number;
+  unit: string;
+  value: number;
 }
 
 interface LobbySettings {
-  targetTimelineSize: number
-  startingCoins: number
-  turnSeconds: number
-  bettingWindowSeconds: number
-  allowGuessTitleArtist: boolean
-  showLiveBets: boolean
-  allowBetRetraction: boolean
-  minYear: number
-  maxYear: number
+  allowBetRetraction: boolean;
+  allowGuessTitleArtist: boolean;
+  bettingWindowSeconds: number;
+  maxYear: number;
+  minYear: number;
+  showLiveBets: boolean;
+  startingCoins: number;
+  targetTimelineSize: number;
+  turnSeconds: number;
 }
 
 const getUnitLabel = (
   label: string,
   value: number,
   unit: string,
-  t: ReturnType<typeof useTranslations>,
+  t: ReturnType<typeof useTranslations>
 ): string => {
   switch (label) {
-    case "turnSeconds":
-      return t("turnSeconds", { count: value })
-    case "targetCards":
-      return t("targetCards", { count: value })
-    case "bettingWindowSeconds":
-      return t("bettingWindowSeconds", { count: value })
-    default:
-      return `${value} ${unit}`
+    case "turnSeconds": {
+      return t("turnSeconds", { count: value });
+    }
+    case "targetCards": {
+      return t("targetCards", { count: value });
+    }
+    case "bettingWindowSeconds": {
+      return t("bettingWindowSeconds", { count: value });
+    }
+    default: {
+      return `${value} ${unit}`;
+    }
   }
-}
+};
 
 export function SettingSlider({
   label,
@@ -55,29 +66,37 @@ export function SettingSlider({
   onCommit,
   unit,
 }: SettingSliderProps): React.ReactNode {
-  const t = useTranslations("settings")
-  const sliderId = `slider-${label}`
-  const unitLabel = getUnitLabel(label, value, unit, t)
+  const t = useTranslations("settings");
+  const sliderId = `slider-${label}`;
+  const unitLabel = getUnitLabel(label, value, unit, t);
   return (
     <div className="space-y-2">
       <div className="flex justify-between text-sm">
         <Label className="cursor-pointer whitespace-nowrap" htmlFor={sliderId}>
-          {["turnSeconds", "targetCards", "bettingWindowSeconds"].includes(label)
+          {["turnSeconds", "targetCards", "bettingWindowSeconds"].includes(
+            label
+          )
             ? t(label, { count: value })
             : t(label)}
         </Label>
-        <span className="whitespace-nowrap text-muted-foreground">{unitLabel}</span>
+        <span className="whitespace-nowrap text-muted-foreground">
+          {unitLabel}
+        </span>
       </div>
       <Slider
         className="h-2 w-full cursor-pointer appearance-none rounded-lg bg-secondary accent-primary"
         id={sliderId}
         max={max}
         min={min}
-        onValueChange={(val) => onChange(label as keyof LobbySettings, Number(val))}
-        onValueCommitted={(val) => onCommit(label as keyof LobbySettings, Number(val))}
+        onValueChange={(val) =>
+          onChange(label as keyof LobbySettings, Number(val))
+        }
+        onValueCommitted={(val) =>
+          onCommit(label as keyof LobbySettings, Number(val))
+        }
         step={step}
         value={value}
       />
     </div>
-  )
+  );
 }

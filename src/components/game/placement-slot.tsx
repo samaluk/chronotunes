@@ -1,15 +1,16 @@
-"use client"
+"use client";
 
-import type { ReactNode } from "react"
-import { cn } from "@/lib/utils"
+import type { ReactNode } from "react";
+
+import { cn } from "@/lib/utils";
 
 interface PlacementSlotProps {
-  index: number
-  label: string
-  isActive: boolean
-  isDisabled?: boolean
-  badgeLabel?: string
-  onClick: (index: number) => void
+  badgeLabel?: string;
+  index: number;
+  isActive: boolean;
+  isDisabled?: boolean;
+  label: string;
+  onClick: (index: number) => void;
 }
 
 export function PlacementSlot({
@@ -26,8 +27,10 @@ export function PlacementSlot({
       aria-pressed={isActive}
       className={cn(
         "min-h-[56px] w-full rounded-xl border border-dashed px-4 py-3 text-left transition",
-        isActive ? "border-primary bg-primary/5 shadow-sm" : "border-border bg-card",
-        isDisabled && "cursor-not-allowed opacity-60",
+        isActive
+          ? "border-primary bg-primary/5 shadow-sm"
+          : "border-border bg-card",
+        isDisabled && "cursor-not-allowed opacity-60"
       )}
       disabled={isDisabled}
       onClick={() => onClick(index)}
@@ -42,5 +45,5 @@ export function PlacementSlot({
         )}
       </div>
     </button>
-  )
+  );
 }

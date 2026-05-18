@@ -1,117 +1,138 @@
-import { Presence } from "@convex-dev/presence"
-import { components } from "./_generated/api"
-import { internalMutation } from "./_generated/server"
+import { Presence } from "@convex-dev/presence";
 
-const presenceComponent = new Presence(components.presence)
+import { components } from "./_generated/api";
+import { internalMutation } from "./_generated/server";
 
-const HEARTBEAT_TIMEOUT_MS = 10_000
-const HOST_TRANSFER_DEADLINE_MS = 30_000
+const presenceComponent = new Presence(components.presence);
+
+const HEARTBEAT_TIMEOUT_MS = 10_000;
+const HOST_TRANSFER_DEADLINE_MS = 30_000;
 
 export const checkHostDisconnect = internalMutation({
   args: {},
   handler: async (ctx) => {
-    const now = Date.now()
-    const cutoffTime = now - HEARTBEAT_TIMEOUT_MS
+    const now = Date.now();
+    const cutoffTime = now - HEARTBEAT_TIMEOUT_MS;
 
     const lobbies = await ctx.db
       .query("lobbies")
-      .filter((q) => q.or(q.eq(q.field("status"), "lobby"), q.eq(q.field("status"), "in_game")))
-      .collect()
+      .filter((q) =>
+        q.or(
+          q.eq(q.field("status"), "lobby"),
+          q.eq(q.field("status"), "in_game")
+        )
+      )
+      .collect();
 
     for (const lobby of lobbies) {
       if (lobby.hostTransferDeadline && lobby.hostTransferDeadline > now) {
-        continue
+        continue;
       }
 
-      const hostPresence = await presenceComponent.listUser(ctx, lobby.hostSessionId, false)
+      const hostPresence = await presenceComponent.listUser(
+        ctx,
+        lobby.hostSessionId,
+        false
+      );
 
       const isHostOnline = hostPresence.some(
         (presence) =>
           presence.online &&
-          (presence as { lastDisconnected?: number }).lastDisconnected !== undefined &&
-          (presence as { lastDisconnected?: number }).lastDisconnected! < cutoffTime,
-      )
+          (presence as { lastDisconnected?: number }).lastDisconnected !==
+            undefined &&
+          (presence as { lastDisconnected?: number }).lastDisconnected! <
+            cutoffTime
+      );
 
       if (!isHostOnline) {
-        const hostTransferDeadline = now + HOST_TRANSFER_DEADLINE_MS
+        const hostTransferDeadline = now + HOST_TRANSFER_DEADLINE_MS;
 
-        await ctx.db.patch(lobby._id, { hostTransferDeadline })
+        await ctx.db.patch(lobby._id, { hostTransferDeadline });
 
         if (lobby.status === "in_game" && lobby.activeGameId) {
-          const game = await ctx.db.get(lobby.activeGameId)
+          const game = await ctx.db.get(lobby.activeGameId);
           if (game && game.status === "active") {
-            await ctx.db.patch(game._id, { status: "paused" })
+            await ctx.db.patch(game._id, { status: "paused" });
           }
         }
       }
     }
   },
-})
+});
 
 export const checkHostTransfer = internalMutation({
   handler: async (ctx) => {
-    const now = Date.now()
+    const now = Date.now();
 
     const lobbies = await ctx.db
       .query("lobbies")
       .filter((q) =>
         q.and(
-          q.or(q.eq(q.field("status"), "lobby"), q.eq(q.field("status"), "in_game")),
-          q.neq(q.field("hostTransferDeadline"), undefined),
-          q.lt(q.field("hostTransferDeadline"), now),
-        ),
+          q.or(
+            q.eq(q.field("status"), "lobby"),
+            q.eq(q.field("status"), "in_game")
+          ),
+          q.neq(q.field("hostTransferDeadline")),
+          q.lt(q.field("hostTransferDeadline"), now)
+        )
       )
-      .collect()
+      .collect();
 
     for (const lobby of lobbies) {
       const players = await ctx.db
         .query("players")
         .filter((q) => q.eq(q.field("lobbyId"), lobby._id))
-        .collect()
+        .collect();
 
-      const cutoffTime = now - HEARTBEAT_TIMEOUT_MS
+      const cutoffTime = now - HEARTBEAT_TIMEOUT_MS;
 
-      const onlinePlayers: typeof players = []
+      const onlinePlayers: typeof players = [];
 
       for (const player of players) {
-        const presence = await presenceComponent.listUser(ctx, player.sessionId, false)
+        const presence = await presenceComponent.listUser(
+          ctx,
+          player.sessionId,
+          false
+        );
         const isOnline = presence.some(
           (entry) =>
             entry.online &&
-            (entry as { lastDisconnected?: number }).lastDisconnected !== undefined &&
-            (entry as { lastDisconnected?: number }).lastDisconnected! < cutoffTime,
-        )
+            (entry as { lastDisconnected?: number }).lastDisconnected !==
+              undefined &&
+            (entry as { lastDisconnected?: number }).lastDisconnected! <
+              cutoffTime
+        );
 
         if (isOnline) {
-          onlinePlayers.push(player)
+          onlinePlayers.push(player);
         }
       }
 
       if (onlinePlayers.length === 0) {
-        continue
+        continue;
       }
 
-      const randomIndex = Math.floor(Math.random() * onlinePlayers.length)
-      const newHost = onlinePlayers[randomIndex]!
+      const randomIndex = Math.floor(Math.random() * onlinePlayers.length);
+      const newHost = onlinePlayers[randomIndex]!;
 
-      const oldHost = players.find((p) => p.isHost)
+      const oldHost = players.find((p) => p.isHost);
 
       if (oldHost) {
-        await ctx.db.patch(oldHost._id, { isHost: false })
+        await ctx.db.patch(oldHost._id, { isHost: false });
       }
 
-      await ctx.db.patch(newHost._id, { isHost: true })
+      await ctx.db.patch(newHost._id, { isHost: true });
       await ctx.db.patch(lobby._id, {
         hostSessionId: newHost.sessionId,
         hostTransferDeadline: undefined,
-      })
+      });
 
       if (lobby.status === "in_game" && lobby.activeGameId) {
-        const game = await ctx.db.get(lobby.activeGameId)
+        const game = await ctx.db.get(lobby.activeGameId);
         if (game && game.status === "paused") {
-          await ctx.db.patch(game._id, { status: "active" })
+          await ctx.db.patch(game._id, { status: "active" });
         }
       }
     }
   },
-})
+});

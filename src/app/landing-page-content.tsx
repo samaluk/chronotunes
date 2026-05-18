@@ -1,126 +1,137 @@
-"use client"
+"use client";
 
-import { useMutation } from "convex/react"
-import { useSessionId } from "convex-helpers/react/sessions"
-import { Music } from "lucide-react"
-import { useTranslations } from "next-intl"
-import { useEffect, useState } from "react"
-import { toast } from "sonner"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp"
-import { Label } from "@/components/ui/label"
-import { LocaleSwitcher } from "@/components/ui/locale-switcher"
-import { ThemeToggle } from "@/components/ui/theme-toggle"
-import { api } from "@/convex/_generated/api"
+import { useSessionId } from "convex-helpers/react/sessions";
+import { useMutation } from "convex/react";
+import { Music } from "lucide-react";
+import { useTranslations } from "next-intl";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
-const DISPLAY_NAME_KEY = "chronotunes-display-name"
-const LOBBY_CODE_LENGTH = 6
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  InputOTP,
+  InputOTPGroup,
+  InputOTPSlot,
+} from "@/components/ui/input-otp";
+import { Label } from "@/components/ui/label";
+import { LocaleSwitcher } from "@/components/ui/locale-switcher";
+import { ThemeToggle } from "@/components/ui/theme-toggle";
+import { api } from "@/convex/_generated/api";
+
+const DISPLAY_NAME_KEY = "chronotunes-display-name";
+const LOBBY_CODE_LENGTH = 6;
 
 function validateLobbyCode(code: string): boolean {
-  const cleaned = code.toUpperCase().replace(/[^A-Z23456789]/g, "")
-  return cleaned.length === LOBBY_CODE_LENGTH
+  const cleaned = code.toUpperCase().replaceAll(/[^A-Z23456789]/g, "");
+  return cleaned.length === LOBBY_CODE_LENGTH;
 }
 
 function getDisplayName(): string {
   if (typeof window === "undefined") {
-    return ""
+    return "";
   }
-  return localStorage.getItem(DISPLAY_NAME_KEY) || ""
+  return localStorage.getItem(DISPLAY_NAME_KEY) || "";
 }
 
 function saveDisplayName(name: string): void {
   if (typeof window !== "undefined") {
-    localStorage.setItem(DISPLAY_NAME_KEY, name.trim())
+    localStorage.setItem(DISPLAY_NAME_KEY, name.trim());
   }
 }
 
 export function LandingPageContent() {
-  const t = useTranslations("landing")
-  const tCommon = useTranslations("common")
+  const t = useTranslations("landing");
+  const tCommon = useTranslations("common");
 
-  const [sessionId] = useSessionId()
-  const createLobby = useMutation(api.lobbies.create)
-  const joinLobby = useMutation(api.lobbies.join)
+  const [sessionId] = useSessionId();
+  const createLobby = useMutation(api.lobbies.create);
+  const joinLobby = useMutation(api.lobbies.join);
 
-  const [displayName, setDisplayNameState] = useState("")
-  const [joinCode, setJoinCode] = useState("")
-  const [isJoining, setIsJoining] = useState(false)
-  const [isCreating, setIsCreating] = useState(false)
-  const [showJoinForm, setShowJoinForm] = useState(false)
+  const [displayName, setDisplayNameState] = useState("");
+  const [joinCode, setJoinCode] = useState("");
+  const [isJoining, setIsJoining] = useState(false);
+  const [isCreating, setIsCreating] = useState(false);
+  const [showJoinForm, setShowJoinForm] = useState(false);
 
   useEffect(() => {
-    const savedName = getDisplayName()
+    const savedName = getDisplayName();
     if (savedName) {
-      setDisplayNameState(savedName)
+      setDisplayNameState(savedName);
     }
-  }, [])
+  }, []);
 
   const handleCreateGame = async (): Promise<void> => {
-    const name = displayName.trim()
+    const name = displayName.trim();
     if (!name) {
-      toast.error(t("displayNameRequired"))
-      return
+      toast.error(t("displayNameRequired"));
+      return;
     }
     if (name.length < 1 || name.length > 20) {
-      toast.error(t("displayNameLength"))
-      return
+      toast.error(t("displayNameLength"));
+      return;
     }
 
     if (!sessionId) {
-      toast.error(t("sessionError"))
-      return
+      toast.error(t("sessionError"));
+      return;
     }
 
-    setIsCreating(true)
+    setIsCreating(true);
     try {
-      saveDisplayName(name)
-      const result = await createLobby({ sessionId, displayName: name })
-      toast.success(t("gameCreated"), { description: t("shareCode", { code: result.code }) })
-      window.location.href = `/lobby/${result.code}`
+      saveDisplayName(name);
+      const result = await createLobby({ displayName: name, sessionId });
+      toast.success(t("gameCreated"), {
+        description: t("shareCode", { code: result.code }),
+      });
+      window.location.href = `/lobby/${result.code}`;
     } catch (error) {
-      const message = error instanceof Error ? error.message : t("failedToCreate")
-      toast.error(message)
+      const message =
+        error instanceof Error ? error.message : t("failedToCreate");
+      toast.error(message);
     } finally {
-      setIsCreating(false)
+      setIsCreating(false);
     }
-  }
+  };
 
   const handleJoinGame = async (): Promise<void> => {
-    const name = displayName.trim()
+    const name = displayName.trim();
     if (!name) {
-      toast.error(t("displayNameRequired"))
-      return
+      toast.error(t("displayNameRequired"));
+      return;
     }
     if (name.length < 1 || name.length > 20) {
-      toast.error(t("displayNameLength"))
-      return
+      toast.error(t("displayNameLength"));
+      return;
     }
 
-    const cleanedCode = joinCode.toUpperCase().replace(/[^A-Z23456789]/g, "")
+    const cleanedCode = joinCode
+      .toUpperCase()
+      .replaceAll(/[^A-Z23456789]/g, "");
     if (!validateLobbyCode(cleanedCode)) {
-      toast.error(t("invalidLobbyCode", { length: LOBBY_CODE_LENGTH }))
-      return
+      toast.error(t("invalidLobbyCode", { length: LOBBY_CODE_LENGTH }));
+      return;
     }
 
     if (!sessionId) {
-      toast.error(t("sessionError"))
-      return
+      toast.error(t("sessionError"));
+      return;
     }
 
-    setIsJoining(true)
+    setIsJoining(true);
     try {
-      saveDisplayName(name)
-      await joinLobby({ code: cleanedCode, sessionId, displayName: name })
-      toast.success(t("joinedGame"))
-      window.location.href = `/lobby/${cleanedCode}`
+      saveDisplayName(name);
+      await joinLobby({ code: cleanedCode, displayName: name, sessionId });
+      toast.success(t("joinedGame"));
+      window.location.href = `/lobby/${cleanedCode}`;
     } catch (error) {
-      const message = error instanceof Error ? error.message : t("failedToJoin")
-      toast.error(message)
+      const message =
+        error instanceof Error ? error.message : t("failedToJoin");
+      toast.error(message);
     } finally {
-      setIsJoining(false)
+      setIsJoining(false);
     }
-  }
+  };
 
   return (
     <div className="relative min-h-screen bg-background font-sans">
@@ -129,7 +140,9 @@ export function LandingPageContent() {
         <header className="flex w-full items-center justify-between">
           <div className="flex items-center gap-2">
             <Music className="h-8 w-8 text-primary" />
-            <span className="font-bold text-2xl text-foreground">{t("title")}</span>
+            <span className="font-bold text-2xl text-foreground">
+              {t("title")}
+            </span>
           </div>
           <div className="flex items-center gap-2">
             <LocaleSwitcher />
@@ -149,7 +162,10 @@ export function LandingPageContent() {
 
           <div className="flex w-full max-w-lg flex-col gap-4 rounded-3xl border border-border/60 bg-card/90 p-6 shadow-lg shadow-primary/10 backdrop-blur sm:p-8">
             <div className="flex flex-col gap-2">
-              <Label className="font-medium text-foreground text-sm" htmlFor="displayName">
+              <Label
+                className="font-medium text-foreground text-sm"
+                htmlFor="displayName"
+              >
                 {t("displayNameLabel")}
               </Label>
               <Input
@@ -165,7 +181,10 @@ export function LandingPageContent() {
             {showJoinForm ? (
               <div className="flex flex-col gap-4">
                 <div className="flex flex-col gap-2">
-                  <Label className="font-medium text-foreground text-sm" htmlFor="joinCode">
+                  <Label
+                    className="font-medium text-foreground text-sm"
+                    htmlFor="joinCode"
+                  >
                     {t("lobbyCodeLabel")}
                   </Label>
                   <div className="flex w-full items-center justify-center">
@@ -211,8 +230,8 @@ export function LandingPageContent() {
                   <Button
                     className="h-12 flex-1"
                     onClick={() => {
-                      setShowJoinForm(false)
-                      setJoinCode("")
+                      setShowJoinForm(false);
+                      setJoinCode("");
                     }}
                     type="button"
                     variant={"outline"}
@@ -255,5 +274,5 @@ export function LandingPageContent() {
         </main>
       </div>
     </div>
-  )
+  );
 }

@@ -1,56 +1,58 @@
-"use client"
+"use client";
 
-import { useTranslations } from "next-intl"
-import type { ReactNode } from "react"
-import type { Id } from "@/convex/_generated/dataModel"
-import { getRevealedTrackMap, sortTimelineByYear } from "@/lib/timeline"
-import { PlacementSlot } from "./placement-slot"
-import { TimelineCard } from "./timeline-card"
+import { useTranslations } from "next-intl";
+import type { ReactNode } from "react";
+
+import type { Id } from "@/convex/_generated/dataModel";
+import { getRevealedTrackMap, sortTimelineByYear } from "@/lib/timeline";
+
+import { PlacementSlot } from "./placement-slot";
+import { TimelineCard } from "./timeline-card";
 
 interface TimelineEntry {
-  trackId: Id<"tracks">
-  year: number
-  earnedAtRoundNumber: number
-  earnedBy: "placement" | "bet" | "initial"
+  earnedAtRoundNumber: number;
+  earnedBy: "placement" | "bet" | "initial";
+  trackId: Id<"tracks">;
+  year: number;
 }
 
 interface RevealedTrack {
-  trackId: Id<"tracks">
-  title: string
-  artist: string
-  year: number
-  youtubeVideoId?: string
+  artist: string;
+  title: string;
+  trackId: Id<"tracks">;
+  year: number;
+  youtubeVideoId?: string;
 }
 
 interface TimelinePlacementViewProps {
-  timeline: TimelineEntry[]
-  revealedTracks: RevealedTrack[]
-  selectedIndex: number | null
-  badgeLabel?: string
-  onSlotClick?: (index: number) => void
-  isDisabled?: boolean
+  badgeLabel?: string;
+  isDisabled?: boolean;
+  onSlotClick?: (index: number) => void;
+  revealedTracks: RevealedTrack[];
+  selectedIndex: number | null;
+  timeline: TimelineEntry[];
 }
 
 export const getPlacementPositionLabel = (
   t: ReturnType<typeof useTranslations>,
   timeline: TimelineEntry[],
-  index: number,
+  index: number
 ): string => {
   if (index === 0 && timeline.length === 0) {
-    return t("emptyTimeline")
+    return t("emptyTimeline");
   }
   if (index === 0) {
-    const firstYear = timeline[0]?.year
-    return t("beforeYear", { year: firstYear })
+    const firstYear = timeline[0]?.year;
+    return t("beforeYear", { year: firstYear });
   }
   if (index === timeline.length) {
-    const lastYear = timeline.at(-1)?.year ?? 0
-    return t("afterYear", { year: lastYear })
+    const lastYear = timeline.at(-1)?.year ?? 0;
+    return t("afterYear", { year: lastYear });
   }
-  const yearBefore = timeline[index - 1]?.year
-  const yearAfter = timeline[index]?.year
-  return t("betweenYears", { year1: yearBefore, year2: yearAfter })
-}
+  const yearBefore = timeline[index - 1]?.year;
+  const yearAfter = timeline[index]?.year;
+  return t("betweenYears", { year1: yearBefore, year2: yearAfter });
+};
 
 export function TimelinePlacementView({
   timeline,
@@ -60,9 +62,9 @@ export function TimelinePlacementView({
   onSlotClick,
   isDisabled = false,
 }: TimelinePlacementViewProps): ReactNode {
-  const t = useTranslations("placing")
-  const sortedTimeline = sortTimelineByYear(timeline)
-  const revealedTrackMap = getRevealedTrackMap(revealedTracks)
+  const t = useTranslations("placing");
+  const sortedTimeline = sortTimelineByYear(timeline);
+  const revealedTrackMap = getRevealedTrackMap(revealedTracks);
 
   const renderSlot = (index: number): ReactNode => (
     <PlacementSlot
@@ -72,19 +74,19 @@ export function TimelinePlacementView({
       isDisabled={isDisabled}
       key={`slot-${index}`}
       label={getPlacementPositionLabel(t, sortedTimeline, index)}
-      onClick={onSlotClick ?? (() => undefined)}
+      onClick={onSlotClick ?? (() => {})}
     />
-  )
+  );
 
   return (
     <div className="space-y-2">
       {(() => {
-        const elements: React.ReactNode[] = []
+        const elements: React.ReactNode[] = [];
 
-        elements.push(renderSlot(0))
+        elements.push(renderSlot(0));
 
         sortedTimeline.forEach((entry, idx) => {
-          const revealedTrack = revealedTrackMap.get(entry.trackId)
+          const revealedTrack = revealedTrackMap.get(entry.trackId);
           elements.push(
             <div key={`${entry.trackId}-${entry.earnedAtRoundNumber}-${idx}`}>
               {revealedTrack ? (
@@ -103,14 +105,14 @@ export function TimelinePlacementView({
                   year={entry.year}
                 />
               )}
-            </div>,
-          )
+            </div>
+          );
 
-          elements.push(renderSlot(idx + 1))
-        })
+          elements.push(renderSlot(idx + 1));
+        });
 
-        return elements
+        return elements;
       })()}
     </div>
-  )
+  );
 }

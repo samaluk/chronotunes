@@ -1,81 +1,81 @@
-import type { Doc, Id } from "../_generated/dataModel"
-import type { MutationCtx } from "../_generated/server"
-import { selectTrackForRound } from "./track_selection"
+import type { Doc, Id } from "../_generated/dataModel";
+import type { MutationCtx } from "../_generated/server";
+import { selectTrackForRound } from "./track_selection";
 
 interface SelectedTrack {
-  trackId: Id<"tracks">
-  title: string
-  artist: string
-  year: number
+  artist: string;
+  title: string;
+  trackId: Id<"tracks">;
+  year: number;
 }
 
 interface NextRoundResult {
-  nextRoundId: Id<"rounds">
-  nextTurnPlayerId: Id<"players">
-  selectedTrack: SelectedTrack
+  nextRoundId: Id<"rounds">;
+  nextTurnPlayerId: Id<"players">;
+  selectedTrack: SelectedTrack;
 }
 
 export async function createNextRound(
   ctx: MutationCtx,
   game: Doc<"games">,
-  lobby: Doc<"lobbies">,
+  lobby: Doc<"lobbies">
 ): Promise<NextRoundResult | { gameEnded: true; noTracksAvailable: true }> {
-  const currentTurnIndex = game.turnOrder.indexOf(game.turnPlayerId!)
+  const currentTurnIndex = game.turnOrder.indexOf(game.turnPlayerId!);
 
   if (currentTurnIndex === -1) {
-    throw new ConvexError("Turn player not found in turn order")
+    throw new ConvexError("Turn player not found in turn order");
   }
 
-  const nextTurnIndex = (currentTurnIndex + 1) % game.turnOrder.length
-  const nextTurnPlayerId = game.turnOrder[nextTurnIndex]!
-  const nextRoundNumber = game.currentRoundNumber + 1
+  const nextTurnIndex = (currentTurnIndex + 1) % game.turnOrder.length;
+  const nextTurnPlayerId = game.turnOrder[nextTurnIndex]!;
+  const nextRoundNumber = game.currentRoundNumber + 1;
 
   const selectedTrack = await selectTrackForRound(ctx, {
     gameId: game._id,
-    minYear: lobby.settings.minYear,
     maxYear: lobby.settings.maxYear,
-  })
+    minYear: lobby.settings.minYear,
+  });
 
   if (!selectedTrack) {
     await ctx.db.patch(game._id, {
-      status: "finished",
       endedAt: Date.now(),
-    })
+      status: "finished",
+    });
 
-    await ctx.db.patch(lobby._id, { status: "finished" })
+    await ctx.db.patch(lobby._id, { status: "finished" });
 
-    return { gameEnded: true, noTracksAvailable: true }
+    return { gameEnded: true, noTracksAvailable: true };
   }
 
   const nextRoundId = await ctx.db.insert("rounds", {
     gameId: game._id,
-    roundNumber: nextRoundNumber,
-    turnPlayerId: nextTurnPlayerId,
-    trackId: selectedTrack.trackId,
     phase: "placing",
+    roundNumber: nextRoundNumber,
     startedAt: Date.now(),
-  })
+    trackId: selectedTrack.trackId,
+    turnPlayerId: nextTurnPlayerId,
+  });
 
   await ctx.db.patch(game._id, {
-    currentRoundNumber: nextRoundNumber,
     currentRoundId: nextRoundId,
+    currentRoundNumber: nextRoundNumber,
     turnPlayerId: nextTurnPlayerId,
-  })
+  });
 
-  return { nextRoundId, nextTurnPlayerId, selectedTrack }
+  return { nextRoundId, nextTurnPlayerId, selectedTrack };
 }
 
 export function shuffleArray<T>(array: readonly T[]): T[] {
-  const shuffled = [...array]
+  const shuffled = [...array];
 
   for (let i = shuffled.length - 1; i >= 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1))
-    const temp = shuffled[i]!
-    shuffled[i] = shuffled[j]!
-    shuffled[j] = temp
+    const j = Math.floor(Math.random() * (i + 1));
+    const temp = shuffled[i]!;
+    shuffled[i] = shuffled[j]!;
+    shuffled[j] = temp;
   }
 
-  return shuffled
+  return shuffled;
 }
 
-import { ConvexError } from "convex/values"
+import { ConvexError } from "convex/values";

@@ -1,57 +1,63 @@
-"use client"
+"use client";
 
-import { useQuery } from "convex/react"
-import { Music } from "lucide-react"
-import { useMemo } from "react"
-import { useIsMounted } from "usehooks-ts"
-import { api } from "@/convex/_generated/api"
-import type { Id } from "@/convex/_generated/dataModel"
-import { sortTimelineByYear } from "@/lib/timeline"
-import { useGame } from "./game-provider"
-import { TimelineCard } from "./timeline-card"
+import { useQuery } from "convex/react";
+import { Music } from "lucide-react";
+import { useMemo } from "react";
+import { useIsMounted } from "usehooks-ts";
+
+import { api } from "@/convex/_generated/api";
+import type { Id } from "@/convex/_generated/dataModel";
+import { sortTimelineByYear } from "@/lib/timeline";
+
+import { useGame } from "./game-provider";
+import { TimelineCard } from "./timeline-card";
 
 interface TimelineEntry {
-  earnedAtRoundNumber: number
-  earnedBy: "placement" | "bet" | "initial"
-  trackId: Id<"tracks">
-  year: number
+  earnedAtRoundNumber: number;
+  earnedBy: "placement" | "bet" | "initial";
+  trackId: Id<"tracks">;
+  year: number;
 }
 
 const getEarnedByLabel = (earnedBy: TimelineEntry["earnedBy"]): string => {
   switch (earnedBy) {
-    case "placement":
-      return "Placed yourself"
-    case "bet":
-      return "Won from bet"
-    case "initial":
-      return "Initial placement"
-    default:
-      return "Unknown"
+    case "placement": {
+      return "Placed yourself";
+    }
+    case "bet": {
+      return "Won from bet";
+    }
+    case "initial": {
+      return "Initial placement";
+    }
+    default: {
+      return "Unknown";
+    }
   }
-}
+};
 
 export function MyTimeline(): React.ReactNode {
-  const { state } = useGame()
-  const { me: player } = state
+  const { state } = useGame();
+  const { me: player } = state;
 
-  const isMounted = useIsMounted()
+  const isMounted = useIsMounted();
 
-  const trackIds = player?.timeline.map((entry) => entry.trackId) ?? []
+  const trackIds = player?.timeline.map((entry) => entry.trackId) ?? [];
   const tracks = useQuery(
     api.tracks.get,
-    isMounted() && trackIds.length > 0 ? { trackIds } : "skip",
-  )
+    isMounted() && trackIds.length > 0 ? { trackIds } : "skip"
+  );
 
   const trackMap = useMemo(() => {
     if (!(tracks && Array.isArray(tracks))) {
-      return new Map()
+      return new Map();
     }
     return new Map(
       tracks
         .filter((track): track is NonNullable<typeof track> => track != null)
-        .map((track) => [track._id, track]),
-    )
-  }, [tracks])
+        .map((track) => [track._id, track])
+    );
+  }, [tracks]);
 
   if (!isMounted()) {
     return (
@@ -60,15 +66,19 @@ export function MyTimeline(): React.ReactNode {
         <TimelineCard isLoading={true} />
         <TimelineCard isLoading={true} />
       </div>
-    )
+    );
   }
 
   if (!player || player.timeline.length === 0) {
     return (
       <div className="w-full">
         <div className="mb-3 flex items-center justify-between">
-          <h3 className="font-medium text-muted-foreground text-sm">My Timeline</h3>
-          {player && <span className="text-muted-foreground text-xs">0 cards</span>}
+          <h3 className="font-medium text-muted-foreground text-sm">
+            My Timeline
+          </h3>
+          {player && (
+            <span className="text-muted-foreground text-xs">0 cards</span>
+          )}
         </div>
         <div className="flex flex-col items-center justify-center rounded-lg border border-dashed bg-muted/30 py-8">
           <Music className="mb-2 h-8 w-8 text-muted-foreground" />
@@ -82,16 +92,18 @@ export function MyTimeline(): React.ReactNode {
           )}
         </div>
       </div>
-    )
+    );
   }
 
-  const isLoading = tracks === undefined
-  const sortedTimeline = sortTimelineByYear(player.timeline)
+  const isLoading = tracks === undefined;
+  const sortedTimeline = sortTimelineByYear(player.timeline);
 
   return (
     <div className="w-full space-y-3">
       <div className="flex items-center justify-between">
-        <h3 className="font-medium text-muted-foreground text-sm">My Timeline</h3>
+        <h3 className="font-medium text-muted-foreground text-sm">
+          My Timeline
+        </h3>
       </div>
 
       {isLoading ? (
@@ -102,7 +114,7 @@ export function MyTimeline(): React.ReactNode {
       ) : (
         <div className="space-y-2">
           {sortedTimeline.map((entry) => {
-            const track = trackMap.get(entry.trackId)
+            const track = trackMap.get(entry.trackId);
             if (!track) {
               return (
                 <TimelineCard
@@ -113,10 +125,10 @@ export function MyTimeline(): React.ReactNode {
                   title="Unknown Track"
                   year={entry.year}
                 />
-              )
+              );
             }
 
-            const isPlacement = entry.earnedBy === "placement"
+            const isPlacement = entry.earnedBy === "placement";
 
             return (
               <TimelineCard
@@ -127,10 +139,10 @@ export function MyTimeline(): React.ReactNode {
                 title={track.title}
                 year={track.year}
               />
-            )
+            );
           })}
         </div>
       )}
     </div>
-  )
+  );
 }

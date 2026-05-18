@@ -1,20 +1,22 @@
-"use client"
+"use client";
 
-import { useQuery } from "convex/react"
-import { useSessionId, useSessionQuery } from "convex-helpers/react/sessions"
-import { useCallback, useMemo } from "react"
-import { useIsMounted } from "usehooks-ts"
-import { ErrorBoundary } from "@/components/ui/error-boundary"
-import { api } from "@/convex/_generated/api"
-import type { Doc, Id } from "@/convex/_generated/dataModel"
-import { BettingPhaseContent } from "./betting-phase-content"
-import { GameHeader } from "./game-header"
-import { GameProvider, useGame } from "./game-provider"
-import { GameResults } from "./game-results"
-import { PlacingPhaseContent } from "./placing-phase-content"
-import { PlayerTimelineModal } from "./player-timeline-modal"
-import { PlayersBar } from "./players-bar"
-import { ResolvedPhaseContent } from "./resolved-phase-content"
+import { useSessionId, useSessionQuery } from "convex-helpers/react/sessions";
+import { useQuery } from "convex/react";
+import { useCallback, useMemo } from "react";
+import { useIsMounted } from "usehooks-ts";
+
+import { ErrorBoundary } from "@/components/ui/error-boundary";
+import { api } from "@/convex/_generated/api";
+import type { Doc, Id } from "@/convex/_generated/dataModel";
+
+import { BettingPhaseContent } from "./betting-phase-content";
+import { GameHeader } from "./game-header";
+import { GameProvider, useGame } from "./game-provider";
+import { GameResults } from "./game-results";
+import { PlacingPhaseContent } from "./placing-phase-content";
+import { PlayerTimelineModal } from "./player-timeline-modal";
+import { PlayersBar } from "./players-bar";
+import { ResolvedPhaseContent } from "./resolved-phase-content";
 
 function LoadingSkeleton(): React.ReactNode {
   return (
@@ -23,33 +25,37 @@ function LoadingSkeleton(): React.ReactNode {
       <div className="h-12 animate-pulse rounded-lg bg-muted" />
       <div className="h-64 animate-pulse rounded-lg bg-muted" />
     </div>
-  )
+  );
 }
 
 function PhaseContent(): React.ReactNode {
-  const { state } = useGame()
-  const { phase } = state
+  const { state } = useGame();
+  const { phase } = state;
 
   switch (phase) {
-    case "placing":
-      return <PlacingPhaseContent />
-    case "betting":
-      return <BettingPhaseContent />
-    case "resolved":
-      return <ResolvedPhaseContent />
-    default:
+    case "placing": {
+      return <PlacingPhaseContent />;
+    }
+    case "betting": {
+      return <BettingPhaseContent />;
+    }
+    case "resolved": {
+      return <ResolvedPhaseContent />;
+    }
+    default: {
       return (
         <div className="flex flex-col items-center justify-center py-12">
           <p className="text-muted-foreground">Waiting for round to start...</p>
         </div>
-      )
+      );
+    }
   }
 }
 
 function ActiveGameView(): React.ReactNode {
-  const { state, actions } = useGame()
-  const { selectedPlayerForTimeline } = state
-  const { handleModalClose } = actions
+  const { state, actions } = useGame();
+  const { selectedPlayerForTimeline } = state;
+  const { handleModalClose } = actions;
 
   return (
     <>
@@ -58,7 +64,7 @@ function ActiveGameView(): React.ReactNode {
           <PlayerTimelineModal
             onOpenChange={(open) => {
               if (!open) {
-                handleModalClose()
+                handleModalClose();
               }
             }}
             open={selectedPlayerForTimeline !== null}
@@ -78,21 +84,21 @@ function ActiveGameView(): React.ReactNode {
         </div>
       </ErrorBoundary>
     </>
-  )
+  );
 }
 
 function GamePlayersBar(): React.ReactNode {
-  const { state, actions, meta } = useGame()
-  const { currentRound } = state
-  const { setSelectedPlayerForTimeline } = actions
-  const { sessionId, lobbyId } = meta
+  const { state, actions, meta } = useGame();
+  const { currentRound } = state;
+  const { setSelectedPlayerForTimeline } = actions;
+  const { sessionId, lobbyId } = meta;
 
   const handlePlayerClick = useCallback(
     (player: Doc<"players">) => {
-      setSelectedPlayerForTimeline(player)
+      setSelectedPlayerForTimeline(player);
     },
-    [setSelectedPlayerForTimeline],
-  )
+    [setSelectedPlayerForTimeline]
+  );
 
   return (
     <PlayersBar
@@ -101,13 +107,13 @@ function GamePlayersBar(): React.ReactNode {
       lobbyId={lobbyId}
       onPlayerClick={handlePlayerClick}
     />
-  )
+  );
 }
 
 function GameContent(): React.ReactNode {
-  const { state, meta } = useGame()
-  const { isGameFinished } = state
-  const { code, lobbyId } = meta
+  const { state, meta } = useGame();
+  const { isGameFinished } = state;
+  const { code, lobbyId } = meta;
 
   return (
     <div className="w-full space-y-4">
@@ -119,44 +125,53 @@ function GameContent(): React.ReactNode {
         <ActiveGameView />
       )}
     </div>
-  )
+  );
 }
 
 interface GameViewProps {
-  code: string
-  lobbyId: Id<"lobbies">
+  code: string;
+  lobbyId: Id<"lobbies">;
 }
 
 export function GameView({ lobbyId, code }: GameViewProps): React.ReactNode {
-  const [sessionId] = useSessionId()
-  const isMounted = useIsMounted()
-  const mounted = isMounted()
+  const [sessionId] = useSessionId();
+  const isMounted = useIsMounted();
+  const mounted = isMounted();
 
-  const lobby = useQuery(api.lobbies.get, mounted && code ? { code } : "skip")
-  const players = useQuery(api.players.list, mounted && lobbyId ? { lobbyId } : "skip")
-  const me = useSessionQuery(api.players.getMe, mounted && lobbyId ? { lobbyId } : "skip")
-  const game = useQuery(api.games.getCurrent, mounted && lobbyId ? { lobbyId } : "skip")
+  const lobby = useQuery(api.lobbies.get, mounted && code ? { code } : "skip");
+  const players = useQuery(
+    api.players.list,
+    mounted && lobbyId ? { lobbyId } : "skip"
+  );
+  const me = useSessionQuery(
+    api.players.getMe,
+    mounted && lobbyId ? { lobbyId } : "skip"
+  );
+  const game = useQuery(
+    api.games.getCurrent,
+    mounted && lobbyId ? { lobbyId } : "skip"
+  );
   const currentRound = useSessionQuery(
     api.rounds.getCurrent,
-    mounted && lobbyId ? { lobbyId } : "skip",
-  )
+    mounted && lobbyId ? { lobbyId } : "skip"
+  );
 
-  const turnPlayer = players?.find((p) => p._id === currentRound?.turnPlayerId)
+  const turnPlayer = players?.find((p) => p._id === currentRound?.turnPlayerId);
 
   const turnPlayerTrackIds = useMemo((): Id<"tracks">[] => {
     if (!turnPlayer?.timeline) {
-      return []
+      return [];
     }
-    return turnPlayer.timeline.map((t) => t.trackId)
-  }, [turnPlayer])
+    return turnPlayer.timeline.map((t) => t.trackId);
+  }, [turnPlayer]);
 
   const revealedTracks = useQuery(
     api.tracks.getPublicByIds,
-    turnPlayerTrackIds.length > 0 ? { trackIds: turnPlayerTrackIds } : "skip",
-  )
+    turnPlayerTrackIds.length > 0 ? { trackIds: turnPlayerTrackIds } : "skip"
+  );
 
   if (!mounted) {
-    return <LoadingSkeleton />
+    return <LoadingSkeleton />;
   }
 
   if (
@@ -165,7 +180,7 @@ export function GameView({ lobbyId, code }: GameViewProps): React.ReactNode {
     game === undefined ||
     currentRound === undefined
   ) {
-    return <LoadingSkeleton />
+    return <LoadingSkeleton />;
   }
 
   if (!(lobby && currentRound)) {
@@ -175,7 +190,7 @@ export function GameView({ lobbyId, code }: GameViewProps): React.ReactNode {
           <p className="text-muted-foreground">No active game found</p>
         </div>
       </div>
-    )
+    );
   }
 
   if (!game) {
@@ -185,7 +200,7 @@ export function GameView({ lobbyId, code }: GameViewProps): React.ReactNode {
           <p className="text-muted-foreground">No active game found</p>
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -202,5 +217,5 @@ export function GameView({ lobbyId, code }: GameViewProps): React.ReactNode {
     >
       <GameContent />
     </GameProvider>
-  )
+  );
 }

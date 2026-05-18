@@ -1,9 +1,9 @@
-"use client"
+"use client";
 
-import { Slider as SliderPrimitive } from "@base-ui/react/slider"
-import { useMemo } from "react"
+import { Slider as SliderPrimitive } from "@base-ui/react/slider";
+import { useMemo } from "react";
 
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/utils";
 
 function Slider({
   className,
@@ -15,13 +15,13 @@ function Slider({
 }: SliderPrimitive.Root.Props) {
   const _values = useMemo(() => {
     if (Array.isArray(value)) {
-      return value
+      return value;
     }
     if (Array.isArray(defaultValue)) {
-      return defaultValue
+      return defaultValue;
     }
-    return [min, max]
-  }, [value, defaultValue, min, max])
+    return [min, max];
+  }, [value, defaultValue, min, max]);
 
   return (
     <SliderPrimitive.Root
@@ -37,7 +37,7 @@ function Slider({
       <SliderPrimitive.Control
         className={cn(
           "relative flex w-full touch-none select-none items-center data-vertical:h-full data-vertical:min-h-40 data-vertical:w-auto data-vertical:flex-col data-disabled:opacity-50",
-          className,
+          className
         )}
       >
         <SliderPrimitive.Track
@@ -58,7 +58,7 @@ function Slider({
         ))}
       </SliderPrimitive.Control>
     </SliderPrimitive.Root>
-  )
+  );
 }
 
-export { Slider }
+export { Slider };

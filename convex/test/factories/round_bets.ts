@@ -1,55 +1,56 @@
-import type { Infer } from "convex/values"
-import type { Id } from "../../_generated/dataModel"
-import type { MutationCtx, QueryCtx } from "../../_generated/server"
-import type schema from "../../schema"
-import type { TestContext } from "./types"
+import type { Infer } from "convex/values";
 
-export type RoundBet = Infer<typeof schema.tables.roundBets.validator>
+import type { Id } from "../../_generated/dataModel";
+import type { MutationCtx, QueryCtx } from "../../_generated/server";
+import type schema from "../../schema";
+import type { TestContext } from "./types";
+
+export type RoundBet = Infer<typeof schema.tables.roundBets.validator>;
 
 export interface BetOverrides {
-  proposedIndex?: number
-  lockedIn?: boolean
-  status?: RoundBet["status"]
+  lockedIn?: boolean;
+  proposedIndex?: number;
+  status?: RoundBet["status"];
 }
 
 export async function create(
   t: TestContext,
   roundId: Id<"rounds">,
   playerId: Id<"players">,
-  overrides: BetOverrides = {},
+  overrides: BetOverrides = {}
 ): Promise<{ id: Id<"roundBets">; record: RoundBet }> {
   const data: RoundBet = {
-    roundId,
+    lockedIn: overrides.lockedIn ?? false,
+    placedAt: Date.now(),
     playerId,
     proposedIndex: overrides.proposedIndex ?? 0,
-    placedAt: Date.now(),
-    lockedIn: overrides.lockedIn ?? false,
+    roundId,
     status: overrides.status ?? "pending",
-  }
+  };
 
-  let betId: Id<"roundBets"> | null = null
+  let betId: Id<"roundBets"> | null = null;
 
   await t.run(async (ctx: MutationCtx) => {
-    betId = await ctx.db.insert("roundBets", data)
-  })
+    betId = await ctx.db.insert("roundBets", data);
+  });
 
   if (!betId) {
-    throw new Error("Failed to create bet")
+    throw new Error("Failed to create bet");
   }
 
-  return { id: betId, record: data }
+  return { id: betId, record: data };
 }
 
 export function createLocked(
   t: TestContext,
   roundId: Id<"rounds">,
   playerId: Id<"players">,
-  proposedIndex: number,
+  proposedIndex: number
 ): Promise<{ id: Id<"roundBets">; record: RoundBet }> {
   return create(t, roundId, playerId, {
-    proposedIndex,
     lockedIn: true,
-  })
+    proposedIndex,
+  });
 }
 
 export async function createMany(
@@ -57,61 +58,66 @@ export async function createMany(
   roundId: Id<"rounds">,
   playerIds: Id<"players">[],
   options: {
-    proposedIndex?: number
-    lockedIn?: boolean
-  } = {},
-): Promise<Array<{ id: Id<"roundBets">; record: RoundBet }>> {
-  const results: Array<{ id: Id<"roundBets">; record: RoundBet }> = []
+    proposedIndex?: number;
+    lockedIn?: boolean;
+  } = {}
+): Promise<{ id: Id<"roundBets">; record: RoundBet }[]> {
+  const results: { id: Id<"roundBets">; record: RoundBet }[] = [];
 
   for (const playerId of playerIds) {
     const result = await create(t, roundId, playerId, {
-      proposedIndex: options.proposedIndex ?? 0,
       lockedIn: options.lockedIn ?? false,
-    })
-    results.push(result)
+      proposedIndex: options.proposedIndex ?? 0,
+    });
+    results.push(result);
   }
 
-  return results
+  return results;
 }
 
 export async function findByPlayerAndRound(
   t: TestContext,
   roundId: Id<"rounds">,
-  playerId: Id<"players">,
+  playerId: Id<"players">
 ): Promise<{ id: Id<"roundBets">; record: RoundBet } | null> {
-  let result: { id: Id<"roundBets">; record: RoundBet } | null = null
+  let result: { id: Id<"roundBets">; record: RoundBet } | null = null;
 
   await t.run(async (ctx: QueryCtx) => {
     const bet = await ctx.db
       .query("roundBets")
-      .filter((q) => q.and(q.eq(q.field("roundId"), roundId), q.eq(q.field("playerId"), playerId)))
-      .first()
+      .filter((q) =>
+        q.and(
+          q.eq(q.field("roundId"), roundId),
+          q.eq(q.field("playerId"), playerId)
+        )
+      )
+      .first();
 
     if (bet) {
-      result = { id: bet._id, record: bet as RoundBet }
+      result = { id: bet._id, record: bet as RoundBet };
     }
-  })
+  });
 
-  return result
+  return result;
 }
 
 export async function findAllInRound(
   t: TestContext,
-  roundId: Id<"rounds">,
-): Promise<Array<{ id: Id<"roundBets">; record: RoundBet }>> {
-  let results: Array<{ id: Id<"roundBets">; record: RoundBet }> = []
+  roundId: Id<"rounds">
+): Promise<{ id: Id<"roundBets">; record: RoundBet }[]> {
+  let results: { id: Id<"roundBets">; record: RoundBet }[] = [];
 
   await t.run(async (ctx: QueryCtx) => {
     const bets = await ctx.db
       .query("roundBets")
       .filter((q) => q.eq(q.field("roundId"), roundId))
-      .collect()
+      .collect();
 
     results = bets.map((b) => ({
       id: b._id,
       record: b as RoundBet,
-    }))
-  })
+    }));
+  });
 
-  return results
+  return results;
 }
