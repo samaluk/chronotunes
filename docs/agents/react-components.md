@@ -1,6 +1,7 @@
 # React and Next.js
 
 ## Component structure
+
 - One component per `.tsx` file (except `components/ui/`).
 - Extract subcomponents to separate files.
 - Use function declarations for components (no arrow component exports).
@@ -13,6 +14,7 @@ export function PlayerCard({ player }: PlayerCardProps) {
 ```
 
 ## React and JSX
+
 - Use function components over class components.
 - Call hooks at the top level only, never conditionally.
 - Specify all dependencies in hook dependency arrays.
@@ -28,6 +30,7 @@ export function PlayerCard({ player }: PlayerCardProps) {
 - React 19+: use ref as a prop instead of `React.forwardRef`.
 
 ## Next.js specifics
+
 - Use the Next.js `<Image>` component instead of `<img>` tags.
 - Use `next/head` or the App Router metadata API for head elements.
 - Use Server Components for async data fetching instead of async Client Components.

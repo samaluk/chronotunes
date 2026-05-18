@@ -9,6 +9,7 @@ ChronoTunes is a browser-based multiplayer music timeline game inspired by Hitst
 **Solution:** A real-time multiplayer web game with turn-based timeline placement, spectator betting on outcomes, and coin-based economy. Built on Convex for instant sync across all players.
 
 **Target Users:**
+
 - Music enthusiasts aged 18-45
 - Friend groups wanting remote game nights
 - Trivia and party game fans
@@ -25,18 +26,22 @@ ChronoTunes is a browser-based multiplayer music timeline game inspired by Hitst
 ## Quality Gates
 
 These commands must pass for every user story:
+
 - `pnpm biome check .` - Linting and formatting
 - `pnpm test` - Run all Vitest tests
 
 For UI stories, also include:
+
 - Verify in browser using dev-browser skill
 
 ## User Stories
 
 ### US-001: Project Initialization
+
 **Description:** As a developer, I want to initialize the project with Next.js 16, TypeScript, pnpm, and Convex so that we have a solid foundation.
 
 **Acceptance Criteria:**
+
 - [ ] Create Next.js 16 project with App Router and TypeScript using pnpm
 - [ ] Install and configure Convex with convex-helpers for sessions
 - [ ] Create Justfile with commands for local Convex backend
@@ -48,9 +53,11 @@ For UI stories, also include:
 - [ ] `just convex dev` deploys to local backend
 
 ### US-002: UI Foundation Setup
+
 **Description:** As a developer, I want to configure Tailwind CSS v4.1 and shadcn/ui so that we have a consistent design system.
 
 **Acceptance Criteria:**
+
 - [ ] Install and configure Tailwind CSS v4.1 with fluid-tailwindcss
 - [ ] Initialize shadcn/ui with Base UI, Lyra style, Neutral base color, Fuchsia theme
 - [ ] Install Lucide icons
@@ -62,9 +69,11 @@ For UI stories, also include:
 - [ ] Toast notifications display correctly
 
 ### US-003: Database Schema
+
 **Description:** As a developer, I want to create the Convex schema with all tables so that data can be persisted.
 
 **Acceptance Criteria:**
+
 - [ ] Create convex/schema.ts with lobbies table (code, hostSessionId, status, settings, activeGameId)
 - [ ] Add players table (lobbyId, sessionId, displayName, isHost, coins, timeline, timelineSize)
 - [ ] Add games table (lobbyId, status, currentRoundNumber, turnPlayerId, turnOrder, winnerPlayerId)
@@ -75,9 +84,11 @@ For UI stories, also include:
 - [ ] `just convex dev` deploys schema without errors
 
 ### US-004: Session Management
+
 **Description:** As a player, I want my session to persist across page refreshes so that I don't lose my game state.
 
 **Acceptance Criteria:**
+
 - [ ] Create lib/session.ts with getSessionId() that generates and persists UUID in localStorage
 - [ ] Create convex/lib/sessionWrapper.ts using convex-helpers for session-based mutations
 - [ ] Export useSessionId hook for React components
@@ -86,9 +97,11 @@ For UI stories, also include:
 - [ ] Session ID is available in Convex mutations via sessionWrapper
 
 ### US-005: Presence System
+
 **Description:** As a player, I want to see who is online/offline so that I know who is connected.
 
 **Acceptance Criteria:**
+
 - [ ] Install @convex-dev/presence package
 - [ ] Create convex/presence.ts with presence configuration
 - [ ] Create usePresence hook for tracking player online status
@@ -98,9 +111,11 @@ For UI stories, also include:
 - [ ] Presence updates in real-time across all clients
 
 ### US-006: Create Lobby Mutation
+
 **Description:** As a host, I want to create a game lobby so that other players can join.
 
 **Acceptance Criteria:**
+
 - [ ] Create convex/lobbies.ts with create mutation
 - [ ] Generate unique 6-char alphanumeric lobby code
 - [ ] Create lobby with default settings (targetTimelineSize: 10, startingCoins: 3, etc.)
@@ -111,9 +126,11 @@ For UI stories, also include:
 - [ ] Host player is created with isHost: true
 
 ### US-007: Join Lobby Mutation
+
 **Description:** As a player, I want to join an existing lobby by code so that I can play with friends.
 
 **Acceptance Criteria:**
+
 - [ ] Add join mutation to convex/lobbies.ts
 - [ ] Validate lobby exists and status is 'lobby'
 - [ ] Check player is not already in lobby
@@ -124,9 +141,11 @@ For UI stories, also include:
 - [ ] Error thrown if session already in lobby
 
 ### US-008: Leave Lobby Mutation
+
 **Description:** As a player, I want to leave a lobby so that I can exit the game.
 
 **Acceptance Criteria:**
+
 - [ ] Add leave mutation to convex/lobbies.ts
 - [ ] Remove player record from lobby
 - [ ] If leaving player is host, transfer host to another player or delete lobby if empty
@@ -136,9 +155,11 @@ For UI stories, also include:
 - [ ] Lobby is deleted if last player leaves
 
 ### US-009: Lobby Queries
+
 **Description:** As a player, I want to query lobby state so that I can see current players and settings.
 
 **Acceptance Criteria:**
+
 - [ ] Add get query to convex/lobbies.ts (by code)
 - [ ] Create convex/players.ts with list query (by lobbyId)
 - [ ] Add getMe query to convex/players.ts (by lobbyId and sessionId)
@@ -148,9 +169,11 @@ For UI stories, also include:
 - [ ] players.getMe returns current player or null
 
 ### US-010: Landing Page
+
 **Description:** As a player, I want a landing page with Create Game and Join Game options so that I can start playing.
 
 **Acceptance Criteria:**
+
 - [ ] Create app/page.tsx with landing page layout
 - [ ] Add Create Game button that calls lobbies.create and redirects to /lobby/[code]
 - [ ] Add Join Game form with code input that redirects to /lobby/[code]
@@ -161,9 +184,11 @@ For UI stories, also include:
 - [ ] Display name is captured and used when creating/joining
 
 ### US-011: Lobby Waiting Room
+
 **Description:** As a player, I want to see the lobby waiting room so that I can see who has joined.
 
 **Acceptance Criteria:**
+
 - [ ] Create app/lobby/[code]/page.tsx
 - [ ] Display lobby code prominently for sharing
 - [ ] Create PlayerList component showing all players with presence indicators
@@ -175,9 +200,11 @@ For UI stories, also include:
 - [ ] Non-host players see waiting state
 
 ### US-012: Lobby Settings Mutation
+
 **Description:** As a host, I want to configure game settings so that I can customize the game.
 
 **Acceptance Criteria:**
+
 - [ ] Add updateSettings mutation to convex/lobbies.ts
 - [ ] Validate caller is host
 - [ ] Allow updating: targetTimelineSize, startingCoins, turnSeconds, bettingWindowSeconds, showLiveBets, minYear, maxYear
@@ -187,9 +214,11 @@ For UI stories, also include:
 - [ ] Settings are validated (e.g., targetTimelineSize 5-15)
 
 ### US-013: Start Game Mutation
+
 **Description:** As a host, I want to start the game so that players can begin playing.
 
 **Acceptance Criteria:**
+
 - [ ] Create convex/games.ts with start mutation
 - [ ] Validate caller is host and lobby status is 'lobby'
 - [ ] Require minimum 2 players
@@ -201,9 +230,11 @@ For UI stories, also include:
 - [ ] First round is created with phase 'placing'
 
 ### US-014: Track Selection Algorithm
+
 **Description:** As a developer, I want an algorithm to select random tracks so that games have variety.
 
 **Acceptance Criteria:**
+
 - [ ] Create convex/lib/trackSelection.ts with selectTrackForRound function
 - [ ] Query available tracks within minYear-maxYear range
 - [ ] Exclude tracks already used in current game
@@ -214,9 +245,11 @@ For UI stories, also include:
 - [ ] Returns null if no tracks available
 
 ### US-015: Current Round Query
+
 **Description:** As a player, I want to query the current round so that I can see the game state.
 
 **Acceptance Criteria:**
+
 - [ ] Create convex/rounds.ts with getCurrent query
 - [ ] Return current round with phase, turnPlayerId, placementPreview
 - [ ] Include track info only if phase is 'resolved' or viewer is host
@@ -226,9 +259,11 @@ For UI stories, also include:
 - [ ] Returns null if no active game
 
 ### US-016: Placement Preview Mutation
+
 **Description:** As the turn player, I want to preview my placement so that others can see where I'm thinking.
 
 **Acceptance Criteria:**
+
 - [ ] Add setPlacementPreview mutation to convex/rounds.ts
 - [ ] Validate caller is turn player and phase is 'placing'
 - [ ] Update round.placementPreview with proposedIndex and timestamp
@@ -238,9 +273,11 @@ For UI stories, also include:
 - [ ] Error if not turn player or wrong phase
 
 ### US-017: Submit Placement Mutation
+
 **Description:** As the turn player, I want to submit my final placement so that the round can progress.
 
 **Acceptance Criteria:**
+
 - [ ] Add submitPlacement mutation to convex/rounds.ts
 - [ ] Validate caller is turn player and phase is 'placing'
 - [ ] Set round.placement with proposedIndex and timestamp
@@ -250,9 +287,11 @@ For UI stories, also include:
 - [ ] Placement is locked and cannot be changed
 
 ### US-018: Betting Mutations
+
 **Description:** As a non-turn player, I want to place bets so that I can win cards.
 
 **Acceptance Criteria:**
+
 - [ ] Create convex/bets.ts with preview mutation (creates unlocked bet)
 - [ ] Add lockIn mutation (sets lockedIn: true)
 - [ ] Add cancel mutation (deletes unlocked bet, refunds coin)
@@ -265,9 +304,11 @@ For UI stories, also include:
 - [ ] Player can cancel unlocked bet and get coin refunded
 
 ### US-019: Bets List Query
+
 **Description:** As a player, I want to see current bets so that I know what others have wagered.
 
 **Acceptance Criteria:**
+
 - [ ] Add listForRound query to convex/bets.ts
 - [ ] Return all bets for round if showLiveBets is true
 - [ ] Return only locked bets if showLiveBets is false
@@ -277,9 +318,11 @@ For UI stories, also include:
 - [ ] Respects showLiveBets setting
 
 ### US-020: Placement Validation Logic
+
 **Description:** As a developer, I want placement validation logic so that correct placements are computed.
 
 **Acceptance Criteria:**
+
 - [ ] Create convex/lib/gameLogic.ts with computeValidIndexRange function
 - [ ] Given timeline array and new song year, compute validIndexMin and validIndexMax
 - [ ] Handle same-year songs (any order valid)
@@ -289,9 +332,11 @@ For UI stories, also include:
 - [ ] Empty timeline allows index 0
 
 ### US-021: Round Resolution Mutation
+
 **Description:** As the host, I want to resolve the round so that outcomes are computed.
 
 **Acceptance Criteria:**
+
 - [ ] Add resolveAndNext mutation to convex/games.ts
 - [ ] Compute if turn player placement was correct
 - [ ] If correct: add track to turn player timeline, all bettors lose coins
@@ -305,9 +350,11 @@ For UI stories, also include:
 - [ ] Game ends if win condition met
 
 ### US-022: Skip Turn Mutation
+
 **Description:** As a host, I want to skip a disconnected player's turn so that the game can continue.
 
 **Acceptance Criteria:**
+
 - [ ] Add skipTurn mutation to convex/games.ts
 - [ ] Validate caller is host
 - [ ] Advance to next player in turnOrder
@@ -318,9 +365,11 @@ For UI stories, also include:
 - [ ] New round is created
 
 ### US-023: Game View Layout
+
 **Description:** As a player, I want to see the game view so that I can play the game.
 
 **Acceptance Criteria:**
+
 - [ ] Update app/lobby/[code]/page.tsx to show GameView when lobby status is 'in_game'
 - [ ] Create components/game/GameView.tsx with layout structure
 - [ ] Create GameHeader showing round number, whose turn, and timer
@@ -331,9 +380,11 @@ For UI stories, also include:
 - [ ] Layout is responsive (mobile and desktop)
 
 ### US-024: My Timeline Component
+
 **Description:** As a player, I want to see my timeline so that I know my current cards.
 
 **Acceptance Criteria:**
+
 - [ ] Create components/game/MyTimeline.tsx
 - [ ] Display cards in chronological order by year
 - [ ] Show song title, artist, year for each card
@@ -343,9 +394,11 @@ For UI stories, also include:
 - [ ] Earned-by indicator shows correctly
 
 ### US-025: Timeline Placer Component
+
 **Description:** As the turn player, I want to drag and drop the song so that I can place it on my timeline.
 
 **Acceptance Criteria:**
+
 - [ ] Create components/game/TimelinePlacer.tsx
 - [ ] Show current timeline with drop zones between cards
 - [ ] Show new song card to be placed (without year)
@@ -357,9 +410,11 @@ For UI stories, also include:
 - [ ] Submit button finalizes placement
 
 ### US-026: Betting Panel Component
+
 **Description:** As a non-turn player, I want to see the betting panel so that I can place bets.
 
 **Acceptance Criteria:**
+
 - [ ] Create components/game/BettingPanel.tsx
 - [ ] Show turn player's timeline with betting slots
 - [ ] Display coin balance and bet status
@@ -371,9 +426,11 @@ For UI stories, also include:
 - [ ] Can confirm bet (solid lock)
 
 ### US-027: Round Results Component
+
 **Description:** As a player, I want to see round results so that I know the outcome.
 
 **Acceptance Criteria:**
+
 - [ ] Create components/game/RoundResults.tsx
 - [ ] Show song reveal (title, artist, year)
 - [ ] Show if turn player was correct or wrong
@@ -385,9 +442,11 @@ For UI stories, also include:
 - [ ] Host can advance to next round
 
 ### US-028: Soft Timer Component
+
 **Description:** As a player, I want to see a countdown timer so that I know how much time is left.
 
 **Acceptance Criteria:**
+
 - [ ] Create components/game/SoftTimer.tsx
 - [ ] Display countdown based on round.startedAt and settings.turnSeconds
 - [ ] Show visual indicator when time is low
@@ -397,9 +456,11 @@ For UI stories, also include:
 - [ ] Timer continues past zero (no enforcement)
 
 ### US-029: YouTube Player Component
+
 **Description:** As a player, I want to hear the song so that I can guess the year.
 
 **Acceptance Criteria:**
+
 - [ ] Create components/player/YouTubePlayer.tsx
 - [ ] Load YouTube IFrame API
 - [ ] Play video by youtubeVideoId from round track
@@ -411,9 +472,11 @@ For UI stories, also include:
 - [ ] Error handling for unavailable videos
 
 ### US-030: Track Import
+
 **Description:** As a developer, I want to import tracks so that the game has content.
 
 **Acceptance Criteria:**
+
 - [ ] Create convex/tracks.ts with import mutation
 - [ ] Accept array of tracks with title, artist, year, youtubeVideoId
 - [ ] Validate required fields and year range
@@ -424,9 +487,11 @@ For UI stories, also include:
 - [ ] Sample tracks are available for testing
 
 ### US-031: Track Queries
+
 **Description:** As a developer, I want track queries so that game rounds can access track data.
 
 **Acceptance Criteria:**
+
 - [ ] Add getForRound query to convex/tracks.ts (host only, full metadata)
 - [ ] Add getPublic query (post-resolution, public metadata)
 - [ ] Return track info based on round phase and viewer role
@@ -436,9 +501,11 @@ For UI stories, also include:
 - [ ] Full metadata visible after resolution
 
 ### US-032: Host Disconnect Detection
+
 **Description:** As a player, I want host disconnect to be detected so that the game doesn't stall.
 
 **Acceptance Criteria:**
+
 - [ ] Create scheduled function to check host presence
 - [ ] When host disconnects, set hostTransferDeadline on lobby
 - [ ] Set game status to 'paused' if game is active
@@ -448,9 +515,11 @@ For UI stories, also include:
 - [ ] Game pauses if in progress
 
 ### US-033: Host Failover
+
 **Description:** As a player, I want automatic host transfer so that the game can continue without the original host.
 
 **Acceptance Criteria:**
+
 - [ ] Create scheduled function checkHostTransfer
 - [ ] After 30s timeout, if host still disconnected, transfer to random online player
 - [ ] Update lobby.hostSessionId and player.isHost flags
@@ -462,9 +531,11 @@ For UI stories, also include:
 - [ ] Original host can rejoin as player
 
 ### US-034: Manual Host Transfer
+
 **Description:** As a host, I want to manually transfer host role so that I can leave gracefully.
 
 **Acceptance Criteria:**
+
 - [ ] Add transferHost mutation to convex/lobbies.ts
 - [ ] Validate caller is current host
 - [ ] Update hostSessionId and player isHost flags
@@ -474,9 +545,11 @@ For UI stories, also include:
 - [ ] Old host becomes regular player
 
 ### US-035: Game Results View
+
 **Description:** As a player, I want to see the final results so that I know who won.
 
 **Acceptance Criteria:**
+
 - [ ] Create components/game/GameResults.tsx
 - [ ] Display winner prominently
 - [ ] Show final standings with timeline sizes
@@ -488,9 +561,11 @@ For UI stories, also include:
 - [ ] Can start new game from results
 
 ### US-036: Loading and Error States
+
 **Description:** As a player, I want loading and error states so that I know what's happening.
 
 **Acceptance Criteria:**
+
 - [ ] Create loading skeletons for all major components
 - [ ] Add error boundaries with retry options
 - [ ] Handle Convex connection errors gracefully
@@ -501,9 +576,11 @@ For UI stories, also include:
 - [ ] Network issues show reconnecting indicator
 
 ### US-037: Internationalization Setup
+
 **Description:** As a player, I want the game in my language so that I can understand it.
 
 **Acceptance Criteria:**
+
 - [ ] Install next-intl package
 - [ ] Create i18n/request.ts with getRequestConfig
 - [ ] Create i18n/routing.ts with defineRouting (locales: en, es, fr, de, pt, ja)
@@ -544,6 +621,7 @@ For UI stories, also include:
 ## Technical Considerations
 
 **Tech Stack:**
+
 - Frontend: Next.js 16 (App Router), TypeScript
 - Backend: Convex (realtime BaaS)
 - Styling: Tailwind CSS v4.1, shadcn/ui (Lyra style, Fuchsia theme)
@@ -552,6 +630,7 @@ For UI stories, also include:
 - i18n: next-intl
 
 **Key Patterns:**
+
 - Decoupled Convex queries (6+ separate queries vs one monolithic)
 - Session-based auth via convex-helpers sessionWrapper
 - Embedded timeline arrays (max 10 cards per player)
@@ -559,6 +638,7 @@ For UI stories, also include:
 - Two-step betting (preview -> confirm)
 
 **Local Development:**
+
 - Local Convex OSS backend (no cloud account needed)
 - Justfile for command orchestration
 - Three terminals: local backend, convex dev, next dev
