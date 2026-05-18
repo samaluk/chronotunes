@@ -1,27 +1,20 @@
 "use client"
 
 import { useQuery } from "convex/react"
-
 import { Music } from "lucide-react"
 import { useMemo } from "react"
 import { useIsMounted } from "usehooks-ts"
 import { api } from "@/convex/_generated/api"
 import type { Id } from "@/convex/_generated/dataModel"
 import { sortTimelineByYear } from "@/lib/timeline"
+import { useGame } from "./game-provider"
 import { TimelineCard } from "./timeline-card"
 
 interface TimelineEntry {
-  trackId: Id<"tracks">
-  year: number
   earnedAtRoundNumber: number
   earnedBy: "placement" | "bet" | "initial"
-}
-
-interface Player {
-  _id: Id<"players">
-  displayName: string
-  timeline: TimelineEntry[]
-  timelineSize: number
+  trackId: Id<"tracks">
+  year: number
 }
 
 const getEarnedByLabel = (earnedBy: TimelineEntry["earnedBy"]): string => {
@@ -37,11 +30,10 @@ const getEarnedByLabel = (earnedBy: TimelineEntry["earnedBy"]): string => {
   }
 }
 
-interface MyTimelineProps {
-  player: Player | null
-}
+export function MyTimeline(): React.ReactNode {
+  const { state } = useGame()
+  const { me: player } = state
 
-export function MyTimeline({ player }: MyTimelineProps): React.ReactNode {
   const isMounted = useIsMounted()
 
   const trackIds = player?.timeline.map((entry) => entry.trackId) ?? []
@@ -50,7 +42,6 @@ export function MyTimeline({ player }: MyTimelineProps): React.ReactNode {
     isMounted() && trackIds.length > 0 ? { trackIds } : "skip",
   )
 
-  // Must be called before any early returns to maintain consistent hook order
   const trackMap = useMemo(() => {
     if (!(tracks && Array.isArray(tracks))) {
       return new Map()
