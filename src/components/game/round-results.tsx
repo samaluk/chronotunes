@@ -1,5 +1,6 @@
 "use client"
 
+import { useQuery } from "convex/react"
 import { useSessionMutation } from "convex-helpers/react/sessions"
 import { Check, Clock, Music, Star, Trophy, Users, X } from "lucide-react"
 import { useTranslations } from "next-intl"
@@ -7,61 +8,16 @@ import { useEffect, useMemo, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { api } from "@/convex/_generated/api"
-import type { Doc, Id } from "@/convex/_generated/dataModel"
+import type { Id } from "@/convex/_generated/dataModel"
 import { cn } from "@/lib/utils"
-
-interface TimelineEntry {
-  trackId: Id<"tracks">
-  year: number
-  earnedAtRoundNumber: number
-  earnedBy: "placement" | "bet"
-}
-
-interface Player {
-  _id: Id<"players">
-  displayName: string
-  timeline: TimelineEntry[]
-  timelineSize: number
-  coins: number
-  isHost: boolean
-  sessionId: string
-}
-
-interface TrackInfo {
-  _id: Id<"tracks">
-  title: string
-  artist: string
-  year: number
-}
-
-interface RoundResolution {
-  validIndexMin: number
-  validIndexMax: number
-  turnPlayerWasCorrect: boolean
-  awardedPlayerIds: Id<"players">[]
-  coinDeltas: Array<{
-    playerId: Id<"players">
-    delta: number
-  }>
-  resolvedAt: number
-}
+import { useGame } from "./game-provider"
 
 interface BetWithPlayer {
-  playerId: Id<"players">
-  playerDisplayName: string
-  proposedIndex: number
   declinedToBet: boolean
+  playerDisplayName: string
+  playerId: Id<"players">
+  proposedIndex: number
   status: "pending" | "won" | "lost"
-}
-
-interface RoundResultsProps {
-  lobbyId: Id<"lobbies">
-  track: TrackInfo
-  resolution: RoundResolution
-  turnPlayer: Doc<"players">
-  bets: BetWithPlayer[]
-  players: Doc<"players">[]
-  me: Doc<"players"> | null
 }
 
 const getCorrectnessStyles = (showCorrectness: boolean, isCorrect: boolean) => {
@@ -120,21 +76,23 @@ const getBetStatusStyles = (status: BetWithPlayer["status"]) => {
   }
 }
 
-export function RoundResults({
-  lobbyId,
-  track,
-  resolution,
-  turnPlayer,
-  bets,
-  players,
-  me,
-}: RoundResultsProps): React.ReactNode {
+export function RoundResults(): React.ReactNode {
   const t = useTranslations("results")
+  const { state, meta } = useGame()
   const [isResolving, setIsResolving] = useState(false)
   const [showCorrectness, setShowCorrectness] = useState(false)
 
+  const { track, players, me, currentRound, turnPlayer } = state
+  const { lobbyId } = meta
+
+  const resolution = currentRound?.resolution
+
   const resolveAndNext = useSessionMutation(api.games.resolveAndNext)
-  const isHost = players.find((p) => p._id === me?._id)?.isHost ?? false
+  const roundBets = useQuery(api.bets.listForRound, lobbyId ? { lobbyId } : "skip")
+
+  const isHost = useMemo(() => {
+    return players.find((p) => p._id === me?._id)?.isHost ?? false
+  }, [players, me])
 
   useEffect(() => {
     const timer = setTimeout(() => setShowCorrectness(true), 300)
@@ -152,22 +110,50 @@ export function RoundResults({
     }
   }
 
-  const getPlayerById = (playerId: Id<"players">): Player | undefined => {
-    return players.find((p) => p._id === playerId) as Player | undefined
+  const getPlayerById = (playerId: Id<"players">) => {
+    return players.find((p) => p._id === playerId)
   }
 
-  const bettingBets = useMemo(() => bets.filter((bet) => !bet.declinedToBet), [bets])
+  const bettingBets = useMemo(() => {
+    if (!roundBets) {
+      return []
+    }
+    return roundBets.filter((bet) => !bet.declinedToBet)
+  }, [roundBets])
 
   const formatTime = (timestamp: number): string => {
     const date = new Date(timestamp)
     return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
   }
 
-  const isTurnPlayerCorrect = resolution.turnPlayerWasCorrect
+  const isTurnPlayerCorrect = resolution?.turnPlayerWasCorrect ?? false
   const correctnessStyles = getCorrectnessStyles(showCorrectness, isTurnPlayerCorrect)
+
   const placementResultText = isTurnPlayerCorrect
-    ? t("placementResult", { name: turnPlayer.displayName, result: "in the valid range" })
-    : t("placementResult", { name: turnPlayer.displayName, result: "outside the valid range" })
+    ? t("placementResult", {
+        name: turnPlayer?.displayName ?? "Player",
+        result: "in the valid range",
+      })
+    : t("placementResult", {
+        name: turnPlayer?.displayName ?? "Player",
+        result: "outside the valid range",
+      })
+
+  if (!(resolution && track && turnPlayer)) {
+    return (
+      <div className="space-y-6">
+        <div className="flex flex-col items-center justify-center space-y-4 py-12">
+          <div className="flex h-16 w-16 items-center justify-center rounded-full bg-green-100 dark:bg-green-900/30">
+            <Music className="h-8 w-8 text-green-600 dark:text-green-400" />
+          </div>
+          <div className="space-y-2 text-center">
+            <p className="font-medium text-lg">{t("roundResults")}</p>
+            <p className="text-muted-foreground text-sm">{t("songRevealed")}</p>
+          </div>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="space-y-6">
