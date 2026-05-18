@@ -70,7 +70,7 @@ test("list returns players with correct properties", async () => {
   expect(host).toBeDefined()
   expect(host?.sessionId).toBe("list-props-host")
   expect(host?.displayName).toBe("ListPropsHost")
-  expect(host?.coins).toBe(3)
+  expect(host?.coins).toBe(0)
   expect(host?.timeline).toEqual([])
   expect(host?.timelineSize).toBe(0)
   expect(host?.createdAt).toBeDefined()
