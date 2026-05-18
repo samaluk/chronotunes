@@ -1,56 +1,23 @@
 "use client"
 
-import { useQuery } from "convex/react"
 import { Music } from "lucide-react"
 import { useTranslations } from "next-intl"
 import { useEffect, useState } from "react"
 import { Dialog, DialogContent } from "@/components/ui/dialog"
-import { api } from "@/convex/_generated/api"
-import type { Doc, Id } from "@/convex/_generated/dataModel"
+import { useGame } from "./game-provider"
 import { RoundResults } from "./round-results"
 
-interface ResolvedPhaseContentProps {
-  lobbyId: Id<"lobbies">
-  track: {
-    _id: Id<"tracks">
-    title?: string
-    artist?: string
-    year?: number
-    youtubeVideoId?: string
-  } | null
-  resolution: {
-    validIndexMin: number
-    validIndexMax: number
-    turnPlayerWasCorrect: boolean
-    awardedPlayerIds: Id<"players">[]
-    coinDeltas: Array<{
-      playerId: Id<"players">
-      delta: number
-    }>
-    resolvedAt: number
-  } | null
-  players: Doc<"players">[] | null
-  turnPlayerId: Id<"players"> | null
-  me: Doc<"players"> | null
-}
-
-export function ResolvedPhaseContent({
-  lobbyId,
-  track,
-  resolution,
-  players,
-  turnPlayerId,
-  me,
-}: ResolvedPhaseContentProps): React.ReactNode {
+export function ResolvedPhaseContent(): React.ReactNode {
   const tResults = useTranslations("results")
   const [showResultsModal, setShowResultsModal] = useState(false)
-  const roundBets = useQuery(api.bets.listForRound, lobbyId ? { lobbyId } : "skip")
+  const { state } = useGame()
+  const { lobby, players, currentRound, track, turnPlayer } = state
 
   useEffect(() => {
     setShowResultsModal(true)
   }, [])
 
-  if (!(lobbyId && track && resolution && players && turnPlayerId)) {
+  if (!(lobby && track && currentRound?.resolution && players && turnPlayer)) {
     return (
       <div className="flex flex-col items-center justify-center space-y-4 py-12">
         <div className="flex h-16 w-16 items-center justify-center rounded-full bg-green-100 dark:bg-green-900/30">
@@ -72,29 +39,7 @@ export function ResolvedPhaseContent({
     )
   }
 
-  const turnPlayer = players.find((player) => player._id === turnPlayerId) ?? null
-  if (!turnPlayer) {
-    return null
-  }
-
-  const resultsContent = (
-    <RoundResults
-      bets={roundBets ?? []}
-      lobbyId={lobbyId}
-      me={me ?? null}
-      players={players}
-      resolution={resolution}
-      track={
-        track as {
-          _id: typeof track._id
-          title: string
-          artist: string
-          year: number
-        }
-      }
-      turnPlayer={turnPlayer}
-    />
-  )
+  const resultsContent = <RoundResults />
 
   return (
     <>
