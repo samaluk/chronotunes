@@ -2,97 +2,25 @@
 
 import { Music } from "lucide-react"
 import { useTranslations } from "next-intl"
-import type { Id } from "@/convex/_generated/dataModel"
 import { BettingPanel } from "./betting-panel"
+import { useGame } from "./game-provider"
 
-interface BettingPhaseContentProps {
-  lobbyId: Id<"lobbies">
-  me: {
-    _id: Id<"players">
-    displayName: string
-    timeline: Array<{
-      trackId: Id<"tracks">
-      year: number
-      earnedAtRoundNumber: number
-      earnedBy: "placement" | "bet" | "initial"
-    }>
-    timelineSize: number
-    coins: number
-    isHost: boolean
-  } | null
-  track: {
-    _id: Id<"tracks">
-    title?: string
-    artist?: string
-    year?: number
-    youtubeVideoId?: string
-  } | null
-  turnPlayerTimeline: Array<{
-    trackId: Id<"tracks">
-    year: number
-    earnedAtRoundNumber: number
-    earnedBy: "placement" | "bet" | "initial"
-  }>
-  revealedTracks: Array<{
-    trackId: Id<"tracks">
-    title: string
-    artist: string
-    year: number
-    youtubeVideoId?: string
-  }>
-  players: Array<{
-    _id: Id<"players">
-    displayName: string
-    timeline: Array<{
-      trackId: Id<"tracks">
-      year: number
-      earnedAtRoundNumber: number
-      earnedBy: "placement" | "bet" | "initial"
-    }>
-    timelineSize: number
-    coins: number
-    isHost: boolean
-  }> | null
-  turnPlayerId: Id<"players"> | null
-  roundStartedAt: number | undefined
-  turnSeconds: number | undefined
-  bettingWindowSeconds: number | undefined
-  turnPlayerPlacementIndex: number | null
-  showLiveBets: boolean
-}
-
-export function BettingPhaseContent({
-  lobbyId,
-  me,
-  track,
-  turnPlayerTimeline,
-  revealedTracks,
-  players,
-  turnPlayerId,
-  roundStartedAt,
-  turnSeconds,
-  bettingWindowSeconds,
-  turnPlayerPlacementIndex,
-  showLiveBets,
-}: BettingPhaseContentProps): React.ReactNode {
+export function BettingPhaseContent(): React.ReactNode {
   const tBetting = useTranslations("betting")
+  const { state } = useGame()
+  const { lobby, me, players, currentRound, track, turnPlayer } = state
 
-  if (lobbyId && me && track && players) {
+  if (lobby && me && track && players) {
     return (
       <BettingPanel
-        bettingWindowSeconds={bettingWindowSeconds}
-        lobbyId={lobbyId}
+        lobbyId={lobby._id}
         me={me}
-        phase="betting"
         players={players}
-        revealedTracks={revealedTracks}
-        roundStartedAt={roundStartedAt}
-        showLiveBets={showLiveBets}
+        revealedTracks={state.revealedTracks}
         track={track}
-        turnPlayerId={turnPlayerId ?? null}
-        turnPlayerPlacementIndex={turnPlayerPlacementIndex}
-        turnPlayerTimeline={turnPlayerTimeline}
-        turnSeconds={turnSeconds}
+        turnPlayerId={currentRound?.turnPlayerId ?? null}
+        turnPlayerPlacementIndex={currentRound?.placement?.proposedIndex ?? null}
+        turnPlayerTimeline={turnPlayer?.timeline ?? []}
       />
     )
   }
