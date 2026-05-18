@@ -39,11 +39,11 @@ typecheck:
 
 # Lint and format check
 lint:
-    pnpm biome check .
+    pnpm check
 
 # Auto-fix lint and format issues
 fix:
-    pnpm biome check . --write --unsafe
+    pnpm fix
 
 # Build for production
 build:

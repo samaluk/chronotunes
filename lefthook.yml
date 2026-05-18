@@ -1,7 +1,9 @@
 pre-commit:
   jobs:
-    - run: pnpm dlx ultracite fix
-      glob: 
+    # Oxfmt only: oxlint has a large backlog; full `pnpm fix` blocks commits.
+    # Run `pnpm check` locally or rely on CI before merging.
+    - run: pnpm exec oxfmt .
+      glob:
         - "*.js"
         - "*.jsx"
         - "*.ts"

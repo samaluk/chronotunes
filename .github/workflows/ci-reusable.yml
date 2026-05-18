@@ -27,8 +27,8 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Lint and format (Biome)
-        run: pnpm exec biome check . --assist-enabled=false
+      - name: Lint and format (Oxlint + Oxfmt)
+        run: pnpm check
 
       - name: Typecheck
         run: pnpm next:typegen
