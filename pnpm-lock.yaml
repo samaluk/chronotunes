@@ -31,7 +31,7 @@ importers:
         version: 1.38.0(react@19.2.6)
       convex-helpers:
         specifier: ^0.1.111
-        version: 0.1.117(@standard-schema/spec@1.1.0)(convex@1.38.0(react@19.2.6))(hono@4.12.19)(react@19.2.6)(typescript@5.9.3)(zod@3.25.76)
+        version: 0.1.117(@standard-schema/spec@1.1.0)(convex@1.38.0(react@19.2.6))(hono@4.12.19)(react@19.2.6)(typescript@6.0.3)(zod@3.25.76)
       date-fns:
         specifier: ^4.1.0
         version: 4.1.0
@@ -52,7 +52,7 @@ importers:
         version: 16.2.6(@babel/core@7.29.0)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
       next-intl:
         specifier: ^4.7.0
-        version: 4.12.0(next@16.2.6(@babel/core@7.29.0)(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(react@19.2.6)(typescript@5.9.3)
+        version: 4.12.0(next@16.2.6(@babel/core@7.29.0)(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(react@19.2.6)(typescript@6.0.3)
       next-themes:
         specifier: ^0.4.6
         version: 0.4.6(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
@@ -79,7 +79,7 @@ importers:
         version: 1.4.8
       shadcn:
         specifier: ^4.0.0
-        version: 4.7.0(@types/node@24.12.4)(typescript@5.9.3)
+        version: 4.7.0(@types/node@24.12.4)(typescript@6.0.3)
       sonner:
         specifier: ^2.0.7
         version: 2.0.7(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
@@ -148,14 +148,14 @@ importers:
         specifier: ^4
         version: 4.2.2
       typescript:
-        specifier: ^5
-        version: 5.9.3
+        specifier: ^6.0.0
+        version: 6.0.3
       ultracite:
         specifier: ^7.0.12
         version: 7.3.2
       vitest:
         specifier: ^4.0.18
-        version: 4.1.6(@edge-runtime/vm@5.0.0)(@types/node@24.12.4)(@vitest/coverage-v8@4.1.6)(@vitest/ui@4.1.6)(jsdom@29.1.1(@noble/hashes@1.8.0))(msw@2.14.6(@types/node@24.12.4)(typescript@5.9.3))(vite@7.3.1(@types/node@24.12.4)(jiti@2.6.1)(lightningcss@1.32.0))
+        version: 4.1.6(@edge-runtime/vm@5.0.0)(@types/node@24.12.4)(@vitest/coverage-v8@4.1.6)(@vitest/ui@4.1.6)(jsdom@29.1.1(@noble/hashes@1.8.0))(msw@2.14.6(@types/node@24.12.4)(typescript@6.0.3))(vite@7.3.1(@types/node@24.12.4)(jiti@2.6.1)(lightningcss@1.32.0))
 
 packages:
 
@@ -4154,8 +4154,8 @@ packages:
     resolution: {integrity: sha512-faYHw0anBbc/kWF3zFTEnxSFOAGUX9GFbOBthvDdLsIlEoWOFOtS0zgCiQYwIskL9iGXZL3kAXD8OoZ4GmMATA==}
     engines: {node: '>= 18'}
 
-  typescript@5.9.3:
-    resolution: {integrity: sha512-jl1vZzPDinLr9eUt3J/t7V6FgNEw9QjvBPdysz9KfQDD41fQrC2Y4vKQdiaUpFT4bXlb1RHhLpp8wtm6M5TgSw==}
+  typescript@6.0.3:
+    resolution: {integrity: sha512-y2TvuxSZPDyQakkFRPZHKFm+KKVqIisdg9/CZwm9ftvKXLP8NRWj38/ODjNbr43SsoXqNuAisEf1GdCxqWcdBw==}
     engines: {node: '>=14.17'}
     hasBin: true
 
@@ -5902,7 +5902,7 @@ snapshots:
       obug: 2.1.1
       std-env: 4.1.0
       tinyrainbow: 3.1.0
-      vitest: 4.1.6(@edge-runtime/vm@5.0.0)(@types/node@24.12.4)(@vitest/coverage-v8@4.1.6)(@vitest/ui@4.1.6)(jsdom@29.1.1(@noble/hashes@1.8.0))(msw@2.14.6(@types/node@24.12.4)(typescript@5.9.3))(vite@7.3.1(@types/node@24.12.4)(jiti@2.6.1)(lightningcss@1.32.0))
+      vitest: 4.1.6(@edge-runtime/vm@5.0.0)(@types/node@24.12.4)(@vitest/coverage-v8@4.1.6)(@vitest/ui@4.1.6)(jsdom@29.1.1(@noble/hashes@1.8.0))(msw@2.14.6(@types/node@24.12.4)(typescript@6.0.3))(vite@7.3.1(@types/node@24.12.4)(jiti@2.6.1)(lightningcss@1.32.0))
 
   '@vitest/expect@4.1.6':
     dependencies:
@@ -5913,13 +5913,13 @@ snapshots:
       chai: 6.2.2
       tinyrainbow: 3.1.0
 
-  '@vitest/mocker@4.1.6(msw@2.14.6(@types/node@24.12.4)(typescript@5.9.3))(vite@7.3.1(@types/node@24.12.4)(jiti@2.6.1)(lightningcss@1.32.0))':
+  '@vitest/mocker@4.1.6(msw@2.14.6(@types/node@24.12.4)(typescript@6.0.3))(vite@7.3.1(@types/node@24.12.4)(jiti@2.6.1)(lightningcss@1.32.0))':
     dependencies:
       '@vitest/spy': 4.1.6
       estree-walker: 3.0.3
       magic-string: 0.30.21
     optionalDependencies:
-      msw: 2.14.6(@types/node@24.12.4)(typescript@5.9.3)
+      msw: 2.14.6(@types/node@24.12.4)(typescript@6.0.3)
       vite: 7.3.1(@types/node@24.12.4)(jiti@2.6.1)(lightningcss@1.32.0)
 
   '@vitest/pretty-format@4.1.6':
@@ -5949,7 +5949,7 @@ snapshots:
       sirv: 3.0.2
       tinyglobby: 0.2.16
       tinyrainbow: 3.1.0
-      vitest: 4.1.6(@edge-runtime/vm@5.0.0)(@types/node@24.12.4)(@vitest/coverage-v8@4.1.6)(@vitest/ui@4.1.6)(jsdom@29.1.1(@noble/hashes@1.8.0))(msw@2.14.6(@types/node@24.12.4)(typescript@5.9.3))(vite@7.3.1(@types/node@24.12.4)(jiti@2.6.1)(lightningcss@1.32.0))
+      vitest: 4.1.6(@edge-runtime/vm@5.0.0)(@types/node@24.12.4)(@vitest/coverage-v8@4.1.6)(@vitest/ui@4.1.6)(jsdom@29.1.1(@noble/hashes@1.8.0))(msw@2.14.6(@types/node@24.12.4)(typescript@6.0.3))(vite@7.3.1(@types/node@24.12.4)(jiti@2.6.1)(lightningcss@1.32.0))
 
   '@vitest/utils@4.1.6':
     dependencies:
@@ -6243,14 +6243,14 @@ snapshots:
 
   convert-source-map@2.0.0: {}
 
-  convex-helpers@0.1.117(@standard-schema/spec@1.1.0)(convex@1.38.0(react@19.2.6))(hono@4.12.19)(react@19.2.6)(typescript@5.9.3)(zod@3.25.76):
+  convex-helpers@0.1.117(@standard-schema/spec@1.1.0)(convex@1.38.0(react@19.2.6))(hono@4.12.19)(react@19.2.6)(typescript@6.0.3)(zod@3.25.76):
     dependencies:
       convex: 1.38.0(react@19.2.6)
     optionalDependencies:
       '@standard-schema/spec': 1.1.0
       hono: 4.12.19
       react: 19.2.6
-      typescript: 5.9.3
+      typescript: 6.0.3
       zod: 3.25.76
 
   convex-test@0.0.52(convex@1.38.0(react@19.2.6)):
@@ -6279,14 +6279,14 @@ snapshots:
       object-assign: 4.1.1
       vary: 1.1.2
 
-  cosmiconfig@9.0.1(typescript@5.9.3):
+  cosmiconfig@9.0.1(typescript@6.0.3):
     dependencies:
       env-paths: 2.2.1
       import-fresh: 3.3.1
       js-yaml: 4.1.1
       parse-json: 5.2.0
     optionalDependencies:
-      typescript: 5.9.3
+      typescript: 6.0.3
 
   cross-spawn@7.0.6:
     dependencies:
@@ -7273,7 +7273,7 @@ snapshots:
 
   ms@2.1.3: {}
 
-  msw@2.14.6(@types/node@24.12.4)(typescript@5.9.3):
+  msw@2.14.6(@types/node@24.12.4)(typescript@6.0.3):
     dependencies:
       '@inquirer/confirm': 6.0.13(@types/node@24.12.4)
       '@mswjs/interceptors': 0.41.9
@@ -7294,7 +7294,7 @@ snapshots:
       until-async: 3.0.2
       yargs: 17.7.2
     optionalDependencies:
-      typescript: 5.9.3
+      typescript: 6.0.3
     transitivePeerDependencies:
       - '@types/node'
 
@@ -7314,7 +7314,7 @@ snapshots:
 
   next-intl-swc-plugin-extractor@4.12.0: {}
 
-  next-intl@4.12.0(next@16.2.6(@babel/core@7.29.0)(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(react@19.2.6)(typescript@5.9.3):
+  next-intl@4.12.0(next@16.2.6(@babel/core@7.29.0)(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(react@19.2.6)(typescript@6.0.3):
     dependencies:
       '@formatjs/intl-localematcher': 0.8.8
       '@parcel/watcher': 2.5.6
@@ -7327,7 +7327,7 @@ snapshots:
       react: 19.2.6
       use-intl: 4.12.0(react@19.2.6)
     optionalDependencies:
-      typescript: 5.9.3
+      typescript: 6.0.3
     transitivePeerDependencies:
       - '@swc/helpers'
 
@@ -7830,7 +7830,7 @@ snapshots:
 
   setprototypeof@1.2.0: {}
 
-  shadcn@4.7.0(@types/node@24.12.4)(typescript@5.9.3):
+  shadcn@4.7.0(@types/node@24.12.4)(typescript@6.0.3):
     dependencies:
       '@babel/core': 7.29.0
       '@babel/parser': 7.29.3
@@ -7841,7 +7841,7 @@ snapshots:
       '@types/validate-npm-package-name': 4.0.2
       browserslist: 4.28.2
       commander: 14.0.3
-      cosmiconfig: 9.0.1(typescript@5.9.3)
+      cosmiconfig: 9.0.1(typescript@6.0.3)
       dedent: 1.7.2
       deepmerge: 4.3.1
       diff: 8.0.4
@@ -7851,7 +7851,7 @@ snapshots:
       fuzzysort: 3.1.0
       https-proxy-agent: 7.0.6
       kleur: 4.1.5
-      msw: 2.14.6(@types/node@24.12.4)(typescript@5.9.3)
+      msw: 2.14.6(@types/node@24.12.4)(typescript@6.0.3)
       node-fetch: 3.3.2
       open: 11.0.0
       ora: 8.2.0
@@ -8108,7 +8108,7 @@ snapshots:
       media-typer: 1.1.0
       mime-types: 3.0.2
 
-  typescript@5.9.3: {}
+  typescript@6.0.3: {}
 
   ua-parser-js@1.0.41: {}
 
@@ -8223,10 +8223,10 @@ snapshots:
       jiti: 2.6.1
       lightningcss: 1.32.0
 
-  vitest@4.1.6(@edge-runtime/vm@5.0.0)(@types/node@24.12.4)(@vitest/coverage-v8@4.1.6)(@vitest/ui@4.1.6)(jsdom@29.1.1(@noble/hashes@1.8.0))(msw@2.14.6(@types/node@24.12.4)(typescript@5.9.3))(vite@7.3.1(@types/node@24.12.4)(jiti@2.6.1)(lightningcss@1.32.0)):
+  vitest@4.1.6(@edge-runtime/vm@5.0.0)(@types/node@24.12.4)(@vitest/coverage-v8@4.1.6)(@vitest/ui@4.1.6)(jsdom@29.1.1(@noble/hashes@1.8.0))(msw@2.14.6(@types/node@24.12.4)(typescript@6.0.3))(vite@7.3.1(@types/node@24.12.4)(jiti@2.6.1)(lightningcss@1.32.0)):
     dependencies:
       '@vitest/expect': 4.1.6
-      '@vitest/mocker': 4.1.6(msw@2.14.6(@types/node@24.12.4)(typescript@5.9.3))(vite@7.3.1(@types/node@24.12.4)(jiti@2.6.1)(lightningcss@1.32.0))
+      '@vitest/mocker': 4.1.6(msw@2.14.6(@types/node@24.12.4)(typescript@6.0.3))(vite@7.3.1(@types/node@24.12.4)(jiti@2.6.1)(lightningcss@1.32.0))
       '@vitest/pretty-format': 4.1.6
       '@vitest/runner': 4.1.6
       '@vitest/snapshot': 4.1.6
