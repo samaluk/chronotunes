@@ -72,7 +72,7 @@ export const checkHostTransfer = internalMutation({
             q.eq(q.field("status"), "lobby"),
             q.eq(q.field("status"), "in_game")
           ),
-          q.neq(q.field("hostTransferDeadline")),
+          q.neq(q.field("hostTransferDeadline"), undefined),
           q.lt(q.field("hostTransferDeadline"), now)
         )
       )

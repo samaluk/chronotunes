@@ -35,6 +35,7 @@ export default defineConfig({
     "unicorn/no-await-expression-member": "allow",
     "unicorn/no-immediate-mutation": "allow",
     "unicorn/no-useless-length-check": "allow",
+    "unicorn/no-useless-undefined": "allow",
     "unicorn/prefer-spread": "allow",
     "unicorn/prefer-ternary": "allow",
     "vitest/max-expects": "allow",

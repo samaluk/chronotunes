@@ -9,12 +9,16 @@ export default defineConfig({
       {
         extends: true,
         resolve: {
-          alias: {
-            "@": path.resolve(import.meta.dirname, "src"),
-            "@/*": path.resolve(import.meta.dirname, "src/*"),
-            "@/convex": path.resolve(import.meta.dirname, "convex"),
-            "@/convex/*": path.resolve(import.meta.dirname, "convex/*"),
-          },
+          alias: [
+            {
+              find: /^@\/convex\/(.*)$/u,
+              replacement: path.resolve(import.meta.dirname, "convex/$1"),
+            },
+            {
+              find: /^@\/(.*)$/u,
+              replacement: path.resolve(import.meta.dirname, "src/$1"),
+            },
+          ],
         },
         test: {
           environment: "jsdom",
