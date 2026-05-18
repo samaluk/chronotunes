@@ -141,11 +141,7 @@
         "lobbies.transferHost",
         "lobbies.kick"
       ],
-      "queries": [
-        "lobbies.get",
-        "players.list",
-        "players.getMe"
-      ],
+      "queries": ["lobbies.get", "players.list", "players.getMe"],
       "acceptance_criteria": [
         "Host creates room, receives 6-char code",
         "Players join via code",
@@ -186,9 +182,7 @@
       "priority": "must-have",
       "phase": 3,
       "description": "Host starts game, explicit turn order established",
-      "mutations": [
-        "games.start"
-      ],
+      "mutations": ["games.start"],
       "acceptance_criteria": [
         "Host clicks Start Game when ready",
         "Turn order randomized or by join order",
@@ -202,13 +196,8 @@
       "priority": "must-have",
       "phase": 3,
       "description": "Turn player places song on chronological timeline",
-      "mutations": [
-        "rounds.setPlacementPreview",
-        "rounds.submitPlacement"
-      ],
-      "queries": [
-        "rounds.getCurrent"
-      ],
+      "mutations": ["rounds.setPlacementPreview", "rounds.submitPlacement"],
+      "queries": ["rounds.getCurrent"],
       "acceptance_criteria": [
         "Turn player sees their timeline and new song",
         "Timeline sorted by year ascending",
@@ -225,14 +214,8 @@
       "priority": "must-have",
       "phase": 3,
       "description": "Non-turn players bet on where song should go with preview/confirm flow",
-      "mutations": [
-        "bets.preview",
-        "bets.lockIn",
-        "bets.cancel"
-      ],
-      "queries": [
-        "bets.listForRound"
-      ],
+      "mutations": ["bets.preview", "bets.lockIn", "bets.cancel"],
+      "queries": ["bets.listForRound"],
       "acceptance_criteria": [
         "Non-turn players can place bets during placing phase",
         "Step 1: Select slot creates unlocked bet (ghost/semi-transparent)",
@@ -249,9 +232,7 @@
       "priority": "must-have",
       "phase": 3,
       "description": "Resolve placement correctness and betting outcomes",
-      "mutations": [
-        "games.resolveAndNext"
-      ],
+      "mutations": ["games.resolveAndNext"],
       "acceptance_criteria": [
         "Compute validIndexMin/validIndexMax from year boundaries",
         "Turn player correct: card added to timeline",
@@ -311,9 +292,7 @@
       "priority": "must-have",
       "phase": 3,
       "description": "Host can skip disconnected player's turn",
-      "mutations": [
-        "games.skipTurn"
-      ],
+      "mutations": ["games.skipTurn"],
       "acceptance_criteria": [
         "Host sees skip button for disconnected turn player",
         "Turn advances to next player",
@@ -338,9 +317,7 @@
       "priority": "should-have",
       "phase": 6,
       "description": "Turn player can guess song title/artist for bonus coin",
-      "mutations": [
-        "rounds.submitGuess"
-      ],
+      "mutations": ["rounds.submitGuess"],
       "acceptance_criteria": [
         "Optional input fields for title and artist",
         "Correct guess awards bonus coin",
@@ -353,10 +330,7 @@
       "priority": "must-have",
       "phase": 5,
       "description": "Song database with YouTube IDs and metadata",
-      "queries": [
-        "tracks.getForRound",
-        "tracks.getPublic"
-      ],
+      "queries": ["tracks.getForRound", "tracks.getPublic"],
       "acceptance_criteria": [
         "Tracks stored with title, artist, year, youtubeVideoId",
         "Manual JSON import for MVP",
@@ -585,10 +559,7 @@
     {
       "phase": 7,
       "name": "Observability",
-      "tasks": [
-        "Sentry (frontend + backend wrappers)",
-        "PostHog analytics"
-      ]
+      "tasks": ["Sentry (frontend + backend wrappers)", "PostHog analytics"]
     }
   ],
   "testing_methodology": {
@@ -616,10 +587,7 @@
   },
   "local_development": {
     "backend": "Local Convex OSS (no cloud account)",
-    "prerequisites": [
-      "Rust toolchain",
-      "just command runner"
-    ],
+    "prerequisites": ["Rust toolchain", "just command runner"],
     "workflow": [
       "Terminal 1: just run-local-backend",
       "Terminal 2: just convex dev",

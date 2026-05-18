@@ -35,6 +35,7 @@ Ask questions even if the prompt seems clear. The goal is to capture missing pro
 - **Quality Gates:** tests, lint, typecheck, build/dev verification (REQUIRED)
 
 Always ask explicitly:
+
 - **Is this a new project or an existing codebase?**
 
 ### Format Questions Like This:
@@ -84,31 +85,18 @@ Output a JSON file with this shape (include detailed top-level fields so the PRD
   "version": 1,
   "project": "Feature Name",
   "overview": "Short problem + solution summary",
-  "goals": [
-    "Goal 1",
-    "Goal 2"
-  ],
-  "nonGoals": [
-    "Explicitly out of scope items"
-  ],
-  "successMetrics": [
-    "How success is measured"
-  ],
-  "openQuestions": [
-    "Remaining unknowns"
-  ],
+  "goals": ["Goal 1", "Goal 2"],
+  "nonGoals": ["Explicitly out of scope items"],
+  "successMetrics": ["How success is measured"],
+  "openQuestions": ["Remaining unknowns"],
   "stack": {
     "framework": "TanStack Start",
     "hosting": "Cloudflare",
     "database": "D1",
     "auth": "describe approach"
   },
-  "routes": [
-    { "path": "/", "name": "Home", "purpose": "..." }
-  ],
-  "uiNotes": [
-    "Layout or component requirements"
-  ],
+  "routes": [{ "path": "/", "name": "Home", "purpose": "..." }],
+  "uiNotes": ["Layout or component requirements"],
   "dataModel": [
     { "entity": "Workout", "fields": ["id", "userId", "date", "notes"] }
   ],
@@ -116,9 +104,7 @@ Output a JSON file with this shape (include detailed top-level fields so the PRD
     "description": "Expected JSON shape",
     "example": { "programName": "..." }
   },
-  "rules": [
-    "Key business rules / calculations"
-  ],
+  "rules": ["Key business rules / calculations"],
   "qualityGates": ["npm run test:ping"],
   "stories": [
     {
@@ -137,6 +123,7 @@ Output a JSON file with this shape (include detailed top-level fields so the PRD
 ```
 
 ### Rules
+
 - **IDs**: Sequential (`US-001`, `US-002`, ...)
 - **Status**: Always `"open"` for new stories
 - **DependsOn**: Use IDs only; empty array if none
@@ -160,6 +147,7 @@ After saving, tell the user:
 `PRD JSON saved to <path>. Close this chat and run \`ralph build\`.`
 
 If the prompt provides a **directory** (not a filename), choose a short filename:
+
 - `prd-<short-slug>.json` where `<short-slug>` is 1–3 meaningful words (avoid filler like “i want to”).
 - Examples: `prd-workout-tracker.json`, `prd-usage-billing.json`
 
@@ -183,15 +171,9 @@ If a story feels too large, split it into multiple smaller stories with dependen
     "Allow assigning priority (high/medium/low) to any task",
     "Enable filtering by priority"
   ],
-  "nonGoals": [
-    "No automatic priority assignment"
-  ],
-  "successMetrics": [
-    "Users can change priority in under 2 clicks"
-  ],
-  "openQuestions": [
-    "Should priority affect ordering within a column?"
-  ],
+  "nonGoals": ["No automatic priority assignment"],
+  "successMetrics": ["Users can change priority in under 2 clicks"],
+  "openQuestions": ["Should priority affect ordering within a column?"],
   "stack": {
     "framework": "React",
     "hosting": "Cloudflare Pages",
@@ -199,22 +181,24 @@ If a story feels too large, split it into multiple smaller stories with dependen
     "auth": "single shared login"
   },
   "routes": [
-    { "path": "/tasks", "name": "Task List", "purpose": "View and filter tasks" },
-    { "path": "/tasks/:id", "name": "Task Detail", "purpose": "Edit task priority" }
+    {
+      "path": "/tasks",
+      "name": "Task List",
+      "purpose": "View and filter tasks"
+    },
+    {
+      "path": "/tasks/:id",
+      "name": "Task Detail",
+      "purpose": "Edit task priority"
+    }
   ],
-  "uiNotes": [
-    "Priority badge colors: high=red, medium=yellow, low=gray"
-  ],
-  "dataModel": [
-    { "entity": "Task", "fields": ["id", "title", "priority"] }
-  ],
+  "uiNotes": ["Priority badge colors: high=red, medium=yellow, low=gray"],
+  "dataModel": [{ "entity": "Task", "fields": ["id", "title", "priority"] }],
   "importFormat": {
     "description": "Not applicable",
     "example": {}
   },
-  "rules": [
-    "Priority defaults to medium when not set"
-  ],
+  "rules": ["Priority defaults to medium when not set"],
   "qualityGates": ["npm run test:ping"],
   "stories": [
     {
