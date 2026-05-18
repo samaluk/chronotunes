@@ -1,6 +1,7 @@
 # Testing
 
 ## File locations
+
 Tests live alongside source files:
 
 ```text
@@ -10,6 +11,7 @@ components/game/Timer.tsx -> components/game/Timer.test.tsx
 ```
 
 ## Convex function tests
+
 ```typescript
 import { convexTest } from "convex-test";
 import { expect, test } from "vitest";
@@ -24,6 +26,7 @@ test("create lobby generates 6-char code", async () => {
 ```
 
 ## Component tests
+
 ```typescript
 import { render, screen } from "@testing-library/react";
 import { expect, test, vi } from "vitest";
@@ -36,6 +39,7 @@ test("displays player name", () => {
 ```
 
 ## Testing rules
+
 - Write assertions inside `it()` or `test()` blocks.
 - Avoid done callbacks in async tests; use async/await.
 - Do not use `.only` or `.skip` in committed code.

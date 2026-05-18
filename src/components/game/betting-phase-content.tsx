@@ -1,14 +1,15 @@
-"use client"
+"use client";
 
-import { Music } from "lucide-react"
-import { useTranslations } from "next-intl"
-import { BettingPanel } from "./betting-panel"
-import { useGame } from "./game-provider"
+import { Music } from "lucide-react";
+import { useTranslations } from "next-intl";
+
+import { BettingPanel } from "./betting-panel";
+import { useGame } from "./game-provider";
 
 export function BettingPhaseContent(): React.ReactNode {
-  const tBetting = useTranslations("betting")
-  const { state } = useGame()
-  const { lobby, me, players, currentRound, track, turnPlayer } = state
+  const tBetting = useTranslations("betting");
+  const { state } = useGame();
+  const { lobby, me, players, currentRound, track, turnPlayer } = state;
 
   if (lobby && me && track && players) {
     return (
@@ -19,10 +20,12 @@ export function BettingPhaseContent(): React.ReactNode {
         revealedTracks={state.revealedTracks}
         track={track}
         turnPlayerId={currentRound?.turnPlayerId ?? null}
-        turnPlayerPlacementIndex={currentRound?.placement?.proposedIndex ?? null}
+        turnPlayerPlacementIndex={
+          currentRound?.placement?.proposedIndex ?? null
+        }
         turnPlayerTimeline={turnPlayer?.timeline ?? []}
       />
-    )
+    );
   }
 
   return (
@@ -32,8 +35,10 @@ export function BettingPhaseContent(): React.ReactNode {
       </div>
       <div className="space-y-2 text-center">
         <p className="font-medium text-lg">{tBetting("placeYourBet")}</p>
-        <p className="text-muted-foreground text-sm">{tBetting("placeBetDescription")}</p>
+        <p className="text-muted-foreground text-sm">
+          {tBetting("placeBetDescription")}
+        </p>
       </div>
     </div>
-  )
+  );
 }

@@ -1,98 +1,98 @@
-"use client"
+"use client";
 
-import { useConvex } from "convex/react"
-import { useCallback, useEffect, useState } from "react"
+import { useConvex } from "convex/react";
+import { useCallback, useEffect, useState } from "react";
 
 export type ConvexConnectionStatus =
   | "connecting"
   | "connected"
   | "disconnected"
   | "reconnecting"
-  | "error"
+  | "error";
 
 interface UseConvexStatusReturn {
-  status: ConvexConnectionStatus
-  isConnected: boolean
-  isReconnecting: boolean
-  error: Error | null
-  retry: () => void
+  error: Error | null;
+  isConnected: boolean;
+  isReconnecting: boolean;
+  retry: () => void;
+  status: ConvexConnectionStatus;
 }
 
 export function useConvexStatus(): UseConvexStatusReturn {
-  const client = useConvex()
-  const [status, setStatus] = useState<ConvexConnectionStatus>("connecting")
-  const [error, setError] = useState<Error | null>(null)
-  const [_retryCount, setRetryCount] = useState(0)
+  const client = useConvex();
+  const [status, setStatus] = useState<ConvexConnectionStatus>("connecting");
+  const [error, setError] = useState<Error | null>(null);
+  const [_retryCount, setRetryCount] = useState(0);
 
   const retry = useCallback(() => {
-    setStatus("connecting")
-    setRetryCount((prev) => prev + 1)
-  }, [])
+    setStatus("connecting");
+    setRetryCount((prev) => prev + 1);
+  }, []);
 
   useEffect(() => {
     if (!client) {
-      setStatus("disconnected")
-      return
+      setStatus("disconnected");
+      return;
     }
 
     if (typeof window === "undefined") {
-      return
+      return;
     }
 
-    let mounted = true
+    let mounted = true;
 
     const checkConnection = () => {
       try {
-        setStatus("connected")
-        setError(null)
+        setStatus("connected");
+        setError(null);
       } catch {
         if (mounted) {
-          setStatus("error")
-          setError(new Error("Connection check failed"))
+          setStatus("error");
+          setError(new Error("Connection check failed"));
         }
       }
-    }
+    };
 
-    checkConnection()
+    checkConnection();
 
     const handleOnline = (): void => {
       if (mounted) {
-        setStatus("connecting")
-        retry()
+        setStatus("connecting");
+        retry();
       }
-    }
+    };
 
     const handleOffline = (): void => {
       if (mounted) {
-        setStatus("disconnected")
+        setStatus("disconnected");
       }
-    }
+    };
 
-    window.addEventListener("online", handleOnline)
-    window.addEventListener("offline", handleOffline)
+    window.addEventListener("online", handleOnline);
+    window.addEventListener("offline", handleOffline);
 
     return () => {
-      mounted = false
-      window.removeEventListener("online", handleOnline)
-      window.removeEventListener("offline", handleOffline)
-    }
-  }, [client, retry])
+      mounted = false;
+      window.removeEventListener("online", handleOnline);
+      window.removeEventListener("offline", handleOffline);
+    };
+  }, [client, retry]);
 
   useEffect(() => {
     if (status === "connecting" && client) {
       const timeout = setTimeout(() => {
-        setStatus("connected")
-      }, 2000)
+        setStatus("connected");
+      }, 2000);
 
-      return () => clearTimeout(timeout)
+      return () => clearTimeout(timeout);
     }
-  }, [status, client])
+  }, [status, client]);
 
   return {
-    status,
+    error,
     isConnected: status === "connected",
     isReconnecting: status === "reconnecting",
-    error,
     retry,
-  }
+    status,
+  };
 }

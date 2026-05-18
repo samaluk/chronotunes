@@ -1,149 +1,169 @@
-import { defineSchema, defineTable } from "convex/server"
-import { v } from "convex/values"
+import { defineSchema, defineTable } from "convex/server";
+import { v } from "convex/values";
 
 // Lobby status enum values
-const lobbyStatus = v.union(v.literal("lobby"), v.literal("in_game"), v.literal("finished"))
+const lobbyStatus = v.union(
+  v.literal("lobby"),
+  v.literal("in_game"),
+  v.literal("finished")
+);
 
 // Game status enum values
-const gameStatus = v.union(v.literal("active"), v.literal("paused"), v.literal("finished"))
+const gameStatus = v.union(
+  v.literal("active"),
+  v.literal("paused"),
+  v.literal("finished")
+);
 
 // Round phase enum values
-const roundPhase = v.union(v.literal("placing"), v.literal("betting"), v.literal("resolved"))
+const roundPhase = v.union(
+  v.literal("placing"),
+  v.literal("betting"),
+  v.literal("resolved")
+);
 
 // Bet status enum values
-const betStatus = v.union(v.literal("pending"), v.literal("won"), v.literal("lost"))
+const betStatus = v.union(
+  v.literal("pending"),
+  v.literal("won"),
+  v.literal("lost")
+);
 
 // Lobby settings object
 const lobbySettings = v.object({
-  targetTimelineSize: v.number(),
-  startingCoins: v.number(),
-  turnSeconds: v.number(),
-  bettingWindowSeconds: v.number(),
-  allowGuessTitleArtist: v.boolean(),
-  showLiveBets: v.boolean(),
   allowBetRetraction: v.boolean(),
-  minYear: v.number(),
+  allowGuessTitleArtist: v.boolean(),
+  bettingWindowSeconds: v.number(),
   maxYear: v.number(),
-})
+  minYear: v.number(),
+  showLiveBets: v.boolean(),
+  startingCoins: v.number(),
+  targetTimelineSize: v.number(),
+  turnSeconds: v.number(),
+});
 
 // Timeline entry for player's timeline (embedded array)
 const timelineEntry = v.object({
+  earnedAtRoundNumber: v.number(),
+  earnedBy: v.union(
+    v.literal("placement"),
+    v.literal("bet"),
+    v.literal("initial")
+  ),
   trackId: v.id("tracks"),
   year: v.number(),
-  earnedAtRoundNumber: v.number(),
-  earnedBy: v.union(v.literal("placement"), v.literal("bet"), v.literal("initial")),
-})
+});
 
 // Placement preview object
 const placementPreview = v.object({
   proposedIndex: v.number(),
   updatedAt: v.number(),
-})
+});
 
 // Placement object
 const placement = v.object({
   proposedIndex: v.number(),
   submittedAt: v.number(),
-})
+});
 
 // Guess object for title/artist guessing
 const guess = v.object({
-  guessedTitle: v.optional(v.string()),
-  guessedArtist: v.optional(v.string()),
-  isCorrect: v.boolean(),
   awardedCoin: v.boolean(),
+  guessedArtist: v.optional(v.string()),
+  guessedTitle: v.optional(v.string()),
+  isCorrect: v.boolean(),
   submittedAt: v.number(),
-})
+});
 
 // Round resolution object
 const resolution = v.object({
-  validIndexMin: v.number(),
-  validIndexMax: v.number(),
-  turnPlayerWasCorrect: v.boolean(),
   awardedPlayerIds: v.array(v.id("players")),
   coinDeltas: v.array(
     v.object({
-      playerId: v.id("players"),
       delta: v.number(),
-    }),
+      playerId: v.id("players"),
+    })
   ),
   resolvedAt: v.number(),
-})
+  turnPlayerWasCorrect: v.boolean(),
+  validIndexMax: v.number(),
+  validIndexMin: v.number(),
+});
 
 // External IDs for tracks (Spotify, YouTube, Deezer)
 const externalIds = v.object({
+  deezerTrackId: v.optional(v.string()),
   spotifyTrackId: v.optional(v.string()),
   youtubeVideoId: v.optional(v.string()),
-  deezerTrackId: v.optional(v.string()),
-})
+});
 
 // Links for tracks
 const trackLinks = v.object({
+  deezerUrl: v.optional(v.string()),
   spotifyUrl: v.optional(v.string()),
   youtubeUrl: v.optional(v.string()),
-  deezerUrl: v.optional(v.string()),
-})
+});
 
 export default defineSchema({
   // Lobbies table
   lobbies: defineTable({
+    activeGameId: v.optional(v.id("games")),
     code: v.string(),
     hostSessionId: v.string(),
     hostTransferDeadline: v.optional(v.number()),
-    status: lobbyStatus,
     settings: lobbySettings,
-    activeGameId: v.optional(v.id("games")),
+    status: lobbyStatus,
   }).index("by_code", ["code"]),
 
   // Players table
   players: defineTable({
-    lobbyId: v.id("lobbies"),
-    sessionId: v.string(),
+    coins: v.number(),
+    createdAt: v.number(),
     displayName: v.string(),
     isHost: v.boolean(),
-    coins: v.number(),
+    lobbyId: v.id("lobbies"),
+    sessionId: v.string(),
     timeline: v.array(timelineEntry),
     timelineSize: v.number(),
-    createdAt: v.number(),
   })
     .index("by_lobby", ["lobbyId"])
     .index("by_lobby_and_session", ["lobbyId", "sessionId"]),
 
   // Games table
   games: defineTable({
-    lobbyId: v.id("lobbies"),
-    status: gameStatus,
-    startedAt: v.number(),
-    endedAt: v.optional(v.number()),
-    currentRoundNumber: v.number(),
     currentRoundId: v.optional(v.id("rounds")),
-    turnPlayerId: v.optional(v.id("players")),
+    currentRoundNumber: v.number(),
+    endedAt: v.optional(v.number()),
+    lobbyId: v.id("lobbies"),
+    startedAt: v.number(),
+    status: gameStatus,
     turnOrder: v.array(v.id("players")),
+    turnPlayerId: v.optional(v.id("players")),
     winnerPlayerId: v.optional(v.id("players")),
   }).index("by_lobby", ["lobbyId"]),
 
   // Rounds table
   rounds: defineTable({
     gameId: v.id("games"),
-    roundNumber: v.number(),
-    turnPlayerId: v.id("players"),
-    trackId: v.id("tracks"),
-    phase: roundPhase,
-    startedAt: v.number(),
-    placementPreview: v.optional(placementPreview),
-    placement: v.optional(placement),
     guess: v.optional(guess),
+    phase: roundPhase,
+    placement: v.optional(placement),
+    placementPreview: v.optional(placementPreview),
     resolution: v.optional(resolution),
+    roundNumber: v.number(),
+    startedAt: v.number(),
+    trackId: v.id("tracks"),
+    turnPlayerId: v.id("players"),
   }).index("by_game", ["gameId"]),
 
   // RoundBets table
   roundBets: defineTable({
-    roundId: v.id("rounds"),
+    declinedToBet: v.optional(v.boolean()),
+    lockedIn: v.boolean(),
+    placedAt: v.number(),
     playerId: v.id("players"),
     proposedIndex: v.number(),
-    placedAt: v.number(),
-    lockedIn: v.boolean(),
-    declinedToBet: v.optional(v.boolean()),
+    roundId: v.id("rounds"),
     status: betStatus,
   })
     .index("by_round", ["roundId"])
@@ -151,16 +171,16 @@ export default defineSchema({
 
   // Tracks table
   tracks: defineTable({
-    mbid: v.optional(v.string()),
-    title: v.string(),
     artist: v.string(),
-    year: v.number(),
+    createdAt: v.number(),
     durationMs: v.optional(v.number()),
     externalIds,
     links: trackLinks,
-    createdAt: v.number(),
+    mbid: v.optional(v.string()),
     source: v.string(),
+    title: v.string(),
+    year: v.number(),
   })
     .index("by_year", ["year"])
     .index("by_year_and_creation", ["year", "createdAt"]),
-})
+});

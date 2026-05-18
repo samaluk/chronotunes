@@ -1,20 +1,23 @@
-"use client"
+"use client";
 
-import { Music } from "lucide-react"
-import { useTranslations } from "next-intl"
-import { useGame } from "./game-provider"
-import { TimelinePlacer } from "./timeline-placer"
-import { TurnPlayerTimeline } from "./turn-player-timeline"
+import { Music } from "lucide-react";
+import { useTranslations } from "next-intl";
+
+import { useGame } from "./game-provider";
+import { TimelinePlacer } from "./timeline-placer";
+import { TurnPlayerTimeline } from "./turn-player-timeline";
 
 export function PlacingPhaseContent(): React.ReactNode {
-  const tPlacing = useTranslations("placing")
-  const { state } = useGame()
-  const { isMyTurn, lobby, me, players, currentRound, track, turnPlayer } = state
+  const tPlacing = useTranslations("placing");
+  const { state } = useGame();
+  const { isMyTurn, lobby, me, players, currentRound, track, turnPlayer } =
+    state;
 
-  const existingPreviewIndex = currentRound?.placementPreview?.proposedIndex ?? null
-  const turnPlayerId = currentRound?.turnPlayerId ?? null
-  const turnPlayerTimeline = turnPlayer?.timeline ?? []
-  const turnPlayerTimelineSize = turnPlayer?.timelineSize ?? 0
+  const existingPreviewIndex =
+    currentRound?.placementPreview?.proposedIndex ?? null;
+  const turnPlayerId = currentRound?.turnPlayerId ?? null;
+  const turnPlayerTimeline = turnPlayer?.timeline ?? [];
+  const turnPlayerTimelineSize = turnPlayer?.timelineSize ?? 0;
 
   if (isMyTurn && lobby && me && track) {
     return (
@@ -25,12 +28,12 @@ export function PlacingPhaseContent(): React.ReactNode {
         player={me}
         revealedTracks={state.revealedTracks}
       />
-    )
+    );
   }
 
   if (lobby && track && players && turnPlayerId) {
-    const turnPlayerData = players.find((p) => p._id === turnPlayerId)
-    const turnPlayerName = turnPlayerData?.displayName ?? "Player"
+    const turnPlayerData = players.find((p) => p._id === turnPlayerId);
+    const turnPlayerName = turnPlayerData?.displayName ?? "Player";
     return (
       <TurnPlayerTimeline
         existingPreviewIndex={existingPreviewIndex}
@@ -39,7 +42,7 @@ export function PlacingPhaseContent(): React.ReactNode {
         timelineSize={turnPlayerTimelineSize}
         turnPlayerName={turnPlayerName}
       />
-    )
+    );
   }
 
   return (
@@ -56,5 +59,5 @@ export function PlacingPhaseContent(): React.ReactNode {
         </p>
       </div>
     </div>
-  )
+  );
 }

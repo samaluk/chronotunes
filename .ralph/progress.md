@@ -1,8 +1,10 @@
 ## [2026-01-18 19:18:00] - S17: Submit Placement Mutation
-Thread: 
+
+Thread:
 Run: 20260118-174814-58161 (iteration 13)
 Run log: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-174814-58161-iter-13.log
 Run summary: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-174814-58161-iter-13.md
+
 - Guardrails reviewed: yes
 - No-commit run: false
 - Commit: 70413eb fix: reorder validation checks in submitPlacement mutation
@@ -23,10 +25,12 @@ Run summary: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-174
   - The submitPlacement mutation and tests were already implemented; only needed to fix validation order
 
 ## [2026-01-18 19:30:17] - S18: Betting Mutations
-Thread: 
+
+Thread:
 Run: 20260118-174814-58161 (iteration 14)
 Run log: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-174814-58161-iter-14.log
 Run summary: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-174814-58161-iter-14.md
+
 - Guardrails reviewed: yes
 - No-commit run: false
 - Commit: 7c34a53 feat: implement betting mutations (S18)
@@ -47,13 +51,16 @@ Run summary: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-174
   - Add early return when spectator is turn player to skip betting-specific test assertions
   - Tests for resolved phase need to set phase to "betting" first (to allow preview), then to "resolved" (to test lockIn/cancel failure)
   - Display name max length is 20 characters - use shorter names in test data
+
 ---
 
 ## [Date/Time] - S26: Betting Panel Component
-Thread: 
+
+Thread:
 Run: 20260118-210256-43823 (iteration 7)
 Run log: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-210256-43823-iter-7.log
 Run summary: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-210256-43823-iter-7.md
+
 - Guardrails reviewed: yes
 - No-commit run: false
 - Commit: 173a8a2 feat: Implement BettingPanel component for non-turn players
@@ -80,13 +87,16 @@ Run summary: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-210
   - Component UI tests require careful query strategies to handle duplicates
   - Position labels: index 0 = "First position", index = timelineSize = "Last position"
   - Timeline slots = timelineSize + 1 (positions between/around cards)
+
 ---
 
 ## [2026-01-18 19:36:00] - S19: Bets List Query
-Thread: 
+
+Thread:
 Run: 20260118-174814-58161 (iteration 15)
 Run log: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-174814-58161-iter-15.log
 Run summary: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-174814-58161-iter-15.md
+
 - Guardrails reviewed: yes
 - No-commit run: false
 - Commit: 93b49f8 chore: add run log (and cbc31e7 for main implementation)
@@ -109,12 +119,16 @@ Run summary: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-174
   - Convex ID type validation prevents testing with fake IDs - remove such tests
   - Use for loop instead of Promise.all for sequential DB reads to avoid Convex rate limits
   - Early returns for empty cases (no game, no round, no bets) improve performance
+
 ---
+
 ## [2026-01-18 20:03:00] - S20: Placement Validation Logic
-Thread: 
+
+Thread:
 Run: 20260118-200149-19116 (iteration 1)
 Run log: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-200149-19116-iter-1.log
 Run summary: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-200149-19116-iter-1.md
+
 - Guardrails reviewed: yes
 - No-commit run: false
 - Commit: f8f02f7 feat: implement placement validation logic (S20)
@@ -135,13 +149,16 @@ Run summary: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-200
   - Empty timeline returns {min: 0, max: 0} - only index 0 is valid for first placement
   - Single item timeline: if same year, range is [0, 1] (can place before or after)
   - Algorithm finds first index >= year and last index <= year for boundaries
+
 ---
 
 ## [2026-01-18 20:01:00] - S22: Skip Turn Mutation
-Thread: 
+
+Thread:
 Run: 20260118-195345-4266 (iteration 1)
 Run log: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-195345-4266-iter-1.log
-Run summary: 
+Run summary:
+
 - Guardrails reviewed: yes
 - No-commit run: false
 - Commit: ee4b582 feat: implement games.skipTurn mutation for host to skip disconnected player (S22)
@@ -162,13 +179,16 @@ Run summary:
   - Patterns discovered: Same pattern as resolveAndNext for advancing turns and creating new rounds
   - Gotchas encountered: Git checkout reverted changes multiple times; had to re-implement
   - Useful context: seedMoreTestTracks helper needed for tests with multiple rounds
+
 ---
 
 ## [2026-01-18 20:22:00] - S21: Round Resolution Mutation
-Thread: 
+
+Thread:
 Run: 20260118-200149-19116 (iteration 2)
 Run log: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-200149-19116-iter-2.log
 Run summary: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-200149-19116-iter-2.md
+
 - Guardrails reviewed: yes
 - No-commit run: false
 - Commit: 830b8a5 S21: Implement games.resolveAndNext mutation for round resolution
@@ -195,13 +215,16 @@ Run summary: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-200
   - Turn order randomization means tests need to dynamically find non-turn players
   - Debug output is crucial for understanding complex state transitions
   - Test setup order matters: seed tracks BEFORE game creation to ensure availability
+
 ---
 
 ## [2026-01-19 21:17:07] - S20: Placement Validation Logic
+
 Thread:
 Run: 20260118-210256-43823 (iteration 2)
 Run log: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-210256-43823-iter-2.log
 Run summary: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-210256-43823-iter-2.md
+
 - Guardrails reviewed: yes
 - No-commit run: false
 - Commit: none - story was already completed in previous iteration (f8f02f7)
@@ -223,13 +246,16 @@ Run summary: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-210
     - Single item timeline (same year returns [0, 1], different year returns boundary)
     - Multiple same-year groups
     - Boundary conditions for placement
+
 ---
 
 ## [2026-01-19 02:02:00] - S21: Round Resolution Mutation
+
 Thread:
 Run: 20260118-210256-43823 (iteration 3)
 Run log: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-210256-43823-iter-3.log
 Run summary: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-210256-43823-iter-3.md
+
 - Guardrails reviewed: yes
 - No-commit run: false
 - Commit: 830b8a5 S21: Implement games.resolveAndNext mutation for round resolution (from previous iteration)
@@ -253,12 +279,14 @@ Run summary: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-210
   - The resolveAndNext mutation is ~180 lines in convex/games.ts
   - Tests use seedMoreTestTracks helper for track availability in multi-round scenarios
   - convex-test library has known compatibility issues (glob is not a function error)
+
 ---
 
-Thread: 
+Thread:
 Run: 20260118-210256-43823 (iteration 1)
 Run log: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-210256-43823-iter-1.log
 Run summary: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-210256-43823-iter-1.md
+
 - Guardrails reviewed: yes
 - No-commit run: false
 - Commit: 1fcb4e9 feat: Implement My Timeline component (S24)
@@ -291,13 +319,16 @@ Run summary: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-210
   - Use getAllByText instead of queryByText when multiple matching elements exist
   - Tracks table requires createdAt field when inserting in tests
   - Component tests need proper mock reset between tests to avoid state leakage
+
 ---
 
 ## [2026-01-19 21:25:00] - S22: Skip Turn Mutation
-Thread: 
+
+Thread:
 Run: 20260118-210256-43823 (iteration 4)
 Run log: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-210256-43823-iter-4.log
 Run summary: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-210256-43823-iter-4.md
+
 - Guardrails reviewed: yes
 - No-commit run: false
 - Commit: 3b7d2d1 fix: format convex configuration files
@@ -321,13 +352,16 @@ Run summary: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-210
   - Git log and progress log provide history of completed work
   - convex-test library has known compatibility issues (glob is not a function error)
   - Tests exist but cannot run due to framework issue - implementation verified through code review
+
 ---
 
 ## [2026-01-19 21:42:00] - S25: Timeline Placer Component
-Thread: 
+
+Thread:
 Run: 20260118-210256-43823 (iteration 6)
 Run log: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-210256-43823-iter-6.log
 Run summary: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-210256-43823-iter-6.md
+
 - Guardrails reviewed: yes
 - No-commit run: false
 - Commit: 75db872 feat(game): Implement TimelinePlacer component for drag-and-drop song placement
@@ -340,7 +374,7 @@ Run summary: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-210
   - src/components/game/TimelinePlacer.test.tsx (new test file)
   - src/components/game/CurrentRoundPanel.tsx (added TimelinePlacer integration)
   - src/components/game/GameView.tsx (passed props to CurrentRoundPanel)
-  - vitest.config.ts (added path aliases for @/* and @/convex/*)
+  - vitest.config.ts (added path aliases for @/_ and @/convex/_)
   - vitest.setup.ts (added @testing-library/jest-dom/vitest)
   - package.json, pnpm-lock.yaml (added @testing-library/jest-dom)
 - What was implemented:
@@ -363,13 +397,16 @@ Run summary: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-210
   - Can tap to select position ✅
   - Preview updates in real-time (via Convex) ✅
   - Submit button finalizes placement ✅
+
 ---
 
 ## [2026-01-19 22:08:00] - S25: Timeline Placer Component
-Thread: 
+
+Thread:
 Run: 20260118-210256-43823 (iteration 8)
 Run log: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-210256-43823-iter-8.log
 Run summary: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-210256-43823-iter-8.md
+
 - Guardrails reviewed: yes
 - No-commit run: false
 - Commit: cab2090 fix(game): biome warnings in TimelinePlacer component
@@ -394,13 +431,16 @@ Run summary: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-210
   - Can tap to select position ✅
   - Preview updates in real-time (via Convex) ✅
   - Submit button finalizes placement ✅
+
 ---
 
 ## [2026-01-19 22:14:00] - S25: Timeline Placer Component
-Thread: 
+
+Thread:
 Run: 20260118-210256-43823 (iteration 9)
 Run log: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-210256-43823-iter-9.log
 Run summary: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-210256-43823-iter-9.md
+
 - Guardrails reviewed: yes
 - No-commit run: false
 - Commit: 75bd82d chore: update run log
@@ -425,4 +465,5 @@ Run summary: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-210
   - Can tap to select position ✅
   - Preview updates in real-time (via Convex) ✅
   - Submit button finalizes placement ✅
+
 ---

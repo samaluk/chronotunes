@@ -1,23 +1,29 @@
-"use client"
+"use client";
 
-import { GripVerticalIcon } from "lucide-react"
-import type { ComponentProps } from "react"
-import { Group, Panel, Separator } from "react-resizable-panels"
+import { GripVerticalIcon } from "lucide-react";
+import type { ComponentProps } from "react";
+import { Group, Panel, Separator } from "react-resizable-panels";
 
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/utils";
 
-function ResizablePanelGroup({ className, ...props }: ComponentProps<typeof Group>) {
+function ResizablePanelGroup({
+  className,
+  ...props
+}: ComponentProps<typeof Group>) {
   return (
     <Group
-      className={cn("flex h-full w-full aria-[orientation=vertical]:flex-col", className)}
+      className={cn(
+        "flex h-full w-full aria-[orientation=vertical]:flex-col",
+        className
+      )}
       data-slot="resizable-panel-group"
       {...props}
     />
-  )
+  );
 }
 
 function ResizablePanel({ ...props }: ComponentProps<typeof Panel>) {
-  return <Panel data-slot="resizable-panel" {...props} />
+  return <Panel data-slot="resizable-panel" {...props} />;
 }
 
 function ResizableHandle({
@@ -25,7 +31,7 @@ function ResizableHandle({
   className,
   ...props
 }: ComponentProps<typeof Separator> & {
-  withHandle?: boolean
+  withHandle?: boolean;
 }) {
   return (
     <Separator
@@ -42,7 +48,7 @@ function ResizableHandle({
         "aria-[orientation=vertical]:after:left-0 aria-[orientation=vertical]:after:h-1 aria-[orientation=vertical]:after:w-full aria-[orientation=vertical]:after:translate-x-0 aria-[orientation=vertical]:after:-translate-y-1/2",
         // icon
         "[&[aria-orientation=horizontal]>div]:rotate-90",
-        className,
+        className
       )}
       data-slot="resizable-handle"
       {...props}
@@ -53,7 +59,7 @@ function ResizableHandle({
         </div>
       )}
     </Separator>
-  )
+  );
 }
 
-export { ResizablePanelGroup, ResizablePanel, ResizableHandle }
+export { ResizableHandle, ResizablePanel, ResizablePanelGroup };

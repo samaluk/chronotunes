@@ -1,64 +1,70 @@
-import { ConvexError, v } from "convex/values"
-import { vSessionId } from "convex-helpers/server/sessions"
-import type { Doc } from "./_generated/dataModel"
-import { type MutationCtx, query } from "./_generated/server"
-import { mutationWithSession } from "./lib/sessions"
+import { vSessionId } from "convex-helpers/server/sessions";
+import { ConvexError, v } from "convex/values";
 
-const LOBBY_CODE_CHARS = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"
-const LOBBY_CODE_LENGTH = 6
+import type { Doc } from "./_generated/dataModel";
+import { query } from "./_generated/server";
+import type { MutationCtx } from "./_generated/server";
+import { mutationWithSession } from "./lib/sessions";
+
+const LOBBY_CODE_CHARS = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+const LOBBY_CODE_LENGTH = 6;
 
 const DEFAULT_SETTINGS = {
-  targetTimelineSize: 10,
-  startingCoins: 3,
-  turnSeconds: 30,
-  bettingWindowSeconds: 15,
-  allowGuessTitleArtist: true,
-  showLiveBets: true,
   allowBetRetraction: true,
-  minYear: 1950,
+  allowGuessTitleArtist: true,
+  bettingWindowSeconds: 15,
   maxYear: 2025,
-} as const
+  minYear: 1950,
+  showLiveBets: true,
+  startingCoins: 3,
+  targetTimelineSize: 10,
+  turnSeconds: 30,
+} as const;
 
-const normalizeLobbyCode = (code: string) => code.trim().toUpperCase()
+const normalizeLobbyCode = (code: string) => code.trim().toUpperCase();
 
 const assertDisplayName = (displayName: string) => {
   if (displayName.length < 1 || displayName.length > 20) {
-    throw new ConvexError("Display name must be between 1 and 20 characters")
+    throw new ConvexError("Display name must be between 1 and 20 characters");
   }
-}
+};
 
 const getLobbyByCode = async (ctx: MutationCtx, code: string) => {
   const lobby = await ctx.db
     .query("lobbies")
     .filter((q) => q.eq(q.field("code"), normalizeLobbyCode(code)))
-    .first()
+    .first();
 
   if (!lobby) {
-    throw new ConvexError("Lobby not found")
+    throw new ConvexError("Lobby not found");
   }
 
-  return lobby
-}
+  return lobby;
+};
 
-const assertHost = (lobby: Doc<"lobbies">, sessionId: string, message: string) => {
+const assertHost = (
+  lobby: Doc<"lobbies">,
+  sessionId: string,
+  message: string
+) => {
   if (lobby.hostSessionId !== sessionId) {
-    throw new ConvexError(message)
+    throw new ConvexError(message);
   }
-}
+};
 
 function generateLobbyCode(): string {
-  let code = ""
-  const randomValues = new Uint8Array(LOBBY_CODE_LENGTH)
-  crypto.getRandomValues(randomValues)
+  let code = "";
+  const randomValues = new Uint8Array(LOBBY_CODE_LENGTH);
+  crypto.getRandomValues(randomValues);
   for (let i = 0; i < LOBBY_CODE_LENGTH; i++) {
-    const rawIndex = randomValues[i]
+    const rawIndex = randomValues[i];
     if (rawIndex === undefined) {
-      throw new Error("Failed to generate random values")
+      throw new Error("Failed to generate random values");
     }
-    const index = rawIndex % LOBBY_CODE_CHARS.length
-    code += LOBBY_CODE_CHARS[index]
+    const index = rawIndex % LOBBY_CODE_CHARS.length;
+    code += LOBBY_CODE_CHARS[index];
   }
-  return code
+  return code;
 }
 
 export const create = mutationWithSession({
@@ -66,48 +72,48 @@ export const create = mutationWithSession({
     displayName: v.string(),
   },
   handler: async (ctx, args) => {
-    const { displayName } = args
-    const { sessionId } = ctx
+    const { displayName } = args;
+    const { sessionId } = ctx;
 
-    assertDisplayName(displayName)
+    assertDisplayName(displayName);
 
-    let code: string
-    const maxAttempts = 10
+    let code: string;
+    const maxAttempts = 10;
     for (let attempt = 0; attempt < maxAttempts; attempt++) {
-      code = generateLobbyCode()
+      code = generateLobbyCode();
       const existing = await ctx.db
         .query("lobbies")
         .filter((q) => q.eq(q.field("code"), code))
-        .first()
+        .first();
       if (!existing) {
-        break
+        break;
       }
       if (attempt === maxAttempts - 1) {
-        throw new ConvexError("Failed to generate unique lobby code")
+        throw new ConvexError("Failed to generate unique lobby code");
       }
     }
 
     const lobbyId = await ctx.db.insert("lobbies", {
       code: code!,
       hostSessionId: sessionId,
-      status: "lobby",
       settings: DEFAULT_SETTINGS,
-    })
+      status: "lobby",
+    });
 
     await ctx.db.insert("players", {
-      lobbyId,
-      sessionId,
+      coins: 0,
+      createdAt: Date.now(),
       displayName,
       isHost: true,
-      coins: 0,
+      lobbyId,
+      sessionId,
       timeline: [],
       timelineSize: 0,
-      createdAt: Date.now(),
-    })
+    });
 
-    return { code: code! }
+    return { code: code! };
   },
-})
+});
 
 export const join = mutationWithSession({
   args: {
@@ -115,169 +121,175 @@ export const join = mutationWithSession({
     displayName: v.string(),
   },
   handler: async (ctx, args) => {
-    const { code, displayName } = args
-    const { sessionId } = ctx
+    const { code, displayName } = args;
+    const { sessionId } = ctx;
 
-    assertDisplayName(displayName)
+    assertDisplayName(displayName);
 
-    const lobby = await getLobbyByCode(ctx, code)
+    const lobby = await getLobbyByCode(ctx, code);
 
     if (lobby.status !== "lobby") {
-      throw new ConvexError("Cannot join lobby that is not in lobby status")
+      throw new ConvexError("Cannot join lobby that is not in lobby status");
     }
 
     const existingPlayer = await ctx.db
       .query("players")
       .filter((q) =>
-        q.and(q.eq(q.field("lobbyId"), lobby._id), q.eq(q.field("sessionId"), sessionId)),
+        q.and(
+          q.eq(q.field("lobbyId"), lobby._id),
+          q.eq(q.field("sessionId"), sessionId)
+        )
       )
-      .first()
+      .first();
 
     if (existingPlayer) {
-      throw new ConvexError("You are already in this lobby")
+      throw new ConvexError("You are already in this lobby");
     }
 
     await ctx.db.insert("players", {
-      lobbyId: lobby._id,
-      sessionId,
+      coins: 0,
+      createdAt: Date.now(),
       displayName,
       isHost: false,
-      coins: 0,
+      lobbyId: lobby._id,
+      sessionId,
       timeline: [],
       timelineSize: 0,
-      createdAt: Date.now(),
-    })
+    });
 
-    return { lobbyId: lobby._id }
+    return { lobbyId: lobby._id };
   },
-})
+});
 
 export const leave = mutationWithSession({
   args: {
     code: v.string(),
   },
   handler: async (ctx, args) => {
-    const { code } = args
-    const { sessionId } = ctx
+    const { code } = args;
+    const { sessionId } = ctx;
 
-    const lobby = await getLobbyByCode(ctx, code)
+    const lobby = await getLobbyByCode(ctx, code);
 
     const player = await ctx.db
       .query("players")
       .filter((q) =>
-        q.and(q.eq(q.field("lobbyId"), lobby._id), q.eq(q.field("sessionId"), sessionId)),
+        q.and(
+          q.eq(q.field("lobbyId"), lobby._id),
+          q.eq(q.field("sessionId"), sessionId)
+        )
       )
-      .first()
+      .first();
 
     if (!player) {
-      throw new ConvexError("You are not in this lobby")
+      throw new ConvexError("You are not in this lobby");
     }
 
-    await ctx.db.delete(player._id)
+    await ctx.db.delete(player._id);
 
     if (player.isHost) {
       const remainingPlayers = await ctx.db
         .query("players")
         .filter((q) => q.eq(q.field("lobbyId"), lobby._id))
-        .collect()
+        .collect();
 
       if (remainingPlayers.length === 0) {
-        await ctx.db.delete(lobby._id)
+        await ctx.db.delete(lobby._id);
       } else {
-        const newHost = remainingPlayers[0]!
-        await ctx.db.patch(newHost._id, { isHost: true })
-        await ctx.db.patch(lobby._id, { hostSessionId: newHost.sessionId })
+        const newHost = remainingPlayers[0]!;
+        await ctx.db.patch(newHost._id, { isHost: true });
+        await ctx.db.patch(lobby._id, { hostSessionId: newHost.sessionId });
       }
     }
   },
-})
+});
 
 export const get = query({
   args: { code: v.string() },
   handler: async (ctx, args) => {
-    const { code } = args
+    const { code } = args;
 
     const lobby = await ctx.db
       .query("lobbies")
       .filter((q) => q.eq(q.field("code"), normalizeLobbyCode(code)))
-      .first()
+      .first();
 
-    return lobby
+    return lobby;
   },
-})
+});
 
 const lobbySettingsValidator = v.object({
-  targetTimelineSize: v.number(),
-  startingCoins: v.number(),
-  turnSeconds: v.number(),
-  bettingWindowSeconds: v.number(),
-  allowGuessTitleArtist: v.boolean(),
-  showLiveBets: v.boolean(),
   allowBetRetraction: v.boolean(),
-  minYear: v.number(),
+  allowGuessTitleArtist: v.boolean(),
+  bettingWindowSeconds: v.number(),
   maxYear: v.number(),
-})
+  minYear: v.number(),
+  showLiveBets: v.boolean(),
+  startingCoins: v.number(),
+  targetTimelineSize: v.number(),
+  turnSeconds: v.number(),
+});
 
 const validateTargetTimelineSize = (value?: number) => {
   if (value && (value < 5 || value > 15)) {
-    throw new ConvexError("Target timeline size must be between 5 and 15")
+    throw new ConvexError("Target timeline size must be between 5 and 15");
   }
-}
+};
 
 const validateStartingCoins = (value?: number) => {
   if (value !== undefined && (value < 1 || value > 10)) {
-    throw new ConvexError("Starting coins must be between 1 and 10")
+    throw new ConvexError("Starting coins must be between 1 and 10");
   }
-}
+};
 
 const validateTurnSeconds = (value?: number) => {
   if (value && (value < 15 || value > 120)) {
-    throw new ConvexError("Turn seconds must be between 15 and 120")
+    throw new ConvexError("Turn seconds must be between 15 and 120");
   }
-}
+};
 
 const validateBettingWindowSeconds = (value?: number) => {
   if (value && (value < 5 || value > 60)) {
-    throw new ConvexError("Betting window seconds must be between 5 and 60")
+    throw new ConvexError("Betting window seconds must be between 5 and 60");
   }
-}
+};
 
 const validateYearRange = (
   settings: Partial<Doc<"lobbies">["settings"]>,
-  currentSettings: Doc<"lobbies">["settings"],
+  currentSettings: Doc<"lobbies">["settings"]
 ) => {
-  const currentMaxYear = settings.maxYear ?? currentSettings.maxYear
-  const currentMinYear = settings.minYear ?? currentSettings.minYear
+  const currentMaxYear = settings.maxYear ?? currentSettings.maxYear;
+  const currentMinYear = settings.minYear ?? currentSettings.minYear;
 
   if (
     settings.minYear !== undefined &&
     (settings.minYear < 1900 || settings.minYear > currentMaxYear)
   ) {
-    throw new ConvexError("Invalid minimum year")
+    throw new ConvexError("Invalid minimum year");
   }
 
   if (
     settings.maxYear !== undefined &&
     (settings.maxYear > 2030 || settings.maxYear < currentMinYear)
   ) {
-    throw new ConvexError("Invalid maximum year")
+    throw new ConvexError("Invalid maximum year");
   }
-}
+};
 
 const validateSettingsUpdate = (
   settings: Partial<Doc<"lobbies">["settings"]> | undefined,
-  currentSettings: Doc<"lobbies">["settings"],
+  currentSettings: Doc<"lobbies">["settings"]
 ) => {
   if (!settings) {
-    return
+    return;
   }
 
-  validateTargetTimelineSize(settings.targetTimelineSize)
-  validateStartingCoins(settings.startingCoins)
-  validateTurnSeconds(settings.turnSeconds)
-  validateBettingWindowSeconds(settings.bettingWindowSeconds)
-  validateYearRange(settings, currentSettings)
-}
+  validateTargetTimelineSize(settings.targetTimelineSize);
+  validateStartingCoins(settings.startingCoins);
+  validateTurnSeconds(settings.turnSeconds);
+  validateBettingWindowSeconds(settings.bettingWindowSeconds);
+  validateYearRange(settings, currentSettings);
+};
 
 export const updateSettings = mutationWithSession({
   args: {
@@ -285,22 +297,26 @@ export const updateSettings = mutationWithSession({
     settings: lobbySettingsValidator.partial(),
   },
   handler: async (ctx, args) => {
-    const { code, settings } = args
-    const { sessionId } = ctx
+    const { code, settings } = args;
+    const { sessionId } = ctx;
 
-    const lobby = await getLobbyByCode(ctx, code)
+    const lobby = await getLobbyByCode(ctx, code);
 
-    assertHost(lobby, sessionId, "Only the host can update settings")
+    assertHost(lobby, sessionId, "Only the host can update settings");
 
     if (lobby.status !== "lobby") {
-      throw new ConvexError("Cannot update settings for a lobby that is not in lobby status")
+      throw new ConvexError(
+        "Cannot update settings for a lobby that is not in lobby status"
+      );
     }
 
-    validateSettingsUpdate(settings, lobby.settings)
+    validateSettingsUpdate(settings, lobby.settings);
 
-    await ctx.db.patch(lobby._id, { settings: { ...lobby.settings, ...settings } })
+    await ctx.db.patch(lobby._id, {
+      settings: { ...lobby.settings, ...settings },
+    });
   },
-})
+});
 
 export const transferHost = mutationWithSession({
   args: {
@@ -308,41 +324,47 @@ export const transferHost = mutationWithSession({
     newHostSessionId: vSessionId,
   },
   handler: async (ctx, args) => {
-    const { code, newHostSessionId } = args
-    const { sessionId } = ctx
+    const { code, newHostSessionId } = args;
+    const { sessionId } = ctx;
 
-    const lobby = await getLobbyByCode(ctx, code)
+    const lobby = await getLobbyByCode(ctx, code);
 
-    assertHost(lobby, sessionId, "Only the host can transfer host privileges")
+    assertHost(lobby, sessionId, "Only the host can transfer host privileges");
 
     if (sessionId === newHostSessionId) {
-      throw new ConvexError("Cannot transfer host to yourself")
+      throw new ConvexError("Cannot transfer host to yourself");
     }
 
     const currentHostPlayer = await ctx.db
       .query("players")
       .filter((q) =>
-        q.and(q.eq(q.field("lobbyId"), lobby._id), q.eq(q.field("sessionId"), sessionId)),
+        q.and(
+          q.eq(q.field("lobbyId"), lobby._id),
+          q.eq(q.field("sessionId"), sessionId)
+        )
       )
-      .first()
+      .first();
 
     if (!currentHostPlayer) {
-      throw new ConvexError("You are not in this lobby")
+      throw new ConvexError("You are not in this lobby");
     }
 
     const newHostPlayer = await ctx.db
       .query("players")
       .filter((q) =>
-        q.and(q.eq(q.field("lobbyId"), lobby._id), q.eq(q.field("sessionId"), newHostSessionId)),
+        q.and(
+          q.eq(q.field("lobbyId"), lobby._id),
+          q.eq(q.field("sessionId"), newHostSessionId)
+        )
       )
-      .first()
+      .first();
 
     if (!newHostPlayer) {
-      throw new ConvexError("New host player is not in this lobby")
+      throw new ConvexError("New host player is not in this lobby");
     }
 
-    await ctx.db.patch(currentHostPlayer._id, { isHost: false })
-    await ctx.db.patch(newHostPlayer._id, { isHost: true })
-    await ctx.db.patch(lobby._id, { hostSessionId: newHostSessionId })
+    await ctx.db.patch(currentHostPlayer._id, { isHost: false });
+    await ctx.db.patch(newHostPlayer._id, { isHost: true });
+    await ctx.db.patch(lobby._id, { hostSessionId: newHostSessionId });
   },
-})
+});

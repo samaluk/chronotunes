@@ -9,9 +9,7 @@
       "filesModified": [],
       "exitCode": 0,
       "completionDetected": false,
-      "errors": [
-        "ProviderModelNotFoundError: ProviderModelNotFoundError"
-      ]
+      "errors": ["ProviderModelNotFoundError: ProviderModelNotFoundError"]
     }
   ],
   "totalDurationMs": 2277,

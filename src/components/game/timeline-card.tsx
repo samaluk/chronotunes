@@ -1,27 +1,28 @@
-"use client"
+"use client";
 
-import { Coins, HelpCircle, Music, Target, Trophy } from "lucide-react"
-import { Badge } from "@/components/ui/badge"
-import { Card } from "@/components/ui/card"
-import { cn } from "@/lib/utils"
+import { Coins, HelpCircle, Music, Target, Trophy } from "lucide-react";
+
+import { Badge } from "@/components/ui/badge";
+import { Card } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
 
 interface TimelineCardProps {
-  icon?: "music" | "target" | "trophy" | "help" | "question"
-  iconColor?: "primary" | "amber" | "muted"
-  title?: string
-  artist?: string
-  subtitle?: string
-  year?: number
-  yearMin?: number
-  yearMax?: number | null
-  showYearBadge?: boolean
-  isNew?: boolean
-  isLoading?: boolean
-  isPreview?: boolean
-  isBetPreview?: boolean
-  coinCost?: number
-  playerName?: string
-  className?: string
+  artist?: string;
+  className?: string;
+  coinCost?: number;
+  icon?: "music" | "target" | "trophy" | "help" | "question";
+  iconColor?: "primary" | "amber" | "muted";
+  isBetPreview?: boolean;
+  isLoading?: boolean;
+  isNew?: boolean;
+  isPreview?: boolean;
+  playerName?: string;
+  showYearBadge?: boolean;
+  subtitle?: string;
+  title?: string;
+  year?: number;
+  yearMax?: number | null;
+  yearMin?: number;
 }
 
 export function TimelineCard({
@@ -43,38 +44,44 @@ export function TimelineCard({
   className,
 }: TimelineCardProps): React.ReactNode {
   const iconColors = {
-    primary: "bg-primary/20 text-primary",
-    amber: "bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400",
+    amber:
+      "bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400",
     muted: "bg-muted text-muted-foreground",
-  }
+    primary: "bg-primary/20 text-primary",
+  };
 
   const IconComponent = {
+    help: HelpCircle,
     music: Music,
+    question: HelpCircle,
     target: Target,
     trophy: Trophy,
-    help: HelpCircle,
-    question: HelpCircle,
-  }[icon]
+  }[icon];
 
-  const formatYearRange = (min: number | undefined, max: number | null | undefined): string => {
+  const formatYearRange = (
+    min: number | undefined,
+    max: number | null | undefined
+  ): string => {
     if (min !== undefined && max !== undefined) {
       if (max === null) {
-        return `${min} - ∞`
+        return `${min} - ∞`;
       }
-      return `${min} - ${max}`
+      return `${min} - ${max}`;
     }
     if (min !== undefined) {
-      return String(min)
+      return String(min);
     }
     if (year !== undefined) {
-      return String(year)
+      return String(year);
     }
-    return "???"
-  }
+    return "???";
+  };
 
   if (isLoading) {
     return (
-      <Card className={cn("flex animate-pulse items-center gap-3 p-3", className)}>
+      <Card
+        className={cn("flex animate-pulse items-center gap-3 p-3", className)}
+      >
         <div className="h-10 w-10 rounded-full bg-muted" />
         <div className="min-w-0 flex-1 space-y-2">
           <div className="h-5 w-3/4 rounded bg-muted" />
@@ -82,7 +89,7 @@ export function TimelineCard({
         </div>
         <div className="h-8 w-12 rounded bg-muted" />
       </Card>
-    )
+    );
   }
 
   return (
@@ -90,21 +97,24 @@ export function TimelineCard({
       className={cn(
         "flex flex-row items-center gap-3 p-3 transition-all",
         isPreview && "animate-pulse border-primary border-dashed bg-primary/10",
-        isBetPreview && "border-amber-200 bg-amber-50 dark:border-amber-800 dark:bg-amber-950/30",
-        className,
+        isBetPreview &&
+          "border-amber-200 bg-amber-50 dark:border-amber-800 dark:bg-amber-950/30",
+        className
       )}
     >
       <div
         className={cn(
           "flex h-10 w-10 shrink-0 items-center justify-center rounded-full",
-          iconColors[iconColor ?? "primary"],
+          iconColors[iconColor ?? "primary"]
         )}
       >
         <IconComponent className="h-5 w-5" />
       </div>
       <div className="min-w-0 flex-1">
         {title && <p className="truncate font-medium">{title}</p>}
-        {artist && <p className="truncate text-muted-foreground text-sm">{artist}</p>}
+        {artist && (
+          <p className="truncate text-muted-foreground text-sm">{artist}</p>
+        )}
         {isBetPreview && playerName && (
           <p className="mt-1 text-muted-foreground text-xs">{playerName}</p>
         )}
@@ -129,9 +139,11 @@ export function TimelineCard({
               -{coinCost} <Coins className="ml-1 h-3 w-3" />
             </Badge>
           )}
-          {showYearBadge && !isBetPreview && year !== undefined && <Badge>{year}</Badge>}
+          {showYearBadge && !isBetPreview && year !== undefined && (
+            <Badge>{year}</Badge>
+          )}
         </div>
       </div>
     </Card>
-  )
+  );
 }

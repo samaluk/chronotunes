@@ -1,27 +1,32 @@
-"use client"
+"use client";
 
-import { ConvexProvider, ConvexReactClient } from "convex/react"
-import { SessionProvider } from "convex-helpers/react/sessions"
-import type { Locale } from "next-intl"
-import { ThemeProvider } from "next-themes"
-import type { ReactNode } from "react"
-import { Toaster } from "sonner"
-import { useLocalStorage } from "usehooks-ts"
-import { ConnectionBanner } from "@/components/ui/network-status"
-import { LocaleActionProvider } from "@/i18n/locale-action"
+import { SessionProvider } from "convex-helpers/react/sessions";
+import { ConvexProvider, ConvexReactClient } from "convex/react";
+import type { Locale } from "next-intl";
+import { ThemeProvider } from "next-themes";
+import type { ReactNode } from "react";
+import { Toaster } from "sonner";
+import { useLocalStorage } from "usehooks-ts";
 
-const convex = new ConvexReactClient(process.env.NEXT_PUBLIC_CONVEX_URL!)
+import { ConnectionBanner } from "@/components/ui/network-status";
+import { LocaleActionProvider } from "@/i18n/locale-action";
+
+const convex = new ConvexReactClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
 
 export function Providers({
   children,
   changeLocaleAction,
 }: {
-  children: ReactNode
-  changeLocaleAction: (locale: Locale) => Promise<void>
+  children: ReactNode;
+  changeLocaleAction: (locale: Locale) => Promise<void>;
 }): ReactNode {
   return (
     <ConvexProvider client={convex}>
-      <SessionProvider ssrFriendly storageKey="chronotunes-session-id" useStorage={useLocalStorage}>
+      <SessionProvider
+        ssrFriendly
+        storageKey="chronotunes-session-id"
+        useStorage={useLocalStorage}
+      >
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
@@ -36,5 +41,5 @@ export function Providers({
         </ThemeProvider>
       </SessionProvider>
     </ConvexProvider>
-  )
+  );
 }

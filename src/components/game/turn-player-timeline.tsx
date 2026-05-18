@@ -1,30 +1,32 @@
-"use client"
+"use client";
 
-import { useTranslations } from "next-intl"
-import type { Id } from "@/convex/_generated/dataModel"
-import { TimelinePlacementView } from "./timeline-placement-view"
+import { useTranslations } from "next-intl";
+
+import type { Id } from "@/convex/_generated/dataModel";
+
+import { TimelinePlacementView } from "./timeline-placement-view";
 
 interface TimelineEntry {
-  trackId: Id<"tracks">
-  year: number
-  earnedAtRoundNumber: number
-  earnedBy: "placement" | "bet" | "initial"
+  earnedAtRoundNumber: number;
+  earnedBy: "placement" | "bet" | "initial";
+  trackId: Id<"tracks">;
+  year: number;
 }
 
 interface RevealedTrack {
-  trackId: Id<"tracks">
-  title: string
-  artist: string
-  year: number
-  youtubeVideoId?: string
+  artist: string;
+  title: string;
+  trackId: Id<"tracks">;
+  year: number;
+  youtubeVideoId?: string;
 }
 
 interface TurnPlayerTimelineProps {
-  turnPlayerName: string
-  timeline: TimelineEntry[]
-  timelineSize: number
-  revealedTracks: RevealedTrack[]
-  existingPreviewIndex: number | null
+  existingPreviewIndex: number | null;
+  revealedTracks: RevealedTrack[];
+  timeline: TimelineEntry[];
+  timelineSize: number;
+  turnPlayerName: string;
 }
 
 export function TurnPlayerTimeline({
@@ -33,8 +35,8 @@ export function TurnPlayerTimeline({
   revealedTracks,
   existingPreviewIndex,
 }: TurnPlayerTimelineProps): React.ReactNode {
-  const t = useTranslations("placing")
-  const badgeLabel = t("yourPickWithName", { name: turnPlayerName })
+  const t = useTranslations("placing");
+  const badgeLabel = t("yourPickWithName", { name: turnPlayerName });
 
   return (
     <div className="w-full space-y-4">
@@ -52,5 +54,5 @@ export function TurnPlayerTimeline({
         timeline={timeline}
       />
     </div>
-  )
+  );
 }

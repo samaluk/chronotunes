@@ -1,128 +1,146 @@
-import type { Id } from "../../_generated/dataModel"
-import type { MutationCtx, QueryCtx } from "../../_generated/server"
-import type { FactoryResult, LobbyOverrides, PlayerOverrides, TestContext } from "./types"
+import type { Id } from "../../_generated/dataModel";
+import type { MutationCtx, QueryCtx } from "../../_generated/server";
+import type {
+  FactoryResult,
+  LobbyOverrides,
+  PlayerOverrides,
+  TestContext,
+} from "./types";
 
-const LOBBY_CODE_CHARS = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"
-const LOBBY_CODE_LENGTH = 6
+const LOBBY_CODE_CHARS = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+const LOBBY_CODE_LENGTH = 6;
 
 const DEFAULT_SETTINGS = {
-  targetTimelineSize: 10,
-  startingCoins: 3,
-  turnSeconds: 30,
-  bettingWindowSeconds: 15,
-  allowGuessTitleArtist: true,
-  showLiveBets: true,
   allowBetRetraction: true,
-  minYear: 1950,
+  allowGuessTitleArtist: true,
+  bettingWindowSeconds: 15,
   maxYear: 2025,
-} as const
+  minYear: 1950,
+  showLiveBets: true,
+  startingCoins: 3,
+  targetTimelineSize: 10,
+  turnSeconds: 30,
+} as const;
 
 interface LobbySettings {
-  targetTimelineSize: number
-  startingCoins: number
-  turnSeconds: number
-  bettingWindowSeconds: number
-  allowGuessTitleArtist: boolean
-  showLiveBets: boolean
-  allowBetRetraction: boolean
-  minYear: number
-  maxYear: number
+  allowBetRetraction: boolean;
+  allowGuessTitleArtist: boolean;
+  bettingWindowSeconds: number;
+  maxYear: number;
+  minYear: number;
+  showLiveBets: boolean;
+  startingCoins: number;
+  targetTimelineSize: number;
+  turnSeconds: number;
 }
 
 const resolvePlayerOverrides = (
   override: PlayerOverrides | undefined,
   index: number,
-  settings: LobbySettings,
+  settings: LobbySettings
 ): Required<
-  Pick<PlayerOverrides, "sessionId" | "displayName" | "coins" | "timeline" | "timelineSize">
+  Pick<
+    PlayerOverrides,
+    "sessionId" | "displayName" | "coins" | "timeline" | "timelineSize"
+  >
 > => {
-  const sessionId = override?.sessionId ?? `player-${index + 1}-session`
-  const displayName = override?.displayName ?? `Player ${index + 1}`
-  const coins = override?.coins ?? settings.startingCoins
-  const timeline = override?.timeline ?? []
-  const timelineSize = override?.timelineSize ?? timeline.length
+  const sessionId = override?.sessionId ?? `player-${index + 1}-session`;
+  const displayName = override?.displayName ?? `Player ${index + 1}`;
+  const coins = override?.coins ?? settings.startingCoins;
+  const timeline = override?.timeline ?? [];
+  const timelineSize = override?.timelineSize ?? timeline.length;
 
   return {
-    sessionId,
-    displayName,
     coins,
+    displayName,
+    sessionId,
     timeline,
     timelineSize,
-  }
-}
+  };
+};
 
 function generateLobbyCode(): string {
-  let code = ""
-  const randomValues = new Uint8Array(LOBBY_CODE_LENGTH)
-  crypto.getRandomValues(randomValues)
+  let code = "";
+  const randomValues = new Uint8Array(LOBBY_CODE_LENGTH);
+  crypto.getRandomValues(randomValues);
   for (let i = 0; i < LOBBY_CODE_LENGTH; i++) {
-    const rawIndex = randomValues[i]
+    const rawIndex = randomValues[i];
     if (rawIndex === undefined) {
-      throw new Error("Failed to generate random values")
+      throw new Error("Failed to generate random values");
     }
-    const index = rawIndex % LOBBY_CODE_CHARS.length
-    code += LOBBY_CODE_CHARS[index]
+    const index = rawIndex % LOBBY_CODE_CHARS.length;
+    code += LOBBY_CODE_CHARS[index];
   }
-  return code
+  return code;
 }
 
 export async function create(
   t: TestContext,
   sessionId: string,
   displayName: string,
-  overrides: LobbyOverrides = {},
+  overrides: LobbyOverrides = {}
 ): Promise<FactoryResult<"lobbies"> & { hostPlayerId: Id<"players"> }> {
-  const code = overrides.code ?? generateLobbyCode()
-  const hostSessionId = sessionId
-  const status: "lobby" | "in_game" | "finished" = overrides.status ?? "lobby"
+  const code = overrides.code ?? generateLobbyCode();
+  const hostSessionId = sessionId;
+  const status: "lobby" | "in_game" | "finished" = overrides.status ?? "lobby";
   const settings = {
-    targetTimelineSize:
-      overrides.settings?.targetTimelineSize ?? DEFAULT_SETTINGS.targetTimelineSize,
-    startingCoins: overrides.settings?.startingCoins ?? DEFAULT_SETTINGS.startingCoins,
-    turnSeconds: overrides.settings?.turnSeconds ?? DEFAULT_SETTINGS.turnSeconds,
-    bettingWindowSeconds:
-      overrides.settings?.bettingWindowSeconds ?? DEFAULT_SETTINGS.bettingWindowSeconds,
-    allowGuessTitleArtist:
-      overrides.settings?.allowGuessTitleArtist ?? DEFAULT_SETTINGS.allowGuessTitleArtist,
-    showLiveBets: overrides.settings?.showLiveBets ?? DEFAULT_SETTINGS.showLiveBets,
     allowBetRetraction:
-      overrides.settings?.allowBetRetraction ?? DEFAULT_SETTINGS.allowBetRetraction,
-    minYear: overrides.settings?.minYear ?? DEFAULT_SETTINGS.minYear,
+      overrides.settings?.allowBetRetraction ??
+      DEFAULT_SETTINGS.allowBetRetraction,
+    allowGuessTitleArtist:
+      overrides.settings?.allowGuessTitleArtist ??
+      DEFAULT_SETTINGS.allowGuessTitleArtist,
+    bettingWindowSeconds:
+      overrides.settings?.bettingWindowSeconds ??
+      DEFAULT_SETTINGS.bettingWindowSeconds,
     maxYear: overrides.settings?.maxYear ?? DEFAULT_SETTINGS.maxYear,
-  }
+    minYear: overrides.settings?.minYear ?? DEFAULT_SETTINGS.minYear,
+    showLiveBets:
+      overrides.settings?.showLiveBets ?? DEFAULT_SETTINGS.showLiveBets,
+    startingCoins:
+      overrides.settings?.startingCoins ?? DEFAULT_SETTINGS.startingCoins,
+    targetTimelineSize:
+      overrides.settings?.targetTimelineSize ??
+      DEFAULT_SETTINGS.targetTimelineSize,
+    turnSeconds:
+      overrides.settings?.turnSeconds ?? DEFAULT_SETTINGS.turnSeconds,
+  };
 
-  let lobbyId: Id<"lobbies"> | null = null
-  let hostPlayerId: Id<"players"> | null = null
+  let lobbyId: Id<"lobbies"> | null = null;
+  let hostPlayerId: Id<"players"> | null = null;
 
   await t.run(async (ctx: MutationCtx) => {
     lobbyId = await ctx.db.insert("lobbies", {
       code,
       hostSessionId,
-      status,
       settings,
-    })
+      status,
+    });
 
     hostPlayerId = await ctx.db.insert("players", {
-      lobbyId,
-      sessionId,
+      coins: settings.startingCoins,
+      createdAt: Date.now(),
       displayName,
       isHost: true,
-      coins: settings.startingCoins,
+      lobbyId,
+      sessionId,
       timeline: [],
       timelineSize: 0,
-      createdAt: Date.now(),
-    })
-  })
+    });
+  });
 
   if (!(lobbyId && hostPlayerId)) {
-    throw new Error("Failed to create lobby")
+    throw new Error("Failed to create lobby");
   }
 
   return {
-    id: lobbyId,
-    record: { code, hostSessionId, status, settings } as unknown as Record<string, unknown>,
     hostPlayerId,
-  }
+    id: lobbyId,
+    record: { code, hostSessionId, settings, status } as unknown as Record<
+      string,
+      unknown
+    >,
+  };
 }
 
 export async function createWithPlayers(
@@ -130,80 +148,91 @@ export async function createWithPlayers(
   hostSessionId: string,
   playerCount: number,
   options: {
-    hostDisplayName?: string
-    playerOverrides?: PlayerOverrides[]
-    settings?: LobbyOverrides["settings"]
-  } = {},
+    hostDisplayName?: string;
+    playerOverrides?: PlayerOverrides[];
+    settings?: LobbyOverrides["settings"];
+  } = {}
 ): Promise<FactoryResult<"lobbies"> & { playerIds: Id<"players">[] }> {
-  const hostName = options.hostDisplayName ?? "Host"
-  const code = generateLobbyCode()
-  const status: "lobby" | "in_game" | "finished" = "lobby"
+  const hostName = options.hostDisplayName ?? "Host";
+  const code = generateLobbyCode();
+  const status: "lobby" | "in_game" | "finished" = "lobby";
   const settings = {
-    targetTimelineSize: options.settings?.targetTimelineSize ?? DEFAULT_SETTINGS.targetTimelineSize,
-    startingCoins: options.settings?.startingCoins ?? DEFAULT_SETTINGS.startingCoins,
-    turnSeconds: options.settings?.turnSeconds ?? DEFAULT_SETTINGS.turnSeconds,
-    bettingWindowSeconds:
-      options.settings?.bettingWindowSeconds ?? DEFAULT_SETTINGS.bettingWindowSeconds,
+    allowBetRetraction:
+      options.settings?.allowBetRetraction ??
+      DEFAULT_SETTINGS.allowBetRetraction,
     allowGuessTitleArtist:
-      options.settings?.allowGuessTitleArtist ?? DEFAULT_SETTINGS.allowGuessTitleArtist,
-    showLiveBets: options.settings?.showLiveBets ?? DEFAULT_SETTINGS.showLiveBets,
-    allowBetRetraction: options.settings?.allowBetRetraction ?? DEFAULT_SETTINGS.allowBetRetraction,
-    minYear: options.settings?.minYear ?? DEFAULT_SETTINGS.minYear,
+      options.settings?.allowGuessTitleArtist ??
+      DEFAULT_SETTINGS.allowGuessTitleArtist,
+    bettingWindowSeconds:
+      options.settings?.bettingWindowSeconds ??
+      DEFAULT_SETTINGS.bettingWindowSeconds,
     maxYear: options.settings?.maxYear ?? DEFAULT_SETTINGS.maxYear,
-  }
+    minYear: options.settings?.minYear ?? DEFAULT_SETTINGS.minYear,
+    showLiveBets:
+      options.settings?.showLiveBets ?? DEFAULT_SETTINGS.showLiveBets,
+    startingCoins:
+      options.settings?.startingCoins ?? DEFAULT_SETTINGS.startingCoins,
+    targetTimelineSize:
+      options.settings?.targetTimelineSize ??
+      DEFAULT_SETTINGS.targetTimelineSize,
+    turnSeconds: options.settings?.turnSeconds ?? DEFAULT_SETTINGS.turnSeconds,
+  };
 
-  let lobbyId: Id<"lobbies"> | null = null
-  const playerIds: Id<"players">[] = []
+  let lobbyId: Id<"lobbies"> | null = null;
+  const playerIds: Id<"players">[] = [];
 
   await t.run(async (ctx: MutationCtx) => {
     lobbyId = await ctx.db.insert("lobbies", {
       code,
       hostSessionId,
-      status,
       settings,
-    })
+      status,
+    });
 
     playerIds.push(
       await ctx.db.insert("players", {
-        lobbyId,
-        sessionId: hostSessionId,
+        coins: settings.startingCoins,
+        createdAt: Date.now(),
         displayName: hostName,
         isHost: true,
-        coins: settings.startingCoins,
+        lobbyId,
+        sessionId: hostSessionId,
         timeline: [],
         timelineSize: 0,
-        createdAt: Date.now(),
-      }),
-    )
+      })
+    );
 
     for (let i = 0; i < playerCount; i++) {
-      const override = options.playerOverrides?.[i]
-      const playerData = resolvePlayerOverrides(override, i, settings)
+      const override = options.playerOverrides?.[i];
+      const playerData = resolvePlayerOverrides(override, i, settings);
 
       playerIds.push(
         await ctx.db.insert("players", {
-          lobbyId,
-          sessionId: playerData.sessionId,
+          coins: playerData.coins,
+          createdAt: Date.now(),
           displayName: playerData.displayName,
           isHost: false,
-          coins: playerData.coins,
+          lobbyId,
+          sessionId: playerData.sessionId,
           timeline: playerData.timeline,
           timelineSize: playerData.timelineSize,
-          createdAt: Date.now(),
-        }),
-      )
+        })
+      );
     }
-  })
+  });
 
   if (!lobbyId) {
-    throw new Error("Failed to create lobby")
+    throw new Error("Failed to create lobby");
   }
 
   return {
     id: lobbyId,
-    record: { code, hostSessionId, status, settings } as unknown as Record<string, unknown>,
     playerIds,
-  }
+    record: { code, hostSessionId, settings, status } as unknown as Record<
+      string,
+      unknown
+    >,
+  };
 }
 
 export async function createWithGame(
@@ -211,100 +240,110 @@ export async function createWithGame(
   hostSessionId: string,
   playerCount: number,
   options: {
-    hostDisplayName?: string
-    playerOverrides?: PlayerOverrides[]
-    settings?: LobbyOverrides["settings"]
-  } = {},
+    hostDisplayName?: string;
+    playerOverrides?: PlayerOverrides[];
+    settings?: LobbyOverrides["settings"];
+  } = {}
 ): Promise<
   FactoryResult<"lobbies"> & {
-    gameId: Id<"games">
-    playerIds: Id<"players">[]
-    roundId: Id<"rounds">
+    gameId: Id<"games">;
+    playerIds: Id<"players">[];
+    roundId: Id<"rounds">;
   }
 > {
-  const lobbyResult = await createWithPlayers(t, hostSessionId, playerCount, options)
+  const lobbyResult = await createWithPlayers(
+    t,
+    hostSessionId,
+    playerCount,
+    options
+  );
 
-  let gameId: Id<"games"> | null = null
-  let roundId: Id<"rounds"> | null = null
+  let gameId: Id<"games"> | null = null;
+  let roundId: Id<"rounds"> | null = null;
 
   await t.run(async (ctx: MutationCtx) => {
-    const turnOrder = lobbyResult.playerIds
-    const turnPlayerId = turnOrder[0]!
+    const turnOrder = lobbyResult.playerIds;
+    const turnPlayerId = turnOrder[0]!;
 
     gameId = await ctx.db.insert("games", {
-      lobbyId: lobbyResult.id,
-      status: "active",
-      startedAt: Date.now(),
       currentRoundNumber: 1,
+      lobbyId: lobbyResult.id,
+      startedAt: Date.now(),
+      status: "active",
       turnOrder,
       turnPlayerId,
-    })
+    });
 
-    await ctx.db.patch(lobbyResult.id, { status: "in_game", activeGameId: gameId })
+    await ctx.db.patch(lobbyResult.id, {
+      activeGameId: gameId,
+      status: "in_game",
+    });
 
-    const track = await ctx.db.query("tracks").first()
+    const track = await ctx.db.query("tracks").first();
     if (!track) {
       throw new Error(
-        "No tracks available. Please seed tracks first using factories.tracks.createMany()",
-      )
+        "No tracks available. Please seed tracks first using factories.tracks.createMany()"
+      );
     }
 
     roundId = await ctx.db.insert("rounds", {
       gameId,
-      roundNumber: 1,
-      turnPlayerId,
-      trackId: track._id,
       phase: "placing",
+      roundNumber: 1,
       startedAt: Date.now(),
-    })
+      trackId: track._id,
+      turnPlayerId,
+    });
 
-    await ctx.db.patch(gameId, { currentRoundId: roundId })
-  })
+    await ctx.db.patch(gameId, { currentRoundId: roundId });
+  });
 
-  const updatedLobby = await findById(t, lobbyResult.id)
+  const updatedLobby = await findById(t, lobbyResult.id);
 
   return {
     ...lobbyResult,
     gameId: gameId!,
-    roundId: roundId!,
     record: updatedLobby!.record as unknown as Record<string, unknown>,
-  }
+    roundId: roundId!,
+  };
 }
 
 export async function findByCode(
   t: TestContext,
-  code: string,
+  code: string
 ): Promise<{ id: Id<"lobbies">; record: Record<string, unknown> } | null> {
-  let result: { id: Id<"lobbies">; record: Record<string, unknown> } | null = null
+  let result: { id: Id<"lobbies">; record: Record<string, unknown> } | null =
+    null;
 
   await t.run(async (ctx: QueryCtx) => {
     const lobby = await ctx.db
       .query("lobbies")
       .filter((q) => q.eq(q.field("code"), code))
-      .first()
+      .first();
 
     if (lobby) {
-      result = { id: lobby._id, record: lobby as Record<string, unknown> }
+      result = { id: lobby._id, record: lobby as Record<string, unknown> };
     }
-  })
+  });
 
-  return result
+  return result;
 }
 
 export async function findById(
   t: TestContext,
-  lobbyId: Id<"lobbies">,
+  lobbyId: Id<"lobbies">
 ): Promise<{ id: Id<"lobbies">; record: Record<string, unknown> } | null> {
-  let result: { id: Id<"lobbies">; record: Record<string, unknown> } | null = null
+  let result: { id: Id<"lobbies">; record: Record<string, unknown> } | null =
+    null;
 
   await t.run(async (ctx: QueryCtx) => {
-    const lobby = await ctx.db.get(lobbyId)
+    const lobby = await ctx.db.get(lobbyId);
     if (lobby) {
-      result = { id: lobby._id, record: lobby as Record<string, unknown> }
+      result = { id: lobby._id, record: lobby as Record<string, unknown> };
     }
-  })
+  });
 
-  return result
+  return result;
 }
 
-export { DEFAULT_SETTINGS }
+export { DEFAULT_SETTINGS };

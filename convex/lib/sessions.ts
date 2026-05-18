@@ -1,15 +1,24 @@
-import { customAction, customMutation, customQuery } from "convex-helpers/server/customFunctions"
-import { runSessionFunctions, type SessionId, SessionIdArg } from "convex-helpers/server/sessions"
-import { action, mutation, query } from "../_generated/server"
+import {
+  customAction,
+  customMutation,
+  customQuery,
+} from "convex-helpers/server/customFunctions";
+import {
+  runSessionFunctions,
+  SessionIdArg,
+} from "convex-helpers/server/sessions";
+import type { SessionId } from "convex-helpers/server/sessions";
 
-export type { SessionId } from "convex-helpers/server/sessions"
+import { action, mutation, query } from "../_generated/server";
+
+export type { SessionId } from "convex-helpers/server/sessions";
 
 /**
  * Helper to cast a string to SessionId for testing purposes.
  * Only use this in test files.
  */
 export function asSessionId(id: string): SessionId {
-  return id as unknown as SessionId
+  return id as unknown as SessionId;
 }
 
 /**
@@ -34,10 +43,8 @@ export function asSessionId(id: string): SessionId {
  */
 export const queryWithSession = customQuery(query, {
   args: { ...SessionIdArg },
-  input: (ctx, { sessionId }) => {
-    return { ctx: { ...ctx, sessionId }, args: {} }
-  },
-})
+  input: (ctx, { sessionId }) => ({ args: {}, ctx: { ...ctx, sessionId } }),
+});
 
 /**
  * Mutation wrapper that automatically injects sessionId into context.
@@ -59,10 +66,8 @@ export const queryWithSession = customQuery(query, {
  */
 export const mutationWithSession = customMutation(mutation, {
   args: { ...SessionIdArg },
-  input: (ctx, { sessionId }) => {
-    return { ctx: { ...ctx, sessionId }, args: {} }
-  },
-})
+  input: (ctx, { sessionId }) => ({ args: {}, ctx: { ...ctx, sessionId } }),
+});
 
 /**
  * Action wrapper that automatically injects sessionId into context.
@@ -70,14 +75,12 @@ export const mutationWithSession = customMutation(mutation, {
  */
 export const actionWithSession = customAction(action, {
   args: { ...SessionIdArg },
-  input: (ctx, { sessionId }) => {
-    return {
-      ctx: {
-        ...ctx,
-        ...runSessionFunctions(ctx, sessionId),
-        sessionId,
-      },
-      args: {},
-    }
-  },
-})
+  input: (ctx, { sessionId }) => ({
+    args: {},
+    ctx: {
+      ...ctx,
+      ...runSessionFunctions(ctx, sessionId),
+      sessionId,
+    },
+  }),
+});

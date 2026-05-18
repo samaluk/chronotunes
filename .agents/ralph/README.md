@@ -52,43 +52,54 @@ If you skipped skills during `ralph install`, you can run `ralph install --skill
 
 ## Quick start (project)
 
-1) Create your PRD (JSON) or generate one:
+1. Create your PRD (JSON) or generate one:
+
 ```
 ralph prd
 ```
+
 Requires the **prd** skill (install via `ralph install --skills`).
 
 Example prompt text:
+
 ```
 A lightweight uptime monitor (Hono app), deployed on Cloudflare, with email alerts via AWS SES
 ```
 
 Default output (agent chooses a short filename in `.agents/tasks/`):
+
 ```
 .agents/tasks/prd-<short>.json
 ```
 
-2) Run one build iteration:
+2. Run one build iteration:
+
 ```
 ralph build 1 # one Ralph run
 ```
 
 No‑commit dry run:
+
 ```
 ralph build 1 --no-commit # one Ralph run
 ```
 
 Override PRD output for `ralph prd`:
+
 ```
 ralph prd --out .agents/tasks/prd-api.json
 ```
+
 Optional human overview (generated from JSON):
+
 ```
 ralph overview
 ```
+
 This writes a tiny overview alongside the PRD: `prd-<slug>.overview.md`.
 
 PRD story status fields are updated automatically by the loop:
+
 - `open` → selectable
 - `in_progress` → locked by a running loop (with `startedAt`)
 - `done` → completed (with `completedAt`)

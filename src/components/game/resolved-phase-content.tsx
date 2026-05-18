@@ -1,21 +1,23 @@
-"use client"
+"use client";
 
-import { Music } from "lucide-react"
-import { useTranslations } from "next-intl"
-import { useEffect, useState } from "react"
-import { Dialog, DialogContent } from "@/components/ui/dialog"
-import { useGame } from "./game-provider"
-import { RoundResults } from "./round-results"
+import { Music } from "lucide-react";
+import { useTranslations } from "next-intl";
+import { useEffect, useState } from "react";
+
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+
+import { useGame } from "./game-provider";
+import { RoundResults } from "./round-results";
 
 export function ResolvedPhaseContent(): React.ReactNode {
-  const tResults = useTranslations("results")
-  const [showResultsModal, setShowResultsModal] = useState(false)
-  const { state } = useGame()
-  const { lobby, players, currentRound, track, turnPlayer } = state
+  const tResults = useTranslations("results");
+  const [showResultsModal, setShowResultsModal] = useState(false);
+  const { state } = useGame();
+  const { lobby, players, currentRound, track, turnPlayer } = state;
 
   useEffect(() => {
-    setShowResultsModal(true)
-  }, [])
+    setShowResultsModal(true);
+  }, []);
 
   if (!(lobby && track && currentRound?.resolution && players && turnPlayer)) {
     return (
@@ -25,21 +27,25 @@ export function ResolvedPhaseContent(): React.ReactNode {
         </div>
         <div className="space-y-2 text-center">
           <p className="font-medium text-lg">{tResults("roundResults")}</p>
-          <p className="text-muted-foreground text-sm">{tResults("songRevealed")}</p>
+          <p className="text-muted-foreground text-sm">
+            {tResults("songRevealed")}
+          </p>
         </div>
         {track?.title && track?.artist && track?.year && (
           <div className="mt-4 w-full max-w-md rounded-lg border bg-card p-4 text-center">
-            <p className="text-muted-foreground text-sm">{tResults("songWas")}</p>
+            <p className="text-muted-foreground text-sm">
+              {tResults("songWas")}
+            </p>
             <p className="mt-1 font-bold text-xl">
               {track.title} - {track.artist} ({track.year})
             </p>
           </div>
         )}
       </div>
-    )
+    );
   }
 
-  const resultsContent = <RoundResults />
+  const resultsContent = <RoundResults />;
 
   return (
     <>
@@ -48,5 +54,5 @@ export function ResolvedPhaseContent(): React.ReactNode {
       </Dialog>
       {!showResultsModal && resultsContent}
     </>
-  )
+  );
 }

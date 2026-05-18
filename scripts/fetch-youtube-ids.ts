@@ -1,168 +1,197 @@
 #!/usr/bin/env node
 
-import { youtube } from "scrape-youtube"
+import { youtube } from "scrape-youtube";
 
 const TEST_TRACKS = [
-  { title: "Johnny B. Goode", artist: "Chuck Berry", year: 1958 },
-  { title: "What'd I Say", artist: "Ray Charles", year: 1959 },
-  { title: "Stand By Me", artist: "Ben E. King", year: 1961 },
-  { title: "I Want To Hold Your Hand", artist: "The Beatles", year: 1963 },
-  { title: "My Girl", artist: "The Temptations", year: 1964 },
-  { title: "Good Vibrations", artist: "The Beach Boys", year: 1966 },
-  { title: "Purple Haze", artist: "Jimi Hendrix", year: 1967 },
-  { title: "Sgt. Pepper's Lonely Hearts Club Band", artist: "The Beatles", year: 1967 },
-  { title: "Hey Jude", artist: "The Beatles", year: 1968 },
-  { title: "Whole Lotta Love", artist: "Led Zeppelin", year: 1969 },
-  { title: "Bridge Over Troubled Water", artist: "Simon & Garfunkel", year: 1970 },
-  { title: "Stairway To Heaven", artist: "Led Zeppelin", year: 1971 },
-  { title: "Superstition", artist: "Stevie Wonder", year: 1972 },
-  { title: "Hotel California", artist: "Eagles", year: 1977 },
-  { title: "Stayin' Alive", artist: "Bee Gees", year: 1977 },
-  { title: "Another One Bites The Dust", artist: "Queen", year: 1980 },
-  { title: "Eye of the Tiger", artist: "Survivor", year: 1982 },
-  { title: "Every Breath You Take", artist: "The Police", year: 1983 },
-  { title: "Sweet Child O' Mine", artist: "Guns N' Roses", year: 1987 },
-  { title: "Like a Prayer", artist: "Madonna", year: 1989 },
-  { title: "Black Hole Sun", artist: "Soundgarden", year: 1994 },
-  { title: "Wonderwall", artist: "Oasis", year: 1995 },
-  { title: "Smells Like Teen Spirit", artist: "Nirvana", year: 1991 },
-  { title: "No Diggity", artist: "Blackstreet", year: 1996 },
-  { title: "Bitter Sweet Symphony", artist: "The Verve", year: 1997 },
-  { title: "I Want It That Way", artist: "Backstreet Boys", year: 1999 },
-  { title: "Kryptonite", artist: "3 Doors Down", year: 2000 },
-  { title: "In The End", artist: "Linkin Park", year: 2000 },
-  { title: "How You Remind Me", artist: "Nickelback", year: 2001 },
-  { title: "Hey Ya!", artist: "OutKast", year: 2003 },
-  { title: "Mr. Brightside", artist: "The Killers", year: 2004 },
-  { title: "Crazy", artist: "Gnarls Barkley", year: 2006 },
-  { title: "Rehab", artist: "Amy Winehouse", year: 2006 },
-  { title: "Viva La Vida", artist: "Coldplay", year: 2008 },
-  { title: "Bad Romance", artist: "Lady Gaga", year: 2009 },
-  { title: "Rolling in the Deep", artist: "Adele", year: 2010 },
-  { title: "Someone Like You", artist: "Adele", year: 2011 },
-  { title: "Gangnam Style", artist: "PSY", year: 2012 },
-  { title: "Get Lucky", artist: "Daft Punk", year: 2013 },
-  { title: "Uptown Funk", artist: "Bruno Mars", year: 2014 },
-  { title: "Shape of You", artist: "Ed Sheeran", year: 2017 },
-  { title: "Despacito", artist: "Luis Fonsi", year: 2017 },
-  { title: "Old Town Road", artist: "Lil Nas X", year: 2018 },
-  { title: "Bad Guy", artist: "Billie Eilish", year: 2019 },
-  { title: "Blinding Lights", artist: "The Weeknd", year: 2020 },
-  { title: "drivers license", artist: "Olivia Rodrigo", year: 2021 },
-  { title: "As It Was", artist: "Harry Styles", year: 2022 },
-  { title: "Flowers", artist: "Miley Cyrus", year: 2023 },
-  { title: "Dance The Night", artist: "Dua Lipa", year: 2023 },
-]
+  { artist: "Chuck Berry", title: "Johnny B. Goode", year: 1958 },
+  { artist: "Ray Charles", title: "What'd I Say", year: 1959 },
+  { artist: "Ben E. King", title: "Stand By Me", year: 1961 },
+  { artist: "The Beatles", title: "I Want To Hold Your Hand", year: 1963 },
+  { artist: "The Temptations", title: "My Girl", year: 1964 },
+  { artist: "The Beach Boys", title: "Good Vibrations", year: 1966 },
+  { artist: "Jimi Hendrix", title: "Purple Haze", year: 1967 },
+  {
+    artist: "The Beatles",
+    title: "Sgt. Pepper's Lonely Hearts Club Band",
+    year: 1967,
+  },
+  { artist: "The Beatles", title: "Hey Jude", year: 1968 },
+  { artist: "Led Zeppelin", title: "Whole Lotta Love", year: 1969 },
+  {
+    artist: "Simon & Garfunkel",
+    title: "Bridge Over Troubled Water",
+    year: 1970,
+  },
+  { artist: "Led Zeppelin", title: "Stairway To Heaven", year: 1971 },
+  { artist: "Stevie Wonder", title: "Superstition", year: 1972 },
+  { artist: "Eagles", title: "Hotel California", year: 1977 },
+  { artist: "Bee Gees", title: "Stayin' Alive", year: 1977 },
+  { artist: "Queen", title: "Another One Bites The Dust", year: 1980 },
+  { artist: "Survivor", title: "Eye of the Tiger", year: 1982 },
+  { artist: "The Police", title: "Every Breath You Take", year: 1983 },
+  { artist: "Guns N' Roses", title: "Sweet Child O' Mine", year: 1987 },
+  { artist: "Madonna", title: "Like a Prayer", year: 1989 },
+  { artist: "Soundgarden", title: "Black Hole Sun", year: 1994 },
+  { artist: "Oasis", title: "Wonderwall", year: 1995 },
+  { artist: "Nirvana", title: "Smells Like Teen Spirit", year: 1991 },
+  { artist: "Blackstreet", title: "No Diggity", year: 1996 },
+  { artist: "The Verve", title: "Bitter Sweet Symphony", year: 1997 },
+  { artist: "Backstreet Boys", title: "I Want It That Way", year: 1999 },
+  { artist: "3 Doors Down", title: "Kryptonite", year: 2000 },
+  { artist: "Linkin Park", title: "In The End", year: 2000 },
+  { artist: "Nickelback", title: "How You Remind Me", year: 2001 },
+  { artist: "OutKast", title: "Hey Ya!", year: 2003 },
+  { artist: "The Killers", title: "Mr. Brightside", year: 2004 },
+  { artist: "Gnarls Barkley", title: "Crazy", year: 2006 },
+  { artist: "Amy Winehouse", title: "Rehab", year: 2006 },
+  { artist: "Coldplay", title: "Viva La Vida", year: 2008 },
+  { artist: "Lady Gaga", title: "Bad Romance", year: 2009 },
+  { artist: "Adele", title: "Rolling in the Deep", year: 2010 },
+  { artist: "Adele", title: "Someone Like You", year: 2011 },
+  { artist: "PSY", title: "Gangnam Style", year: 2012 },
+  { artist: "Daft Punk", title: "Get Lucky", year: 2013 },
+  { artist: "Bruno Mars", title: "Uptown Funk", year: 2014 },
+  { artist: "Ed Sheeran", title: "Shape of You", year: 2017 },
+  { artist: "Luis Fonsi", title: "Despacito", year: 2017 },
+  { artist: "Lil Nas X", title: "Old Town Road", year: 2018 },
+  { artist: "Billie Eilish", title: "Bad Guy", year: 2019 },
+  { artist: "The Weeknd", title: "Blinding Lights", year: 2020 },
+  { artist: "Olivia Rodrigo", title: "drivers license", year: 2021 },
+  { artist: "Harry Styles", title: "As It Was", year: 2022 },
+  { artist: "Miley Cyrus", title: "Flowers", year: 2023 },
+  { artist: "Dua Lipa", title: "Dance The Night", year: 2023 },
+];
 
-const BLACKLIST_WORDS = ["lyrics", "cover", "remix", "tribute", "live", "reaction", "behind"]
+const BLACKLIST_WORDS = [
+  "lyrics",
+  "cover",
+  "remix",
+  "tribute",
+  "live",
+  "reaction",
+  "behind",
+];
 
-type TrackSeed = (typeof TEST_TRACKS)[number]
-type TrackResult = TrackSeed & { videoId: string | null }
+type TrackSeed = (typeof TEST_TRACKS)[number];
+type TrackResult = TrackSeed & { videoId: string | null };
 
-async function searchTrack(title: string, artist: string, retryCount = 0): Promise<string | null> {
-  const query = `${title} ${artist} official video`
-  process.stdout.write(`Searching: "${query}"... `)
+async function searchTrack(
+  title: string,
+  artist: string,
+  retryCount = 0
+): Promise<string | null> {
+  const query = `${title} ${artist} official video`;
+  process.stdout.write(`Searching: "${query}"... `);
 
   try {
-    const { videos } = await youtube.search(query)
+    const { videos } = await youtube.search(query);
 
     if (!videos.length) {
-      console.log("No results")
-      return null
+      console.log("No results");
+      return null;
     }
 
     // Score each result
-    const artistLower = artist.toLowerCase()
-    const artistFirstWord = artistLower.split(" ")[0] || ""
+    const artistLower = artist.toLowerCase();
+    const artistFirstWord = artistLower.split(" ")[0] || "";
 
     const scored = videos.map((video) => {
-      let score = 0
-      const titleLower = (video.title || "").toLowerCase()
-      const channelName = video.channel?.name || video.channel || ""
+      let score = 0;
+      const titleLower = (video.title || "").toLowerCase();
+      const channelName = video.channel?.name || video.channel || "";
       const channelLower = (
-        typeof channelName === "string" ? channelName : JSON.stringify(channelName)
-      ).toLowerCase()
+        typeof channelName === "string"
+          ? channelName
+          : JSON.stringify(channelName)
+      ).toLowerCase();
 
       // Prefer official channel matches
-      if (channelLower.includes(artistLower) || channelLower.includes(artistFirstWord)) {
-        score += 100
+      if (
+        channelLower.includes(artistLower) ||
+        channelLower.includes(artistFirstWord)
+      ) {
+        score += 100;
       }
 
       // Penalize blacklisted words
       for (const word of BLACKLIST_WORDS) {
         if (titleLower.includes(word)) {
-          score -= 50
+          score -= 50;
         }
       }
 
       // Bonus for high views if available
       if (video.views) {
-        score += Math.log10(video.views + 1) * 5
+        score += Math.log10(video.views + 1) * 5;
       }
 
-      return { video, score }
-    })
+      return { score, video };
+    });
 
     // Sort by score descending
-    scored.sort((a, b) => b.score - a.score)
+    scored.sort((a, b) => b.score - a.score);
 
-    const best = scored[0]
+    const best = scored[0];
     console.log(
-      `Found: "${best.video.title}" (score: ${best.score}, channel: ${best.video.channel})`,
-    )
+      `Found: "${best.video.title}" (score: ${best.score}, channel: ${best.video.channel})`
+    );
 
-    return best.video.id
+    return best.video.id;
   } catch (error) {
-    const maxRetries = 2
+    const maxRetries = 2;
     if (retryCount < maxRetries) {
-      console.log(`Retrying (${retryCount + 1}/${maxRetries})...`)
-      await new Promise((resolve) => setTimeout(resolve, 3000))
-      return searchTrack(title, artist, retryCount + 1)
+      console.log(`Retrying (${retryCount + 1}/${maxRetries})...`);
+      await new Promise((resolve) => setTimeout(resolve, 3000));
+      return searchTrack(title, artist, retryCount + 1);
     }
-    console.log(`Error: ${error}`)
-    return null
+    console.log(`Error: ${error}`);
+    return null;
   }
 }
 
 async function main() {
-  const fs = await import("node:fs")
-  const path = await import("node:path")
+  const fs = await import("node:fs");
+  const path = await import("node:path");
 
-  console.log(`Fetching YouTube video IDs for ${TEST_TRACKS.length} tracks...\n`)
+  console.log(
+    `Fetching YouTube video IDs for ${TEST_TRACKS.length} tracks...\n`
+  );
 
-  const results: TrackResult[] = []
+  const results: TrackResult[] = [];
 
   for (let i = 0; i < TEST_TRACKS.length; i++) {
-    const track = TEST_TRACKS[i]
-    process.stdout.write(`${i + 1}/${TEST_TRACKS.length}: `)
+    const track = TEST_TRACKS[i];
+    process.stdout.write(`${i + 1}/${TEST_TRACKS.length}: `);
 
-    const videoId = await searchTrack(track.title, track.artist)
-    results.push({ ...track, videoId })
+    const videoId = await searchTrack(track.title, track.artist);
+    results.push({ ...track, videoId });
 
     // Rate limiting
     if (i < TEST_TRACKS.length - 1) {
-      await new Promise((resolve) => setTimeout(resolve, 2000))
+      await new Promise((resolve) => setTimeout(resolve, 2000));
     }
   }
 
-  console.log("\n\nGenerating updated seed file...\n")
+  console.log("\n\nGenerating updated seed file...\n");
 
-  const failedCount = results.filter((r) => !r.videoId).length
-  console.log(`Failed to find: ${failedCount} tracks\n`)
+  const failedCount = results.filter((r) => !r.videoId).length;
+  console.log(`Failed to find: ${failedCount} tracks\n`);
 
   let seedContent = `import { mutation } from "./_generated/server";
 
 const TEST_TRACKS = [
-`
+`;
 
   for (const track of results) {
     if (track.videoId) {
       seedContent += `  { title: "${track.title}", artist: "${track.artist}", year: ${track.year}, videoId: "${track.videoId}" },
-`
+`;
     } else {
       seedContent += `  // FAILED: { title: "${track.title}", artist: "${track.artist}", year: ${track.year}, videoId: null },
-`
-      console.log(`Could not find video for: "${track.title}" - ${track.artist}`)
+`;
+      console.log(
+        `Could not find video for: "${track.title}" - ${track.artist}`
+      );
     }
   }
 
@@ -230,21 +259,25 @@ export const seed = mutation({
     };
   },
 });
-`
+`;
 
-  const seedPath = path.join(process.cwd(), "convex", "seed.ts")
-  fs.writeFileSync(seedPath, seedContent)
-  console.log(`Updated: ${seedPath}`)
+  const seedPath = path.join(process.cwd(), "convex", "seed.ts");
+  fs.writeFileSync(seedPath, seedContent);
+  console.log(`Updated: ${seedPath}`);
 
-  const jsonPath = path.join(process.cwd(), "convex", "youtube-search-results.json")
-  fs.writeFileSync(jsonPath, JSON.stringify(results, null, 2))
-  console.log(`Saved: ${jsonPath}`)
+  const jsonPath = path.join(
+    process.cwd(),
+    "convex",
+    "youtube-search-results.json"
+  );
+  fs.writeFileSync(jsonPath, JSON.stringify(results, null, 2));
+  console.log(`Saved: ${jsonPath}`);
 
-  console.log("\n\nSummary:")
-  console.log(`  Total tracks: ${results.length}`)
-  console.log(`  Successfully found: ${results.length - failedCount}`)
-  console.log(`  Failed: ${failedCount}`)
-  console.log(`\nRun 'npx convex run seed:seed' to update the database.`)
+  console.log("\n\nSummary:");
+  console.log(`  Total tracks: ${results.length}`);
+  console.log(`  Successfully found: ${results.length - failedCount}`);
+  console.log(`  Failed: ${failedCount}`);
+  console.log(`\nRun 'npx convex run seed:seed' to update the database.`);
 }
 
-main().catch(console.error)
+main().catch(console.error);

@@ -4,7 +4,7 @@ This document captures the current design decisions for a **Hitster-style online
 
 The emphasis is on:
 
-- Convex-idiomatic data modeling, queries, and mutations. [oai_citation:0‡Convex Developer Hub](https://docs.convex.dev/understanding/best-practices/?utm_source=chatgpt.com)  
+- Convex-idiomatic data modeling, queries, and mutations. [oai_citation:0‡Convex Developer Hub](https://docs.convex.dev/understanding/best-practices/?utm_source=chatgpt.com)
 - Clean separation of game rules vs. storage vs. UI.
 - Mobile-first UI with host-streamed audio and provider-agnostic track metadata.
 
@@ -71,18 +71,18 @@ Browser-based multiplayer music game inspired by Hitster:
 
 ### 2.1 Backend & Realtime
 
-- **Convex** as authoritative backend and realtime sync: queries, mutations, actions, and storage. [oai_citation:1‡Convex Developer Hub](https://docs.convex.dev/understanding/best-practices/?utm_source=chatgpt.com)  
+- **Convex** as authoritative backend and realtime sync: queries, mutations, actions, and storage. [oai_citation:1‡Convex Developer Hub](https://docs.convex.dev/understanding/best-practices/?utm_source=chatgpt.com)
 - Use **Convex best practices**:
   - Index every large query.
-  - Use `.collect()` only on small result sets (bounded). [oai_citation:2‡Convex Developer Hub](https://docs.convex.dev/understanding/best-practices/?utm_source=chatgpt.com)  
-  - Use argument validators and access control in all public functions. [oai_citation:3‡Convex Developer Hub](https://docs.convex.dev/understanding/best-practices/?utm_source=chatgpt.com)  
+  - Use `.collect()` only on small result sets (bounded). [oai_citation:2‡Convex Developer Hub](https://docs.convex.dev/understanding/best-practices/?utm_source=chatgpt.com)
+  - Use argument validators and access control in all public functions. [oai_citation:3‡Convex Developer Hub](https://docs.convex.dev/understanding/best-practices/?utm_source=chatgpt.com)
 
 - **Convex Components**:
-  - **Presence component** for live-updating list of users in a lobby (no custom `isConnected` field). [oai_citation:4‡Convex](https://www.convex.dev/components/presence?utm_source=chatgpt.com)  
+  - **Presence component** for live-updating list of users in a lobby (no custom `isConnected` field). [oai_citation:4‡Convex](https://www.convex.dev/components/presence?utm_source=chatgpt.com)
 
 - **convex-helpers**:
-  - **Session tracking without cookies** via parameter injection and wrappers (sessionId stored client-side). [oai_citation:5‡Stack by Convex](https://stack.convex.dev/track-sessions-without-cookies?utm_source=chatgpt.com)  
-  - **Relationship helpers** to traverse relational data (players ↔ lobbies ↔ games ↔ rounds ↔ tracks) in readable, composable functions instead of hand-rolled joins. [oai_citation:6‡Stack by Convex](https://stack.convex.dev/functional-relationships-helpers?utm_source=chatgpt.com)  
+  - **Session tracking without cookies** via parameter injection and wrappers (sessionId stored client-side). [oai_citation:5‡Stack by Convex](https://stack.convex.dev/track-sessions-without-cookies?utm_source=chatgpt.com)
+  - **Relationship helpers** to traverse relational data (players ↔ lobbies ↔ games ↔ rounds ↔ tracks) in readable, composable functions instead of hand-rolled joins. [oai_citation:6‡Stack by Convex](https://stack.convex.dev/functional-relationships-helpers?utm_source=chatgpt.com)
 
 ### 2.2 Frontend
 
@@ -95,13 +95,13 @@ Browser-based multiplayer music game inspired by Hitster:
   - Server and client component support via `getTranslations` and `useTranslations`
 - No global state library initially; rely on:
   - Convex React client
-  - `convex-helpers` richer `useQuery` wrappers for better loading/error/staleness handling. [oai_citation:7‡GitHub](https://github.com/get-convex/convex-helpers?utm_source=chatgpt.com)  
+  - `convex-helpers` richer `useQuery` wrappers for better loading/error/staleness handling. [oai_citation:7‡GitHub](https://github.com/get-convex/convex-helpers?utm_source=chatgpt.com)
 - Mobile-first layout; vertical timelines; host-streamed audio.
 
 ### 2.3 Observability & Analytics
 
 - **Sentry**:
-  - Wrap Convex queries/mutations/actions via custom “middleware” functions (similar to custom function wrappers used for authorization/sessions). [oai_citation:8‡Stack by Convex](https://stack.convex.dev/authorization?utm_source=chatgpt.com)  
+  - Wrap Convex queries/mutations/actions via custom “middleware” functions (similar to custom function wrappers used for authorization/sessions). [oai_citation:8‡Stack by Convex](https://stack.convex.dev/authorization?utm_source=chatgpt.com)
   - Capture `lobbyId`, `gameId`, `roundId`, `sessionId` tags where available.
 
 - **PostHog**:
@@ -120,6 +120,7 @@ Browser-based multiplayer music game inspired by Hitster:
 ### 2.5 Internationalization (next-intl)
 
 File structure for i18n:
+
 ```
 src/i18n/
   request.ts         # getRequestConfig for next-intl
@@ -130,6 +131,7 @@ messages/
 ```
 
 Translation key organization (namespaced by feature):
+
 ```json
 {
   "common": { "loading": "Loading...", "error": "An error occurred" },
@@ -139,6 +141,7 @@ Translation key organization (namespaced by feature):
 ```
 
 Usage patterns:
+
 - Server Components: `const t = await getTranslations("lobby")`
 - Client Components: `const t = useTranslations("lobby")`
 - Links: Use `<Link>` from `@/i18n/routing` to preserve locale
@@ -150,7 +153,7 @@ Usage patterns:
 ### 3.1 Sessions Without Cookies
 
 - A **sessionId** is generated client-side (UUID) and stored in `localStorage`.
-- All Convex functions expect a `sessionId` argument injected via **convex-helpers session wrappers**, instead of cookies. [oai_citation:9‡Stack by Convex](https://stack.convex.dev/track-sessions-without-cookies?utm_source=chatgpt.com)  
+- All Convex functions expect a `sessionId` argument injected via **convex-helpers session wrappers**, instead of cookies. [oai_citation:9‡Stack by Convex](https://stack.convex.dev/track-sessions-without-cookies?utm_source=chatgpt.com)
 - Server-side:
   - Wrap queries/mutations/actions with `SessionIdArg` to ensure `sessionId` is always available.
   - Optionally maintain a `sessions` table for additional metadata (lastSeenAt, device info, etc.), but **core gameplay is keyed by `sessionId` + `lobbyId`**.
@@ -159,7 +162,7 @@ Usage patterns:
 
 - Use Convex **Presence component** to track:
   - Which sessionIds are currently active in each lobby.
-  - Optional per-user status (“in game”, “choosing placement”, “idle”). [oai_citation:10‡Convex](https://www.convex.dev/components/presence?utm_source=chatgpt.com)  
+  - Optional per-user status (“in game”, “choosing placement”, “idle”). [oai_citation:10‡Convex](https://www.convex.dev/components/presence?utm_source=chatgpt.com)
 - Presence is **ephemeral UI state** and is not persisted as part of the game’s durable state.
 
 ---
@@ -213,7 +216,7 @@ One document per **sessionId in a lobby**.
 **Indexes:**
 
 - `by_lobby`: `["lobbyId"]`.
-- `by_lobby_and_session`: `["lobbyId", "sessionId"]` (for uniqueness and fast lookups). [oai_citation:11‡Stack by Convex](https://stack.convex.dev/databases-are-spreadsheets?utm_source=chatgpt.com)  
+- `by_lobby_and_session`: `["lobbyId", "sessionId"]` (for uniqueness and fast lookups). [oai_citation:11‡Stack by Convex](https://stack.convex.dev/databases-are-spreadsheets?utm_source=chatgpt.com)
 
 ---
 
@@ -283,7 +286,7 @@ One document per turn; doubles as decision log.
 **Indexes:**
 
 - `by_game_round`: `["gameId", "roundNumber"]`.
-- `by_game`: `["gameId"]` (safe to `.collect()` because games have few rounds). [oai_citation:12‡Convex Developer Hub](https://docs.convex.dev/understanding/best-practices/?utm_source=chatgpt.com)  
+- `by_game`: `["gameId"]` (safe to `.collect()` because games have few rounds). [oai_citation:12‡Convex Developer Hub](https://docs.convex.dev/understanding/best-practices/?utm_source=chatgpt.com)
 
 ---
 
@@ -329,7 +332,7 @@ Central catalog of playable tracks; used across games.
 
 **Index:**
 
-- `by_year`: `["year", "_creationTime"]` for efficient range queries and pagination. [oai_citation:13‡Stack by Convex](https://stack.convex.dev/databases-are-spreadsheets?utm_source=chatgpt.com)  
+- `by_year`: `["year", "_creationTime"]` for efficient range queries and pagination. [oai_citation:13‡Stack by Convex](https://stack.convex.dev/databases-are-spreadsheets?utm_source=chatgpt.com)
 
 ---
 
@@ -348,7 +351,7 @@ For a given `gameId`:
 1. Query all rounds for the game (bounded small) via `rounds.by_game`.
 2. Build a `Set<Id<"tracks">>` of `usedTrackIds`.
 
-This is safe because `.collect()` is only over a small set (≤ a few hundred documents). [oai_citation:14‡Convex Developer Hub](https://docs.convex.dev/understanding/best-practices/?utm_source=chatgpt.com)  
+This is safe because `.collect()` is only over a small set (≤ a few hundred documents). [oai_citation:14‡Convex Developer Hub](https://docs.convex.dev/understanding/best-practices/?utm_source=chatgpt.com)
 
 ### 5.2 Candidate Selection
 
@@ -356,17 +359,16 @@ In mutation `startNextRound(gameId)`:
 
 1. Read `lobby.settings.minYear` / `maxYear`.
 2. Try a fixed number of attempts (`MAX_TRIES`) to find a new track:
-
    - Pick a random year `y` in `[minYear, maxYear]`.
    - Query `tracks.by_year` with inequalities:
 
      ```ts
      query("tracks")
-       .withIndex("by_year", q => q.gte("year", y).lte("year", maxYear))
+       .withIndex("by_year", (q) => q.gte("year", y).lte("year", maxYear))
        .take(50);
      ```
 
-     This follows the “databases as spreadsheets” mental model: use indexes and inequalities instead of scanning. [oai_citation:15‡Stack by Convex](https://stack.convex.dev/databases-are-spreadsheets?utm_source=chatgpt.com)  
+     This follows the “databases as spreadsheets” mental model: use indexes and inequalities instead of scanning. [oai_citation:15‡Stack by Convex](https://stack.convex.dev/databases-are-spreadsheets?utm_source=chatgpt.com)
 
    - Filter out tracks in `usedTrackIds`.
    - Pick a random unused candidate from the page.
@@ -388,7 +390,7 @@ When a candidate track is chosen:
 
 ## 6. Round Lifecycle & Mutations
 
-All server logic is implemented as Convex **mutations** with appropriate access controls and argument validation. [oai_citation:16‡Convex Developer Hub](https://docs.convex.dev/understanding/best-practices/?utm_source=chatgpt.com)  
+All server logic is implemented as Convex **mutations** with appropriate access controls and argument validation. [oai_citation:16‡Convex Developer Hub](https://docs.convex.dev/understanding/best-practices/?utm_source=chatgpt.com)
 
 ### 6.1 Lobby Management
 
@@ -510,7 +512,7 @@ Single host-only mutation for deterministic state:
 
 ## 7. Queries & Relationship Patterns
 
-Queries should be built using indexed lookups and **relationship helpers** from `convex-helpers` where beneficial. [oai_citation:17‡Stack by Convex](https://stack.convex.dev/functional-relationships-helpers?utm_source=chatgpt.com)  
+Queries should be built using indexed lookups and **relationship helpers** from `convex-helpers` where beneficial. [oai_citation:17‡Stack by Convex](https://stack.convex.dev/functional-relationships-helpers?utm_source=chatgpt.com)
 
 ### 7.1 Main Game View Query
 
@@ -535,3 +537,4 @@ Returned shape should be tailored to UI:
   track: TrackPublicView, // no title/artist for main view
   bets: BetPublicView[]   // depending on showLiveBets
 }
+```
