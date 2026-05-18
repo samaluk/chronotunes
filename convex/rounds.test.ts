@@ -341,7 +341,14 @@ test("setPlacementPreview fails for non-turn player", async () => {
 
   expect(playerId).not.toBeNull()
 
-  if (playerId !== turnPlayerId) {
+  if (playerId === turnPlayerId) {
+    const result = await t.mutation(api.rounds.setPlacementPreview, {
+      lobbyId: lobby!._id,
+      sessionId: asSessionId("player-session-notturn"),
+      proposedIndex: 0,
+    })
+    expect(result).toBeNull()
+  } else {
     await expect(
       t.mutation(api.rounds.setPlacementPreview, {
         lobbyId: lobby!._id,
@@ -349,13 +356,6 @@ test("setPlacementPreview fails for non-turn player", async () => {
         proposedIndex: 0,
       }),
     ).rejects.toThrow("Only the turn player can preview placement")
-  } else {
-    const result = await t.mutation(api.rounds.setPlacementPreview, {
-      lobbyId: lobby!._id,
-      sessionId: asSessionId("player-session-notturn"),
-      proposedIndex: 0,
-    })
-    expect(result).toBeNull()
   }
 })
 

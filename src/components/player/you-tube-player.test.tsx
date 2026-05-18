@@ -1,39 +1,14 @@
 import { render, screen } from "@testing-library/react"
 import { NextIntlClientProvider } from "next-intl"
-import type { ComponentProps } from "react"
+import { type ComponentProps, createElement } from "react"
 import { expect, test, vi } from "vitest"
 import messages from "../../../messages/en.json"
+
+vi.mock("react-player", () => ({
+  default: () => createElement("span", { "data-testid": "mock-react-player" }),
+}))
+
 import { YouTubePlayer } from "./you-tube-player"
-
-declare global {
-  interface Window {
-    YT: {
-      Player: () => {
-        playVideo: () => void
-        pauseVideo: () => void
-        destroy: () => void
-      }
-      PlayerState: {
-        PLAYING: number
-        PAUSED: number
-        ENDED: number
-      }
-    }
-  }
-}
-
-global.window.YT = {
-  Player: vi.fn().mockImplementation(() => ({
-    playVideo: vi.fn(),
-    pauseVideo: vi.fn(),
-    destroy: vi.fn(),
-  })),
-  PlayerState: {
-    PLAYING: 1,
-    PAUSED: 2,
-    ENDED: 0,
-  },
-} as unknown as typeof window.YT
 
 type PlayerProps = ComponentProps<typeof YouTubePlayer>
 
