@@ -13,13 +13,13 @@ interface PlayerListProps {
 }
 
 interface Player {
-  _id: Id<"players">
   _creationTime: number
+  _id: Id<"players">
+  coins: number
   displayName: string
   isHost: boolean
-  coins: number
-  sessionId: string
   lobbyId: Id<"lobbies">
+  sessionId: string
 }
 
 export function PlayerList({ lobbyId }: PlayerListProps): React.ReactNode {
@@ -73,9 +73,6 @@ export function PlayerList({ lobbyId }: PlayerListProps): React.ReactNode {
                       {t("host")}
                     </span>
                   )}
-                </div>
-                <div className="flex items-center gap-2 text-muted-foreground text-sm">
-                  <span>{t("coins", { count: player.coins })}</span>
                 </div>
               </div>
             </div>
