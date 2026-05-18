@@ -1,8 +1,8 @@
 "use client"
 
+import { type DayButton, DayPicker, getDefaultClassNames } from "@daypicker/react"
 import { ChevronDownIcon, ChevronLeftIcon, ChevronRightIcon } from "lucide-react"
 import { type ComponentProps, useEffect, useRef } from "react"
-import { type DayButton, DayPicker, getDefaultClassNames } from "react-day-picker"
 import { Button, buttonVariants } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 
@@ -67,7 +67,7 @@ function Calendar({
             : "cn-calendar-caption-label flex items-center gap-1 rounded-(--cell-radius) text-sm [&>svg]:size-3.5 [&>svg]:text-muted-foreground",
           defaultClassNames.caption_label,
         ),
-        table: "w-full border-collapse",
+        month_grid: cn("w-full border-collapse", defaultClassNames.month_grid),
         weekdays: cn("flex", defaultClassNames.weekdays),
         weekday: cn(
           "flex-1 select-none rounded-(--cell-radius) font-normal text-[0.8rem] text-muted-foreground",
