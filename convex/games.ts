@@ -183,6 +183,10 @@ export const start = mutationWithSession({
       throw new ConvexError("At least 2 players are required to start a game")
     }
 
+    await Promise.all(
+      players.map((player) => ctx.db.patch(player._id, { coins: lobby.settings.startingCoins })),
+    )
+
     const turnOrder = shuffleArray(players.map((p) => p._id))
 
     const gameId = await ctx.db.insert("games", {

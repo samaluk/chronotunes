@@ -708,3 +708,126 @@ test("resolveAndNext handles no tracks available", async () => {
   expect(result.winnerPlayerId).toBeNull()
   expect(result.noTracksAvailable).toBe(true)
 })
+
+test("start sets all players' coins to lobby's startingCoins setting", async () => {
+  const t = convexTest(schema, modules)
+
+  await seedTestTracks(t)
+
+  const { code } = await t.mutation(api.lobbies.create, {
+    sessionId: asSessionId("host-coins-start"),
+    displayName: "HostCoinsStart",
+  })
+
+  await t.mutation(api.lobbies.join, {
+    code,
+    sessionId: asSessionId("player1-coins-start"),
+    displayName: "Player1",
+  })
+
+  await t.mutation(api.lobbies.join, {
+    code,
+    sessionId: asSessionId("player2-coins-start"),
+    displayName: "Player2",
+  })
+
+  await t.mutation(api.lobbies.updateSettings, {
+    code,
+    sessionId: asSessionId("host-coins-start"),
+    settings: { startingCoins: 5 },
+  })
+
+  const lobby = await t.query(api.lobbies.get, { code })
+
+  const playersBeforeStart = await t.run(async (ctx) => {
+    const lobbyDoc = await ctx.db.query("lobbies").first()
+    if (!lobbyDoc) {
+      return []
+    }
+    const allPlayers = await ctx.db
+      .query("players")
+      .filter((q) => q.eq(q.field("lobbyId"), lobbyDoc._id))
+      .collect()
+    return allPlayers
+  })
+
+  expect(playersBeforeStart.length).toBe(3)
+  for (const player of playersBeforeStart) {
+    expect(player.coins).toBe(0)
+  }
+
+  await t.mutation(api.games.start, {
+    lobbyId: lobby!._id,
+    sessionId: asSessionId("host-coins-start"),
+  })
+
+  const playersAfterStart = await t.run(async (ctx) => {
+    const lobbyDoc = await ctx.db.query("lobbies").first()
+    if (!lobbyDoc) {
+      return []
+    }
+    const allPlayers = await ctx.db
+      .query("players")
+      .filter((q) => q.eq(q.field("lobbyId"), lobbyDoc._id))
+      .collect()
+    return allPlayers
+  })
+
+  expect(playersAfterStart.length).toBe(3)
+  for (const player of playersAfterStart) {
+    expect(player.coins).toBe(5)
+  }
+})
+
+test("start ignores settings changes and uses final lobby startingCoins", async () => {
+  const t = convexTest(schema, modules)
+
+  await seedTestTracks(t)
+
+  const { code } = await t.mutation(api.lobbies.create, {
+    sessionId: asSessionId("host-coins-final"),
+    displayName: "HostCoinsFinal",
+  })
+
+  await t.mutation(api.lobbies.join, {
+    code,
+    sessionId: asSessionId("player1-coins-final"),
+    displayName: "Player1",
+  })
+
+  await t.mutation(api.lobbies.updateSettings, {
+    code,
+    sessionId: asSessionId("host-coins-final"),
+    settings: { startingCoins: 7 },
+  })
+
+  await t.mutation(api.lobbies.updateSettings, {
+    code,
+    sessionId: asSessionId("host-coins-final"),
+    settings: { startingCoins: 4 },
+  })
+
+  const lobby = await t.query(api.lobbies.get, { code })
+
+  await t.mutation(api.games.start, {
+    lobbyId: lobby!._id,
+    sessionId: asSessionId("host-coins-final"),
+  })
+
+  const players = await t.run(async (ctx) => {
+    const lobbyDoc = await ctx.db.query("lobbies").first()
+    if (!lobbyDoc) {
+      return []
+    }
+    const allPlayers = await ctx.db
+      .query("players")
+      .filter((q) => q.eq(q.field("lobbyId"), lobbyDoc._id))
+      .collect()
+    return allPlayers
+  })
+
+  expect(players.length).toBe(2)
+  for (const player of players) {
+    expect(player.coins).toBe(4)
+  }
+})

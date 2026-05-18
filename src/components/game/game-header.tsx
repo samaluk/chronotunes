@@ -4,29 +4,9 @@ import { Check, X } from "lucide-react"
 import { useTranslations } from "next-intl"
 import { memo } from "react"
 import { VolumeSlider } from "@/components/player/volume-slider"
-import type { Id } from "@/convex/_generated/dataModel"
 import { cn } from "@/lib/utils"
+import { useGame } from "./game-provider"
 import { GameTimer } from "./game-timer"
-
-interface TurnPlayer {
-  _id: Id<"players">
-  displayName: string
-}
-
-interface ResolutionInfo {
-  turnPlayerWasCorrect: boolean
-  awardedPlayerIds: Id<"players">[]
-}
-
-interface GameHeaderProps {
-  roundNumber: number
-  turnPlayer: TurnPlayer | null
-  isMyTurn: boolean
-  roundPhase: "placing" | "betting" | "resolved"
-  bettingStartedAt?: number
-  bettingWindowSeconds?: number
-  resolution?: ResolutionInfo | null
-}
 
 const phaseStyles = {
   placing: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400",
@@ -34,18 +14,16 @@ const phaseStyles = {
   resolved: "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400",
 }
 
-export const GameHeader = memo(function GameHeader({
-  roundNumber,
-  turnPlayer,
-  isMyTurn,
-  roundPhase,
-  bettingStartedAt,
-  bettingWindowSeconds,
-  resolution,
-}: GameHeaderProps): React.ReactNode {
+export const GameHeader = memo(function GameHeader(): React.ReactNode {
   const t = useTranslations("game")
   const tCommon = useTranslations("common")
   const tPhase = useTranslations("phase")
+  const { state } = useGame()
+  const { game, isMyTurn, phase, turnPlayer, currentRound } = state
+
+  const roundNumber = game?.currentRoundNumber ?? 1
+  const bettingStartedAt = phase === "betting" ? currentRound?.startedAt : undefined
+  const bettingWindowSeconds = state.bettingWindowSeconds
 
   return (
     <div className="w-full space-y-4">
@@ -59,10 +37,10 @@ export const GameHeader = memo(function GameHeader({
               <span
                 className={cn(
                   "inline-flex items-center rounded-full px-2 py-0.5 font-medium text-xs",
-                  phaseStyles[roundPhase],
+                  phaseStyles[phase],
                 )}
               >
-                {tPhase(roundPhase)}
+                {tPhase(phase)}
               </span>
             </div>
             <div className="mt-1 flex items-center gap-2">
@@ -71,7 +49,7 @@ export const GameHeader = memo(function GameHeader({
                   <span className="font-semibold text-lg">
                     {isMyTurn ? t("yourTurn") : t("playersTurn", { name: turnPlayer.displayName })}
                   </span>
-                  {isMyTurn && roundPhase === "placing" && (
+                  {isMyTurn && phase === "placing" && (
                     <span className="inline-flex animate-pulse items-center gap-1 rounded-full bg-primary/20 px-2 py-0.5 font-medium text-primary text-xs">
                       {tCommon("active")}
                     </span>
@@ -82,7 +60,7 @@ export const GameHeader = memo(function GameHeader({
           </div>
         </div>
 
-        {roundPhase === "betting" && bettingStartedAt && bettingWindowSeconds && (
+        {phase === "betting" && bettingStartedAt && bettingWindowSeconds && (
           <GameTimer
             className={isMyTurn ? "bg-amber-50 dark:bg-amber-950/20" : ""}
             startedAt={bettingStartedAt}
@@ -91,16 +69,16 @@ export const GameHeader = memo(function GameHeader({
           />
         )}
 
-        {roundPhase === "resolved" && resolution && (
+        {phase === "resolved" && currentRound?.resolution && (
           <div
             className={cn(
               "flex items-center gap-2 rounded-lg px-4 py-2 font-medium",
-              resolution.turnPlayerWasCorrect
+              currentRound.resolution.turnPlayerWasCorrect
                 ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
                 : "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400",
             )}
           >
-            {resolution.turnPlayerWasCorrect ? (
+            {currentRound.resolution.turnPlayerWasCorrect ? (
               <>
                 <Check className="h-4 w-4" />
                 <span>Correct!</span>

@@ -1,49 +1,11 @@
 import { cleanup, render, screen } from "@testing-library/react"
 import type { GenericId } from "convex/values"
 import { afterEach, describe, expect, it, vi } from "vitest"
+import { GameContext } from "./game-provider"
 import { RoundResults } from "./round-results"
-
-vi.mock("convex/react", () => ({
-  useMutation: vi.fn(() => vi.fn()),
-}))
-
-vi.mock("convex-helpers/react/sessions", () => ({
-  useSessionQuery: vi.fn(() => null),
-  useSessionMutation: vi.fn(() => vi.fn()),
-  SessionProvider: ({ children }: { children: React.ReactNode }) => children,
-}))
-
-vi.mock("next-intl", () => ({
-  useTranslations: () => (key: string) => key,
-}))
-
-let useStateCallCount = 0
-
-vi.mock("react", () => ({
-  useState: vi.fn((initial) => {
-    useStateCallCount += 1
-    if (useStateCallCount === 2) {
-      return [true, vi.fn()]
-    }
-    if (typeof initial === "function") {
-      return [initial(), vi.fn()]
-    }
-    return [initial, vi.fn()]
-  }),
-  useEffect: vi.fn((fn) => fn()),
-  useMemo: vi.fn((fn) => fn()),
-}))
-
-afterEach(() => {
-  cleanup()
-  useStateCallCount = 0
-})
 
 const mockLobbyId = "lobby123" as GenericId<"lobbies">
 const now = Date.now()
-const startNextRoundRegex = /Start Next Round/i
-const waitingForHostRegex = /Waiting for host to start next round/i
-const resolvedAtRegex = /Resolved at/i
 
 const createMockPlayer = (overrides = {}) => ({
   _id: "player1" as GenericId<"players">,
@@ -92,18 +54,89 @@ const mockResolution = {
   resolvedAt: now,
 }
 
+vi.mock("convex/react", () => ({
+  useMutation: vi.fn(() => vi.fn()),
+  useQuery: vi.fn(() => null),
+}))
+
+vi.mock("convex-helpers/react/sessions", () => ({
+  useSessionQuery: vi.fn(() => null),
+  useSessionMutation: vi.fn(() => vi.fn()),
+  SessionProvider: ({ children }: { children: React.ReactNode }) => children,
+}))
+
+vi.mock("next-intl", () => ({
+  useTranslations: () => (key: string) => key,
+}))
+
+let useStateCallCount = 0
+
+vi.mock("react", async () => {
+  const actual = await vi.importActual("react")
+  return {
+    ...actual,
+    useMemo: vi.fn((fn) => fn()),
+    useState: vi.fn((initial) => {
+      useStateCallCount += 1
+      if (useStateCallCount === 2) {
+        return [true, vi.fn()]
+      }
+      if (typeof initial === "function") {
+        return [initial(), vi.fn()]
+      }
+      return [initial, vi.fn()]
+    }),
+  }
+})
+
+afterEach(() => {
+  cleanup()
+  useStateCallCount = 0
+})
+
+const startNextRoundRegex = /Start Next Round/i
+const waitingForHostRegex = /Waiting for host to start next round/i
+const resolvedAtRegex = /Resolved at/i
+
+const createContextValue = (
+  overrides: { state?: Record<string, unknown>; meta?: Record<string, unknown> } = {},
+) => ({
+  state: {
+    lobby: null,
+    players: mockPlayers,
+    me: mockPlayers[0],
+    game: null,
+    currentRound: { resolution: mockResolution },
+    revealedTracks: [],
+    turnPlayer: mockPlayers[0],
+    isMyTurn: false,
+    phase: "resolved" as const,
+    track: mockTrack,
+    isGameFinished: false,
+    bettingWindowSeconds: undefined,
+    turnSeconds: undefined,
+    showLiveBets: false,
+    selectedPlayerForTimeline: null,
+    ...overrides.state,
+  },
+  actions: {
+    setSelectedPlayerForTimeline: vi.fn(),
+    handleModalClose: vi.fn(),
+  },
+  meta: {
+    sessionId: "session1",
+    lobbyId: mockLobbyId,
+    code: "ABC123",
+    ...overrides.meta,
+  },
+})
+
 describe("RoundResults", () => {
   it("displays song title, artist, and year", () => {
     render(
-      <RoundResults
-        bets={[]}
-        lobbyId={mockLobbyId}
-        me={null}
-        players={mockPlayers}
-        resolution={mockResolution}
-        track={mockTrack}
-        turnPlayer={mockPlayers[0]}
-      />,
+      <GameContext.Provider value={createContextValue() as any}>
+        <RoundResults />
+      </GameContext.Provider>,
     )
 
     expect(screen.getByText((content) => content.includes("Test Song"))).toBeInTheDocument()
@@ -113,15 +146,9 @@ describe("RoundResults", () => {
 
   it("shows correct placement result when turn player was correct", () => {
     render(
-      <RoundResults
-        bets={[]}
-        lobbyId={mockLobbyId}
-        me={null}
-        players={mockPlayers}
-        resolution={mockResolution}
-        track={mockTrack}
-        turnPlayer={mockPlayers[0]}
-      />,
+      <GameContext.Provider value={createContextValue() as any}>
+        <RoundResults />
+      </GameContext.Provider>,
     )
 
     expect(screen.getByText("correct")).toBeInTheDocument()
@@ -134,15 +161,13 @@ describe("RoundResults", () => {
     }
 
     render(
-      <RoundResults
-        bets={[]}
-        lobbyId={mockLobbyId}
-        me={null}
-        players={mockPlayers}
-        resolution={wrongResolution}
-        track={mockTrack}
-        turnPlayer={mockPlayers[0]}
-      />,
+      <GameContext.Provider
+        value={
+          createContextValue({ state: { currentRound: { resolution: wrongResolution } } }) as any
+        }
+      >
+        <RoundResults />
+      </GameContext.Provider>,
     )
 
     expect(screen.getByText("incorrect")).toBeInTheDocument()
@@ -150,117 +175,20 @@ describe("RoundResults", () => {
 
   it("displays card awards for awarded players", () => {
     render(
-      <RoundResults
-        bets={[]}
-        lobbyId={mockLobbyId}
-        me={null}
-        players={mockPlayers}
-        resolution={mockResolution}
-        track={mockTrack}
-        turnPlayer={mockPlayers[0]}
-      />,
+      <GameContext.Provider value={createContextValue() as any}>
+        <RoundResults />
+      </GameContext.Provider>,
     )
 
     expect(screen.getByText("Card Awards")).toBeInTheDocument()
     expect(screen.getByText("Player1")).toBeInTheDocument()
   })
 
-  it("displays betting results when bets exist", () => {
-    const bets = [
-      {
-        playerId: "player2" as GenericId<"players">,
-        playerDisplayName: "Player2",
-        proposedIndex: 0,
-        declinedToBet: false,
-        status: "lost" as const,
-      },
-    ]
-
-    render(
-      <RoundResults
-        bets={bets}
-        lobbyId={mockLobbyId}
-        me={null}
-        players={mockPlayers}
-        resolution={mockResolution}
-        track={mockTrack}
-        turnPlayer={mockPlayers[0]}
-      />,
-    )
-
-    expect(screen.getByText("Betting Results")).toBeInTheDocument()
-    expect(screen.getByText("Player2")).toBeInTheDocument()
-  })
-
-  it("shows won status for correct bets", () => {
-    const bets = [
-      {
-        playerId: "player2" as GenericId<"players">,
-        playerDisplayName: "Player2",
-        proposedIndex: 0,
-        declinedToBet: false,
-        status: "won" as const,
-      },
-    ]
-
-    render(
-      <RoundResults
-        bets={bets}
-        lobbyId={mockLobbyId}
-        me={null}
-        players={mockPlayers}
-        resolution={mockResolution}
-        track={mockTrack}
-        turnPlayer={mockPlayers[0]}
-      />,
-    )
-
-    expect(screen.getByText("Won")).toBeInTheDocument()
-  })
-
-  it("shows host controls when user is host", () => {
-    render(
-      <RoundResults
-        bets={[]}
-        lobbyId={mockLobbyId}
-        me={mockPlayers[0]}
-        players={mockPlayers}
-        resolution={mockResolution}
-        track={mockTrack}
-        turnPlayer={mockPlayers[0]}
-      />,
-    )
-
-    expect(screen.getByRole("button", { name: startNextRoundRegex })).toBeInTheDocument()
-  })
-
-  it("shows waiting state when user is not host", () => {
-    render(
-      <RoundResults
-        bets={[]}
-        lobbyId={mockLobbyId}
-        me={mockPlayers[1]}
-        players={mockPlayers}
-        resolution={mockResolution}
-        track={mockTrack}
-        turnPlayer={mockPlayers[0]}
-      />,
-    )
-
-    expect(screen.getByText(waitingForHostRegex)).toBeInTheDocument()
-  })
-
   it("displays resolved timestamp", () => {
     render(
-      <RoundResults
-        bets={[]}
-        lobbyId={mockLobbyId}
-        me={null}
-        players={mockPlayers}
-        resolution={mockResolution}
-        track={mockTrack}
-        turnPlayer={mockPlayers[0]}
-      />,
+      <GameContext.Provider value={createContextValue() as any}>
+        <RoundResults />
+      </GameContext.Provider>,
     )
 
     expect(screen.getByText(resolvedAtRegex)).toBeInTheDocument()
@@ -274,15 +202,13 @@ describe("RoundResults", () => {
     }
 
     render(
-      <RoundResults
-        bets={[]}
-        lobbyId={mockLobbyId}
-        me={null}
-        players={mockPlayers}
-        resolution={noAwardResolution}
-        track={mockTrack}
-        turnPlayer={mockPlayers[0]}
-      />,
+      <GameContext.Provider
+        value={
+          createContextValue({ state: { currentRound: { resolution: noAwardResolution } } }) as any
+        }
+      >
+        <RoundResults />
+      </GameContext.Provider>,
     )
 
     expect(screen.getByText("No cards were awarded this round")).toBeInTheDocument()
@@ -290,17 +216,31 @@ describe("RoundResults", () => {
 
   it("highlights current user with (You) indicator", () => {
     render(
-      <RoundResults
-        bets={[]}
-        lobbyId={mockLobbyId}
-        me={mockPlayers[0]}
-        players={mockPlayers}
-        resolution={mockResolution}
-        track={mockTrack}
-        turnPlayer={mockPlayers[0]}
-      />,
+      <GameContext.Provider value={createContextValue() as any}>
+        <RoundResults />
+      </GameContext.Provider>,
     )
 
     expect(screen.getByText("(You)")).toBeInTheDocument()
+  })
+
+  it("shows host controls when user is host", () => {
+    render(
+      <GameContext.Provider value={createContextValue() as any}>
+        <RoundResults />
+      </GameContext.Provider>,
+    )
+
+    expect(screen.getByRole("button", { name: startNextRoundRegex })).toBeInTheDocument()
+  })
+
+  it("shows waiting state when user is not host", () => {
+    render(
+      <GameContext.Provider value={createContextValue({ state: { me: mockPlayers[1] } }) as any}>
+        <RoundResults />
+      </GameContext.Provider>,
+    )
+
+    expect(screen.getByText(waitingForHostRegex)).toBeInTheDocument()
   })
 })

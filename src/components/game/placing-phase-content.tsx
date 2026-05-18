@@ -2,73 +2,39 @@
 
 import { Music } from "lucide-react"
 import { useTranslations } from "next-intl"
-import type { Doc, Id } from "@/convex/_generated/dataModel"
+import { useGame } from "./game-provider"
 import { TimelinePlacer } from "./timeline-placer"
 import { TurnPlayerTimeline } from "./turn-player-timeline"
 
-interface PlacingPhaseContentProps {
-  isMyTurn: boolean
-  lobbyId?: Id<"lobbies">
-  me: Doc<"players"> | null
-  players: Doc<"players">[] | null
-  track: {
-    _id: Id<"tracks">
-    title?: string
-    artist?: string
-    year?: number
-    youtubeVideoId?: string
-  } | null
-  existingPreviewIndex: number | null
-  turnPlayerId: Id<"players"> | null
-  turnPlayerTimeline: Array<{
-    trackId: Id<"tracks">
-    year: number
-    earnedAtRoundNumber: number
-    earnedBy: "placement" | "bet" | "initial"
-  }>
-  turnPlayerTimelineSize: number
-  revealedTracks: Array<{
-    trackId: Id<"tracks">
-    title: string
-    artist: string
-    year: number
-    youtubeVideoId?: string
-  }>
-}
-
-export function PlacingPhaseContent({
-  isMyTurn,
-  lobbyId,
-  me,
-  players,
-  track,
-  existingPreviewIndex,
-  turnPlayerId,
-  turnPlayerTimeline,
-  turnPlayerTimelineSize,
-  revealedTracks,
-}: PlacingPhaseContentProps): React.ReactNode {
+export function PlacingPhaseContent(): React.ReactNode {
   const tPlacing = useTranslations("placing")
+  const { state } = useGame()
+  const { isMyTurn, lobby, me, players, currentRound, track, turnPlayer } = state
 
-  if (isMyTurn && lobbyId && me && track) {
+  const existingPreviewIndex = currentRound?.placementPreview?.proposedIndex ?? null
+  const turnPlayerId = currentRound?.turnPlayerId ?? null
+  const turnPlayerTimeline = turnPlayer?.timeline ?? []
+  const turnPlayerTimelineSize = turnPlayer?.timelineSize ?? 0
+
+  if (isMyTurn && lobby && me && track) {
     return (
       <TimelinePlacer
         currentTrack={track}
-        existingPreviewIndex={existingPreviewIndex ?? null}
-        lobbyId={lobbyId}
+        existingPreviewIndex={existingPreviewIndex}
+        lobbyId={lobby._id}
         player={me}
-        revealedTracks={revealedTracks}
+        revealedTracks={state.revealedTracks}
       />
     )
   }
 
-  if (lobbyId && track && players && turnPlayerId) {
-    const turnPlayer = players.find((p) => p._id === turnPlayerId)
-    const turnPlayerName = turnPlayer?.displayName ?? "Player"
+  if (lobby && track && players && turnPlayerId) {
+    const turnPlayerData = players.find((p) => p._id === turnPlayerId)
+    const turnPlayerName = turnPlayerData?.displayName ?? "Player"
     return (
       <TurnPlayerTimeline
-        existingPreviewIndex={existingPreviewIndex ?? null}
-        revealedTracks={revealedTracks}
+        existingPreviewIndex={existingPreviewIndex}
+        revealedTracks={state.revealedTracks}
         timeline={turnPlayerTimeline}
         timelineSize={turnPlayerTimelineSize}
         turnPlayerName={turnPlayerName}

@@ -58,7 +58,7 @@ describe("lobbies", () => {
     expect(players[0]?.displayName).toBe("HostPlayer")
   })
 
-  test("create lobby creates host with default starting coins", async () => {
+  test("create lobby creates host with zero coins until game starts", async () => {
     const t = convexTest(schema, modules)
     await t.mutation(api.lobbies.create, {
       sessionId: asSessionId("test-session-coins"),
@@ -70,7 +70,7 @@ describe("lobbies", () => {
       return allPlayers
     })
 
-    expect(players[0]?.coins).toBe(3)
+    expect(players[0]?.coins).toBe(0)
   })
 
   test("create lobby rejects empty display name", async () => {
@@ -249,18 +249,11 @@ describe("lobbies", () => {
     expect(result1.lobbyId).toBe(result2.lobbyId)
   })
 
-  test("join lobby uses lobby's starting coins setting", async () => {
+  test("join lobby creates player with zero coins until game starts", async () => {
     const t = convexTest(schema, modules)
     const { code } = await t.mutation(api.lobbies.create, {
       sessionId: asSessionId("coins-host"),
       displayName: "Host",
-    })
-
-    await t.run(async (ctx) => {
-      const lobby = await ctx.db.query("lobbies").first()
-      if (lobby) {
-        await ctx.db.patch(lobby._id, { settings: { ...lobby.settings, startingCoins: 5 } })
-      }
     })
 
     await t.mutation(api.lobbies.join, {
@@ -277,7 +270,7 @@ describe("lobbies", () => {
       return player
     })
 
-    expect(player?.coins).toBe(5)
+    expect(player?.coins).toBe(0)
   })
 
   test("leave lobby removes player from lobby", async () => {
