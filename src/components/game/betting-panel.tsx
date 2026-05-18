@@ -15,33 +15,33 @@ import { BetZone } from "./bet-zone"
 import { TimelineCard } from "./timeline-card"
 
 interface TimelineEntry {
-  trackId: Id<"tracks">
-  year: number
   earnedAtRoundNumber: number
   earnedBy: "placement" | "bet" | "initial"
+  trackId: Id<"tracks">
+  year: number
 }
 
 interface Player {
   _id: Id<"players">
+  coins: number
   displayName: string
+  isHost: boolean
   timeline: TimelineEntry[]
   timelineSize: number
-  coins: number
-  isHost: boolean
 }
 
 interface TrackInfo {
   _id: Id<"tracks">
-  title?: string
   artist?: string
+  title?: string
   year?: number
   youtubeVideoId?: string
 }
 
 interface RevealedTrack {
-  trackId: Id<"tracks">
-  title: string
   artist: string
+  title: string
+  trackId: Id<"tracks">
   year: number
   youtubeVideoId?: string
 }
@@ -49,85 +49,80 @@ interface RevealedTrack {
 interface BettingPanelProps {
   lobbyId: Id<"lobbies">
   me: Player | null
-  track: TrackInfo | null
-  turnPlayerTimeline: TimelineEntry[]
-  revealedTracks: RevealedTrack[]
   players?: Player[]
+  revealedTracks: RevealedTrack[]
+  track: TrackInfo | null
   turnPlayerId?: Id<"players"> | null
-  roundStartedAt?: number
-  turnSeconds?: number
-  bettingWindowSeconds?: number
   turnPlayerPlacementIndex?: number | null
-  phase?: string
-  showLiveBets?: boolean
+  turnPlayerTimeline: TimelineEntry[]
 }
 
 interface SlotBetInfo {
-  playerId: Id<"players">
-  playerDisplayName: string
   lockedIn: boolean
+  playerDisplayName: string
+  playerId: Id<"players">
 }
 
 interface SlotInfo {
-  index: number
   above?: TimelineEntry
   below?: TimelineEntry
   bets: SlotBetInfo[]
+  index: number
 }
 
 interface SlotState {
-  slotBetsForIndex: SlotBetInfo[]
-  isTurnPlayerSlot: boolean
   isActive: boolean
-  label: string
-  showPreviewCoin: boolean
   isDisabled: boolean
+  isTurnPlayerSlot: boolean
+  label: string
   shouldDim: boolean
+  showPreviewCoin: boolean
+  slotBetsForIndex: SlotBetInfo[]
 }
 
 interface BettingHeaderProps {
   betCoinsLabel: string
-  title: string
   description: string
+  title: string
 }
 
 interface BettingTimelineProps {
+  canBet: boolean
+  getSlotState: (slot: SlotInfo) => SlotState
+  hasDeclinedBet: boolean
+  hasLockedBet: boolean
+  me: Player | null
+  onSlotClick: (index: number) => void
+  renderTimelineEntry: (entry: TimelineEntry) => React.ReactNode
+  selectedIndex: number | null
+  shakeSlotIndex: number | null
   slots: SlotInfo[]
   sortedTimeline: TimelineEntry[]
-  getSlotState: (slot: SlotInfo) => SlotState
-  shakeSlotIndex: number | null
-  canBet: boolean
-  hasLockedBet: boolean
-  hasDeclinedBet: boolean
-  selectedIndex: number | null
-  me: Player | null
-  renderTimelineEntry: (entry: TimelineEntry) => React.ReactNode
-  onSlotClick: (index: number) => void
   tCommon: ReturnType<typeof useTranslations>
 }
 
 interface BettingActionsProps {
-  selectedIndex: number | null
-  hasLockedBet: boolean
   hasDeclinedBet: boolean
+  hasLockedBet: boolean
   isLockingIn: boolean
   isPreviewing: boolean
   onCancel: () => void
   onConfirm: () => void
+  selectedIndex: number | null
   t: ReturnType<typeof useTranslations>
   tCommon: ReturnType<typeof useTranslations>
 }
 
 interface BettingStatusProps {
+  canBet: boolean
   canDecline: boolean
+  coins: number
+  hasDeclinedBet: boolean
+  hasLockedBet: boolean
   isDeclining: boolean
+  isTurnPlayer: boolean
   onDecline: () => void
   showPreviewDiscarded: boolean
-  isTurnPlayer: boolean
-  canBet: boolean
-  hasLockedBet: boolean
-  hasDeclinedBet: boolean
-  coins: number
   t: ReturnType<typeof useTranslations>
 }
 
@@ -176,7 +171,11 @@ const buildSlots = (sortedTimeline: TimelineEntry[], slotBets: Map<number, SlotB
   return result
 }
 
-function BettingHeader({ betCoinsLabel, title, description }: BettingHeaderProps): React.ReactNode {
+function BettingHeader({
+  betCoinsLabel,
+  title,
+  description,
+}: Readonly<BettingHeaderProps>): React.ReactNode {
   return (
     <div className="flex items-center justify-between">
       <div>
@@ -204,7 +203,7 @@ function BettingTimeline({
   renderTimelineEntry,
   onSlotClick,
   tCommon,
-}: BettingTimelineProps): React.ReactNode {
+}: Readonly<BettingTimelineProps>): React.ReactNode {
   const elements: React.ReactNode[] = []
 
   const renderBetZone = (slot: SlotInfo): React.ReactNode => {
@@ -291,7 +290,7 @@ function BettingActions({
   onConfirm,
   t,
   tCommon,
-}: BettingActionsProps): React.ReactNode {
+}: Readonly<BettingActionsProps>): React.ReactNode {
   if (selectedIndex === null || hasLockedBet || hasDeclinedBet) {
     return null
   }
@@ -338,7 +337,7 @@ function BettingStatus({
   hasDeclinedBet,
   coins,
   t,
-}: BettingStatusProps): React.ReactNode {
+}: Readonly<BettingStatusProps>): React.ReactNode {
   return (
     <>
       {canDecline && (
@@ -401,7 +400,7 @@ function ResolveRoundPanel({
   isResolving,
   onResolveRound,
   tTimer,
-}: ResolveRoundPanelProps): React.ReactNode {
+}: Readonly<ResolveRoundPanelProps>): React.ReactNode {
   if (!canResolveRound) {
     return null
   }
@@ -432,7 +431,7 @@ export function BettingPanel({
   players,
   turnPlayerId,
   turnPlayerPlacementIndex,
-}: BettingPanelProps): React.ReactNode {
+}: Readonly<BettingPanelProps>): React.ReactNode {
   const t = useTranslations("betting")
   const tCommon = useTranslations("common")
   const tTimer = useTranslations("timer")
@@ -476,7 +475,7 @@ export function BettingPanel({
     (index: number) => {
       setShakeSlotIndex(index)
       if (shakeTimeoutRef.current !== null) {
-        window.clearTimeout(shakeTimeoutRef.current)
+        globalThis.clearTimeout(shakeTimeoutRef.current)
       }
       shakeTimeoutRef.current = window.setTimeout(() => {
         setShakeSlotIndex(null)
@@ -647,7 +646,7 @@ export function BettingPanel({
   useEffect(() => {
     return () => {
       if (shakeTimeoutRef.current !== null) {
-        window.clearTimeout(shakeTimeoutRef.current)
+        globalThis.clearTimeout(shakeTimeoutRef.current)
       }
     }
   }, [])
@@ -820,8 +819,8 @@ export function BettingPanel({
       return
     }
 
-    window.addEventListener("keydown", handleKeyDown)
-    return () => window.removeEventListener("keydown", handleKeyDown)
+    globalThis.addEventListener("keydown", handleKeyDown)
+    return () => globalThis.removeEventListener("keydown", handleKeyDown)
   }, [canBet, handleKeyDown])
 
   const renderTimelineEntry = useCallback(
