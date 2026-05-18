@@ -68,7 +68,7 @@
     "lefthook": "^2.0.15",
     "scrape-youtube": "^2.4.0",
     "tailwindcss": "^4",
-    "typescript": "^5",
+    "typescript": "^6.0.0",
     "ultracite": "^7.0.12",
     "vitest": "^4.0.18"
   }
