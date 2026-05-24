@@ -65,7 +65,7 @@
     "convex-test": "^0.0.53",
     "jsdom": "^29.0.0",
     "lefthook": "^2.0.15",
-    "oxfmt": "^0.50.0",
+    "oxfmt": "^0.51.0",
     "oxlint": "^1.65.0",
     "scrape-youtube": "^2.4.0",
     "tailwindcss": "^4",
