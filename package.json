@@ -64,7 +64,7 @@
     "@vitest/ui": "4.1.6",
     "convex-test": "0.0.53",
     "jsdom": "29.1.1",
-    "lefthook": "2.1.6",
+    "lefthook": "2.1.8",
     "oxfmt": "0.51.0",
     "oxlint": "1.65.0",
     "scrape-youtube": "2.4.0",
