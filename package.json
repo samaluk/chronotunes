@@ -60,8 +60,8 @@
     "@types/node": "24.12.4",
     "@types/react": "19.2.15",
     "@types/react-dom": "19.2.3",
-    "@vitest/coverage-v8": "4.1.6",
-    "@vitest/ui": "4.1.6",
+    "@vitest/coverage-v8": "4.1.7",
+    "@vitest/ui": "4.1.7",
     "convex-test": "0.0.53",
     "jsdom": "29.1.1",
     "lefthook": "2.1.6",
@@ -71,6 +71,6 @@
     "tailwindcss": "4.3.0",
     "typescript": "6.0.3",
     "ultracite": "7.7.0",
-    "vitest": "4.1.6"
+    "vitest": "4.1.7"
   }
 }
