@@ -36,6 +36,7 @@ export function BetZone({
   return (
     <button
       aria-disabled={isButtonDisabled}
+      aria-label={label}
       aria-pressed={isActive}
       className={cn(
         "min-h-[56px] w-full rounded-xl border px-4 py-3 text-left transition",

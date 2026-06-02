@@ -4,7 +4,7 @@ import { Music } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { memo } from "react";
 
-export const LobbyHeader = memo(function LobbyHeader(): React.ReactNode {
+export const LobbyHeader = memo((): React.ReactNode => {
   const t = useTranslations("lobby");
 
   return (

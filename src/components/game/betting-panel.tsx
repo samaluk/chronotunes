@@ -135,15 +135,17 @@ interface ResolveRoundPanelProps {
   tTimer: ReturnType<typeof useTranslations>;
 }
 
-const buildSlotBets = (
-  safeBets: {
-    playerId: Id<"players">;
-    playerDisplayName: string;
-    lockedIn: boolean;
-    declinedToBet: boolean;
-    proposedIndex: number;
-  }[]
-) => {
+interface RoundBet {
+  playerId: Id<"players">;
+  playerDisplayName: string;
+  lockedIn: boolean;
+  declinedToBet: boolean;
+  proposedIndex: number;
+}
+
+const EMPTY_ROUND_BETS: RoundBet[] = [];
+
+const buildSlotBets = (safeBets: RoundBet[]) => {
   const map = new Map<number, SlotBetInfo[]>();
   for (const bet of safeBets) {
     if (bet.declinedToBet) {
@@ -484,7 +486,7 @@ export function BettingPanel({
     api.bets.listForRound,
     lobbyId ? { lobbyId } : "skip"
   );
-  const safeBets = existingBets ?? [];
+  const safeBets = existingBets ?? EMPTY_ROUND_BETS;
   const myBet = safeBets.find((bet) => bet.playerId === me?._id) ?? null;
   const hasLockedBet = myBet?.lockedIn ?? false;
   const hasDeclinedBet = myBet?.declinedToBet ?? false;

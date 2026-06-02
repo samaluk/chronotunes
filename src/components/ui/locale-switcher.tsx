@@ -15,7 +15,7 @@ const localeNames: Record<string, string> = {
 
 const availableLocales = ["en", "es"] as const;
 
-export const LocaleSwitcher = memo(function LocaleSwitcher(): React.ReactNode {
+export const LocaleSwitcher = memo((): React.ReactNode => {
   const t = useTranslations("locale");
   const [isOpen, setIsOpen] = useState(false);
   const locale = useLocale();
