@@ -146,27 +146,26 @@ export const submitPlacement = mutationWithSession({
 
     const playersWithBets = new Set(allBets.map((bet) => bet.playerId));
 
-    for (const p of players) {
-      if (p._id === round.turnPlayerId) {
-        continue;
-      }
-      if (playersWithBets.has(p._id)) {
-        continue;
-      }
-      if (p.coins >= 1) {
-        continue;
-      }
+    const playersToDecline = players.filter(
+      (p) =>
+        p._id !== round.turnPlayerId &&
+        !playersWithBets.has(p._id) &&
+        p.coins < 1
+    );
 
-      await ctx.db.insert("roundBets", {
-        declinedToBet: true,
-        lockedIn: false,
-        placedAt: Date.now(),
-        playerId: p._id,
-        proposedIndex: 0,
-        roundId: round._id,
-        status: "pending",
-      });
-    }
+    await Promise.all(
+      playersToDecline.map((p) =>
+        ctx.db.insert("roundBets", {
+          declinedToBet: true,
+          lockedIn: false,
+          placedAt: Date.now(),
+          playerId: p._id,
+          proposedIndex: 0,
+          roundId: round._id,
+          status: "pending",
+        })
+      )
+    );
   },
 });
 

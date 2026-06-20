@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { existsSync, readFileSync } from "node:fs";
-import { join } from "node:path";
+import path from "node:path";
 
 interface TrackData {
   artist: string;
@@ -129,7 +129,7 @@ async function importChunk(
 }
 
 async function importTracks(): Promise<void> {
-  const csvPath = join(
+  const csvPath = path.join(
     process.cwd(),
     "convex",
     "HITSTER - Español Temazos.csv"
@@ -152,6 +152,8 @@ async function importTracks(): Promise<void> {
   let imported = 0;
   let failed = 0;
 
+  // Process chunks sequentially to avoid overwhelming the import endpoint.
+  /* oxlint-disable eslint/no-await-in-loop */
   for (let i = 0; i < tracks.length; i += chunkSize) {
     const chunk = tracks.slice(i, i + chunkSize);
     const result = await importChunk(chunk, i, tracks.length, i === 0);
@@ -162,6 +164,7 @@ async function importTracks(): Promise<void> {
       `\rProgress: ${result.progress}% (${imported}/${tracks.length} imported)`
     );
   }
+  /* oxlint-enable eslint/no-await-in-loop */
 
   console.log("\n\nImport complete!");
   console.log(`  Imported: ${imported}`);

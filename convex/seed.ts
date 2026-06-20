@@ -287,9 +287,9 @@ export const seed = mutation({
   handler: async (ctx) => {
     const existingTracks = await ctx.db.query("tracks").collect();
     if (existingTracks.length > 0) {
-      for (const track of existingTracks) {
-        await ctx.db.delete(track._id);
-      }
+      await Promise.all(
+        existingTracks.map((track) => ctx.db.delete(track._id))
+      );
     }
 
     const lobbyId = await ctx.db.insert("lobbies", {

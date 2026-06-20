@@ -131,6 +131,7 @@ const applyLockedBets = async (
   const awardedPlayerIds: Id<"players">[] = [];
   const coinDeltas: { playerId: Id<"players">; delta: number }[] = [];
 
+  /* oxlint-disable eslint/no-await-in-loop -- bet outcomes mutate shared timeline state */
   for (const bet of lockedBets) {
     const bettorWasCorrect = isPlacementCorrect(bet.proposedIndex, validRange);
 
@@ -159,6 +160,7 @@ const applyLockedBets = async (
     coinDeltas.push({ delta: 0, playerId: bet.playerId });
     await ctx.db.patch(bet._id, { status: "won" });
   }
+  /* oxlint-enable eslint/no-await-in-loop */
 
   return { awardedPlayerIds, coinDeltas };
 };
@@ -245,6 +247,7 @@ export const start = mutationWithSession({
       { trackId: Id<"tracks">; year: number }
     >();
 
+    /* oxlint-disable eslint/no-await-in-loop -- each player must claim a unique track */
     for (const player of players) {
       const availableTracks = tracks.filter((t) => !usedTrackIds.has(t._id));
 
@@ -273,6 +276,7 @@ export const start = mutationWithSession({
         timelineSize: 1,
       });
     }
+    /* oxlint-enable eslint/no-await-in-loop */
 
     let startingPlayerId: Id<"players"> | null = null;
     let oldestYear = Number.POSITIVE_INFINITY;
@@ -602,13 +606,15 @@ export const playAgain = mutationWithSession({
 
     const players = await getLobbyPlayers(ctx, lobbyId);
 
-    for (const player of players) {
-      await ctx.db.patch(player._id, {
-        coins: lobby.settings.startingCoins,
-        timeline: [],
-        timelineSize: 0,
-      });
-    }
+    await Promise.all(
+      players.map((player) =>
+        ctx.db.patch(player._id, {
+          coins: lobby.settings.startingCoins,
+          timeline: [],
+          timelineSize: 0,
+        })
+      )
+    );
 
     if (lobby.activeGameId) {
       const rounds = await ctx.db
@@ -616,9 +622,7 @@ export const playAgain = mutationWithSession({
         .filter((q) => q.eq(q.field("gameId"), lobby.activeGameId))
         .collect();
 
-      for (const round of rounds) {
-        await ctx.db.delete(round._id);
-      }
+      await Promise.all(rounds.map((round) => ctx.db.delete(round._id)));
 
       const game = await ctx.db.get(lobby.activeGameId);
 

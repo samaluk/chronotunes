@@ -191,32 +191,40 @@ export const importTracksFromCsv = mutation({
 
     const importedIds: string[] = [];
     const now = Date.now();
-    let hasErrors = false;
 
-    for (const track of tracks) {
-      try {
-        validateTrackItem(track);
+    const importResults = await Promise.all(
+      tracks.map(async (track) => {
+        try {
+          validateTrackItem(track);
 
-        const trackId = await ctx.db.insert("tracks", {
-          artist: track.artist.trim(),
-          createdAt: now,
-          externalIds: buildExternalIds(track),
-          links: buildLinks(track),
-          source: "import",
-          title: track.title.trim(),
-          year: track.year,
-          ...(track.mbid ? { mbid: track.mbid.trim() } : {}),
-          ...(track.durationMs === undefined
-            ? {}
-            : { durationMs: track.durationMs }),
-        });
+          const trackId = await ctx.db.insert("tracks", {
+            artist: track.artist.trim(),
+            createdAt: now,
+            externalIds: buildExternalIds(track),
+            links: buildLinks(track),
+            source: "import",
+            title: track.title.trim(),
+            year: track.year,
+            ...(track.mbid ? { mbid: track.mbid.trim() } : {}),
+            ...(track.durationMs === undefined
+              ? {}
+              : { durationMs: track.durationMs }),
+          });
 
-        importedIds.push(trackId);
-      } catch (error) {
-        hasErrors = true;
-        console.error(`Failed to import track "${track.title}":`, error);
+          return { success: true as const, trackId };
+        } catch (error) {
+          console.error(`Failed to import track "${track.title}":`, error);
+          return { success: false as const };
+        }
+      })
+    );
+
+    for (const result of importResults) {
+      if (result.success) {
+        importedIds.push(result.trackId);
       }
     }
+    const hasErrors = importResults.some((result) => !result.success);
 
     return {
       deletedCount,

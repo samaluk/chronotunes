@@ -11,10 +11,12 @@ export default defineConfig({
         resolve: {
           alias: [
             {
+              // oxlint-disable-next-line eslint/prefer-named-capture-group -- ES2017 target disallows named groups in tsc
               find: /^@\/convex\/(.*)$/u,
               replacement: path.resolve(import.meta.dirname, "convex/$1"),
             },
             {
+              // oxlint-disable-next-line eslint/prefer-named-capture-group -- ES2017 target disallows named groups in tsc
               find: /^@\/(.*)$/u,
               replacement: path.resolve(import.meta.dirname, "src/$1"),
             },
