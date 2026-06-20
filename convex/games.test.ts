@@ -311,18 +311,20 @@ async function seedMoreTestTracks(
   count = 10
 ) {
   await t.run(async (ctx) => {
-    for (let i = 0; i < count; i++) {
-      const year = 1950 + i * 5;
-      await ctx.db.insert("tracks", {
-        artist: `Test Artist ${i}`,
-        createdAt: Date.now(),
-        externalIds: { youtubeVideoId: `abc${i}` },
-        links: {},
-        source: "test",
-        title: `Test Song ${i}`,
-        year,
-      });
-    }
+    await Promise.all(
+      Array.from({ length: count }, (_, i) => {
+        const year = 1950 + i * 5;
+        return ctx.db.insert("tracks", {
+          artist: `Test Artist ${i}`,
+          createdAt: Date.now(),
+          externalIds: { youtubeVideoId: `abc${i}` },
+          links: {},
+          source: "test",
+          title: `Test Song ${i}`,
+          year,
+        });
+      })
+    );
   });
 }
 
@@ -400,22 +402,28 @@ async function placeDummyBets(
   const placementIndex = round?.placement?.proposedIndex ?? 0;
   const proposedIndex = placementIndex === 0 ? 1 : 0;
 
-  for (const player of players) {
-    if (player._id === turnPlayerId) {
-      continue;
-    }
+  const nonTurnPlayers = players.filter(
+    (player) => player._id !== turnPlayerId
+  );
 
-    await t.mutation(api.bets.preview, {
-      lobbyId: lobbyId as Id<"lobbies">,
-      proposedIndex,
-      sessionId: asSessionId(player.sessionId),
-    });
+  await Promise.all(
+    nonTurnPlayers.map((player) =>
+      t.mutation(api.bets.preview, {
+        lobbyId: lobbyId as Id<"lobbies">,
+        proposedIndex,
+        sessionId: asSessionId(player.sessionId),
+      })
+    )
+  );
 
-    await t.mutation(api.bets.lockIn, {
-      lobbyId: lobbyId as Id<"lobbies">,
-      sessionId: asSessionId(player.sessionId),
-    });
-  }
+  await Promise.all(
+    nonTurnPlayers.map((player) =>
+      t.mutation(api.bets.lockIn, {
+        lobbyId: lobbyId as Id<"lobbies">,
+        sessionId: asSessionId(player.sessionId),
+      })
+    )
+  );
 }
 
 async function declineAllNonTurnPlayers(
@@ -435,16 +443,18 @@ async function declineAllNonTurnPlayers(
         .collect()
   );
 
-  for (const player of players) {
-    if (player._id === turnPlayerId) {
-      continue;
-    }
+  const nonTurnPlayers = players.filter(
+    (player) => player._id !== turnPlayerId
+  );
 
-    await t.mutation(api.rounds.declineBet, {
-      lobbyId: lobbyId as Id<"lobbies">,
-      sessionId: asSessionId(player.sessionId),
-    });
-  }
+  await Promise.all(
+    nonTurnPlayers.map((player) =>
+      t.mutation(api.rounds.declineBet, {
+        lobbyId: lobbyId as Id<"lobbies">,
+        sessionId: asSessionId(player.sessionId),
+      })
+    )
+  );
 }
 
 test("skipTurn rejects when caller is not host", async () => {
@@ -655,17 +665,19 @@ test("resolveAndNext handles no tracks available", async () => {
   const t = convexTest(schema, modules);
 
   await t.run(async (ctx) => {
-    for (let i = 0; i < 3; i++) {
-      await ctx.db.insert("tracks", {
-        artist: "Test Artist",
-        createdAt: Date.now(),
-        externalIds: { youtubeVideoId: `abc${i}` },
-        links: {},
-        source: "test",
-        title: `Track ${i}`,
-        year: 1980 + i,
-      });
-    }
+    await Promise.all(
+      Array.from({ length: 3 }, (_, i) =>
+        ctx.db.insert("tracks", {
+          artist: "Test Artist",
+          createdAt: Date.now(),
+          externalIds: { youtubeVideoId: `abc${i}` },
+          links: {},
+          source: "test",
+          title: `Track ${i}`,
+          year: 1980 + i,
+        })
+      )
+    );
   });
 
   const { code } = await t.mutation(api.lobbies.create, {

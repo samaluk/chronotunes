@@ -1553,13 +1553,15 @@ test("listForRound returns only locked bets when showLiveBets is false", async (
   expect(turnPlayerSessionId).not.toBeNull();
   expect(nonTurnSessions.length).toBeGreaterThan(0);
 
-  for (const sessionId of nonTurnSessions) {
-    await t.mutation(api.bets.preview, {
-      lobbyId: lobby!._id,
-      proposedIndex: 1,
-      sessionId,
-    });
-  }
+  await Promise.all(
+    nonTurnSessions.map((sessionId) =>
+      t.mutation(api.bets.preview, {
+        lobbyId: lobby!._id,
+        proposedIndex: 1,
+        sessionId,
+      })
+    )
+  );
 
   const betsBeforeLock = await t.query(api.bets.listForRound, {
     lobbyId: lobby!._id,
@@ -1567,12 +1569,14 @@ test("listForRound returns only locked bets when showLiveBets is false", async (
   expect(betsBeforeLock).toHaveLength(nonTurnSessions.length);
   expect(betsBeforeLock?.every((bet) => bet.lockedIn === false)).toBeTruthy();
 
-  for (const sessionId of nonTurnSessions) {
-    await t.mutation(api.bets.lockIn, {
-      lobbyId: lobby!._id,
-      sessionId,
-    });
-  }
+  await Promise.all(
+    nonTurnSessions.map((sessionId) =>
+      t.mutation(api.bets.lockIn, {
+        lobbyId: lobby!._id,
+        sessionId,
+      })
+    )
+  );
 
   const betsAfterLock = await t.query(api.bets.listForRound, {
     lobbyId: lobby!._id,

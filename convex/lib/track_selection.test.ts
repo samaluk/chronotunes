@@ -9,17 +9,20 @@ import { asSessionId } from "./sessions";
 
 async function seedTracks(t: ReturnType<typeof convexTest>) {
   await t.run(async (ctx) => {
-    for (let year = 1950; year <= 2050; year += 5) {
-      await ctx.db.insert("tracks", {
-        artist: `Artist ${year}`,
-        createdAt: Date.now(),
-        externalIds: { youtubeVideoId: `video${year}` },
-        links: {},
-        source: "test",
-        title: `Song ${year}`,
-        year,
-      });
-    }
+    await Promise.all(
+      Array.from({ length: (2050 - 1950) / 5 + 1 }, (_, index) => {
+        const year = 1950 + index * 5;
+        return ctx.db.insert("tracks", {
+          artist: `Artist ${year}`,
+          createdAt: Date.now(),
+          externalIds: { youtubeVideoId: `video${year}` },
+          links: {},
+          source: "test",
+          title: `Song ${year}`,
+          year,
+        });
+      })
+    );
   });
 }
 
@@ -143,11 +146,11 @@ test("selectTrackForRound never returns track already used in game", async () =>
       .filter((q) => q.eq(q.field("gameId"), gameId))
       .collect();
 
-    for (const round of rounds) {
-      if (round.trackId !== firstTrack!.trackId) {
-        await ctx.db.delete(round._id);
-      }
-    }
+    await Promise.all(
+      rounds
+        .filter((round) => round.trackId !== firstTrack!.trackId)
+        .map((round) => ctx.db.delete(round._id))
+    );
   });
 
   const secondTrack = await t.run(async (ctx) => {
@@ -167,17 +170,20 @@ test("selectTrackForRound returns null if no tracks available", async () => {
   const t = convexTest(schema, modules);
 
   await t.run(async (ctx) => {
-    for (let year = 1980; year <= 1995; year += 5) {
-      await ctx.db.insert("tracks", {
-        artist: "Artist",
-        createdAt: Date.now(),
-        externalIds: { youtubeVideoId: `video${year}` },
-        links: {},
-        source: "test",
-        title: `Song ${year}`,
-        year,
-      });
-    }
+    await Promise.all(
+      Array.from({ length: (1995 - 1980) / 5 + 1 }, (_, index) => {
+        const year = 1980 + index * 5;
+        return ctx.db.insert("tracks", {
+          artist: "Artist",
+          createdAt: Date.now(),
+          externalIds: { youtubeVideoId: `video${year}` },
+          links: {},
+          source: "test",
+          title: `Song ${year}`,
+          year,
+        });
+      })
+    );
   });
 
   const { gameId } = await createGameWithPlayers(t, 1980, 2000);
@@ -190,31 +196,35 @@ test("selectTrackForRound returns null if no tracks available", async () => {
         .collect()
   );
 
-  for (const round of allRounds) {
-    await t.run(async (ctx) => {
-      const game = await ctx.db.get(gameId);
-      if (!game) {
-        return;
-      }
+  await Promise.all(
+    allRounds.map((round) =>
+      t.run(async (ctx) => {
+        const game = await ctx.db.get(gameId);
+        if (!game) {
+          return;
+        }
 
-      const players = await ctx.db
-        .query("players")
-        .filter((q) => q.eq(q.field("lobbyId"), game.lobbyId))
-        .collect();
+        const players = await ctx.db
+          .query("players")
+          .filter((q) => q.eq(q.field("lobbyId"), game.lobbyId))
+          .collect();
 
-      for (const player of players) {
-        await ctx.db.patch(player._id, {
-          timeline: player.timeline.concat({
-            earnedAtRoundNumber: 1,
-            earnedBy: "placement" as const,
-            trackId: round.trackId,
-            year: 1990,
-          }),
-          timelineSize: player.timeline.length + 1,
-        });
-      }
-    });
-  }
+        await Promise.all(
+          players.map((player) =>
+            ctx.db.patch(player._id, {
+              timeline: player.timeline.concat({
+                earnedAtRoundNumber: 1,
+                earnedBy: "placement" as const,
+                trackId: round.trackId,
+                year: 1990,
+              }),
+              timelineSize: player.timeline.length + 1,
+            })
+          )
+        );
+      })
+    )
+  );
 
   const game = await t.run(async (ctx) => await ctx.db.get(gameId));
 
@@ -238,10 +248,14 @@ test("selectTrackForRound returns null if no tracks available", async () => {
       async (ctx) => await ctx.db.query("tracks").collect()
     );
 
-    for (const track of allTracks) {
-      if (!usedTrackIds.has(track._id)) {
-        for (const player of players) {
-          await t.run(async (ctx) => {
+    const unusedTracks = allTracks.filter(
+      (track) => !usedTrackIds.has(track._id)
+    );
+
+    await Promise.all(
+      unusedTracks.flatMap((track) =>
+        players.map((player) =>
+          t.run(async (ctx) => {
             await ctx.db.patch(player._id, {
               timeline: player.timeline.concat({
                 earnedAtRoundNumber: 1,
@@ -251,10 +265,13 @@ test("selectTrackForRound returns null if no tracks available", async () => {
               }),
               timelineSize: player.timeline.length + 1,
             });
-          });
-        }
-        usedTrackIds.add(track._id);
-      }
+          })
+        )
+      )
+    );
+
+    for (const track of unusedTracks) {
+      usedTrackIds.add(track._id);
     }
   }
 
@@ -274,17 +291,20 @@ test("selectTrackForRound respects year range boundaries", async () => {
   const t = convexTest(schema, modules);
 
   await t.run(async (ctx) => {
-    for (let year = 1985; year <= 1995; year++) {
-      await ctx.db.insert("tracks", {
-        artist: `Artist ${year}`,
-        createdAt: Date.now(),
-        externalIds: { youtubeVideoId: `video${year}` },
-        links: {},
-        source: "test",
-        title: `Song ${year}`,
-        year,
-      });
-    }
+    await Promise.all(
+      Array.from({ length: 1995 - 1985 + 1 }, (_, index) => {
+        const year = 1985 + index;
+        return ctx.db.insert("tracks", {
+          artist: `Artist ${year}`,
+          createdAt: Date.now(),
+          externalIds: { youtubeVideoId: `video${year}` },
+          links: {},
+          source: "test",
+          title: `Song ${year}`,
+          year,
+        });
+      })
+    );
   });
 
   const { gameId } = await createGameWithPlayers(t, 1985, 1995);

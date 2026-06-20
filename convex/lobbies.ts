@@ -79,6 +79,7 @@ export const create = mutationWithSession({
 
     let code: string;
     const maxAttempts = 10;
+    /* oxlint-disable eslint/no-await-in-loop -- retry until a unique lobby code is found */
     for (let attempt = 0; attempt < maxAttempts; attempt++) {
       code = generateLobbyCode();
       const existing = await ctx.db
@@ -92,6 +93,7 @@ export const create = mutationWithSession({
         throw new ConvexError("Failed to generate unique lobby code");
       }
     }
+    /* oxlint-enable eslint/no-await-in-loop */
 
     const lobbyId = await ctx.db.insert("lobbies", {
       code: code!,

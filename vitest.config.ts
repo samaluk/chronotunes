@@ -11,12 +11,12 @@ export default defineConfig({
         resolve: {
           alias: [
             {
-              find: /^@\/convex\/(.*)$/u,
-              replacement: path.resolve(import.meta.dirname, "convex/$1"),
+              find: /^@\/convex\/(?<path>.*)$/u,
+              replacement: path.resolve(import.meta.dirname, "convex/$<path>"),
             },
             {
-              find: /^@\/(.*)$/u,
-              replacement: path.resolve(import.meta.dirname, "src/$1"),
+              find: /^@\/(?<path>.*)$/u,
+              replacement: path.resolve(import.meta.dirname, "src/$<path>"),
             },
           ],
         },

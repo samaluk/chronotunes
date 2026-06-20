@@ -202,23 +202,25 @@ export async function createWithPlayers(
       })
     );
 
-    for (let i = 0; i < playerCount; i++) {
-      const override = options.playerOverrides?.[i];
-      const playerData = resolvePlayerOverrides(override, i, settings);
+    playerIds.push(
+      ...(await Promise.all(
+        Array.from({ length: playerCount }, (_, i) => {
+          const override = options.playerOverrides?.[i];
+          const playerData = resolvePlayerOverrides(override, i, settings);
 
-      playerIds.push(
-        await ctx.db.insert("players", {
-          coins: playerData.coins,
-          createdAt: Date.now(),
-          displayName: playerData.displayName,
-          isHost: false,
-          lobbyId,
-          sessionId: playerData.sessionId,
-          timeline: playerData.timeline,
-          timelineSize: playerData.timelineSize,
+          return ctx.db.insert("players", {
+            coins: playerData.coins,
+            createdAt: Date.now(),
+            displayName: playerData.displayName,
+            isHost: false,
+            lobbyId,
+            sessionId: playerData.sessionId,
+            timeline: playerData.timeline,
+            timelineSize: playerData.timelineSize,
+          });
         })
-      );
-    }
+      ))
+    );
   });
 
   if (!lobbyId) {

@@ -62,17 +62,14 @@ export async function createMany(
     lockedIn?: boolean;
   } = {}
 ): Promise<{ id: Id<"roundBets">; record: RoundBet }[]> {
-  const results: { id: Id<"roundBets">; record: RoundBet }[] = [];
-
-  for (const playerId of playerIds) {
-    const result = await create(t, roundId, playerId, {
-      lockedIn: options.lockedIn ?? false,
-      proposedIndex: options.proposedIndex ?? 0,
-    });
-    results.push(result);
-  }
-
-  return results;
+  return await Promise.all(
+    playerIds.map((playerId) =>
+      create(t, roundId, playerId, {
+        lockedIn: options.lockedIn ?? false,
+        proposedIndex: options.proposedIndex ?? 0,
+      })
+    )
+  );
 }
 
 export async function findByPlayerAndRound(

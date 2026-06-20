@@ -137,6 +137,8 @@ async function main() {
 
   const results = [];
 
+  // Sequential requests are intentional for YouTube API rate limiting.
+  /* oxlint-disable eslint/no-await-in-loop */
   for (let i = 0; i < TEST_TRACKS.length; i++) {
     const track = TEST_TRACKS[i];
     process.stdout.write(`${i + 1}/${TEST_TRACKS.length}: `);
@@ -149,6 +151,7 @@ async function main() {
       await new Promise((resolve) => setTimeout(resolve, 1000));
     }
   }
+  /* oxlint-enable eslint/no-await-in-loop */
 
   console.log("\n\nGenerating updated seed file...\n");
 

@@ -200,27 +200,28 @@ export const importTracks = mutation({
     const importedIds: string[] = [];
     const now = Date.now();
 
-    for (const track of tracks) {
-      validateTrackItem(track);
+    const trackIds = await Promise.all(
+      tracks.map((track) => {
+        validateTrackItem(track);
 
-      const trackId = await ctx.db.insert("tracks", {
-        artist: track.artist.trim(),
-        createdAt: now,
-        externalIds: track.youtubeVideoId
-          ? { youtubeVideoId: track.youtubeVideoId.trim() }
-          : {},
-        links: {},
-        source: "import",
-        title: track.title.trim(),
-        year: track.year,
-        ...(track.mbid ? { mbid: track.mbid.trim() } : {}),
-        ...(track.durationMs === undefined
-          ? {}
-          : { durationMs: track.durationMs }),
-      });
-
-      importedIds.push(trackId);
-    }
+        return ctx.db.insert("tracks", {
+          artist: track.artist.trim(),
+          createdAt: now,
+          externalIds: track.youtubeVideoId
+            ? { youtubeVideoId: track.youtubeVideoId.trim() }
+            : {},
+          links: {},
+          source: "import",
+          title: track.title.trim(),
+          year: track.year,
+          ...(track.mbid ? { mbid: track.mbid.trim() } : {}),
+          ...(track.durationMs === undefined
+            ? {}
+            : { durationMs: track.durationMs }),
+        });
+      })
+    );
+    importedIds.push(...trackIds);
 
     return { importedCount: importedIds.length, trackIds: importedIds };
   },

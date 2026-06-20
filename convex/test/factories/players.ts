@@ -71,22 +71,18 @@ export async function createMany(
   count: number,
   overrides: PlayerOverrides = {}
 ): Promise<{ id: Id<"players">; record: Player }[]> {
-  const results: { id: Id<"players">; record: Player }[] = [];
+  return await Promise.all(
+    Array.from({ length: count }, (_, i) => {
+      const isHost = overrides.isHost ?? i === 0;
+      const index = i + 1;
+      const data = buildPlayerData(lobbyId, { ...overrides, isHost }, index);
 
-  for (let i = 0; i < count; i++) {
-    const isHost = overrides.isHost ?? i === 0;
-    const index = i + 1;
-    const data = buildPlayerData(lobbyId, { ...overrides, isHost }, index);
-    let playerId: Id<"players"> | null = null;
-
-    await t.run(async (ctx: MutationCtx) => {
-      playerId = await ctx.db.insert("players", data);
-    });
-
-    results.push({ id: playerId!, record: data });
-  }
-
-  return results;
+      return t.run(async (ctx: MutationCtx) => {
+        const playerId = await ctx.db.insert("players", data);
+        return { id: playerId, record: data };
+      });
+    })
+  );
 }
 
 export function createWithTimeline(

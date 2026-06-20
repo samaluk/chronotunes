@@ -1,5 +1,8 @@
 #!/usr/bin/env node
 
+import fs from "node:fs";
+import path from "node:path";
+
 import { youtube } from "scrape-youtube";
 
 const TEST_TRACKS = [
@@ -150,15 +153,14 @@ async function searchTrack(
 }
 
 async function main() {
-  const fs = await import("node:fs");
-  const path = await import("node:path");
-
   console.log(
     `Fetching YouTube video IDs for ${TEST_TRACKS.length} tracks...\n`
   );
 
   const results: TrackResult[] = [];
 
+  // Sequential requests are intentional for YouTube API rate limiting.
+  /* oxlint-disable eslint/no-await-in-loop */
   for (let i = 0; i < TEST_TRACKS.length; i++) {
     const track = TEST_TRACKS[i];
     process.stdout.write(`${i + 1}/${TEST_TRACKS.length}: `);
@@ -171,6 +173,7 @@ async function main() {
       await new Promise((resolve) => setTimeout(resolve, 2000));
     }
   }
+  /* oxlint-enable eslint/no-await-in-loop */
 
   console.log("\n\nGenerating updated seed file...\n");
 

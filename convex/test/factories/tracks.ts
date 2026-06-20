@@ -58,20 +58,17 @@ export async function createMany(
   options: { startIndex?: number } = {}
 ): Promise<{ id: Id<"tracks">; record: Track }[]> {
   const startIndex = options.startIndex ?? 1;
-  const results: { id: Id<"tracks">; record: Track }[] = [];
 
-  for (let i = 0; i < count; i++) {
-    const data = buildTrackData(overrides, startIndex + i);
-    let trackId: Id<"tracks"> | null = null;
+  return await Promise.all(
+    Array.from({ length: count }, (_, i) => {
+      const data = buildTrackData(overrides, startIndex + i);
 
-    await t.run(async (ctx: MutationCtx) => {
-      trackId = await ctx.db.insert("tracks", data);
-    });
-
-    results.push({ id: trackId!, record: data });
-  }
-
-  return results;
+      return t.run(async (ctx: MutationCtx) => {
+        const trackId = await ctx.db.insert("tracks", data);
+        return { id: trackId, record: data };
+      });
+    })
+  );
 }
 
 export function createWithYear(
