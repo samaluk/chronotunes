@@ -21,7 +21,7 @@ runs:
 
     # Composite actions do not pass setup-node's PATH to nested JS actions; standalone
     # installs @pnpm/exe without using the runner's default Node 20.
-    - uses: pnpm/action-setup@v6.0.8
+    - uses: pnpm/action-setup@v6.0.9
       with:
         standalone: true
         # GitHub-hosted runners benefit from actions/cache; self-hosted uses PNPM_STORE_DIR above.
