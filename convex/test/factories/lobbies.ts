@@ -182,12 +182,13 @@ export async function createWithPlayers(
   const playerIds: Id<"players">[] = [];
 
   await t.run(async (ctx: MutationCtx) => {
-    lobbyId = await ctx.db.insert("lobbies", {
+    const insertedLobbyId = await ctx.db.insert("lobbies", {
       code,
       hostSessionId,
       settings,
       status,
     });
+    lobbyId = insertedLobbyId;
 
     playerIds.push(
       await ctx.db.insert("players", {
@@ -195,7 +196,7 @@ export async function createWithPlayers(
         createdAt: Date.now(),
         displayName: hostName,
         isHost: true,
-        lobbyId,
+        lobbyId: insertedLobbyId,
         sessionId: hostSessionId,
         timeline: [],
         timelineSize: 0,
@@ -213,7 +214,7 @@ export async function createWithPlayers(
             createdAt: Date.now(),
             displayName: playerData.displayName,
             isHost: false,
-            lobbyId,
+            lobbyId: insertedLobbyId,
             sessionId: playerData.sessionId,
             timeline: playerData.timeline,
             timelineSize: playerData.timelineSize,
