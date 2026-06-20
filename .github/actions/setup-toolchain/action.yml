@@ -1,0 +1,28 @@
+name: Setup Node and pnpm
+description: Install Node and pnpm versions from the root package.json
+
+runs:
+  using: composite
+  steps:
+    # Self-hosted runners should not use GitHub's remote cache service — it uploads and
+    # downloads over the network even when the runner is on the same machine, which is
+    # slow and wasteful. Use RUNNER_TOOL_CACHE instead (see community discussion #18549).
+    - name: Configure local caches on self-hosted runners
+      if: runner.environment == 'self-hosted'
+      shell: bash
+      run: |
+        mkdir -p "$RUNNER_TOOL_CACHE/pnpm-store"
+        echo "PNPM_STORE_DIR=$RUNNER_TOOL_CACHE/pnpm-store" >> "$GITHUB_ENV"
+
+    # Node must be installed before pnpm 11.x (requires Node >=22.13).
+    - uses: actions/setup-node@v6.4.0
+      with:
+        node-version-file: package.json
+
+    # Composite actions do not pass setup-node's PATH to nested JS actions; standalone
+    # installs @pnpm/exe without using the runner's default Node 20.
+    - uses: pnpm/action-setup@v6.0.8
+      with:
+        standalone: true
+        # GitHub-hosted runners benefit from actions/cache; self-hosted uses PNPM_STORE_DIR above.
+        cache: ${{ runner.environment != 'self-hosted' }}

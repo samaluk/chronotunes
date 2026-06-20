@@ -42,3 +42,14 @@ pnpm next:typegen
 pnpm convex:typegen
 pnpm test
 ```
+
+## CI / self-hosted runners
+
+CI runs on GitHub-hosted `ubuntu-latest` by default. To opt into a self-hosted runner, set repository variables under **Settings → Actions → Variables**:
+
+| Variable                    | Value                                                  |
+| --------------------------- | ------------------------------------------------------ |
+| `USE_SELF_HOSTED_RUNNERS`   | `true` to enable                                       |
+| `SELF_HOSTED_RUNNER_LABELS` | (optional) JSON array, e.g. `["self-hosted", "macOS"]` |
+
+Leave `USE_SELF_HOSTED_RUNNERS` unset to keep using `ubuntu-latest`.
