@@ -12,8 +12,8 @@ importers:
         specifier: 1.5.0
         version: 1.5.0(@date-fns/tz@1.4.1)(@types/react@19.2.17)(date-fns@4.2.1)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
       '@convex-dev/presence':
-        specifier: 0.3.0
-        version: 0.3.0(convex@1.41.0(react@19.2.7))(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
+        specifier: 0.3.1
+        version: 0.3.1(convex@1.41.0(react@19.2.7))(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
       '@daypicker/react':
         specifier: 10.0.1
         version: 10.0.1(@types/react@19.2.17)(react@19.2.7)
@@ -357,8 +357,8 @@ packages:
     resolution: {integrity: sha512-S0My7XPGIgpRWMDG8uRqalbgT+a6FmCUdOW+HaIOVVpUPHOb7RrpvjTjiODadKp06fsrVDJZlIzc6yCTp4AnxA==}
     engines: {node: '>= 20.12.0'}
 
-  '@convex-dev/presence@0.3.0':
-    resolution: {integrity: sha512-adV+ao1L77u+egobyJabNwuai/0y/VgzMbqZiy+Q49JmX6fbSaiYg6FpFVACqPaq3giOfjrN2k+5mK2jTAUG0g==}
+  '@convex-dev/presence@0.3.1':
+    resolution: {integrity: sha512-dDjMCGtbxkLlZJI+z5CHAT7qg2+Nww1I/SUVeK9ZZxDkg7e7WAbxzaUUx9HxtXW5vzXXIduyVLqJ54eC1YW3UA==}
     peerDependencies:
       convex: ^1.24.8
       expo-crypto: '>=14.1.0'
@@ -4910,7 +4910,7 @@ snapshots:
       fast-wrap-ansi: 0.2.0
       sisteransi: 1.0.5
 
-  '@convex-dev/presence@0.3.0(convex@1.41.0(react@19.2.7))(react-dom@19.2.7(react@19.2.7))(react@19.2.7)':
+  '@convex-dev/presence@0.3.1(convex@1.41.0(react@19.2.7))(react-dom@19.2.7(react@19.2.7))(react@19.2.7)':
     dependencies:
       convex: 1.41.0(react@19.2.7)
       react: 19.2.7
