@@ -39,8 +39,8 @@ importers:
         specifier: 8.6.0
         version: 8.6.0(react@19.2.7)
       fluid-tailwindcss:
-        specifier: 1.1.5
-        version: 1.1.5(tailwindcss@4.3.1)
+        specifier: 1.1.7
+        version: 1.1.7(tailwindcss@4.3.1)
       input-otp:
         specifier: 1.4.2
         version: 1.4.2(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
@@ -2952,8 +2952,8 @@ packages:
   flatted@3.4.2:
     resolution: {integrity: sha512-PjDse7RzhcPkIJwy5t7KPWQSZ9cAbzQXcafsetQoD7sOJRQlGikNbx7yZp2OotDnJyrDcbyRq3Ttb18iYOqkxA==}
 
-  fluid-tailwindcss@1.1.5:
-    resolution: {integrity: sha512-Hw9qC1NXCesC5rkueo1JwgZSjC6DQBsapLkm7qrdsB8GWdYtGBu62Npng3JyorvGGefVrgoU1e1RoVRyu6ypTw==}
+  fluid-tailwindcss@1.1.7:
+    resolution: {integrity: sha512-aSsF2IvZ9Jhqbz0S0JTpPZNixSZ8CLQMbPAWpQzJcVEOwPqQAdNdwlUbtoUo1hAhHFzwFbJu255ZNKwXO1UaSA==}
     peerDependencies:
       tailwindcss: ^4.0.0
 
@@ -7017,7 +7017,7 @@ snapshots:
 
   flatted@3.4.2: {}
 
-  fluid-tailwindcss@1.1.5(tailwindcss@4.3.1):
+  fluid-tailwindcss@1.1.7(tailwindcss@4.3.1):
     dependencies:
       tailwindcss: 4.3.1
 
