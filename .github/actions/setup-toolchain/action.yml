@@ -24,5 +24,8 @@ runs:
     - uses: pnpm/action-setup@v6.0.9
       with:
         standalone: true
+        # Self-hosted runners run concurrent jobs on one machine; the default ~/setup-pnpm
+        # is shared and pnpm version switches in one job can break another job's shims.
+        dest: ${{ runner.environment == 'self-hosted' && format('{0}/setup-pnpm', runner.temp) || '~/setup-pnpm' }}
         # GitHub-hosted runners benefit from actions/cache; self-hosted uses PNPM_STORE_DIR above.
         cache: ${{ runner.environment != 'self-hosted' }}
