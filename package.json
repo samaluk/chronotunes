@@ -62,7 +62,7 @@
     "@types/react-dom": "19.2.3",
     "@vitest/coverage-v8": "4.1.9",
     "@vitest/ui": "4.1.9",
-    "convex-test": "0.0.53",
+    "convex-test": "0.0.54",
     "jsdom": "29.1.1",
     "lefthook": "2.1.9",
     "oxfmt": "0.56.0",
