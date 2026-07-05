@@ -151,8 +151,8 @@ importers:
         specifier: 6.0.3
         version: 6.0.3
       ultracite:
-        specifier: 7.8.3
-        version: 7.8.3(oxfmt@0.57.0)(oxlint@1.72.0)
+        specifier: 7.8.4
+        version: 7.8.4(oxfmt@0.57.0)(oxlint@1.72.0)
       vitest:
         specifier: 4.1.9
         version: 4.1.9(@edge-runtime/vm@5.0.0)(@types/node@24.13.2)(@vitest/coverage-v8@4.1.9)(@vitest/ui@4.1.9)(jsdom@29.1.1(@noble/hashes@1.8.0))(msw@2.14.6(@types/node@24.13.2)(typescript@6.0.3))(vite@7.3.1(@types/node@24.13.2)(jiti@2.7.0)(lightningcss@1.32.0)(yaml@2.9.0))
@@ -4313,8 +4313,8 @@ packages:
     resolution: {integrity: sha512-LbBDqdIC5s8iROCUjMbW1f5dJQTEFB1+KO9ogbvlb3nm9n4YHa5p4KTvFPWvh2Hs8gZMBuiB1/8+pdfe/tDPug==}
     hasBin: true
 
-  ultracite@7.8.3:
-    resolution: {integrity: sha512-Fsj9aYJfh57uDB6DrdKVafKhF0QNekwqTrZKoTMYePjZp1npyFCnfZVj2SnPZdOcxAGHJfmLYUIDq0YPh8acVA==}
+  ultracite@7.8.4:
+    resolution: {integrity: sha512-Lqd1k8sr7xT3QY+2x6qA72TFkA3r1Z7QvCUbOFBOeGAVdwBG43RPSvhTuEpZOgbdINFBcJ/v6dK2tyT4inPDTQ==}
     hasBin: true
     peerDependencies:
       oxfmt: '>=0.1.0'
@@ -8372,7 +8372,7 @@ snapshots:
 
   ua-parser-js@1.0.41: {}
 
-  ultracite@7.8.3(oxfmt@0.57.0)(oxlint@1.72.0):
+  ultracite@7.8.4(oxfmt@0.57.0)(oxlint@1.72.0):
     dependencies:
       '@clack/prompts': 1.5.1
       commander: 15.0.0
