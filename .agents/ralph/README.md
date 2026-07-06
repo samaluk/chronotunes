@@ -47,8 +47,7 @@ This creates `.agents/ralph/` in the current repo so you can customize prompts a
 ralph install --skills
 ```
 
-You’ll be prompted for agent (codex/claude/droid/opencode) and local vs global install. Skills installed: **commit**, **dev-browser**, **prd**.
-If you skipped skills during `ralph install`, you can run `ralph install --skills` anytime.
+You’ll be prompted for agent (codex/claude/droid/opencode) and local vs global install. Skills installed: **commit**, **dev-browser**, **prd**. If you skipped skills during `ralph install`, you can run `ralph install --skills` anytime.
 
 ## Quick start (project)
 

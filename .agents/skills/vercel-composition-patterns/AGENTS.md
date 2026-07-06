@@ -39,8 +39,7 @@ Composition patterns for building flexible, maintainable React components. Avoid
 
 **Impact: HIGH**
 
-Fundamental patterns for structuring components to avoid prop
-proliferation and enable flexible composition.
+Fundamental patterns for structuring components to avoid prop proliferation and enable flexible composition.
 
 ### 1.1 Avoid Boolean Prop Proliferation
 
@@ -257,8 +256,7 @@ Consumers explicitly compose exactly what they need. No hidden conditionals. And
 
 **Impact: MEDIUM**
 
-Patterns for lifting state and managing shared context across
-composed components.
+Patterns for lifting state and managing shared context across composed components.
 
 ### 2.1 Decouple State Management from UI
 
@@ -703,8 +701,7 @@ nested inside each other—they just need to be within the same provider.
 
 **Impact: MEDIUM**
 
-Specific techniques for implementing compound components and
-context providers.
+Specific techniques for implementing compound components and context providers.
 
 ### 3.1 Create Explicit Component Variants
 

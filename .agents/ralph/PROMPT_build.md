@@ -26,11 +26,9 @@ You are an autonomous coding agent. Your task is to complete the work for exactl
 
 ## Selected Story (Do not change scope)
 
-ID: {{STORY_ID}}
-Title: {{STORY_TITLE}}
+ID: {{STORY_ID}} Title: {{STORY_TITLE}}
 
-Story details:
-{{STORY_BLOCK}}
+Story details: {{STORY_BLOCK}}
 
 If the story details are empty or missing, STOP and report that the PRD story format could not be parsed.
 
@@ -67,10 +65,8 @@ If the story details are empty or missing, STOP and report that the PRD story fo
 10. If No-commit is false, commit changes using the `$commit` skill.
     - Stage everything: `git add -A`
     - Confirm a clean working tree after commit: `git status --porcelain` should be empty.
-    - After committing, capture the commit hash and subject using:
-      `git show -s --format="%h %s" HEAD`.
-11. Append a progress entry to {{PROGRESS_PATH}} with run/commit/test details (format below).
-    If No-commit is true, skip committing and note it in the progress entry.
+    - After committing, capture the commit hash and subject using: `git show -s --format="%h %s" HEAD`.
+11. Append a progress entry to {{PROGRESS_PATH}} with run/commit/test details (format below). If No-commit is true, skip committing and note it in the progress entry.
 
 ## Progress Entry Format (Append Only)
 
@@ -100,9 +96,7 @@ Run summary: {{RUN_META_PATH}}
 
 ## Completion Signal
 
-Only output the completion signal when the **selected story** is fully complete and verified.
-When the selected story is complete, output:
-<promise>COMPLETE</promise>
+Only output the completion signal when the **selected story** is fully complete and verified. When the selected story is complete, output: <promise>COMPLETE</promise>
 
 Otherwise, end normally without the signal.
 

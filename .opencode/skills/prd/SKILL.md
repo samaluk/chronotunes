@@ -143,8 +143,7 @@ Output a JSON file with this shape (include detailed top-level fields so the PRD
 - Output **only** the JSON file content (no Markdown PRD)
 - Do not include extra commentary in the file
 
-After saving, tell the user:
-`PRD JSON saved to <path>. Close this chat and run \`ralph build\`.`
+After saving, tell the user: `PRD JSON saved to <path>. Close this chat and run \`ralph build\`.`
 
 If the prompt provides a **directory** (not a filename), choose a short filename:
 
@@ -155,8 +154,7 @@ If the prompt provides a **directory** (not a filename), choose a short filename
 
 ## Story Size (Critical)
 
-Each story must be completable in a **single Ralph iteration**.
-If a story feels too large, split it into multiple smaller stories with dependencies.
+Each story must be completable in a **single Ralph iteration**. If a story feels too large, split it into multiple smaller stories with dependencies.
 
 ---
 

@@ -1,9 +1,6 @@
 ## [2026-01-18 19:18:00] - S17: Submit Placement Mutation
 
-Thread:
-Run: 20260118-174814-58161 (iteration 13)
-Run log: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-174814-58161-iter-13.log
-Run summary: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-174814-58161-iter-13.md
+Thread: Run: 20260118-174814-58161 (iteration 13) Run log: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-174814-58161-iter-13.log Run summary: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-174814-58161-iter-13.md
 
 - Guardrails reviewed: yes
 - No-commit run: false
@@ -26,10 +23,7 @@ Run summary: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-174
 
 ## [2026-01-18 19:30:17] - S18: Betting Mutations
 
-Thread:
-Run: 20260118-174814-58161 (iteration 14)
-Run log: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-174814-58161-iter-14.log
-Run summary: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-174814-58161-iter-14.md
+Thread: Run: 20260118-174814-58161 (iteration 14) Run log: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-174814-58161-iter-14.log Run summary: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-174814-58161-iter-14.md
 
 - Guardrails reviewed: yes
 - No-commit run: false
@@ -56,10 +50,7 @@ Run summary: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-174
 
 ## [Date/Time] - S26: Betting Panel Component
 
-Thread:
-Run: 20260118-210256-43823 (iteration 7)
-Run log: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-210256-43823-iter-7.log
-Run summary: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-210256-43823-iter-7.md
+Thread: Run: 20260118-210256-43823 (iteration 7) Run log: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-210256-43823-iter-7.log Run summary: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-210256-43823-iter-7.md
 
 - Guardrails reviewed: yes
 - No-commit run: false
@@ -92,10 +83,7 @@ Run summary: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-210
 
 ## [2026-01-18 19:36:00] - S19: Bets List Query
 
-Thread:
-Run: 20260118-174814-58161 (iteration 15)
-Run log: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-174814-58161-iter-15.log
-Run summary: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-174814-58161-iter-15.md
+Thread: Run: 20260118-174814-58161 (iteration 15) Run log: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-174814-58161-iter-15.log Run summary: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-174814-58161-iter-15.md
 
 - Guardrails reviewed: yes
 - No-commit run: false
@@ -124,10 +112,7 @@ Run summary: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-174
 
 ## [2026-01-18 20:03:00] - S20: Placement Validation Logic
 
-Thread:
-Run: 20260118-200149-19116 (iteration 1)
-Run log: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-200149-19116-iter-1.log
-Run summary: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-200149-19116-iter-1.md
+Thread: Run: 20260118-200149-19116 (iteration 1) Run log: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-200149-19116-iter-1.log Run summary: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-200149-19116-iter-1.md
 
 - Guardrails reviewed: yes
 - No-commit run: false
@@ -154,10 +139,7 @@ Run summary: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-200
 
 ## [2026-01-18 20:01:00] - S22: Skip Turn Mutation
 
-Thread:
-Run: 20260118-195345-4266 (iteration 1)
-Run log: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-195345-4266-iter-1.log
-Run summary:
+Thread: Run: 20260118-195345-4266 (iteration 1) Run log: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-195345-4266-iter-1.log Run summary:
 
 - Guardrails reviewed: yes
 - No-commit run: false
@@ -184,10 +166,7 @@ Run summary:
 
 ## [2026-01-18 20:22:00] - S21: Round Resolution Mutation
 
-Thread:
-Run: 20260118-200149-19116 (iteration 2)
-Run log: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-200149-19116-iter-2.log
-Run summary: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-200149-19116-iter-2.md
+Thread: Run: 20260118-200149-19116 (iteration 2) Run log: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-200149-19116-iter-2.log Run summary: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-200149-19116-iter-2.md
 
 - Guardrails reviewed: yes
 - No-commit run: false
@@ -220,10 +199,7 @@ Run summary: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-200
 
 ## [2026-01-19 21:17:07] - S20: Placement Validation Logic
 
-Thread:
-Run: 20260118-210256-43823 (iteration 2)
-Run log: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-210256-43823-iter-2.log
-Run summary: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-210256-43823-iter-2.md
+Thread: Run: 20260118-210256-43823 (iteration 2) Run log: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-210256-43823-iter-2.log Run summary: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-210256-43823-iter-2.md
 
 - Guardrails reviewed: yes
 - No-commit run: false
@@ -251,10 +227,7 @@ Run summary: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-210
 
 ## [2026-01-19 02:02:00] - S21: Round Resolution Mutation
 
-Thread:
-Run: 20260118-210256-43823 (iteration 3)
-Run log: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-210256-43823-iter-3.log
-Run summary: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-210256-43823-iter-3.md
+Thread: Run: 20260118-210256-43823 (iteration 3) Run log: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-210256-43823-iter-3.log Run summary: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-210256-43823-iter-3.md
 
 - Guardrails reviewed: yes
 - No-commit run: false
@@ -282,10 +255,7 @@ Run summary: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-210
 
 ---
 
-Thread:
-Run: 20260118-210256-43823 (iteration 1)
-Run log: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-210256-43823-iter-1.log
-Run summary: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-210256-43823-iter-1.md
+Thread: Run: 20260118-210256-43823 (iteration 1) Run log: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-210256-43823-iter-1.log Run summary: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-210256-43823-iter-1.md
 
 - Guardrails reviewed: yes
 - No-commit run: false
@@ -324,10 +294,7 @@ Run summary: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-210
 
 ## [2026-01-19 21:25:00] - S22: Skip Turn Mutation
 
-Thread:
-Run: 20260118-210256-43823 (iteration 4)
-Run log: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-210256-43823-iter-4.log
-Run summary: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-210256-43823-iter-4.md
+Thread: Run: 20260118-210256-43823 (iteration 4) Run log: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-210256-43823-iter-4.log Run summary: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-210256-43823-iter-4.md
 
 - Guardrails reviewed: yes
 - No-commit run: false
@@ -357,10 +324,7 @@ Run summary: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-210
 
 ## [2026-01-19 21:42:00] - S25: Timeline Placer Component
 
-Thread:
-Run: 20260118-210256-43823 (iteration 6)
-Run log: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-210256-43823-iter-6.log
-Run summary: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-210256-43823-iter-6.md
+Thread: Run: 20260118-210256-43823 (iteration 6) Run log: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-210256-43823-iter-6.log Run summary: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-210256-43823-iter-6.md
 
 - Guardrails reviewed: yes
 - No-commit run: false
@@ -402,10 +366,7 @@ Run summary: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-210
 
 ## [2026-01-19 22:08:00] - S25: Timeline Placer Component
 
-Thread:
-Run: 20260118-210256-43823 (iteration 8)
-Run log: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-210256-43823-iter-8.log
-Run summary: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-210256-43823-iter-8.md
+Thread: Run: 20260118-210256-43823 (iteration 8) Run log: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-210256-43823-iter-8.log Run summary: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-210256-43823-iter-8.md
 
 - Guardrails reviewed: yes
 - No-commit run: false
@@ -436,10 +397,7 @@ Run summary: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-210
 
 ## [2026-01-19 22:14:00] - S25: Timeline Placer Component
 
-Thread:
-Run: 20260118-210256-43823 (iteration 9)
-Run log: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-210256-43823-iter-9.log
-Run summary: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-210256-43823-iter-9.md
+Thread: Run: 20260118-210256-43823 (iteration 9) Run log: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-210256-43823-iter-9.log Run summary: /Users/smaluk/dev/personal/chronotunes/.ralph/runs/run-20260118-210256-43823-iter-9.md
 
 - Guardrails reviewed: yes
 - No-commit run: false

@@ -212,36 +212,19 @@ The PRD will be executed by AI coding agents via ralph-tui. Therefore:
 
 **Assistant:** I'll help you create a PRD for dark mode. Let me ask a few questions:
 
-1. What is the primary goal?
-   A. Reduce eye strain for long sessions
-   B. Match system theme preference
-   C. Provide visual customization
-   D. Other
+1. What is the primary goal? A. Reduce eye strain for long sessions B. Match system theme preference C. Provide visual customization D. Other
 
-2. Should the setting persist?
-   A. Yes, save to config file
-   B. No, session only
-   C. Follow system preference
+2. Should the setting persist? A. Yes, save to config file B. No, session only C. Follow system preference
 
 **User:** 1A, 2A
 
 **Assistant:** Great! A couple more questions:
 
-3. Which components need dark mode support?
-   A. All TUI components
-   B. Only the main execution view
-   C. Main view + settings
-   D. Other
+3. Which components need dark mode support? A. All TUI components B. Only the main execution view C. Main view + settings D. Other
 
-4. What quality commands must pass for each story?
-   A. pnpm typecheck && pnpm lint
-   B. npm run typecheck && npm run lint
-   C. bun run typecheck
-   D. Other: [specify]
+4. What quality commands must pass for each story? A. pnpm typecheck && pnpm lint B. npm run typecheck && npm run lint C. bun run typecheck D. Other: [specify]
 
-5. For UI stories, include browser verification?
-   A. Yes, use dev-browser skill
-   B. No, automated tests sufficient
+5. For UI stories, include browser verification? A. Yes, use dev-browser skill B. No, automated tests sufficient
 
 **User:** 3A, 4A, 5A
 
@@ -343,8 +326,7 @@ For UI stories, also include:
 
 ## Open Questions
 
-- Should we detect system theme preference automatically in v2?
-  [/PRD]
+- Should we detect system theme preference automatically in v2? [/PRD]
 
 ---
 
