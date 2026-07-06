@@ -7,9 +7,7 @@ tags: composition, children, render-props
 
 ## Prefer Children Over Render Props
 
-Use `children` for composition instead of `renderX` props. Children are more
-readable, compose naturally, and don't require understanding callback
-signatures.
+Use `children` for composition instead of `renderX` props. Children are more readable, compose naturally, and don't require understanding callback signatures.
 
 **Incorrect (render props):**
 
@@ -83,5 +81,4 @@ return (
 />
 ```
 
-Use render props when the parent needs to provide data or state to the child.
-Use children when composing static structure.
+Use render props when the parent needs to provide data or state to the child. Use children when composing static structure.
