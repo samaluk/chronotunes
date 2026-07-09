@@ -1,0 +1,5720 @@
+{
+  "diagnostics": [
+    {
+      "message": "Remove the declaration of the unused '_roundId' variable.",
+      "code": "sonarjs(no-unused-vars)",
+      "severity": "error",
+      "causes": [],
+      "filename": "convex/games.test.ts",
+      "labels": [
+        {
+          "span": {
+            "offset": 9475,
+            "length": 8,
+            "line": 351,
+            "column": 9
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Reduce the total number of \"break\" and \"continue\" statements in this loop to use one at most.",
+      "code": "sonarjs(too-many-break-or-continue-in-loop)",
+      "severity": "error",
+      "causes": [],
+      "filename": "convex/games.ts",
+      "labels": [
+        {
+          "span": {
+            "offset": 3602,
+            "length": 3,
+            "line": 135,
+            "column": 3
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "This makes the for…of loop slow because each await runs one after another, so collect the independent calls & run them together with `await Promise.all(items.map(...))`",
+      "code": "react-doctor(async-await-in-loop)",
+      "severity": "error",
+      "causes": [],
+      "filename": "convex/games.ts",
+      "labels": [
+        {
+          "span": {
+            "offset": 3835,
+            "length": 47,
+            "line": 140,
+            "column": 7
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "This await doesn't use the previous result, so your users wait twice as long for nothing.",
+      "code": "react-doctor(server-sequential-independent-await)",
+      "severity": "error",
+      "causes": [],
+      "filename": "convex/games.ts",
+      "labels": [
+        {
+          "span": {
+            "offset": 6173,
+            "length": 237,
+            "line": 228,
+            "column": 5
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Make sure that using this pseudorandom number generator is safe here.",
+      "code": "sonarjs(pseudo-random)",
+      "severity": "error",
+      "causes": [],
+      "filename": "convex/games.ts",
+      "labels": [
+        {
+          "span": {
+            "offset": 7169,
+            "length": 13,
+            "line": 258,
+            "column": 38
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "This makes the for…of loop slow because each await runs one after another, so collect the independent calls & run them together with `await Promise.all(items.map(...))`",
+      "code": "react-doctor(async-await-in-loop)",
+      "severity": "error",
+      "causes": [],
+      "filename": "convex/games.ts",
+      "labels": [
+        {
+          "span": {
+            "offset": 7444,
+            "length": 271,
+            "line": 267,
+            "column": 7
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Make sure that using this pseudorandom number generator is safe here.",
+      "code": "sonarjs(pseudo-random)",
+      "severity": "error",
+      "causes": [],
+      "filename": "convex/games.ts",
+      "labels": [
+        {
+          "span": {
+            "offset": 8633,
+            "length": 13,
+            "line": 310,
+            "column": 36
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "These 3 sequential await statements run one after another even though they look independent, so the page waits longer than it needs to. Run them together with Promise.all() instead",
+      "code": "react-doctor(async-parallel)",
+      "severity": "error",
+      "causes": [],
+      "filename": "convex/games.ts",
+      "labels": [
+        {
+          "span": {
+            "offset": 13516,
+            "length": 43,
+            "line": 506,
+            "column": 5
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "This await doesn't use the previous result, so your users wait twice as long for nothing.",
+      "code": "react-doctor(server-sequential-independent-await)",
+      "severity": "error",
+      "causes": [],
+      "filename": "convex/games.ts",
+      "labels": [
+        {
+          "span": {
+            "offset": 14415,
+            "length": 129,
+            "line": 546,
+            "column": 5
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Use null instead.",
+      "code": "sonarjs(no-undefined-assignment)",
+      "severity": "error",
+      "causes": [],
+      "filename": "convex/games.ts",
+      "labels": [
+        {
+          "span": {
+            "offset": 15926,
+            "length": 9,
+            "line": 603,
+            "column": 21
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Filename 'host_disconnect.test.ts' does not match the regex naming convention.",
+      "code": "github(filenames-match-regex)",
+      "severity": "error",
+      "causes": [],
+      "filename": "convex/host_disconnect.test.ts",
+      "labels": [
+        {
+          "span": {
+            "offset": 0,
+            "length": 8878,
+            "line": 1,
+            "column": 1
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Make sure that using this pseudorandom number generator is safe here.",
+      "code": "sonarjs(pseudo-random)",
+      "severity": "error",
+      "causes": [],
+      "filename": "convex/host_disconnect.ts",
+      "labels": [
+        {
+          "span": {
+            "offset": 3376,
+            "length": 13,
+            "line": 118,
+            "column": 40
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Use null instead.",
+      "code": "sonarjs(no-undefined-assignment)",
+      "severity": "error",
+      "causes": [],
+      "filename": "convex/host_disconnect.ts",
+      "labels": [
+        {
+          "span": {
+            "offset": 3796,
+            "length": 9,
+            "line": 130,
+            "column": 33
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Reduce the total number of \"break\" and \"continue\" statements in this loop to use one at most.",
+      "code": "sonarjs(too-many-break-or-continue-in-loop)",
+      "severity": "error",
+      "causes": [],
+      "filename": "convex/import_tracks.ts",
+      "labels": [
+        {
+          "span": {
+            "offset": 1028,
+            "length": 3,
+            "line": 42,
+            "column": 3
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Use destructuring syntax for these assignments from \"parts\".",
+      "code": "sonarjs(destructuring-assignment-syntax)",
+      "severity": "error",
+      "causes": [],
+      "filename": "convex/import_tracks.ts",
+      "labels": [
+        {
+          "span": {
+            "offset": 1241,
+            "length": 19,
+            "line": 53,
+            "column": 11
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Remove this redundant jump.",
+      "code": "sonarjs(no-redundant-jump)",
+      "severity": "error",
+      "causes": [],
+      "filename": "convex/import_tracks.ts",
+      "labels": [
+        {
+          "span": {
+            "offset": 2617,
+            "length": 7,
+            "line": 110,
+            "column": 3
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Prefer `Math.trunc(Number(dateStr.split(\"-\")[0]))`.",
+      "code": "unicorn(prefer-number-coercion)",
+      "severity": "error",
+      "causes": [],
+      "url": "https://oxc.rs/docs/guide/usage/linter/rules/unicorn/prefer-number-coercion.html",
+      "help": "Replace this call with `Math.trunc(Number(dateStr.split(\"-\")[0]))`.",
+      "filename": "convex/import_tracks.ts",
+      "labels": [
+        {
+          "span": {
+            "offset": 2836,
+            "length": 42,
+            "line": 118,
+            "column": 16
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Filename 'game_logic.test.ts' does not match the regex naming convention.",
+      "code": "github(filenames-match-regex)",
+      "severity": "error",
+      "causes": [],
+      "filename": "convex/lib/game_logic.test.ts",
+      "labels": [
+        {
+          "span": {
+            "offset": 0,
+            "length": 6624,
+            "line": 1,
+            "column": 1
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Make sure that using this pseudorandom number generator is safe here.",
+      "code": "sonarjs(pseudo-random)",
+      "severity": "error",
+      "causes": [],
+      "filename": "convex/lib/round_management.ts",
+      "labels": [
+        {
+          "span": {
+            "offset": 1969,
+            "length": 13,
+            "line": 72,
+            "column": 26
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Filename 'track_selection.test.ts' does not match the regex naming convention.",
+      "code": "github(filenames-match-regex)",
+      "severity": "error",
+      "causes": [],
+      "filename": "convex/lib/track_selection.test.ts",
+      "labels": [
+        {
+          "span": {
+            "offset": 0,
+            "length": 8358,
+            "line": 1,
+            "column": 1
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Make sure that using this pseudorandom number generator is safe here.",
+      "code": "sonarjs(pseudo-random)",
+      "severity": "error",
+      "causes": [],
+      "filename": "convex/lib/track_selection.ts",
+      "labels": [
+        {
+          "span": {
+            "offset": 961,
+            "length": 13,
+            "line": 44,
+            "column": 34
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "These 3 sequential await statements run one after another even though they look independent, so the page waits longer than it needs to. Run them together with Promise.all() instead",
+      "code": "react-doctor(async-parallel)",
+      "severity": "error",
+      "causes": [],
+      "filename": "convex/lobbies.ts",
+      "labels": [
+        {
+          "span": {
+            "offset": 9384,
+            "length": 61,
+            "line": 368,
+            "column": 5
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "This await blocks the function before an early-return that doesn't use the awaited value, so the skip path waits for nothing. Move the await below the guard so it only runs when you need the data",
+      "code": "react-doctor(async-defer-await)",
+      "severity": "error",
+      "causes": [],
+      "filename": "convex/rounds.ts",
+      "labels": [
+        {
+          "span": {
+            "offset": 2946,
+            "length": 65,
+            "line": 118,
+            "column": 5
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "This await doesn't use the previous result, so your users wait twice as long for nothing.",
+      "code": "react-doctor(server-sequential-independent-await)",
+      "severity": "error",
+      "causes": [],
+      "filename": "convex/rounds.ts",
+      "labels": [
+        {
+          "span": {
+            "offset": 3625,
+            "length": 136,
+            "line": 142,
+            "column": 5
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Define a constant instead of duplicating this literal 3 times.",
+      "code": "sonarjs(no-duplicate-string)",
+      "severity": "error",
+      "causes": [],
+      "filename": "convex/seed.ts",
+      "labels": [
+        {
+          "span": {
+            "offset": 410,
+            "length": 13,
+            "line": 23,
+            "column": 13
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "This await doesn't use the previous result, so your users wait twice as long for nothing.",
+      "code": "react-doctor(server-sequential-independent-await)",
+      "severity": "error",
+      "causes": [],
+      "filename": "convex/seed.ts",
+      "labels": [
+        {
+          "span": {
+            "offset": 6301,
+            "length": 356,
+            "line": 323,
+            "column": 5
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Do not call `Array#push()` multiple times.",
+      "code": "unicorn(prefer-single-call)",
+      "severity": "error",
+      "causes": [],
+      "url": "https://oxc.rs/docs/guide/usage/linter/rules/unicorn/prefer-single-call.html",
+      "help": "Merge with the previous call.",
+      "filename": "convex/test/factories/lobbies.ts",
+      "labels": [
+        {
+          "span": {
+            "offset": 5953,
+            "length": 4,
+            "line": 206,
+            "column": 15
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Use null instead.",
+      "code": "sonarjs(no-undefined-assignment)",
+      "severity": "error",
+      "causes": [],
+      "filename": "convex/tracks.test.ts",
+      "labels": [
+        {
+          "span": {
+            "offset": 10568,
+            "length": 9,
+            "line": 395,
+            "column": 49
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Define a constant instead of duplicating this literal 3 times.",
+      "code": "sonarjs(no-duplicate-string)",
+      "severity": "error",
+      "causes": [],
+      "filename": "scripts/fetch-youtube-ids.cjs",
+      "labels": [
+        {
+          "span": {
+            "offset": 369,
+            "length": 13,
+            "line": 12,
+            "column": 13
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Prefer async/await to Promise.catch()",
+      "code": "github(no-then)",
+      "severity": "error",
+      "causes": [],
+      "filename": "scripts/fetch-youtube-ids.cjs",
+      "labels": [
+        {
+          "span": {
+            "offset": 8596,
+            "length": 5,
+            "line": 264,
+            "column": 8
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Define a constant instead of duplicating this literal 3 times.",
+      "code": "sonarjs(no-duplicate-string)",
+      "severity": "error",
+      "causes": [],
+      "filename": "scripts/fetch-youtube-ids.ts",
+      "labels": [
+        {
+          "span": {
+            "offset": 349,
+            "length": 13,
+            "line": 12,
+            "column": 13
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Prefer async/await to Promise.catch()",
+      "code": "github(no-then)",
+      "severity": "error",
+      "causes": [],
+      "filename": "scripts/fetch-youtube-ids.ts",
+      "labels": [
+        {
+          "span": {
+            "offset": 9214,
+            "length": 5,
+            "line": 286,
+            "column": 8
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Remove this redundant jump.",
+      "code": "sonarjs(no-redundant-jump)",
+      "severity": "error",
+      "causes": [],
+      "filename": "scripts/import-tracks.ts",
+      "labels": [
+        {
+          "span": {
+            "offset": 585,
+            "length": 7,
+            "line": 22,
+            "column": 3
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Prefer `Math.trunc(Number(dateStr.split(\"-\")[0]))`.",
+      "code": "unicorn(prefer-number-coercion)",
+      "severity": "error",
+      "causes": [],
+      "url": "https://oxc.rs/docs/guide/usage/linter/rules/unicorn/prefer-number-coercion.html",
+      "help": "Replace this call with `Math.trunc(Number(dateStr.split(\"-\")[0]))`.",
+      "filename": "scripts/import-tracks.ts",
+      "labels": [
+        {
+          "span": {
+            "offset": 724,
+            "length": 42,
+            "line": 29,
+            "column": 16
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Reduce the total number of \"break\" and \"continue\" statements in this loop to use one at most.",
+      "code": "sonarjs(too-many-break-or-continue-in-loop)",
+      "severity": "error",
+      "causes": [],
+      "filename": "scripts/import-tracks.ts",
+      "labels": [
+        {
+          "span": {
+            "offset": 904,
+            "length": 3,
+            "line": 36,
+            "column": 3
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Prefer async/await to Promise.catch()",
+      "code": "github(no-then)",
+      "severity": "error",
+      "causes": [],
+      "filename": "scripts/import-tracks.ts",
+      "labels": [
+        {
+          "span": {
+            "offset": 4765,
+            "length": 5,
+            "line": 175,
+            "column": 16
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Use default import for module `node:path`.",
+      "code": "unicorn(import-style)",
+      "severity": "error",
+      "causes": [],
+      "url": "https://oxc.rs/docs/guide/usage/linter/rules/unicorn/import-style.html",
+      "filename": "scripts/oxlint-ledger.mjs",
+      "labels": [
+        {
+          "span": {
+            "offset": 114,
+            "length": 45,
+            "line": 3,
+            "column": 1
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Reduce the number of conditional operators (4) used in the expression (maximum allowed 3).",
+      "code": "sonarjs(expression-complexity)",
+      "severity": "error",
+      "causes": [],
+      "filename": "scripts/oxlint-ledger.mjs",
+      "labels": [
+        {
+          "span": {
+            "offset": 483,
+            "length": 327,
+            "line": 14,
+            "column": 7
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Make sure the \"PATH\" variable only contains fixed, unwriteable directories.",
+      "code": "sonarjs(no-os-command-from-path)",
+      "severity": "error",
+      "causes": [],
+      "filename": "scripts/oxlint-ledger.mjs",
+      "labels": [
+        {
+          "span": {
+            "offset": 935,
+            "length": 6,
+            "line": 26,
+            "column": 5
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Prefer `utf-8` over `utf8`.",
+      "code": "unicorn(text-encoding-identifier-case)",
+      "severity": "error",
+      "causes": [],
+      "url": "https://oxc.rs/docs/guide/usage/linter/rules/unicorn/text-encoding-identifier-case.html",
+      "help": "Replace `utf8` with `utf-8`.",
+      "filename": "scripts/oxlint-ledger.mjs",
+      "labels": [
+        {
+          "span": {
+            "offset": 1091,
+            "length": 6,
+            "line": 36,
+            "column": 17
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Prefer `utf-8` over `utf8`.",
+      "code": "unicorn(text-encoding-identifier-case)",
+      "severity": "error",
+      "causes": [],
+      "url": "https://oxc.rs/docs/guide/usage/linter/rules/unicorn/text-encoding-identifier-case.html",
+      "help": "Replace `utf8` with `utf-8`.",
+      "filename": "scripts/oxlint-ledger.mjs",
+      "labels": [
+        {
+          "span": {
+            "offset": 1772,
+            "length": 6,
+            "line": 68,
+            "column": 46
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Remove this redundant jump.",
+      "code": "sonarjs(no-redundant-jump)",
+      "severity": "error",
+      "causes": [],
+      "filename": "scripts/parse-tracks.cjs",
+      "labels": [
+        {
+          "span": {
+            "offset": 412,
+            "length": 7,
+            "line": 14,
+            "column": 3
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Prefer `Math.trunc(Number(dateStr.split(\"-\")[0]))`.",
+      "code": "unicorn(prefer-number-coercion)",
+      "severity": "error",
+      "causes": [],
+      "url": "https://oxc.rs/docs/guide/usage/linter/rules/unicorn/prefer-number-coercion.html",
+      "help": "Replace this call with `Math.trunc(Number(dateStr.split(\"-\")[0]))`.",
+      "filename": "scripts/parse-tracks.cjs",
+      "labels": [
+        {
+          "span": {
+            "offset": 535,
+            "length": 42,
+            "line": 21,
+            "column": 16
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Reduce the total number of \"break\" and \"continue\" statements in this loop to use one at most.",
+      "code": "sonarjs(too-many-break-or-continue-in-loop)",
+      "severity": "error",
+      "causes": [],
+      "filename": "scripts/parse-tracks.cjs",
+      "labels": [
+        {
+          "span": {
+            "offset": 1083,
+            "length": 3,
+            "line": 49,
+            "column": 3
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Prefer for...of instead of Array.forEach",
+      "code": "github(array-foreach)",
+      "severity": "error",
+      "causes": [],
+      "filename": "scripts/parse-tracks.cjs",
+      "labels": [
+        {
+          "span": {
+            "offset": 2526,
+            "length": 147,
+            "line": 108,
+            "column": 3
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "useState call does not follow the [thing, setThing] naming convention",
+      "code": "react(hook-use-state)",
+      "severity": "error",
+      "causes": [],
+      "url": "https://oxc.rs/docs/guide/usage/linter/rules/react/hook-use-state.html",
+      "help": "Follow the [thing, setThing] naming convention",
+      "filename": "src/app/landing-page-content.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 1526,
+            "length": 34,
+            "line": 51,
+            "column": 9
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Your users see an extra render with empty \"displayName\" because a useEffect sets its starting value.",
+      "code": "react-doctor(no-initialize-state)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/app/landing-page-content.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 1880,
+            "length": 30,
+            "line": 60,
+            "column": 7
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "EffectSetState: Calling setState synchronously within an effect can trigger cascading renders",
+      "code": "react(react-compiler)",
+      "severity": "error",
+      "causes": [],
+      "url": "https://oxc.rs/docs/guide/usage/linter/rules/react/react-compiler.html",
+      "help": "Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:\n* Update external systems with the latest state from React.\n* Subscribe for updates from some external system, calling setState in a callback function when external state changes.\n\nCalling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect)",
+      "filename": "src/app/landing-page-content.tsx",
+      "labels": [
+        {
+          "label": "Avoid calling setState() directly within an effect",
+          "span": {
+            "offset": 1880,
+            "length": 19,
+            "line": 60,
+            "column": 7
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Curly braces are unnecessary here.",
+      "code": "react(jsx-curly-brace-presence)",
+      "severity": "error",
+      "causes": [],
+      "url": "https://oxc.rs/docs/guide/usage/linter/rules/react/jsx-curly-brace-presence.html",
+      "help": "Replace `{\"outline\"}` with `\"outline\"`.",
+      "filename": "src/app/landing-page-content.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 8260,
+            "length": 9,
+            "line": 237,
+            "column": 30
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Curly braces are unnecessary here.",
+      "code": "react(jsx-curly-brace-presence)",
+      "severity": "error",
+      "causes": [],
+      "url": "https://oxc.rs/docs/guide/usage/linter/rules/react/jsx-curly-brace-presence.html",
+      "help": "Replace `{\"default\"}` with `\"default\"`.",
+      "filename": "src/app/landing-page-content.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 8592,
+            "length": 9,
+            "line": 246,
+            "column": 30
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Curly braces are unnecessary here.",
+      "code": "react(jsx-curly-brace-presence)",
+      "severity": "error",
+      "causes": [],
+      "url": "https://oxc.rs/docs/guide/usage/linter/rules/react/jsx-curly-brace-presence.html",
+      "help": "Replace `{\"default\"}` with `\"default\"`.",
+      "filename": "src/app/landing-page-content.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 9060,
+            "length": 9,
+            "line": 259,
+            "column": 28
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Curly braces are unnecessary here.",
+      "code": "react(jsx-curly-brace-presence)",
+      "severity": "error",
+      "causes": [],
+      "url": "https://oxc.rs/docs/guide/usage/linter/rules/react/jsx-curly-brace-presence.html",
+      "help": "Replace `{\"outline\"}` with `\"outline\"`.",
+      "filename": "src/app/landing-page-content.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 9363,
+            "length": 9,
+            "line": 267,
+            "column": 28
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "`changeLocaleAction` inside `Layout` uses no local state but is rebuilt on every render, so it wastes work & breaks memoized children. Move it to the top of the file, outside the component.",
+      "code": "react-doctor(prefer-module-scope-pure-function)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/app/layout.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 934,
+            "length": 149,
+            "line": 37,
+            "column": 3
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Faking an event handler with a prop plus a useEffect costs an extra render & runs late.",
+      "code": "react-doctor(no-event-handler)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/app/lobby/[code]/lobby-page-content.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 1304,
+            "length": 4,
+            "line": 41,
+            "column": 54
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "This flashes for your users because useEffect(setState, []) runs after the first paint, so use useSyncExternalStore, or add suppressHydrationWarning",
+      "code": "react-doctor(rendering-hydration-no-flicker)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/app/lobby/[code]/lobby-page-content.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 1656,
+            "length": 48,
+            "line": 54,
+            "column": 3
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Your users see an extra render with empty \"mounted\" because a useEffect sets its starting value.",
+      "code": "react-doctor(no-initialize-state)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/app/lobby/[code]/lobby-page-content.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 1678,
+            "length": 16,
+            "line": 55,
+            "column": 5
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "EffectSetState: Calling setState synchronously within an effect can trigger cascading renders",
+      "code": "react(react-compiler)",
+      "severity": "error",
+      "causes": [],
+      "url": "https://oxc.rs/docs/guide/usage/linter/rules/react/react-compiler.html",
+      "help": "Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:\n* Update external systems with the latest state from React.\n* Subscribe for updates from some external system, calling setState in a callback function when external state changes.\n\nCalling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect)",
+      "filename": "src/app/lobby/[code]/lobby-page-content.tsx",
+      "labels": [
+        {
+          "label": "Avoid calling setState() directly within an effect",
+          "span": {
+            "offset": 1678,
+            "length": 10,
+            "line": 55,
+            "column": 5
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Your screen redraws several times from a single action because one useEffect changes \"mounted\", which sets off this one.",
+      "code": "react-doctor(no-effect-chain)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/app/lobby/[code]/lobby-page-content.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 1709,
+            "length": 171,
+            "line": 58,
+            "column": 3
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Faking an event handler with state plus a useEffect costs an extra render & runs late.",
+      "code": "react-doctor(no-event-handler)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/app/lobby/[code]/lobby-page-content.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 1735,
+            "length": 7,
+            "line": 59,
+            "column": 9
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "router.push() in useEffect flashes the wrong page before redirecting.",
+      "code": "react-doctor(nextjs-no-client-side-redirect)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/app/lobby/[code]/lobby-page-content.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 1817,
+            "length": 16,
+            "line": 61,
+            "column": 7
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "The title attribute is not accessible and should never be used unless for an `<iframe>`.",
+      "code": "github(a11y-no-title-attribute)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/app/lobby/[code]/lobby-page-content.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 5468,
+            "length": 340,
+            "line": 168,
+            "column": 17
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Hooks: Hooks may not be referenced as normal values, they must be called. See https://react.dev/reference/rules/react-calls-components-and-hooks#never-pass-around-hooks-as-regular-values",
+      "code": "react(react-compiler)",
+      "severity": "error",
+      "causes": [],
+      "url": "https://oxc.rs/docs/guide/usage/linter/rules/react/react-compiler.html",
+      "filename": "src/app/providers.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 877,
+            "length": 15,
+            "line": 28,
+            "column": 21
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "`stateClasses` inside `BetCoin` uses no local state but is rebuilt every render, so it looks new each time & breaks memoized children. Move it to the top of the file, outside the component.",
+      "code": "react-doctor(prefer-module-scope-static-value)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/game/bet-coin.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 886,
+            "length": 409,
+            "line": 38,
+            "column": 9
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "`iconByState` inside `BetCoin` uses no local state but is rebuilt every render, so it looks new each time & breaks memoized children. Move it to the top of the file, outside the component.",
+      "code": "react-doctor(prefer-module-scope-static-value)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/game/bet-coin.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 1306,
+            "length": 202,
+            "line": 47,
+            "column": 9
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "The title attribute is not accessible and should never be used unless for an `<iframe>`.",
+      "code": "github(a11y-no-title-attribute)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/game/bet-coin.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 1526,
+            "length": 352,
+            "line": 54,
+            "column": 5
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Component \"BetZone\" takes 7 on/off props (isActive, isDisabled, isTurnPlayerSlot…), which is hard to combine & test. Split it into smaller components or named variants.",
+      "code": "react-doctor(no-many-boolean-props)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/game/bet-zone.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 390,
+            "length": 7,
+            "line": 21,
+            "column": 17
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Rename this 'SessionProvider' function to match the regular expression '^[_a-z][a-zA-Z0-9]*$'.",
+      "code": "sonarjs(function-name)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/game/betting-panel.test.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 481,
+            "length": 15,
+            "line": 15,
+            "column": 3
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Reduce the number of conditional operators (4) used in the expression (maximum allowed 3).",
+      "code": "sonarjs(expression-complexity)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/game/betting-panel.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 5401,
+            "length": 112,
+            "line": 221,
+            "column": 7
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Prefer for...of instead of Array.forEach",
+      "code": "github(array-foreach)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/game/betting-panel.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 7197,
+            "length": 340,
+            "line": 281,
+            "column": 3
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Component \"BettingActions\" takes 4 on/off props (hasLockedBet, hasDeclinedBet, isLockingIn…), which is hard to combine & test. Split it into smaller components or named variants.",
+      "code": "react-doctor(no-many-boolean-props)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/game/betting-panel.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 7606,
+            "length": 14,
+            "line": 299,
+            "column": 10
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Component \"BettingStatus\" takes 7 on/off props (canDecline, isDeclining, showPreviewDiscarded…), which is hard to combine & test. Split it into smaller components or named variants.",
+      "code": "react-doctor(no-many-boolean-props)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/game/betting-panel.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 9078,
+            "length": 13,
+            "line": 351,
+            "column": 10
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Reduce the number of conditional operators (4) used in the expression (maximum allowed 3).",
+      "code": "sonarjs(expression-complexity)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/game/betting-panel.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 10326,
+            "length": 310,
+            "line": 394,
+            "column": 8
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Component \"BettingPanel\" is 538 lines long, which is hard to read & change. Split it into a few smaller components.",
+      "code": "react-doctor(no-giant-component)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/game/betting-panel.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 12247,
+            "length": 12,
+            "line": 454,
+            "column": 17
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Faking an event handler with a prop plus a useEffect costs an extra render & runs late.",
+      "code": "react-doctor(no-event-handler)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/game/betting-panel.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 13505,
+            "length": 7,
+            "line": 487,
+            "column": 5
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Faking an event handler with a prop plus a useEffect costs an extra render & runs late.",
+      "code": "react-doctor(no-event-handler)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/game/betting-panel.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 13877,
+            "length": 24,
+            "line": 494,
+            "column": 31
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Reduce the number of conditional operators (4) used in the expression (maximum allowed 3).",
+      "code": "sonarjs(expression-complexity)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/game/betting-panel.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 14254,
+            "length": 72,
+            "line": 504,
+            "column": 5
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "This `useCallback` is dead weight, since React Compiler already caches every function here. Delete it.",
+      "code": "react-doctor(react-compiler-no-manual-memoization)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/game/betting-panel.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 14505,
+            "length": 444,
+            "line": 511,
+            "column": 40
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "This `useCallback` is dead weight, since React Compiler already caches every function here. Delete it.",
+      "code": "react-doctor(react-compiler-no-manual-memoization)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/game/betting-panel.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 14975,
+            "length": 433,
+            "line": 528,
+            "column": 24
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "This `useCallback` is dead weight, since React Compiler already caches every function here. Delete it.",
+      "code": "react-doctor(react-compiler-no-manual-memoization)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/game/betting-panel.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 15434,
+            "length": 1344,
+            "line": 546,
+            "column": 24
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Reduce the number of conditional operators (4) used in the expression (maximum allowed 3).",
+      "code": "sonarjs(expression-complexity)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/game/betting-panel.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 16212,
+            "length": 104,
+            "line": 563,
+            "column": 9
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "This `useMemo` is dead weight, since React Compiler already caches every value here. Delete it.",
+      "code": "react-doctor(react-compiler-no-manual-memoization)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/game/betting-panel.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 16800,
+            "length": 50,
+            "line": 593,
+            "column": 20
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "This `useMemo` is dead weight, since React Compiler already caches every value here. Delete it.",
+      "code": "react-doctor(react-compiler-no-manual-memoization)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/game/betting-panel.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 16868,
+            "length": 91,
+            "line": 594,
+            "column": 17
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "This `useCallback` is dead weight, since React Compiler already caches every function here. Delete it.",
+      "code": "react-doctor(react-compiler-no-manual-memoization)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/game/betting-panel.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 16997,
+            "length": 719,
+            "line": 599,
+            "column": 36
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "This `useMemo` is dead weight, since React Compiler already caches every value here. Delete it.",
+      "code": "react-doctor(react-compiler-no-manual-memoization)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/game/betting-panel.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 17745,
+            "length": 599,
+            "line": 626,
+            "column": 27
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "This `useCallback` is dead weight, since React Compiler already caches every function here. Delete it.",
+      "code": "react-doctor(react-compiler-no-manual-memoization)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/game/betting-panel.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 18376,
+            "length": 300,
+            "line": 646,
+            "column": 30
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Storing \"selectedIndex\" in state when you can derive it from other values costs an extra render.",
+      "code": "react-doctor(no-derived-state)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/game/betting-panel.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 18758,
+            "length": 37,
+            "line": 663,
+            "column": 7
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "EffectSetState: Calling setState synchronously within an effect can trigger cascading renders",
+      "code": "react(react-compiler)",
+      "severity": "error",
+      "causes": [],
+      "url": "https://oxc.rs/docs/guide/usage/linter/rules/react/react-compiler.html",
+      "help": "Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:\n* Update external systems with the latest state from React.\n* Subscribe for updates from some external system, calling setState in a callback function when external state changes.\n\nCalling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect)",
+      "filename": "src/components/game/betting-panel.tsx",
+      "labels": [
+        {
+          "label": "Avoid calling setState() directly within an effect",
+          "span": {
+            "offset": 18758,
+            "length": 16,
+            "line": 663,
+            "column": 7
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "This effect adjusts state after a prop changes, so users briefly see the stale value.",
+      "code": "react-doctor(no-adjust-state-on-prop-change)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/game/betting-panel.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 18822,
+            "length": 22,
+            "line": 667,
+            "column": 5
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Your screen redraws several times from a single action because one useEffect changes \"selectedIndex\", which sets off this one.",
+      "code": "react-doctor(no-effect-chain)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/game/betting-panel.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 18916,
+            "length": 391,
+            "line": 670,
+            "column": 3
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Faking an event handler with state plus a useEffect costs an extra render & runs late.",
+      "code": "react-doctor(no-event-handler)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/game/betting-panel.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 19038,
+            "length": 13,
+            "line": 675,
+            "column": 43
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "This effect adjusts state after a prop changes, so users briefly see the stale value.",
+      "code": "react-doctor(no-adjust-state-on-prop-change)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/game/betting-panel.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 19205,
+            "length": 22,
+            "line": 681,
+            "column": 7
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Chaining state updates triggers an extra render each step.",
+      "code": "react-doctor(no-chain-state-updates)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/game/betting-panel.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 19205,
+            "length": 22,
+            "line": 681,
+            "column": 7
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "EffectSetState: Calling setState synchronously within an effect can trigger cascading renders",
+      "code": "react(react-compiler)",
+      "severity": "error",
+      "causes": [],
+      "url": "https://oxc.rs/docs/guide/usage/linter/rules/react/react-compiler.html",
+      "help": "Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:\n* Update external systems with the latest state from React.\n* Subscribe for updates from some external system, calling setState in a callback function when external state changes.\n\nCalling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect)",
+      "filename": "src/components/game/betting-panel.tsx",
+      "labels": [
+        {
+          "label": "Avoid calling setState() directly within an effect",
+          "span": {
+            "offset": 19205,
+            "length": 16,
+            "line": 681,
+            "column": 7
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "This effect adjusts state after a prop changes, so users briefly see the stale value.",
+      "code": "react-doctor(no-adjust-state-on-prop-change)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/game/betting-panel.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 19235,
+            "length": 29,
+            "line": 682,
+            "column": 7
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Chaining state updates triggers an extra render each step.",
+      "code": "react-doctor(no-chain-state-updates)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/game/betting-panel.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 19235,
+            "length": 29,
+            "line": 682,
+            "column": 7
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Your screen redraws several times from a single action because one useEffect changes \"selectedIndex\", which sets off this one.",
+      "code": "react-doctor(no-effect-chain)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/game/betting-panel.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 19716,
+            "length": 232,
+            "line": 707,
+            "column": 3
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Faking an event handler with state plus a useEffect costs an extra render & runs late.",
+      "code": "react-doctor(no-event-handler)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/game/betting-panel.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 19829,
+            "length": 13,
+            "line": 712,
+            "column": 9
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "This effect adjusts state after a prop changes, so users briefly see the stale value.",
+      "code": "react-doctor(no-adjust-state-on-prop-change)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/game/betting-panel.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 19876,
+            "length": 22,
+            "line": 713,
+            "column": 7
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Chaining state updates triggers an extra render each step.",
+      "code": "react-doctor(no-chain-state-updates)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/game/betting-panel.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 19876,
+            "length": 22,
+            "line": 713,
+            "column": 7
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "EffectSetState: Calling setState synchronously within an effect can trigger cascading renders",
+      "code": "react(react-compiler)",
+      "severity": "error",
+      "causes": [],
+      "url": "https://oxc.rs/docs/guide/usage/linter/rules/react/react-compiler.html",
+      "help": "Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:\n* Update external systems with the latest state from React.\n* Subscribe for updates from some external system, calling setState in a callback function when external state changes.\n\nCalling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect)",
+      "filename": "src/components/game/betting-panel.tsx",
+      "labels": [
+        {
+          "label": "Avoid calling setState() directly within an effect",
+          "span": {
+            "offset": 19876,
+            "length": 16,
+            "line": 713,
+            "column": 7
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "This `useCallback` is dead weight, since React Compiler already caches every function here. Delete it.",
+      "code": "react-doctor(react-compiler-no-manual-memoization)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/game/betting-panel.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 19975,
+            "length": 968,
+            "line": 717,
+            "column": 25
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "This `useCallback` is dead weight, since React Compiler already caches every function here. Delete it.",
+      "code": "react-doctor(react-compiler-no-manual-memoization)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/game/betting-panel.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 20970,
+            "length": 403,
+            "line": 763,
+            "column": 25
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "This `useCallback` is dead weight, since React Compiler already caches every function here. Delete it.",
+      "code": "react-doctor(react-compiler-no-manual-memoization)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/game/betting-panel.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 21399,
+            "length": 382,
+            "line": 780,
+            "column": 24
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "This `useCallback` is dead weight, since React Compiler already caches every function here. Delete it.",
+      "code": "react-doctor(react-compiler-no-manual-memoization)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/game/betting-panel.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 21808,
+            "length": 352,
+            "line": 797,
+            "column": 25
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "This `useCallback` is dead weight, since React Compiler already caches every function here. Delete it.",
+      "code": "react-doctor(react-compiler-no-manual-memoization)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/game/betting-panel.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 22189,
+            "length": 434,
+            "line": 814,
+            "column": 27
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "This `useCallback` is dead weight, since React Compiler already caches every function here. Delete it.",
+      "code": "react-doctor(react-compiler-no-manual-memoization)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/game/betting-panel.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 22652,
+            "length": 358,
+            "line": 836,
+            "column": 27
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "This `useCallback` is dead weight, since React Compiler already caches every function here. Delete it.",
+      "code": "react-doctor(react-compiler-no-manual-memoization)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/game/betting-panel.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 23037,
+            "length": 651,
+            "line": 852,
+            "column": 25
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "This `useCallback` is dead weight, since React Compiler already caches every function here. Delete it.",
+      "code": "react-doctor(react-compiler-no-manual-memoization)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/game/betting-panel.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 23947,
+            "length": 450,
+            "line": 891,
+            "column": 31
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Component definition is missing display name.",
+      "code": "react(display-name)",
+      "severity": "error",
+      "causes": [],
+      "url": "https://oxc.rs/docs/guide/usage/linter/rules/react/display-name.html",
+      "help": "Add a `displayName` property to the component.",
+      "filename": "src/components/game/game-header.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 612,
+            "length": 10,
+            "line": 21,
+            "column": 14
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "This `memo()` is dead weight, since React Compiler already caches the component's output. Delete it.",
+      "code": "react-doctor(react-compiler-no-manual-memoization)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/game/game-header.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 625,
+            "length": 3114,
+            "line": 21,
+            "column": 27
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "useContext is replaced by `use()` in React 19, which reads context inside ifs & loops too, so switch to `import { use } from 'react'`.",
+      "code": "react-doctor(no-react19-deprecated-apis)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/game/game-provider.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 58,
+            "length": 10,
+            "line": 6,
+            "column": 3
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "This file exports a context with components, so Fast Refresh can't safely preserve component state.",
+      "code": "react-doctor(only-export-components)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/game/game-provider.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 2410,
+            "length": 11,
+            "line": 116,
+            "column": 14
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "This `useMemo` is dead weight, since React Compiler already caches every value here. Delete it.",
+      "code": "react-doctor(react-compiler-no-manual-memoization)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/game/game-provider.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 3320,
+            "length": 172,
+            "line": 154,
+            "column": 22
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "This `useMemo` is dead weight, since React Compiler already caches every value here. Delete it.",
+      "code": "react-doctor(react-compiler-no-manual-memoization)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/game/game-provider.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 3514,
+            "length": 148,
+            "line": 161,
+            "column": 20
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "This `useMemo` is dead weight, since React Compiler already caches every value here. Delete it.",
+      "code": "react-doctor(react-compiler-no-manual-memoization)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/game/game-provider.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 3681,
+            "length": 87,
+            "line": 168,
+            "column": 17
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "This `useMemo` is dead weight, since React Compiler already caches every value here. Delete it.",
+      "code": "react-doctor(react-compiler-no-manual-memoization)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/game/game-provider.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 3787,
+            "length": 293,
+            "line": 173,
+            "column": 17
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "This costs more than it saves because useMemo is wrapping a value that's already cheap, so remove the useMemo",
+      "code": "react-doctor(no-usememo-simple-expression)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/game/game-provider.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 4108,
+            "length": 50,
+            "line": 187,
+            "column": 26
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "This `useMemo` is dead weight, since React Compiler already caches every value here. Delete it.",
+      "code": "react-doctor(react-compiler-no-manual-memoization)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/game/game-provider.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 4108,
+            "length": 50,
+            "line": 187,
+            "column": 26
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "This `useCallback` is dead weight, since React Compiler already caches every function here. Delete it.",
+      "code": "react-doctor(react-compiler-no-manual-memoization)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/game/game-provider.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 4188,
+            "length": 68,
+            "line": 189,
+            "column": 28
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "This `useMemo` is dead weight, since React Compiler already caches every value here. Delete it.",
+      "code": "react-doctor(react-compiler-no-manual-memoization)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/game/game-provider.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 4286,
+            "length": 635,
+            "line": 193,
+            "column": 28
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "This `useMemo` is dead weight, since React Compiler already caches every value here. Delete it.",
+      "code": "react-doctor(react-compiler-no-manual-memoization)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/game/game-provider.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 4955,
+            "length": 116,
+            "line": 227,
+            "column": 32
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "This `useMemo` is dead weight, since React Compiler already caches every value here. Delete it.",
+      "code": "react-doctor(react-compiler-no-manual-memoization)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/game/game-provider.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 5099,
+            "length": 108,
+            "line": 235,
+            "column": 26
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "This `useMemo` is dead weight, since React Compiler already caches every value here. Delete it.",
+      "code": "react-doctor(react-compiler-no-manual-memoization)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/game/game-provider.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 5244,
+            "length": 100,
+            "line": 244,
+            "column": 35
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Rename this 'SessionProvider' function to match the regular expression '^[_a-z][a-zA-Z0-9]*$'.",
+      "code": "sonarjs(function-name)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/game/game-results.test.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 456,
+            "length": 15,
+            "line": 15,
+            "column": 3
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "`formatDuration` inside `GameResults` uses no local state but is rebuilt on every render, so it wastes work & breaks memoized children. Move it to the top of the file, outside the component.",
+      "code": "react-doctor(prefer-module-scope-pure-function)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/game/game-results.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 2103,
+            "length": 250,
+            "line": 74,
+            "column": 26
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "`getRankBadgeClass` inside `GameResults` uses no local state but is rebuilt on every render, so it wastes work & breaks memoized children. Move it to the top of the file, outside the component.",
+      "code": "react-doctor(prefer-module-scope-pure-function)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/game/game-results.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 2384,
+            "length": 360,
+            "line": 81,
+            "column": 29
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Component definition is missing display name.",
+      "code": "react(display-name)",
+      "severity": "error",
+      "causes": [],
+      "url": "https://oxc.rs/docs/guide/usage/linter/rules/react/display-name.html",
+      "help": "Add a `displayName` property to the component.",
+      "filename": "src/components/game/game-timer.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 405,
+            "length": 9,
+            "line": 18,
+            "column": 14
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "This `memo()` is dead weight, since React Compiler already caches the component's output. Delete it.",
+      "code": "react-doctor(react-compiler-no-manual-memoization)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/game/game-timer.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 417,
+            "length": 2520,
+            "line": 18,
+            "column": 26
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "EffectSetState: Calling setState synchronously within an effect can trigger cascading renders",
+      "code": "react(react-compiler)",
+      "severity": "error",
+      "causes": [],
+      "url": "https://oxc.rs/docs/guide/usage/linter/rules/react/react-compiler.html",
+      "help": "Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:\n* Update external systems with the latest state from React.\n* Subscribe for updates from some external system, calling setState in a callback function when external state changes.\n\nCalling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect)",
+      "filename": "src/components/game/game-timer.tsx",
+      "labels": [
+        {
+          "label": "Avoid calling setState() directly within an effect",
+          "span": {
+            "offset": 898,
+            "length": 16,
+            "line": 36,
+            "column": 7
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "`formatTime` inside `GameTimer` uses no local state but is rebuilt on every render, so it wastes work & breaks memoized children. Move it to the top of the file, outside the component.",
+      "code": "react-doctor(prefer-module-scope-pure-function)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/game/game-timer.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 1157,
+            "length": 286,
+            "line": 45,
+            "column": 24
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "This `useCallback` is dead weight, since React Compiler already caches every function here. Delete it.",
+      "code": "react-doctor(react-compiler-no-manual-memoization)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/game/game-view.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 2885,
+            "length": 136,
+            "line": 96,
+            "column": 29
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "This `useMemo` is dead weight, since React Compiler already caches every value here. Delete it.",
+      "code": "react-doctor(react-compiler-no-manual-memoization)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/game/game-view.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 4496,
+            "length": 160,
+            "line": 161,
+            "column": 30
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Use null instead.",
+      "code": "sonarjs(no-undefined-assignment)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/game/my-timeline.test.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 1701,
+            "length": 9,
+            "line": 80,
+            "column": 27
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Use null instead.",
+      "code": "sonarjs(no-undefined-assignment)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/game/my-timeline.test.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 2020,
+            "length": 9,
+            "line": 94,
+            "column": 18
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "The Context `value` prop should not be constructed.",
+      "code": "react(jsx-no-constructed-context-values)",
+      "severity": "error",
+      "causes": [],
+      "url": "https://oxc.rs/docs/guide/usage/linter/rules/react/jsx-no-constructed-context-values.html",
+      "help": "Wrap the `value` prop in useMemo() or useCallback(), or use a constant value to prevent unnecessary re-renders.\nAlternatively, move the value outside the render function if it doesn't depend on props or state.",
+      "filename": "src/components/game/my-timeline.test.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 2457,
+            "length": 37,
+            "line": 111,
+            "column": 29
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Update this function so that its implementation is not identical to the one on line 110.",
+      "code": "sonarjs(no-identical-functions)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/game/my-timeline.test.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 3288,
+            "length": 2,
+            "line": 141,
+            "column": 71
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "The Context `value` prop should not be constructed.",
+      "code": "react(jsx-no-constructed-context-values)",
+      "severity": "error",
+      "causes": [],
+      "url": "https://oxc.rs/docs/guide/usage/linter/rules/react/jsx-no-constructed-context-values.html",
+      "help": "Wrap the `value` prop in useMemo() or useCallback(), or use a constant value to prevent unnecessary re-renders.\nAlternatively, move the value outside the render function if it doesn't depend on props or state.",
+      "filename": "src/components/game/my-timeline.test.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 3321,
+            "length": 37,
+            "line": 142,
+            "column": 29
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Update this function so that its implementation is not identical to the one on line 110.",
+      "code": "sonarjs(no-identical-functions)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/game/my-timeline.test.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 4249,
+            "length": 2,
+            "line": 176,
+            "column": 71
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "The Context `value` prop should not be constructed.",
+      "code": "react(jsx-no-constructed-context-values)",
+      "severity": "error",
+      "causes": [],
+      "url": "https://oxc.rs/docs/guide/usage/linter/rules/react/jsx-no-constructed-context-values.html",
+      "help": "Wrap the `value` prop in useMemo() or useCallback(), or use a constant value to prevent unnecessary re-renders.\nAlternatively, move the value outside the render function if it doesn't depend on props or state.",
+      "filename": "src/components/game/my-timeline.test.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 4282,
+            "length": 37,
+            "line": 177,
+            "column": 29
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Update this function so that its implementation is not identical to the one on line 110.",
+      "code": "sonarjs(no-identical-functions)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/game/my-timeline.test.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 5198,
+            "length": 2,
+            "line": 207,
+            "column": 71
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "The Context `value` prop should not be constructed.",
+      "code": "react(jsx-no-constructed-context-values)",
+      "severity": "error",
+      "causes": [],
+      "url": "https://oxc.rs/docs/guide/usage/linter/rules/react/jsx-no-constructed-context-values.html",
+      "help": "Wrap the `value` prop in useMemo() or useCallback(), or use a constant value to prevent unnecessary re-renders.\nAlternatively, move the value outside the render function if it doesn't depend on props or state.",
+      "filename": "src/components/game/my-timeline.test.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 5231,
+            "length": 37,
+            "line": 208,
+            "column": 29
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Update this function so that its implementation is not identical to the one on line 110.",
+      "code": "sonarjs(no-identical-functions)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/game/my-timeline.test.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 5981,
+            "length": 2,
+            "line": 235,
+            "column": 71
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "The Context `value` prop should not be constructed.",
+      "code": "react(jsx-no-constructed-context-values)",
+      "severity": "error",
+      "causes": [],
+      "url": "https://oxc.rs/docs/guide/usage/linter/rules/react/jsx-no-constructed-context-values.html",
+      "help": "Wrap the `value` prop in useMemo() or useCallback(), or use a constant value to prevent unnecessary re-renders.\nAlternatively, move the value outside the render function if it doesn't depend on props or state.",
+      "filename": "src/components/game/my-timeline.test.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 6014,
+            "length": 37,
+            "line": 236,
+            "column": 29
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Update this function so that its implementation is not identical to the one on line 110.",
+      "code": "sonarjs(no-identical-functions)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/game/my-timeline.test.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 6754,
+            "length": 2,
+            "line": 263,
+            "column": 71
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "The Context `value` prop should not be constructed.",
+      "code": "react(jsx-no-constructed-context-values)",
+      "severity": "error",
+      "causes": [],
+      "url": "https://oxc.rs/docs/guide/usage/linter/rules/react/jsx-no-constructed-context-values.html",
+      "help": "Wrap the `value` prop in useMemo() or useCallback(), or use a constant value to prevent unnecessary re-renders.\nAlternatively, move the value outside the render function if it doesn't depend on props or state.",
+      "filename": "src/components/game/my-timeline.test.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 6787,
+            "length": 37,
+            "line": 264,
+            "column": 29
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "This `useMemo` is dead weight, since React Compiler already caches every value here. Delete it.",
+      "code": "react-doctor(react-compiler-no-manual-memoization)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/game/my-timeline.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 1253,
+            "length": 268,
+            "line": 51,
+            "column": 20
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "This `useMemo` is dead weight, since React Compiler already caches every value here. Delete it.",
+      "code": "react-doctor(react-compiler-no-manual-memoization)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/game/player-timeline-modal.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 1054,
+            "length": 356,
+            "line": 41,
+            "column": 20
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Component definition is missing display name.",
+      "code": "react(display-name)",
+      "severity": "error",
+      "causes": [],
+      "url": "https://oxc.rs/docs/guide/usage/linter/rules/react/display-name.html",
+      "help": "Add a `displayName` property to the component.",
+      "filename": "src/components/game/players-bar.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 634,
+            "length": 10,
+            "line": 20,
+            "column": 14
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "This `memo()` is dead weight, since React Compiler already caches the component's output. Delete it.",
+      "code": "react-doctor(react-compiler-no-manual-memoization)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/game/players-bar.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 647,
+            "length": 4955,
+            "line": 20,
+            "column": 27
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "The title attribute is not accessible and should never be used unless for an `<iframe>`.",
+      "code": "github(a11y-no-title-attribute)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/game/players-bar.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 4170,
+            "length": 342,
+            "line": 104,
+            "column": 21
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "This flashes for your users because useEffect(setState, []) runs after the first paint, so use useSyncExternalStore, or add suppressHydrationWarning",
+      "code": "react-doctor(rendering-hydration-no-flicker)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/game/resolved-phase-content.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 576,
+            "length": 57,
+            "line": 18,
+            "column": 3
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Your users see an extra render with empty \"showResultsModal\" because a useEffect sets its starting value.",
+      "code": "react-doctor(no-initialize-state)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/game/resolved-phase-content.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 598,
+            "length": 25,
+            "line": 19,
+            "column": 5
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "EffectSetState: Calling setState synchronously within an effect can trigger cascading renders",
+      "code": "react(react-compiler)",
+      "severity": "error",
+      "causes": [],
+      "url": "https://oxc.rs/docs/guide/usage/linter/rules/react/react-compiler.html",
+      "help": "Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:\n* Update external systems with the latest state from React.\n* Subscribe for updates from some external system, calling setState in a callback function when external state changes.\n\nCalling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect)",
+      "filename": "src/components/game/resolved-phase-content.tsx",
+      "labels": [
+        {
+          "label": "Avoid calling setState() directly within an effect",
+          "span": {
+            "offset": 598,
+            "length": 19,
+            "line": 19,
+            "column": 5
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Reduce the number of conditional operators (4) used in the expression (maximum allowed 3).",
+      "code": "sonarjs(expression-complexity)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/game/resolved-phase-content.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 644,
+            "length": 67,
+            "line": 22,
+            "column": 9
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "This rebuilds on every render because static JSX \"resultsContent\" is built inside the component, so move it to the top of the file to make it just once",
+      "code": "react-doctor(rendering-hoist-jsx)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/game/resolved-phase-content.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 1716,
+            "length": 33,
+            "line": 48,
+            "column": 9
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Rename this 'SessionProvider' function to match the regular expression '^[_a-z][a-zA-Z0-9]*$'.",
+      "code": "sonarjs(function-name)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/game/round-results.test.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 1491,
+            "length": 15,
+            "line": 64,
+            "column": 3
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Use null instead.",
+      "code": "sonarjs(no-undefined-assignment)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/game/round-results.test.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 2797,
+            "length": 9,
+            "line": 119,
+            "column": 27
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Use null instead.",
+      "code": "sonarjs(no-undefined-assignment)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/game/round-results.test.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 3178,
+            "length": 9,
+            "line": 133,
+            "column": 18
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "The Context `value` prop should not be constructed.",
+      "code": "react(jsx-no-constructed-context-values)",
+      "severity": "error",
+      "causes": [],
+      "url": "https://oxc.rs/docs/guide/usage/linter/rules/react/jsx-no-constructed-context-values.html",
+      "help": "Wrap the `value` prop in useMemo() or useCallback(), or use a constant value to prevent unnecessary re-renders.\nAlternatively, move the value outside the render function if it doesn't depend on props or state.",
+      "filename": "src/components/game/round-results.test.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 3348,
+            "length": 35,
+            "line": 141,
+            "column": 29
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "The Context `value` prop should not be constructed.",
+      "code": "react(jsx-no-constructed-context-values)",
+      "severity": "error",
+      "causes": [],
+      "url": "https://oxc.rs/docs/guide/usage/linter/rules/react/jsx-no-constructed-context-values.html",
+      "help": "Wrap the `value` prop in useMemo() or useCallback(), or use a constant value to prevent unnecessary re-renders.\nAlternatively, move the value outside the render function if it doesn't depend on props or state.",
+      "filename": "src/components/game/round-results.test.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 3843,
+            "length": 35,
+            "line": 157,
+            "column": 29
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "The Context `value` prop should not be constructed.",
+      "code": "react(jsx-no-constructed-context-values)",
+      "severity": "error",
+      "causes": [],
+      "url": "https://oxc.rs/docs/guide/usage/linter/rules/react/jsx-no-constructed-context-values.html",
+      "help": "Wrap the `value` prop in useMemo() or useCallback(), or use a constant value to prevent unnecessary re-renders.\nAlternatively, move the value outside the render function if it doesn't depend on props or state.",
+      "filename": "src/components/game/round-results.test.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 4233,
+            "length": 138,
+            "line": 173,
+            "column": 9
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "The Context `value` prop should not be constructed.",
+      "code": "react(jsx-no-constructed-context-values)",
+      "severity": "error",
+      "causes": [],
+      "url": "https://oxc.rs/docs/guide/usage/linter/rules/react/jsx-no-constructed-context-values.html",
+      "help": "Wrap the `value` prop in useMemo() or useCallback(), or use a constant value to prevent unnecessary re-renders.\nAlternatively, move the value outside the render function if it doesn't depend on props or state.",
+      "filename": "src/components/game/round-results.test.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 4610,
+            "length": 35,
+            "line": 188,
+            "column": 29
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "The Context `value` prop should not be constructed.",
+      "code": "react(jsx-no-constructed-context-values)",
+      "severity": "error",
+      "causes": [],
+      "url": "https://oxc.rs/docs/guide/usage/linter/rules/react/jsx-no-constructed-context-values.html",
+      "help": "Wrap the `value` prop in useMemo() or useCallback(), or use a constant value to prevent unnecessary re-renders.\nAlternatively, move the value outside the render function if it doesn't depend on props or state.",
+      "filename": "src/components/game/round-results.test.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 4927,
+            "length": 35,
+            "line": 199,
+            "column": 29
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "The Context `value` prop should not be constructed.",
+      "code": "react(jsx-no-constructed-context-values)",
+      "severity": "error",
+      "causes": [],
+      "url": "https://oxc.rs/docs/guide/usage/linter/rules/react/jsx-no-constructed-context-values.html",
+      "help": "Wrap the `value` prop in useMemo() or useCallback(), or use a constant value to prevent unnecessary re-renders.\nAlternatively, move the value outside the render function if it doesn't depend on props or state.",
+      "filename": "src/components/game/round-results.test.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 5334,
+            "length": 140,
+            "line": 216,
+            "column": 9
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "The Context `value` prop should not be constructed.",
+      "code": "react(jsx-no-constructed-context-values)",
+      "severity": "error",
+      "causes": [],
+      "url": "https://oxc.rs/docs/guide/usage/linter/rules/react/jsx-no-constructed-context-values.html",
+      "help": "Wrap the `value` prop in useMemo() or useCallback(), or use a constant value to prevent unnecessary re-renders.\nAlternatively, move the value outside the render function if it doesn't depend on props or state.",
+      "filename": "src/components/game/round-results.test.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 5752,
+            "length": 35,
+            "line": 233,
+            "column": 29
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "The Context `value` prop should not be constructed.",
+      "code": "react(jsx-no-constructed-context-values)",
+      "severity": "error",
+      "causes": [],
+      "url": "https://oxc.rs/docs/guide/usage/linter/rules/react/jsx-no-constructed-context-values.html",
+      "help": "Wrap the `value` prop in useMemo() or useCallback(), or use a constant value to prevent unnecessary re-renders.\nAlternatively, move the value outside the render function if it doesn't depend on props or state.",
+      "filename": "src/components/game/round-results.test.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 6012,
+            "length": 35,
+            "line": 243,
+            "column": 29
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "The Context `value` prop should not be constructed.",
+      "code": "react(jsx-no-constructed-context-values)",
+      "severity": "error",
+      "causes": [],
+      "url": "https://oxc.rs/docs/guide/usage/linter/rules/react/jsx-no-constructed-context-values.html",
+      "help": "Wrap the `value` prop in useMemo() or useCallback(), or use a constant value to prevent unnecessary re-renders.\nAlternatively, move the value outside the render function if it doesn't depend on props or state.",
+      "filename": "src/components/game/round-results.test.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 6328,
+            "length": 68,
+            "line": 256,
+            "column": 9
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Your users see a dated, tacky animate-bounce, so use a subtle ease-out transform for a smoother finish.",
+      "code": "react-doctor(no-inline-bounce-easing)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/game/round-results.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 1186,
+            "length": 81,
+            "line": 39,
+            "column": 9
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "This `useMemo` is dead weight, since React Compiler already caches every value here. Delete it.",
+      "code": "react-doctor(react-compiler-no-manual-memoization)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/game/round-results.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 3197,
+            "length": 97,
+            "line": 108,
+            "column": 18
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "This `useMemo` is dead weight, since React Compiler already caches every value here. Delete it.",
+      "code": "react-doctor(react-compiler-no-manual-memoization)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/game/round-results.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 3814,
+            "length": 136,
+            "line": 132,
+            "column": 23
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "`formatTime` inside `RoundResults` uses no local state but is rebuilt on every render, so it wastes work & breaks memoized children. Move it to the top of the file, outside the component.",
+      "code": "react-doctor(prefer-module-scope-pure-function)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/game/round-results.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 3974,
+            "length": 154,
+            "line": 139,
+            "column": 22
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Refactor this union type to have less than 3 elements.",
+      "code": "sonarjs(max-union-size)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/game/timeline-card.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 317,
+            "length": 51,
+            "line": 13,
+            "column": 10
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Component \"TimelineCard\" takes 5 on/off props (showYearBadge, isNew, isLoading…), which is hard to combine & test. Split it into smaller components or named variants.",
+      "code": "react-doctor(no-many-boolean-props)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/game/timeline-card.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 678,
+            "length": 12,
+            "line": 28,
+            "column": 17
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "`iconColors` inside `TimelineCard` uses no local state but is rebuilt every render, so it looks new each time & breaks memoized children. Move it to the top of the file, outside the component.",
+      "code": "react-doctor(prefer-module-scope-static-value)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/game/timeline-card.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 1011,
+            "length": 195,
+            "line": 46,
+            "column": 9
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "This file exports non-components, so Fast Refresh can't safely preserve component state.",
+      "code": "react-doctor(only-export-components)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/game/timeline-placement-view.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 849,
+            "length": 25,
+            "line": 36,
+            "column": 14
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Your users can see & submit the wrong data when this list reorders or filters, so use a stable id like `key={item.id}`, not the array index \"index\".",
+      "code": "react-doctor(no-array-index-as-key)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/game/timeline-placement-view.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 2054,
+            "length": 21,
+            "line": 75,
+            "column": 7
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Prefer for...of instead of Array.forEach",
+      "code": "github(array-foreach)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/game/timeline-placement-view.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 2352,
+            "length": 823,
+            "line": 88,
+            "column": 9
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Do not call `Array#push()` multiple times.",
+      "code": "unicorn(prefer-single-call)",
+      "severity": "error",
+      "causes": [],
+      "url": "https://oxc.rs/docs/guide/usage/linter/rules/unicorn/prefer-single-call.html",
+      "help": "Merge with the previous call.",
+      "filename": "src/components/game/timeline-placement-view.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 3138,
+            "length": 4,
+            "line": 111,
+            "column": 20
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Rename this 'SessionProvider' function to match the regular expression '^[_a-z][a-zA-Z0-9]*$'.",
+      "code": "sonarjs(function-name)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/game/timeline-placer.test.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 622,
+            "length": 15,
+            "line": 23,
+            "column": 3
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "This `useCallback` is dead weight, since React Compiler already caches every function here. Delete it.",
+      "code": "react-doctor(react-compiler-no-manual-memoization)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/game/timeline-placer.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 1658,
+            "length": 254,
+            "line": 64,
+            "column": 25
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "PreserveManualMemo: Existing memoization could not be preserved",
+      "code": "react(react-compiler)",
+      "severity": "error",
+      "causes": [],
+      "url": "https://oxc.rs/docs/guide/usage/linter/rules/react/react-compiler.html",
+      "help": "React Compiler has skipped optimizing this component because the existing manual memoization could not be preserved. This value was memoized in source but not in compilation output",
+      "filename": "src/components/game/timeline-placer.tsx",
+      "labels": [
+        {
+          "label": "Could not preserve existing memoization",
+          "span": {
+            "offset": 1675,
+            "length": 214,
+            "line": 65,
+            "column": 5
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "PreserveManualMemo: Existing memoization could not be preserved",
+      "code": "react(react-compiler)",
+      "severity": "error",
+      "causes": [],
+      "url": "https://oxc.rs/docs/guide/usage/linter/rules/react/react-compiler.html",
+      "help": "React Compiler has skipped optimizing this component because the existing manual memoization could not be preserved. This dependency may be mutated later, which could cause the value to change unexpectedly",
+      "filename": "src/components/game/timeline-placer.tsx",
+      "labels": [
+        {
+          "label": "This dependency may be modified later",
+          "span": {
+            "offset": 1896,
+            "length": 11,
+            "line": 73,
+            "column": 6
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "This `useCallback` is dead weight, since React Compiler already caches every function here. Delete it.",
+      "code": "react-doctor(react-compiler-no-manual-memoization)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/game/timeline-placer.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 1941,
+            "length": 70,
+            "line": 76,
+            "column": 27
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "This `useCallback` is dead weight, since React Compiler already caches every function here. Delete it.",
+      "code": "react-doctor(react-compiler-no-manual-memoization)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/game/timeline-placer.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 2037,
+            "length": 285,
+            "line": 80,
+            "column": 24
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Refs: Cannot access refs during render",
+      "code": "react(react-compiler)",
+      "severity": "error",
+      "causes": [],
+      "url": "https://oxc.rs/docs/guide/usage/linter/rules/react/react-compiler.html",
+      "help": "React refs are values that are not needed for rendering. Refs should only be accessed outside of render, such as in event handlers or effects. Accessing a ref value (the `current` property) during render can cause your component not to update as expected (https://react.dev/reference/react/useRef)",
+      "filename": "src/components/game/timeline-placer.tsx",
+      "labels": [
+        {
+          "label": "Cannot update ref during render",
+          "span": {
+            "offset": 2375,
+            "length": 23,
+            "line": 94,
+            "column": 3
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Storing \"selectedIndex\" in state when you can derive it from other values costs an extra render.",
+      "code": "react-doctor(no-derived-state)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/game/timeline-placer.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 2483,
+            "length": 38,
+            "line": 98,
+            "column": 7
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "EffectSetState: Calling setState synchronously within an effect can trigger cascading renders",
+      "code": "react(react-compiler)",
+      "severity": "error",
+      "causes": [],
+      "url": "https://oxc.rs/docs/guide/usage/linter/rules/react/react-compiler.html",
+      "help": "Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:\n* Update external systems with the latest state from React.\n* Subscribe for updates from some external system, calling setState in a callback function when external state changes.\n\nCalling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect)",
+      "filename": "src/components/game/timeline-placer.tsx",
+      "labels": [
+        {
+          "label": "Avoid calling setState() directly within an effect",
+          "span": {
+            "offset": 2483,
+            "length": 16,
+            "line": 98,
+            "column": 7
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "This `useCallback` is dead weight, since React Compiler already caches every function here. Delete it.",
+      "code": "react-doctor(react-compiler-no-manual-memoization)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/game/timeline-placer.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 2584,
+            "length": 435,
+            "line": 102,
+            "column": 25
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Your screen redraws several times from a single action because one useEffect changes \"selectedIndex\", which sets off this one.",
+      "code": "react-doctor(no-effect-chain)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/game/timeline-placer.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 3194,
+            "length": 330,
+            "line": 129,
+            "column": 3
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Prefer async/await to Promise.catch()",
+      "code": "github(no-then)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/game/timeline-placer.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 3379,
+            "length": 5,
+            "line": 137,
+            "column": 21
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Component definition is missing display name.",
+      "code": "react(display-name)",
+      "severity": "error",
+      "causes": [],
+      "url": "https://oxc.rs/docs/guide/usage/linter/rules/react/display-name.html",
+      "help": "Add a `displayName` property to the component.",
+      "filename": "src/components/lobby/copy-code-button.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 237,
+            "length": 14,
+            "line": 12,
+            "column": 14
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "This `memo()` is dead weight, since React Compiler already caches the component's output. Delete it.",
+      "code": "react-doctor(react-compiler-no-manual-memoization)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/lobby/copy-code-button.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 254,
+            "length": 874,
+            "line": 12,
+            "column": 31
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "This `useCallback` is dead weight, since React Compiler already caches every function here. Delete it.",
+      "code": "react-doctor(react-compiler-no-manual-memoization)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/lobby/copy-code-button.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 431,
+            "length": 176,
+            "line": 17,
+            "column": 28
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "The title attribute is not accessible and should never be used unless for an `<iframe>`.",
+      "code": "github(a11y-no-title-attribute)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/lobby/copy-code-button.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 818,
+            "length": 284,
+            "line": 27,
+            "column": 9
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Component definition is missing display name.",
+      "code": "react(display-name)",
+      "severity": "error",
+      "causes": [],
+      "url": "https://oxc.rs/docs/guide/usage/linter/rules/react/display-name.html",
+      "help": "Add a `displayName` property to the component.",
+      "filename": "src/components/lobby/leave-button.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 397,
+            "length": 11,
+            "line": 16,
+            "column": 14
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "This `memo()` is dead weight, since React Compiler already caches the component's output. Delete it.",
+      "code": "react-doctor(react-compiler-no-manual-memoization)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/lobby/leave-button.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 411,
+            "length": 933,
+            "line": 16,
+            "column": 28
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "This `useCallback` is dead weight, since React Compiler already caches every function here. Delete it.",
+      "code": "react-doctor(react-compiler-no-manual-memoization)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/lobby/leave-button.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 634,
+            "length": 348,
+            "line": 22,
+            "column": 30
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Component definition is missing display name.",
+      "code": "react(display-name)",
+      "severity": "error",
+      "causes": [],
+      "url": "https://oxc.rs/docs/guide/usage/linter/rules/react/display-name.html",
+      "help": "Add a `displayName` property to the component.",
+      "filename": "src/components/lobby/lobby-header.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 142,
+            "length": 11,
+            "line": 7,
+            "column": 14
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "This `memo()` is dead weight, since React Compiler already caches the component's output. Delete it.",
+      "code": "react-doctor(react-compiler-no-manual-memoization)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/lobby/lobby-header.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 156,
+            "length": 458,
+            "line": 7,
+            "column": 28
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Component definition is missing display name.",
+      "code": "react(display-name)",
+      "severity": "error",
+      "causes": [],
+      "url": "https://oxc.rs/docs/guide/usage/linter/rules/react/display-name.html",
+      "help": "Add a `displayName` property to the component.",
+      "filename": "src/components/lobby/player-count.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 346,
+            "length": 11,
+            "line": 15,
+            "column": 14
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "This `memo()` is dead weight, since React Compiler already caches the component's output. Delete it.",
+      "code": "react-doctor(react-compiler-no-manual-memoization)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/lobby/player-count.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 360,
+            "length": 428,
+            "line": 15,
+            "column": 28
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "You pay an extra render for state you can derive from other values.",
+      "code": "react-doctor(no-derived-state-effect)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/lobby/settings-panel.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 1556,
+            "length": 85,
+            "line": 55,
+            "column": 3
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Your screen shows the old value first because useState \"optimisticSettings\" copies prop \"currentSettings\" through this effect.",
+      "code": "react-doctor(no-mirror-prop-effect)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/lobby/settings-panel.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 1556,
+            "length": 85,
+            "line": 55,
+            "column": 3
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Storing \"optimisticSettings\" in state when you can derive it from other values costs an extra render.",
+      "code": "react-doctor(no-derived-state)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/lobby/settings-panel.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 1578,
+            "length": 38,
+            "line": 56,
+            "column": 5
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "EffectDerivationsOfState: Values derived from props and state should be calculated during render, not in an effect. (https://react.dev/learn/you-might-not-need-an-effect#updating-state-based-on-props-or-state)",
+      "code": "react(react-compiler)",
+      "severity": "error",
+      "causes": [],
+      "url": "https://oxc.rs/docs/guide/usage/linter/rules/react/react-compiler.html",
+      "filename": "src/components/lobby/settings-panel.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 1578,
+            "length": 21,
+            "line": 56,
+            "column": 5
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "EffectSetState: Calling setState synchronously within an effect can trigger cascading renders",
+      "code": "react(react-compiler)",
+      "severity": "error",
+      "causes": [],
+      "url": "https://oxc.rs/docs/guide/usage/linter/rules/react/react-compiler.html",
+      "help": "Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:\n* Update external systems with the latest state from React.\n* Subscribe for updates from some external system, calling setState in a callback function when external state changes.\n\nCalling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect)",
+      "filename": "src/components/lobby/settings-panel.tsx",
+      "labels": [
+        {
+          "label": "Avoid calling setState() directly within an effect",
+          "span": {
+            "offset": 1578,
+            "length": 21,
+            "line": 56,
+            "column": 5
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Curly braces are unnecessary here.",
+      "code": "react(jsx-curly-brace-presence)",
+      "severity": "error",
+      "causes": [],
+      "url": "https://oxc.rs/docs/guide/usage/linter/rules/react/jsx-curly-brace-presence.html",
+      "help": "Replace `{\"icon-lg\"}` with `\"icon-lg\"`.",
+      "filename": "src/components/player/volume-slider.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 1061,
+            "length": 9,
+            "line": 39,
+            "column": 15
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Curly braces are unnecessary here.",
+      "code": "react(jsx-curly-brace-presence)",
+      "severity": "error",
+      "causes": [],
+      "url": "https://oxc.rs/docs/guide/usage/linter/rules/react/jsx-curly-brace-presence.html",
+      "help": "Replace `{\"ghost\"}` with `\"ghost\"`.",
+      "filename": "src/components/player/volume-slider.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 1111,
+            "length": 7,
+            "line": 41,
+            "column": 18
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Remove the declaration of the unused '_setVolume' variable.",
+      "code": "sonarjs(no-unused-vars)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/player/you-tube-player.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 981,
+            "length": 10,
+            "line": 32,
+            "column": 18
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Remove the declaration of the unused '_setIsMuted' variable.",
+      "code": "sonarjs(no-unused-vars)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/player/you-tube-player.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 1054,
+            "length": 11,
+            "line": 33,
+            "column": 19
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "This `useMemo` is dead weight, since React Compiler already caches every value here. Delete it.",
+      "code": "react-doctor(react-compiler-no-manual-memoization)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/player/you-tube-player.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 1262,
+            "length": 277,
+            "line": 37,
+            "column": 32
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "This effect adjusts state after a prop changes, so users briefly see the stale value.",
+      "code": "react-doctor(no-adjust-state-on-prop-change)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/player/you-tube-player.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 1636,
+            "length": 18,
+            "line": 59,
+            "column": 7
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "EffectSetState: Calling setState synchronously within an effect can trigger cascading renders",
+      "code": "react(react-compiler)",
+      "severity": "error",
+      "causes": [],
+      "url": "https://oxc.rs/docs/guide/usage/linter/rules/react/react-compiler.html",
+      "help": "Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:\n* Update external systems with the latest state from React.\n* Subscribe for updates from some external system, calling setState in a callback function when external state changes.\n\nCalling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect)",
+      "filename": "src/components/player/you-tube-player.tsx",
+      "labels": [
+        {
+          "label": "Avoid calling setState() directly within an effect",
+          "span": {
+            "offset": 1636,
+            "length": 9,
+            "line": 59,
+            "column": 7
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "This effect adjusts state after a prop changes, so users briefly see the stale value.",
+      "code": "react-doctor(no-adjust-state-on-prop-change)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/player/you-tube-player.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 1681,
+            "length": 20,
+            "line": 63,
+            "column": 5
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "This `useCallback` is dead weight, since React Compiler already caches every function here. Delete it.",
+      "code": "react-doctor(react-compiler-no-manual-memoization)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/player/you-tube-player.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 2283,
+            "length": 59,
+            "line": 87,
+            "column": 29
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "This `useMemo` is dead weight, since React Compiler already caches every value here. Delete it.",
+      "code": "react-doctor(react-compiler-no-manual-memoization)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/player/you-tube-player.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 2366,
+            "length": 810,
+            "line": 91,
+            "column": 22
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Explicitly import the specific member needed.",
+      "code": "sonarjs(no-wildcard-import)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/ui/alert-dialog.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 110,
+            "length": 10,
+            "line": 4,
+            "column": 13
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Explicitly import the specific member needed.",
+      "code": "sonarjs(no-wildcard-import)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/ui/alert.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 122,
+            "length": 10,
+            "line": 3,
+            "column": 13
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Explicitly import the specific member needed.",
+      "code": "sonarjs(no-wildcard-import)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/ui/avatar.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 94,
+            "length": 10,
+            "line": 4,
+            "column": 13
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Rename this 'Badge' function to match the regular expression '^[_a-z][a-zA-Z0-9]*$'.",
+      "code": "sonarjs(function-name)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/ui/badge.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 1564,
+            "length": 5,
+            "line": 31,
+            "column": 10
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "This file exports non-components, so Fast Refresh can't safely preserve component state.",
+      "code": "react-doctor(only-export-components)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/ui/badge.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 1976,
+            "length": 13,
+            "line": 53,
+            "column": 17
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "[aria-label] text should be formatted the same as you would visual text. Use sentence case.",
+      "code": "github(a11y-aria-label-is-well-formatted)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/ui/breadcrumb.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 347,
+            "length": 119,
+            "line": 10,
+            "column": 5
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Rename this 'BreadcrumbLink' function to match the regular expression '^[_a-z][a-zA-Z0-9]*$'.",
+      "code": "sonarjs(function-name)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/ui/breadcrumb.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 1016,
+            "length": 14,
+            "line": 42,
+            "column": 10
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "The attribute aria-disabled is not supported by the role generic.",
+      "code": "github(a11y-role-supports-aria-props)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/ui/breadcrumb.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 1452,
+            "length": 179,
+            "line": 64,
+            "column": 5
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Rename this 'ButtonGroupText' function to match the regular expression '^[_a-z][a-zA-Z0-9]*$'.",
+      "code": "sonarjs(function-name)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/ui/button-group.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 1562,
+            "length": 15,
+            "line": 42,
+            "column": 10
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "This file exports non-components, so Fast Refresh can't safely preserve component state.",
+      "code": "react-doctor(only-export-components)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/ui/button-group.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 2615,
+            "length": 19,
+            "line": 87,
+            "column": 3
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "This file exports non-components, so Fast Refresh can't safely preserve component state.",
+      "code": "react-doctor(only-export-components)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/ui/button.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 3201,
+            "length": 14,
+            "line": 61,
+            "column": 18
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Refactor this union type to have less than 3 elements.",
+      "code": "sonarjs(max-union-size)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/ui/calendar.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 522,
+            "length": 32,
+            "line": 22,
+            "column": 17
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Faking an event handler with a prop plus a useEffect costs an extra render & runs late.",
+      "code": "react-doctor(no-event-handler)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/ui/calendar.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 6712,
+            "length": 9,
+            "line": 207,
+            "column": 9
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Explicitly import the specific member needed.",
+      "code": "sonarjs(no-wildcard-import)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/ui/card.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 12,
+            "length": 10,
+            "line": 1,
+            "column": 13
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "useContext is replaced by `use()` in React 19, which reads context inside ifs & loops too, so switch to `import { use } from 'react'`.",
+      "code": "react-doctor(no-react19-deprecated-apis)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/ui/carousel.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 243,
+            "length": 10,
+            "line": 9,
+            "column": 3
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "This `useCallback` is dead weight, since React Compiler already caches every function here. Delete it.",
+      "code": "react-doctor(react-compiler-no-manual-memoization)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/ui/carousel.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 1784,
+            "length": 166,
+            "line": 70,
+            "column": 20
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "This `useCallback` is dead weight, since React Compiler already caches every function here. Delete it.",
+      "code": "react-doctor(react-compiler-no-manual-memoization)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/ui/carousel.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 1974,
+            "length": 54,
+            "line": 78,
+            "column": 22
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "This `useCallback` is dead weight, since React Compiler already caches every function here. Delete it.",
+      "code": "react-doctor(react-compiler-no-manual-memoization)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/ui/carousel.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 2052,
+            "length": 54,
+            "line": 82,
+            "column": 22
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "This `useCallback` is dead weight, since React Compiler already caches every function here. Delete it.",
+      "code": "react-doctor(react-compiler-no-manual-memoization)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/ui/carousel.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 2133,
+            "length": 302,
+            "line": 86,
+            "column": 25
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Handing data back to a parent from a useEffect costs your users an extra render.",
+      "code": "react-doctor(no-pass-data-to-parent)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/ui/carousel.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 2510,
+            "length": 11,
+            "line": 103,
+            "column": 5
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Your parent re-renders on every local state change because this useEffect calls the prop \"setApi\" just to stay in sync.",
+      "code": "react-doctor(no-prop-callback-in-effect)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/ui/carousel.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 2510,
+            "length": 11,
+            "line": 103,
+            "column": 5
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "EffectSetState: Calling setState synchronously within an effect can trigger cascading renders",
+      "code": "react(react-compiler)",
+      "severity": "error",
+      "causes": [],
+      "url": "https://oxc.rs/docs/guide/usage/linter/rules/react/react-compiler.html",
+      "help": "Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:\n* Update external systems with the latest state from React.\n* Subscribe for updates from some external system, calling setState in a callback function when external state changes.\n\nCalling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect)",
+      "filename": "src/components/ui/carousel.tsx",
+      "labels": [
+        {
+          "label": "Avoid calling setState() directly within an effect",
+          "span": {
+            "offset": 2605,
+            "length": 8,
+            "line": 110,
+            "column": 5
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "The Context `value` prop should not be constructed.",
+      "code": "react(jsx-no-constructed-context-values)",
+      "severity": "error",
+      "causes": [],
+      "url": "https://oxc.rs/docs/guide/usage/linter/rules/react/jsx-no-constructed-context-values.html",
+      "help": "Wrap the `value` prop in useMemo() or useCallback(), or use a constant value to prevent unnecessary re-renders.\nAlternatively, move the value outside the render function if it doesn't depend on props or state.",
+      "filename": "src/components/ui/carousel.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 2818,
+            "length": 247,
+            "line": 121,
+            "column": 7
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "useContext is replaced by `use()` in React 19, which reads context inside ifs & loops too, so switch to `import { use } from 'react'`.",
+      "code": "react-doctor(no-react19-deprecated-apis)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/ui/chart.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 39,
+            "length": 10,
+            "line": 3,
+            "column": 25
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "\"recharts\" ships extra code to your users up front & slows page load. Load it on demand with React.lazy() or next/dynamic.",
+      "code": "react-doctor(prefer-dynamic-import)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/ui/chart.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 177,
+            "length": 64,
+            "line": 10,
+            "column": 1
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "The Context `value` prop should not be constructed.",
+      "code": "react(jsx-no-constructed-context-values)",
+      "severity": "error",
+      "causes": [],
+      "url": "https://oxc.rs/docs/guide/usage/linter/rules/react/jsx-no-constructed-context-values.html",
+      "help": "Wrap the `value` prop in useMemo() or useCallback(), or use a constant value to prevent unnecessary re-renders.\nAlternatively, move the value outside the render function if it doesn't depend on props or state.",
+      "filename": "src/components/ui/chart.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 1452,
+            "length": 18,
+            "line": 67,
+            "column": 28
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "This runs even when the component bails out because the useMemo builds JSX before an early return, so move the JSX into a child wrapped in memo to skip it on the early return",
+      "code": "react-doctor(rerender-memo-before-early-return)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/ui/chart.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 3607,
+            "length": 838,
+            "line": 139,
+            "column": 9
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "This `useMemo` is dead weight, since React Compiler already caches every value here. Delete it.",
+      "code": "react-doctor(react-compiler-no-manual-memoization)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/ui/chart.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 3622,
+            "length": 823,
+            "line": 139,
+            "column": 24
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Reduce the number of conditional operators (5) used in the expression (maximum allowed 3).",
+      "code": "sonarjs(expression-complexity)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/ui/chart.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 5592,
+            "length": 2108,
+            "line": 205,
+            "column": 18
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Explicitly import the specific member needed.",
+      "code": "sonarjs(no-wildcard-import)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/ui/command.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 133,
+            "length": 10,
+            "line": 5,
+            "column": 13
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Explicitly import the specific member needed.",
+      "code": "sonarjs(no-wildcard-import)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/ui/context-menu.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 170,
+            "length": 10,
+            "line": 5,
+            "column": 13
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Explicitly import the specific member needed.",
+      "code": "sonarjs(no-wildcard-import)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/ui/dialog.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 132,
+            "length": 10,
+            "line": 5,
+            "column": 13
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Explicitly import the specific member needed.",
+      "code": "sonarjs(no-wildcard-import)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/ui/drawer.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 27,
+            "length": 10,
+            "line": 3,
+            "column": 13
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Explicitly import the specific member needed.",
+      "code": "sonarjs(no-wildcard-import)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/ui/dropdown-menu.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 148,
+            "length": 10,
+            "line": 5,
+            "column": 13
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Do not use `setState`.",
+      "code": "react(no-set-state)",
+      "severity": "error",
+      "causes": [],
+      "url": "https://oxc.rs/docs/guide/usage/linter/rules/react/no-set-state.html",
+      "filename": "src/components/ui/error-boundary.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 1057,
+            "length": 13,
+            "line": 39,
+            "column": 5
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Do not use `setState`.",
+      "code": "react(no-set-state)",
+      "severity": "error",
+      "causes": [],
+      "url": "https://oxc.rs/docs/guide/usage/linter/rules/react/no-set-state.html",
+      "filename": "src/components/ui/error-boundary.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 1244,
+            "length": 13,
+            "line": 46,
+            "column": 5
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Fragments should contain more than one child.",
+      "code": "react(jsx-no-useless-fragment)",
+      "severity": "error",
+      "causes": [],
+      "url": "https://oxc.rs/docs/guide/usage/linter/rules/react/jsx-no-useless-fragment.html",
+      "filename": "src/components/ui/error-boundary.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 3967,
+            "length": 2,
+            "line": 137,
+            "column": 10
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "This runs even when the component bails out because the useMemo builds JSX before an early return, so move the JSX into a child wrapped in memo to skip it on the early return",
+      "code": "react-doctor(rerender-memo-before-early-return)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/ui/field.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 5129,
+            "length": 570,
+            "line": 185,
+            "column": 9
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "This `useMemo` is dead weight, since React Compiler already caches every value here. Delete it.",
+      "code": "react-doctor(react-compiler-no-manual-memoization)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/ui/field.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 5139,
+            "length": 560,
+            "line": 185,
+            "column": 19
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Your users can see & submit the wrong data when this list reorders or filters, so use a stable id like `key={item.id}`, not the array index \"index\".",
+      "code": "react-doctor(no-array-index-as-key)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/ui/field.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 5612,
+            "length": 11,
+            "line": 206,
+            "column": 35
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "useContext is replaced by `use()` in React 19, which reads context inside ifs & loops too, so switch to `import { use } from 'react'`.",
+      "code": "react-doctor(no-react19-deprecated-apis)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/ui/input-otp.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 121,
+            "length": 10,
+            "line": 5,
+            "column": 10
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Explicitly import the specific member needed.",
+      "code": "sonarjs(no-wildcard-import)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/ui/input.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 76,
+            "length": 10,
+            "line": 2,
+            "column": 13
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Rename this 'Item' function to match the regular expression '^[_a-z][a-zA-Z0-9]*$'.",
+      "code": "sonarjs(function-name)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/ui/item.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 1625,
+            "length": 4,
+            "line": 59,
+            "column": 10
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Component definition is missing display name.",
+      "code": "react(display-name)",
+      "severity": "error",
+      "causes": [],
+      "url": "https://oxc.rs/docs/guide/usage/linter/rules/react/display-name.html",
+      "help": "Add a `displayName` property to the component.",
+      "filename": "src/components/ui/locale-switcher.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 444,
+            "length": 14,
+            "line": 18,
+            "column": 14
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "This `memo()` is dead weight, since React Compiler already caches the component's output. Delete it.",
+      "code": "react-doctor(react-compiler-no-manual-memoization)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/ui/locale-switcher.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 461,
+            "length": 2635,
+            "line": 18,
+            "column": 31
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Prefer async/await to Promise.catch()",
+      "code": "github(no-then)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/ui/locale-switcher.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 920,
+            "length": 5,
+            "line": 31,
+            "column": 47
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Explicitly import the specific member needed.",
+      "code": "sonarjs(no-wildcard-import)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/ui/menubar.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 200,
+            "length": 10,
+            "line": 6,
+            "column": 13
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "This file exports non-components, so Fast Refresh can't safely preserve component state.",
+      "code": "react-doctor(only-export-components)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/ui/navigation-menu.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 6868,
+            "length": 26,
+            "line": 168,
+            "column": 3
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Explicitly import the specific member needed.",
+      "code": "sonarjs(no-wildcard-import)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/ui/pagination.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 105,
+            "length": 10,
+            "line": 6,
+            "column": 13
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "[aria-label] text should be formatted the same as you would visual text. Use sentence case.",
+      "code": "github(a11y-aria-label-is-well-formatted)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/ui/pagination.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 306,
+            "length": 157,
+            "line": 13,
+            "column": 5
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Explicitly import the specific member needed.",
+      "code": "sonarjs(no-wildcard-import)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/ui/popover.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 97,
+            "length": 10,
+            "line": 4,
+            "column": 13
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Explicitly import the specific member needed.",
+      "code": "sonarjs(no-wildcard-import)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/ui/select.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 168,
+            "length": 10,
+            "line": 5,
+            "column": 13
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Explicitly import the specific member needed.",
+      "code": "sonarjs(no-wildcard-import)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/ui/sheet.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 131,
+            "length": 10,
+            "line": 5,
+            "column": 13
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Refactor this union type to have less than 3 elements.",
+      "code": "sonarjs(max-union-size)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/ui/sheet.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 1410,
+            "length": 35,
+            "line": 46,
+            "column": 10
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "useContext is replaced by `use()` in React 19, which reads context inside ifs & loops too, so switch to `import { use } from 'react'`.",
+      "code": "react-doctor(no-react19-deprecated-apis)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/ui/sidebar.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 326,
+            "length": 10,
+            "line": 11,
+            "column": 3
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "useState call does not follow the [thing, setThing] naming convention",
+      "code": "react(hook-use-state)",
+      "severity": "error",
+      "causes": [],
+      "url": "https://oxc.rs/docs/guide/usage/linter/rules/react/hook-use-state.html",
+      "help": "Follow the [thing, setThing] naming convention",
+      "filename": "src/components/ui/sidebar.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 2169,
+            "length": 17,
+            "line": 83,
+            "column": 9
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "This `useCallback` is dead weight, since React Compiler already caches every function here. Delete it.",
+      "code": "react-doctor(react-compiler-no-manual-memoization)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/ui/sidebar.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 2264,
+            "length": 585,
+            "line": 85,
+            "column": 19
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Prefer async/await to Promise.catch()",
+      "code": "github(no-then)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/ui/sidebar.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 2790,
+            "length": 5,
+            "line": 102,
+            "column": 12
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "This `useCallback` is dead weight, since React Compiler already caches every function here. Delete it.",
+      "code": "react-doctor(react-compiler-no-manual-memoization)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/ui/sidebar.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 2911,
+            "length": 126,
+            "line": 109,
+            "column": 25
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "This `useMemo` is dead weight, since React Compiler already caches every value here. Delete it.",
+      "code": "react-doctor(react-compiler-no-manual-memoization)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/ui/sidebar.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 3722,
+            "length": 234,
+            "line": 135,
+            "column": 24
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "The title attribute is not accessible and should never be used unless for an `<iframe>`.",
+      "code": "github(a11y-no-title-attribute)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/ui/sidebar.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 8663,
+            "length": 1025,
+            "line": 303,
+            "column": 5
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "`button` elements must have an explicit `type` attribute.",
+      "code": "react(button-has-type)",
+      "severity": "error",
+      "causes": [],
+      "url": "https://oxc.rs/docs/guide/usage/linter/rules/react/button-has-type.html",
+      "help": "Add a `type` attribute to the `button` element.",
+      "filename": "src/components/ui/sidebar.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 8664,
+            "length": 6,
+            "line": 303,
+            "column": 6
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Rename this 'SidebarGroupLabel' function to match the regular expression '^[_a-z][a-zA-Z0-9]*$'.",
+      "code": "sonarjs(function-name)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/ui/sidebar.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 11833,
+            "length": 17,
+            "line": 409,
+            "column": 10
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Rename this 'SidebarGroupAction' function to match the regular expression '^[_a-z][a-zA-Z0-9]*$'.",
+      "code": "sonarjs(function-name)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/ui/sidebar.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 12554,
+            "length": 18,
+            "line": 433,
+            "column": 10
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Rename this 'SidebarMenuAction' function to match the regular expression '^[_a-z][a-zA-Z0-9]*$'.",
+      "code": "sonarjs(function-name)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/ui/sidebar.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 16628,
+            "length": 17,
+            "line": 566,
+            "column": 10
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "useState call is not destructured into value + setter pair",
+      "code": "react(hook-use-state)",
+      "severity": "error",
+      "causes": [],
+      "url": "https://oxc.rs/docs/guide/usage/linter/rules/react/hook-use-state.html",
+      "help": "Destructure useState call into value + setter pair follow the [thing, setThing] naming convention",
+      "filename": "src/components/ui/sidebar.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 18729,
+            "length": 7,
+            "line": 618,
+            "column": 9
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Make sure that using this pseudorandom number generator is safe here.",
+      "code": "sonarjs(pseudo-random)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/ui/sidebar.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 18768,
+            "length": 13,
+            "line": 618,
+            "column": 48
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Rename this 'SidebarMenuSubButton' function to match the regular expression '^[_a-z][a-zA-Z0-9]*$'.",
+      "code": "sonarjs(function-name)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/ui/sidebar.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 20043,
+            "length": 20,
+            "line": 671,
+            "column": 10
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Define a constant instead of duplicating this literal 3 times.",
+      "code": "sonarjs(no-duplicate-string)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/ui/skeletons.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 2951,
+            "length": 43,
+            "line": 98,
+            "column": 24
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "This `useMemo` is dead weight, since React Compiler already caches every value here. Delete it.",
+      "code": "react-doctor(react-compiler-no-manual-memoization)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/ui/slider.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 293,
+            "length": 206,
+            "line": 16,
+            "column": 19
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Explicitly import the specific member needed.",
+      "code": "sonarjs(no-wildcard-import)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/ui/table.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 27,
+            "length": 10,
+            "line": 3,
+            "column": 13
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "This file exports non-components, so Fast Refresh can't safely preserve component state.",
+      "code": "react-doctor(only-export-components)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/ui/tabs.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 3555,
+            "length": 16,
+            "line": 83,
+            "column": 52
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Explicitly import the specific member needed.",
+      "code": "sonarjs(no-wildcard-import)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/ui/textarea.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 12,
+            "length": 10,
+            "line": 1,
+            "column": 13
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "useContext is replaced by `use()` in React 19, which reads context inside ifs & loops too, so switch to `import { use } from 'react'`.",
+      "code": "react-doctor(no-react19-deprecated-apis)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/ui/toggle-group.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 251,
+            "length": 10,
+            "line": 6,
+            "column": 25
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "The Context `value` prop should not be constructed.",
+      "code": "react(jsx-no-constructed-context-values)",
+      "severity": "error",
+      "causes": [],
+      "url": "https://oxc.rs/docs/guide/usage/linter/rules/react/jsx-no-constructed-context-values.html",
+      "help": "Wrap the `value` prop in useMemo() or useCallback(), or use a constant value to prevent unnecessary re-renders.\nAlternatively, move the value outside the render function if it doesn't depend on props or state.",
+      "filename": "src/components/ui/toggle-group.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 1517,
+            "length": 47,
+            "line": 52,
+            "column": 9
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "This file exports non-components, so Fast Refresh can't safely preserve component state.",
+      "code": "react-doctor(only-export-components)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/components/ui/toggle.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 1492,
+            "length": 14,
+            "line": 45,
+            "column": 18
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "useContext is replaced by `use()` in React 19, which reads context inside ifs & loops too, so switch to `import { use } from 'react'`.",
+      "code": "react-doctor(no-react19-deprecated-apis)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/i18n/locale-action.tsx",
+      "labels": [
+        {
+          "span": {
+            "offset": 120,
+            "length": 10,
+            "line": 5,
+            "column": 25
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "useState call does not follow the [thing, setThing] naming convention",
+      "code": "react(hook-use-state)",
+      "severity": "error",
+      "causes": [],
+      "url": "https://oxc.rs/docs/guide/usage/linter/rules/react/hook-use-state.html",
+      "help": "Follow the [thing, setThing] naming convention",
+      "filename": "src/lib/hooks/use-convex-status.ts",
+      "labels": [
+        {
+          "span": {
+            "offset": 637,
+            "length": 28,
+            "line": 25,
+            "column": 9
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Remove the declaration of the unused '_retryCount' variable.",
+      "code": "sonarjs(no-unused-vars)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/lib/hooks/use-convex-status.ts",
+      "labels": [
+        {
+          "span": {
+            "offset": 638,
+            "length": 11,
+            "line": 25,
+            "column": 10
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "This `useCallback` is dead weight, since React Compiler already caches every function here. Delete it.",
+      "code": "react-doctor(react-compiler-no-manual-memoization)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/lib/hooks/use-convex-status.ts",
+      "labels": [
+        {
+          "span": {
+            "offset": 698,
+            "length": 96,
+            "line": 27,
+            "column": 17
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "4 setState calls in one useEffect redraw your screen each time they run together.",
+      "code": "react-doctor(no-cascading-set-state)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/lib/hooks/use-convex-status.ts",
+      "labels": [
+        {
+          "span": {
+            "offset": 799,
+            "length": 994,
+            "line": 32,
+            "column": 3
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "EffectSetState: Calling setState synchronously within an effect can trigger cascading renders",
+      "code": "react(react-compiler)",
+      "severity": "error",
+      "causes": [],
+      "url": "https://oxc.rs/docs/guide/usage/linter/rules/react/react-compiler.html",
+      "help": "Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:\n* Update external systems with the latest state from React.\n* Subscribe for updates from some external system, calling setState in a callback function when external state changes.\n\nCalling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect)",
+      "filename": "src/lib/hooks/use-convex-status.ts",
+      "labels": [
+        {
+          "label": "Avoid calling setState() directly within an effect",
+          "span": {
+            "offset": 842,
+            "length": 9,
+            "line": 34,
+            "column": 7
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Your users see an extra render with empty \"isMobile\" because a useEffect sets its starting value.",
+      "code": "react-doctor(no-initialize-state)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/lib/hooks/use-mobile.ts",
+      "labels": [
+        {
+          "span": {
+            "offset": 420,
+            "length": 50,
+            "line": 14,
+            "column": 5
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "EffectSetState: Calling setState synchronously within an effect can trigger cascading renders",
+      "code": "react(react-compiler)",
+      "severity": "error",
+      "causes": [],
+      "url": "https://oxc.rs/docs/guide/usage/linter/rules/react/react-compiler.html",
+      "help": "Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:\n* Update external systems with the latest state from React.\n* Subscribe for updates from some external system, calling setState in a callback function when external state changes.\n\nCalling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect)",
+      "filename": "src/lib/hooks/use-mobile.ts",
+      "labels": [
+        {
+          "label": "Avoid calling setState() directly within an effect",
+          "span": {
+            "offset": 420,
+            "length": 11,
+            "line": 14,
+            "column": 5
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "useRef(randomUUID()) rebuilds this value on every render & throws it away.",
+      "code": "react-doctor(rerender-lazy-ref-init)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/lib/hooks/use-presence.ts",
+      "labels": [
+        {
+          "span": {
+            "offset": 794,
+            "length": 19,
+            "line": 31,
+            "column": 31
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Prefer async/await to Promise.catch()",
+      "code": "github(no-then)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/lib/hooks/use-presence.ts",
+      "labels": [
+        {
+          "span": {
+            "offset": 1317,
+            "length": 5,
+            "line": 47,
+            "column": 63
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Prefer async/await to Promise.catch()",
+      "code": "github(no-then)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/lib/hooks/use-presence.ts",
+      "labels": [
+        {
+          "span": {
+            "offset": 1804,
+            "length": 5,
+            "line": 68,
+            "column": 21
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Prefer async/await to Promise.catch()",
+      "code": "github(no-then)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/lib/hooks/use-presence.ts",
+      "labels": [
+        {
+          "span": {
+            "offset": 2721,
+            "length": 5,
+            "line": 99,
+            "column": 25
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Prefer async/await to Promise.catch()",
+      "code": "github(no-then)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/lib/hooks/use-presence.ts",
+      "labels": [
+        {
+          "span": {
+            "offset": 3256,
+            "length": 5,
+            "line": 114,
+            "column": 63
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Refs: Cannot access refs during render",
+      "code": "react(react-compiler)",
+      "severity": "error",
+      "causes": [],
+      "url": "https://oxc.rs/docs/guide/usage/linter/rules/react/react-compiler.html",
+      "help": "React refs are values that are not needed for rendering. Refs should only be accessed outside of render, such as in event handlers or effects. Accessing a ref value (the `current` property) during render can cause your component not to update as expected (https://react.dev/reference/react/useRef)",
+      "filename": "src/lib/hooks/use-presence.ts",
+      "labels": [
+        {
+          "label": "Cannot access ref value during render",
+          "span": {
+            "offset": 3481,
+            "length": 20,
+            "line": 125,
+            "column": 5
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Refs: Cannot access refs during render",
+      "code": "react(react-compiler)",
+      "severity": "error",
+      "causes": [],
+      "url": "https://oxc.rs/docs/guide/usage/linter/rules/react/react-compiler.html",
+      "help": "React refs are values that are not needed for rendering. Refs should only be accessed outside of render, such as in event handlers or effects. Accessing a ref value (the `current` property) during render can cause your component not to update as expected (https://react.dev/reference/react/useRef)",
+      "filename": "src/lib/hooks/use-presence.ts",
+      "labels": [
+        {
+          "label": "Cannot access ref value during render",
+          "span": {
+            "offset": 3517,
+            "length": 20,
+            "line": 125,
+            "column": 41
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "Refs: Cannot access refs during render",
+      "code": "react(react-compiler)",
+      "severity": "error",
+      "causes": [],
+      "url": "https://oxc.rs/docs/guide/usage/linter/rules/react/react-compiler.html",
+      "help": "React refs are values that are not needed for rendering. Refs should only be accessed outside of render, such as in event handlers or effects. Accessing a ref value (the `current` property) during render can cause your component not to update as expected (https://react.dev/reference/react/useRef)",
+      "filename": "src/lib/hooks/use-presence.ts",
+      "labels": [
+        {
+          "label": "Cannot access ref value during render",
+          "span": {
+            "offset": 3517,
+            "length": 20,
+            "line": 125,
+            "column": 41
+          }
+        }
+      ],
+      "related": []
+    },
+    {
+      "message": "This `useMemo` is dead weight, since React Compiler already caches every value here. Delete it.",
+      "code": "react-doctor(react-compiler-no-manual-memoization)",
+      "severity": "error",
+      "causes": [],
+      "filename": "src/lib/hooks/use-presence.ts",
+      "labels": [
+        {
+          "span": {
+            "offset": 3564,
+            "length": 267,
+            "line": 128,
+            "column": 10
+          }
+        }
+      ],
+      "related": []
+    }
+  ],
+  "number_of_files": 165,
+  "number_of_rules": 844,
+  "threads_count": 10
+}
