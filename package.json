@@ -17,8 +17,9 @@
     "convex:typegen": "convex codegen --url http://127.0.0.1:3210 2>/dev/null || true",
     "convex:dev": "convex dev --local",
     "prepare": "lefthook install",
-    "check": "oxlint . && oxfmt --check .",
-    "fix": "oxlint --fix . && oxfmt ."
+    "check": "node scripts/oxlint-ledger.mjs check && oxfmt --check .",
+    "fix": "oxlint --fix . && oxfmt .",
+    "lint:ledger:update": "node scripts/oxlint-ledger.mjs update"
   },
   "dependencies": {
     "@base-ui/react": "1.6.0",
