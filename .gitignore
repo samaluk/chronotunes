@@ -46,6 +46,9 @@ next-env.d.ts
 # Keep .env.example for reference
 !.env.example
 
-# Dev browser skill artifacts
-.opencode/skills/dev-browser/profiles/
-.opencode/skills/dev-browser/tmp/
+# Agent skill artifacts (installed via skills CLI)
+.agents/skills/*/node_modules/
+
+# OpenCode internal artifacts (local only)
+.opencode/package-lock.json
+.opencode/node_modules/
