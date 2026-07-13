@@ -148,8 +148,8 @@ importers:
         specifier: 1.73.0
         version: 1.73.0
       oxlint-plugin-react-doctor:
-        specifier: 0.7.2
-        version: 0.7.2
+        specifier: 0.7.4
+        version: 0.7.4
       scrape-youtube:
         specifier: 2.4.0
         version: 2.4.0
@@ -4582,8 +4582,8 @@ packages:
       vite-plus:
         optional: true
 
-  oxlint-plugin-react-doctor@0.7.2:
-    resolution: {integrity: sha512-5euEAWYWwA/q9DIfazvFCmuu7x3N075P0AiRyXCvsuInRzFL6xswF91s12NWQEmSuPRiA+ofmz8ZC5Xxd3we6Q==}
+  oxlint-plugin-react-doctor@0.7.4:
+    resolution: {integrity: sha512-0JK+5KdT3maDvcXH9Qe79z5wVbWHax6dpqzdEM83e5uMLLZfqI6WVpCJvdtVoknMYLvJY0hdyFTf3adpzZlrQw==}
     engines: {node: ^20.19.0 || >=22.13.0}
 
   oxlint@1.73.0:
@@ -9777,7 +9777,7 @@ snapshots:
       '@oxfmt/binding-win32-ia32-msvc': 0.58.0
       '@oxfmt/binding-win32-x64-msvc': 0.58.0
 
-  oxlint-plugin-react-doctor@0.7.2:
+  oxlint-plugin-react-doctor@0.7.4:
     dependencies:
       '@typescript-eslint/types': 8.63.0
       eslint-scope: 9.1.2
