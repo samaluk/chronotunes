@@ -130,8 +130,8 @@ importers:
         specifier: 0.0.54
         version: 0.0.54(convex@1.42.1(react@19.2.7))
       eslint-plugin-github:
-        specifier: 6.1.0
-        version: 6.1.0(eslint@10.6.0(jiti@2.7.0))
+        specifier: 6.1.1
+        version: 6.1.1(eslint@10.6.0(jiti@2.7.0))
       eslint-plugin-sonarjs:
         specifier: 4.1.0
         version: 4.1.0(eslint@10.6.0(jiti@2.7.0))
@@ -3328,8 +3328,8 @@ packages:
     peerDependencies:
       eslint: '*'
 
-  eslint-plugin-github@6.1.0:
-    resolution: {integrity: sha512-+mA0K1/I1JSE9AOiJ4ifMDGu7NplRZX0e3Uy0SjbwyXb2rsDfo5yfT0UCUO+TiOJ/99R1YxFRltizP/PZuB4PQ==}
+  eslint-plugin-github@6.1.1:
+    resolution: {integrity: sha512-xCqu1S/s/CCvoRLafaXNvwiVrxhroNOFLGyG9Dhi4i1PWZgPHlipjXysH6wccPFQyhSKE7gAjSLqdSdM204bZQ==}
     hasBin: true
     peerDependencies:
       eslint: ^8 || ^9 || ^10
@@ -8411,7 +8411,7 @@ snapshots:
       lodash.snakecase: 4.1.1
       lodash.upperfirst: 4.3.1
 
-  eslint-plugin-github@6.1.0(eslint@10.6.0(jiti@2.7.0)):
+  eslint-plugin-github@6.1.1(eslint@10.6.0(jiti@2.7.0)):
     dependencies:
       '@eslint/compat': 2.1.0(eslint@10.6.0(jiti@2.7.0))
       '@eslint/eslintrc': 3.3.5
