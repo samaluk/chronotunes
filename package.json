@@ -73,7 +73,7 @@
     "oxlint-plugin-react-doctor": "0.9.1",
     "scrape-youtube": "2.4.0",
     "tailwindcss": "4.3.3",
-    "typescript": "6.0.3",
+    "typescript": "7.0.2",
     "ultracite": "7.9.4",
     "vitest": "4.1.10"
   },
