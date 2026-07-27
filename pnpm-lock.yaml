@@ -12,8 +12,8 @@ importers:
         specifier: 1.6.0
         version: 1.6.0(@date-fns/tz@1.4.1)(@types/react@19.2.17)(date-fns@4.2.1)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
       '@convex-dev/presence':
-        specifier: 0.3.2
-        version: 0.3.2(convex@1.42.3(react@19.2.8))(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
+        specifier: 0.4.0
+        version: 0.4.0(convex@1.42.3(react@19.2.8))(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
       '@daypicker/react':
         specifier: 10.0.1
         version: 10.0.1(@types/react@19.2.17)(react@19.2.8)
@@ -366,10 +366,16 @@ packages:
     resolution: {integrity: sha512-zccHj2z2oCCO4yrDiRSlFOxWerGqRiysP7a5jPK6uoI9URKAquwY42Dd/iUP8JWHxEzdRe4TlbvZCo8z1/mhrw==}
     engines: {node: '>= 20.12.0'}
 
-  '@convex-dev/presence@0.3.2':
-    resolution: {integrity: sha512-3Q4LOHW4hSDFWG8XZZv/xYya8WGbpFNEkyvxBYM6NLXTWSxc2ifw/8URRQziIhRx97v1VnSjrExntgXMGn4vLg==}
+  '@convex-dev/batch-worker@0.2.0':
+    resolution: {integrity: sha512-dn0L/5jqufXHzgzAhWqjGBmDGXbwRA0S6YVV5Z66y4pMXZ+YL3M4aHCk9iBInPp5zOtEPgVbfo/BYMxhLxVP+w==}
     peerDependencies:
-      convex: ^1.24.8
+      convex: ^1.36.1
+      react: ^18.3.1 || ^19.0.0
+
+  '@convex-dev/presence@0.4.0':
+    resolution: {integrity: sha512-T1f2aHyS2D2dxvMnvY+qSJBIRG0W7ph8+mgOvZif52JLlLNscCHTangAgNWR4VLYGhXFFDxwSSpdh7vxzA/hPQ==}
+    peerDependencies:
+      convex: ^1.36.1
       expo-crypto: '>=14.1.0'
       react: ~18.3.1 || ^19.0.0
       react-dom: ~18.3.1 || ^19.0.0
@@ -5961,8 +5967,14 @@ snapshots:
       fast-wrap-ansi: 0.2.0
       sisteransi: 1.0.5
 
-  '@convex-dev/presence@0.3.2(convex@1.42.3(react@19.2.8))(react-dom@19.2.8(react@19.2.8))(react@19.2.8)':
+  '@convex-dev/batch-worker@0.2.0(convex@1.42.3(react@19.2.8))(react@19.2.8)':
     dependencies:
+      convex: 1.42.3(react@19.2.8)
+      react: 19.2.8
+
+  '@convex-dev/presence@0.4.0(convex@1.42.3(react@19.2.8))(react-dom@19.2.8(react@19.2.8))(react@19.2.8)':
+    dependencies:
+      '@convex-dev/batch-worker': 0.2.0(convex@1.42.3(react@19.2.8))(react@19.2.8)
       convex: 1.42.3(react@19.2.8)
       react: 19.2.8
       react-dom: 19.2.8(react@19.2.8)
