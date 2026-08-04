@@ -19,13 +19,8 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Format testing guide probe
-        run: |
-          pnpm exec oxfmt docs/agents/testing.md
-          echo '--- OXFMT OUTPUT BEGIN ---'
-          cat docs/agents/testing.md
-          echo '--- OXFMT OUTPUT END ---'
-          exit 1
+      - name: Lint and format (Oxlint + Oxfmt)
+        run: pnpm check
 
       - name: Typecheck
         run: pnpm next:typegen
