@@ -1,7 +1,6 @@
 # Testing
 
-These guidelines adapt Kent C. Dodds' testing principles from Kody:
-https://github.com/kentcdodds/kody/blob/main/docs/contributing/testing-principles.md
+These guidelines adapt Kent C. Dodds' testing principles from Kody: https://github.com/kentcdodds/kody/blob/main/docs/contributing/testing-principles.md
 
 Use the repository's existing commands and framework-specific setup; the principles below govern test design.
 
