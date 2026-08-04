@@ -34,6 +34,12 @@ pnpm test <pattern>         # Run tests matching pattern
 pnpm test --watch           # Watch mode
 ```
 
+## Workflow support
+
+```bash
+pnpx --yes frog@1.0.15 list  # Validate the unresolved friction inbox
+```
+
 ## Pre-commit (must pass)
 
 ```bash
