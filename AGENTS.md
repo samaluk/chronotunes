@@ -161,6 +161,10 @@ Most formatting and common issues are automatically fixed by Oxlint + Oxfmt. Run
 
 Issues are tracked in GitHub Issues via the `gh` CLI. See `docs/agents/issue-tracker.md`.
 
+### Friction and lessons
+
+Use `pnpx frog list` before logging unresolved friction. Treat `LESSONS.md` as a staging inbox, not always-on context; follow `docs/agents/workflow.md` when capturing or promoting durable lessons.
+
 ### Triage labels
 
 Use `needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`, and `wontfix`. See `docs/agents/triage-labels.md`.
