@@ -13,7 +13,7 @@ importers:
         version: 1.6.0(@date-fns/tz@1.4.1)(@types/react@19.2.18)(date-fns@4.2.1)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
       '@convex-dev/presence':
         specifier: 0.4.0
-        version: 0.4.0(convex@1.42.3(react@19.2.8))(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
+        version: 0.4.0(convex@1.43.0(react@19.2.8))(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
       '@daypicker/react':
         specifier: 10.0.1
         version: 10.0.1(@types/react@19.2.18)(react@19.2.8)
@@ -30,11 +30,11 @@ importers:
         specifier: 1.1.1
         version: 1.1.1(@types/react-dom@19.2.4(@types/react@19.2.18))(@types/react@19.2.18)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
       convex:
-        specifier: 1.42.3
-        version: 1.42.3(react@19.2.8)
+        specifier: 1.43.0
+        version: 1.43.0(react@19.2.8)
       convex-helpers:
         specifier: 0.1.120
-        version: 0.1.120(@standard-schema/spec@1.1.0)(convex@1.42.3(react@19.2.8))(hono@4.12.19)(react@19.2.8)(typescript@7.0.2)(zod@3.25.76)
+        version: 0.1.120(@standard-schema/spec@1.1.0)(convex@1.43.0(react@19.2.8))(hono@4.12.19)(react@19.2.8)(typescript@7.0.2)(zod@3.25.76)
       embla-carousel-react:
         specifier: 8.6.0
         version: 8.6.0(react@19.2.8)
@@ -128,7 +128,7 @@ importers:
         version: 4.1.10(vitest@4.1.10)
       convex-test:
         specifier: 0.0.54
-        version: 0.0.54(convex@1.42.3(react@19.2.8))
+        version: 0.0.54(convex@1.43.0(react@19.2.8))
       eslint-plugin-github:
         specifier: 6.1.2
         version: 6.1.2(eslint@9.39.5(jiti@2.7.0)(supports-color@7.2.0))(supports-color@7.2.0)
@@ -3058,8 +3058,8 @@ packages:
     peerDependencies:
       convex: ^1.32.0
 
-  convex@1.42.3:
-    resolution: {integrity: sha512-7Tz/lH6UlZdiqzLPF/zrlH6Rlo/DOp836dL+GZkUMEQ2jaGGNnBIiIDcOOiEqtfSehuQ65r/rdNMnb4LupowaA==}
+  convex@1.43.0:
+    resolution: {integrity: sha512-huZWEUZQYxIRG104o22ZI99HkviSEVltwezZRDi+pQDPrQbc5EoCPa4Y7pJDqUBQw9dc/iEEXj2/rLZg1j7Dww==}
     engines: {node: '>=18.0.0', npm: '>=7.0.0'}
     hasBin: true
     peerDependencies:
@@ -6107,15 +6107,15 @@ snapshots:
       fast-wrap-ansi: 0.2.0
       sisteransi: 1.0.5
 
-  '@convex-dev/batch-worker@0.2.0(convex@1.42.3(react@19.2.8))(react@19.2.8)':
+  '@convex-dev/batch-worker@0.2.0(convex@1.43.0(react@19.2.8))(react@19.2.8)':
     dependencies:
-      convex: 1.42.3(react@19.2.8)
+      convex: 1.43.0(react@19.2.8)
       react: 19.2.8
 
-  '@convex-dev/presence@0.4.0(convex@1.42.3(react@19.2.8))(react-dom@19.2.8(react@19.2.8))(react@19.2.8)':
+  '@convex-dev/presence@0.4.0(convex@1.43.0(react@19.2.8))(react-dom@19.2.8(react@19.2.8))(react@19.2.8)':
     dependencies:
-      '@convex-dev/batch-worker': 0.2.0(convex@1.42.3(react@19.2.8))(react@19.2.8)
-      convex: 1.42.3(react@19.2.8)
+      '@convex-dev/batch-worker': 0.2.0(convex@1.43.0(react@19.2.8))(react@19.2.8)
+      convex: 1.43.0(react@19.2.8)
       react: 19.2.8
       react-dom: 19.2.8(react@19.2.8)
 
@@ -8203,9 +8203,9 @@ snapshots:
 
   convert-source-map@2.0.0: {}
 
-  convex-helpers@0.1.120(@standard-schema/spec@1.1.0)(convex@1.42.3(react@19.2.8))(hono@4.12.19)(react@19.2.8)(typescript@7.0.2)(zod@3.25.76):
+  convex-helpers@0.1.120(@standard-schema/spec@1.1.0)(convex@1.43.0(react@19.2.8))(hono@4.12.19)(react@19.2.8)(typescript@7.0.2)(zod@3.25.76):
     dependencies:
-      convex: 1.42.3(react@19.2.8)
+      convex: 1.43.0(react@19.2.8)
     optionalDependencies:
       '@standard-schema/spec': 1.1.0
       hono: 4.12.19
@@ -8213,11 +8213,11 @@ snapshots:
       typescript: 7.0.2
       zod: 3.25.76
 
-  convex-test@0.0.54(convex@1.42.3(react@19.2.8)):
+  convex-test@0.0.54(convex@1.43.0(react@19.2.8)):
     dependencies:
-      convex: 1.42.3(react@19.2.8)
+      convex: 1.43.0(react@19.2.8)
 
-  convex@1.42.3(react@19.2.8):
+  convex@1.43.0(react@19.2.8):
     dependencies:
       esbuild: 0.27.0
       prettier: 3.8.3
