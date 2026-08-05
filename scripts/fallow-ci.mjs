@@ -48,10 +48,12 @@ if (version.status !== 0) {
   process.exit(version.status ?? 2);
 }
 
-const versionMatch = version.stdout.match(/fallow\s+(\S+)/);
-const installedVersion = versionMatch?.[1];
+const versionMatch = version.stdout.match(/fallow\s+(?<version>\S+)/u);
+const installedVersion = versionMatch?.groups?.version;
 if (installedVersion !== FALLOW_VERSION) {
-  console.error(`Expected fallow ${FALLOW_VERSION}, found ${installedVersion ?? "unknown"}.`);
+  console.error(
+    `Expected fallow ${FALLOW_VERSION}, found ${installedVersion ?? "unknown"}.`
+  );
   process.exit(2);
 }
 
@@ -63,12 +65,27 @@ run("node", ["scripts/fallow-baseline-check.mjs"]);
 
 console.log("\n==> Gate A: exact baselines");
 fallow(
-  ["dead-code", "--baseline", "fallow-baselines/dead-code.json", "--fail-on-issues", "--quiet"],
-  { allowIssueExit: false },
+  [
+    "dead-code",
+    "--baseline",
+    "fallow-baselines/dead-code.json",
+    "--fail-on-issues",
+    "--quiet",
+  ],
+  { allowIssueExit: false }
 );
-fallow(["dupes", "--baseline", "fallow-baselines/dupes.json", "--fail-on-issues", "--quiet"], {
-  allowIssueExit: false,
-});
+fallow(
+  [
+    "dupes",
+    "--baseline",
+    "fallow-baselines/dupes.json",
+    "--fail-on-issues",
+    "--quiet",
+  ],
+  {
+    allowIssueExit: false,
+  }
+);
 fallow(
   [
     "health",
@@ -79,7 +96,7 @@ fallow(
     "--fail-on-issues",
     "--quiet",
   ],
-  { allowIssueExit: false },
+  { allowIssueExit: false }
 );
 
 console.log("\n==> Gate B: regression baseline (embedded in .fallowrc.json)");

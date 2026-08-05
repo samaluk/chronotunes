@@ -15,7 +15,7 @@ import {
   rmSync,
 } from "node:fs";
 import { tmpdir } from "node:os";
-import { join } from "node:path";
+import path from "node:path";
 
 const EXACT_BASELINE_FILES = [
   "fallow-baselines/dead-code.json",
@@ -49,15 +49,15 @@ function canonicalJson(text) {
   return JSON.stringify(JSON.parse(text));
 }
 
-const tempRoot = mkdtempSync(join(tmpdir(), "fallow-baseline-check-"));
-const tempConfigPath = join(tempRoot, ".fallowrc.json");
+const tempRoot = mkdtempSync(path.join(tmpdir(), "fallow-baseline-check-"));
+const tempConfigPath = path.join(tempRoot, ".fallowrc.json");
 
 try {
   copyFileSync(".fallowrc.json", tempConfigPath);
 
   for (const file of EXACT_BASELINE_FILES) {
-    const generatedPath = join(tempRoot, file);
-    mkdirSync(join(tempRoot, "fallow-baselines"), { recursive: true });
+    const generatedPath = path.join(tempRoot, file);
+    mkdirSync(path.join(tempRoot, "fallow-baselines"), { recursive: true });
 
     if (file.endsWith("health.json")) {
       runFallow(
@@ -70,7 +70,7 @@ try {
           "--baseline-mode",
           "identity",
         ],
-        { allowIssueExit: true },
+        { allowIssueExit: true }
       );
       continue;
     }
@@ -78,7 +78,7 @@ try {
     const command = file.includes("dead-code") ? "dead-code" : "dupes";
     runFallow(
       ["-c", tempConfigPath, command, "--save-baseline", generatedPath],
-      { allowIssueExit: true },
+      { allowIssueExit: true }
     );
   }
 
@@ -90,7 +90,9 @@ try {
 
   for (const file of EXACT_BASELINE_FILES) {
     const committed = canonicalJson(readFileSync(file, "utf-8"));
-    const generated = canonicalJson(readFileSync(join(tempRoot, file), "utf-8"));
+    const generated = canonicalJson(
+      readFileSync(path.join(tempRoot, file), "utf-8")
+    );
 
     if (committed !== generated) {
       stale.push(file);
@@ -98,10 +100,10 @@ try {
   }
 
   const committedRegression = JSON.stringify(
-    JSON.parse(readFileSync(".fallowrc.json", "utf-8")).regression ?? null,
+    JSON.parse(readFileSync(".fallowrc.json", "utf-8")).regression ?? null
   );
   const generatedRegression = JSON.stringify(
-    JSON.parse(readFileSync(tempConfigPath, "utf-8")).regression ?? null,
+    JSON.parse(readFileSync(tempConfigPath, "utf-8")).regression ?? null
   );
 
   if (committedRegression !== generatedRegression) {
@@ -110,7 +112,7 @@ try {
 
   if (stale.length > 0) {
     console.error(
-      "\nCommitted Fallow baselines are stale. Run `pnpm fallow:baseline:update` and commit the results:",
+      "\nCommitted Fallow baselines are stale. Run `pnpm fallow:baseline:update` and commit the results:"
     );
     for (const file of stale) {
       console.error(`  - ${file}`);

@@ -6,7 +6,7 @@
  */
 import { spawnSync } from "node:child_process";
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
-import { dirname } from "node:path";
+import path from "node:path";
 
 const EXACT_BASELINE_FILES = [
   "fallow-baselines/dead-code.json",
@@ -74,8 +74,10 @@ mkdirSync("fallow-baselines", { recursive: true });
 
 for (const step of BASELINES) {
   console.log(`\n==> ${step.label}`);
-  for (const path of step.args.filter((arg) => arg.startsWith("fallow-baselines/"))) {
-    mkdirSync(dirname(path), { recursive: true });
+  for (const baselinePath of step.args.filter((arg) =>
+    arg.startsWith("fallow-baselines/")
+  )) {
+    mkdirSync(path.dirname(baselinePath), { recursive: true });
   }
   runFallow(step.args, { allowIssueExit: step.allowIssueExit });
 }
