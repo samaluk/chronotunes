@@ -19,11 +19,7 @@ const getLobbyOrThrow = async (ctx: MutationCtx, lobbyId: Id<"lobbies">) => {
   return lobby;
 };
 
-const assertHostSession = (
-  lobby: Doc<"lobbies">,
-  sessionId: string,
-  message: string
-) => {
+const assertHostSession = (lobby: Doc<"lobbies">, sessionId: string, message: string) => {
   if (lobby.hostSessionId !== sessionId) {
     throw new ConvexError(message);
   }
@@ -32,7 +28,7 @@ const assertHostSession = (
 const assertLobbyStatus = (
   lobby: Doc<"lobbies">,
   status: Doc<"lobbies">["status"],
-  message: string
+  message: string,
 ) => {
   if (lobby.status !== status) {
     throw new ConvexError(message);
@@ -63,18 +59,16 @@ const ensureAllNonTurnPlayersActed = (
   players: Doc<"players">[],
   turnPlayerId: Id<"players">,
   lockedBets: Doc<"roundBets">[],
-  declinedBets: Doc<"roundBets">[]
+  declinedBets: Doc<"roundBets">[],
 ) => {
-  const nonTurnPlayers = players.filter(
-    (player) => player._id !== turnPlayerId
-  );
+  const nonTurnPlayers = players.filter((player) => player._id !== turnPlayerId);
 
   const allNonTurnPlayersActed =
     nonTurnPlayers.length === 0 ||
     nonTurnPlayers.every(
       (player) =>
         lockedBets.some((bet) => bet.playerId === player._id) ||
-        declinedBets.some((bet) => bet.playerId === player._id)
+        declinedBets.some((bet) => bet.playerId === player._id),
     );
 
   if (!allNonTurnPlayersActed) {
@@ -83,15 +77,12 @@ const ensureAllNonTurnPlayersActed = (
 };
 
 const applyTurnPlayerPlacement = (
-  timelineUpdates: Map<
-    Id<"players">,
-    { newTimeline: TimelineEntry[]; newTimelineSize: number }
-  >,
+  timelineUpdates: Map<Id<"players">, { newTimeline: TimelineEntry[]; newTimelineSize: number }>,
   turnPlayerId: Id<"players">,
   track: Doc<"tracks">,
   roundNumber: number,
   proposedIndex: number,
-  turnPlayerWasCorrect: boolean
+  turnPlayerWasCorrect: boolean,
 ) => {
   const awardedPlayerIds: Id<"players">[] = [];
 
@@ -119,14 +110,11 @@ const applyTurnPlayerPlacement = (
 const applyLockedBets = async (
   ctx: MutationCtx,
   lockedBets: Doc<"roundBets">[],
-  timelineUpdates: Map<
-    Id<"players">,
-    { newTimeline: TimelineEntry[]; newTimelineSize: number }
-  >,
+  timelineUpdates: Map<Id<"players">, { newTimeline: TimelineEntry[]; newTimelineSize: number }>,
   track: Doc<"tracks">,
   roundNumber: number,
   validRange: { min: number; max: number },
-  turnPlayerWasCorrect: boolean
+  turnPlayerWasCorrect: boolean,
 ) => {
   const awardedPlayerIds: Id<"players">[] = [];
   const coinDeltas: { playerId: Id<"players">; delta: number }[] = [];
@@ -165,29 +153,21 @@ const applyLockedBets = async (
   return { awardedPlayerIds, coinDeltas };
 };
 
-const applyDeclinedBets = async (
-  ctx: MutationCtx,
-  declinedBets: Doc<"roundBets">[]
-) => {
-  await Promise.all(
-    declinedBets.map((bet) => ctx.db.patch(bet._id, { status: "lost" }))
-  );
+const applyDeclinedBets = async (ctx: MutationCtx, declinedBets: Doc<"roundBets">[]) => {
+  await Promise.all(declinedBets.map((bet) => ctx.db.patch(bet._id, { status: "lost" })));
 };
 
 const persistTimelineUpdates = async (
   ctx: MutationCtx,
-  timelineUpdates: Map<
-    Id<"players">,
-    { newTimeline: TimelineEntry[]; newTimelineSize: number }
-  >
+  timelineUpdates: Map<Id<"players">, { newTimeline: TimelineEntry[]; newTimelineSize: number }>,
 ) => {
   await Promise.all(
     Array.from(timelineUpdates.entries(), ([playerId, update]) =>
       ctx.db.patch(playerId, {
         timeline: update.newTimeline,
         timelineSize: update.newTimelineSize,
-      })
-    )
+      }),
+    ),
   );
 };
 
@@ -209,9 +189,7 @@ export const start = mutationWithSession({
     }
 
     await Promise.all(
-      players.map((player) =>
-        ctx.db.patch(player._id, { coins: lobby.settings.startingCoins })
-      )
+      players.map((player) => ctx.db.patch(player._id, { coins: lobby.settings.startingCoins })),
     );
 
     const turnOrder = shuffleArray(players.map((p) => p._id));
@@ -230,22 +208,19 @@ export const start = mutationWithSession({
       .filter((q) =>
         q.and(
           q.gte(q.field("year"), lobby.settings.minYear),
-          q.lte(q.field("year"), lobby.settings.maxYear)
-        )
+          q.lte(q.field("year"), lobby.settings.maxYear),
+        ),
       )
       .collect();
 
     if (tracks.length < players.length) {
       throw new ConvexError(
-        `Not enough tracks for all players. Have ${tracks.length} tracks but need at least ${players.length} tracks (one per player)`
+        `Not enough tracks for all players. Have ${tracks.length} tracks but need at least ${players.length} tracks (one per player)`,
       );
     }
 
     const usedTrackIds = new Set<Id<"tracks">>();
-    const playerInitialTracks = new Map<
-      Id<"players">,
-      { trackId: Id<"tracks">; year: number }
-    >();
+    const playerInitialTracks = new Map<Id<"players">, { trackId: Id<"tracks">; year: number }>();
 
     /* oxlint-disable eslint/no-await-in-loop -- each player must claim a unique track */
     for (const player of players) {
@@ -299,9 +274,7 @@ export const start = mutationWithSession({
     });
 
     const usedTrackIdsForRounds = new Set(usedTrackIds);
-    const availableRoundTracks = tracks.filter(
-      (t) => !usedTrackIdsForRounds.has(t._id)
-    );
+    const availableRoundTracks = tracks.filter((t) => !usedTrackIdsForRounds.has(t._id));
 
     if (availableRoundTracks.length === 0) {
       throw new ConvexError("No tracks available for the first round");
@@ -380,11 +353,7 @@ export const resolveAndNext = mutationWithSession({
 
     const lobby = await getLobbyOrThrow(ctx, lobbyId);
 
-    assertHostSession(
-      lobby,
-      sessionId,
-      "Only the host can start the next round"
-    );
+    assertHostSession(lobby, sessionId, "Only the host can start the next round");
 
     const { game, round } = await getGameContext(ctx, lobbyId);
 
@@ -452,9 +421,7 @@ export const resolveRound = mutationWithSession({
     }
 
     const players = await getLobbyPlayers(ctx, lobbyId);
-    const turnPlayer = players.find(
-      (player) => player._id === round.turnPlayerId
-    );
+    const turnPlayer = players.find((player) => player._id === round.turnPlayerId);
 
     if (!turnPlayer) {
       throw new ConvexError("Turn player not found");
@@ -468,18 +435,10 @@ export const resolveRound = mutationWithSession({
     const lockedBets = allBets.filter((bet) => bet.lockedIn);
     const declinedBets = allBets.filter((bet) => bet.declinedToBet);
 
-    ensureAllNonTurnPlayersActed(
-      players,
-      round.turnPlayerId,
-      lockedBets,
-      declinedBets
-    );
+    ensureAllNonTurnPlayersActed(players, round.turnPlayerId, lockedBets, declinedBets);
 
     const validRange = computeValidIndexRange(turnPlayer.timeline, track.year);
-    const turnPlayerWasCorrect = isPlacementCorrect(
-      round.placement.proposedIndex,
-      validRange
-    );
+    const turnPlayerWasCorrect = isPlacementCorrect(round.placement.proposedIndex, validRange);
 
     const timelineUpdates = createTimelineUpdates(players);
     const awardedPlayerIds = applyTurnPlayerPlacement(
@@ -488,7 +447,7 @@ export const resolveRound = mutationWithSession({
       track,
       round.roundNumber,
       round.placement.proposedIndex,
-      turnPlayerWasCorrect
+      turnPlayerWasCorrect,
     );
 
     const lockedBetResults = await applyLockedBets(
@@ -498,7 +457,7 @@ export const resolveRound = mutationWithSession({
       track,
       round.roundNumber,
       validRange,
-      turnPlayerWasCorrect
+      turnPlayerWasCorrect,
     );
 
     awardedPlayerIds.push(...lockedBetResults.awardedPlayerIds);
@@ -563,7 +522,7 @@ export const getResults = query({
               }
             : null,
         };
-      })
+      }),
     );
 
     return {
@@ -612,8 +571,8 @@ export const playAgain = mutationWithSession({
           coins: lobby.settings.startingCoins,
           timeline: [],
           timelineSize: 0,
-        })
-      )
+        }),
+      ),
     );
 
     if (lobby.activeGameId) {

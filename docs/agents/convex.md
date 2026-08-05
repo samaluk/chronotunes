@@ -38,10 +38,7 @@ Use decoupled queries instead of fetching everything in one query.
 
 ```typescript
 const lobby = useQuery(api.lobbies.get, { code });
-const players = useQuery(
-  api.players.list,
-  lobby ? { lobbyId: lobby._id } : "skip"
-);
+const players = useQuery(api.players.list, lobby ? { lobbyId: lobby._id } : "skip");
 const me = useQuery(api.players.getMe, lobby ? { lobbyId: lobby._id } : "skip");
 ```
 

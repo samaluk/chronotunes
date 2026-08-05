@@ -27,15 +27,11 @@ export function ResolvedPhaseContent(): React.ReactNode {
         </div>
         <div className="space-y-2 text-center">
           <p className="font-medium text-lg">{tResults("roundResults")}</p>
-          <p className="text-muted-foreground text-sm">
-            {tResults("songRevealed")}
-          </p>
+          <p className="text-muted-foreground text-sm">{tResults("songRevealed")}</p>
         </div>
         {track?.title && track?.artist && track?.year && (
           <div className="mt-4 w-full max-w-md rounded-lg border bg-card p-4 text-center">
-            <p className="text-muted-foreground text-sm">
-              {tResults("songWas")}
-            </p>
+            <p className="text-muted-foreground text-sm">{tResults("songWas")}</p>
             <p className="mt-1 font-bold text-xl">
               {track.title} - {track.artist} ({track.year})
             </p>

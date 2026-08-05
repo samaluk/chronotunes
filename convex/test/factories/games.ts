@@ -30,7 +30,7 @@ export async function create(
   t: TestContext,
   lobbyId: Id<"lobbies">,
   turnOrder: Id<"players">[],
-  overrides: GameOverrides = {}
+  overrides: GameOverrides = {},
 ): Promise<{ id: Id<"games">; record: Game }> {
   const turnPlayerId = overrides.turnPlayerId ?? turnOrder[0]!;
 
@@ -64,7 +64,7 @@ export async function createWithRound(
   options: {
     gameOverrides?: GameOverrides;
     roundOverrides?: RoundOverrides;
-  } = {}
+  } = {},
 ): Promise<{
   id: Id<"games">;
   record: Game;
@@ -147,7 +147,7 @@ export async function createInPhase(
     roundNumber?: number;
     placementIndex?: number;
     resolution?: Round["resolution"];
-  } = {}
+  } = {},
 ): Promise<{
   id: Id<"games">;
   record: Game;
@@ -244,7 +244,7 @@ export async function createInPhase(
 
 export async function findCurrent(
   t: TestContext,
-  lobbyId: Id<"lobbies">
+  lobbyId: Id<"lobbies">,
 ): Promise<{ id: Id<"games">; record: Game } | null> {
   let result: { id: Id<"games">; record: Game } | null = null;
 
@@ -263,7 +263,7 @@ export async function findCurrent(
 
 export async function findById(
   t: TestContext,
-  gameId: Id<"games">
+  gameId: Id<"games">,
 ): Promise<{ id: Id<"games">; record: Game } | null> {
   let result: { id: Id<"games">; record: Game } | null = null;
 

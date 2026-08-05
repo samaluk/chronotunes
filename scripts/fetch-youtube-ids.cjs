@@ -65,14 +65,7 @@ const TEST_TRACKS = [
   { artist: "Dua Lipa", title: "Dance The Night", year: 2023 },
 ];
 
-const BLACKLIST_WORDS = [
-  "lyrics",
-  "cover",
-  "remix",
-  "tribute",
-  "live",
-  "reaction",
-];
+const BLACKLIST_WORDS = ["lyrics", "cover", "remix", "tribute", "live", "reaction"];
 
 async function searchTrack(title, artist) {
   const query = `${title} ${artist}`;
@@ -120,7 +113,7 @@ async function searchTrack(title, artist) {
 
     const best = scored[0];
     console.log(
-      `Found: "${best.video.title}" (score: ${best.score.toFixed(1)}, channel: ${best.video.channel?.name}, views: ${best.video.views?.toLocaleString()})`
+      `Found: "${best.video.title}" (score: ${best.score.toFixed(1)}, channel: ${best.video.channel?.name}, views: ${best.video.views?.toLocaleString()})`,
     );
 
     return best.video.id;
@@ -131,9 +124,7 @@ async function searchTrack(title, artist) {
 }
 
 async function main() {
-  console.log(
-    `Fetching YouTube video IDs for ${TEST_TRACKS.length} tracks...\n`
-  );
+  console.log(`Fetching YouTube video IDs for ${TEST_TRACKS.length} tracks...\n`);
 
   const results = [];
 
@@ -170,9 +161,7 @@ const TEST_TRACKS = [
     } else {
       seedContent += `  // FAILED: { title: "${track.title}", artist: "${track.artist}", year: ${track.year}, videoId: null },
 `;
-      console.log(
-        `Could not find video for: "${track.title}" - ${track.artist}`
-      );
+      console.log(`Could not find video for: "${track.title}" - ${track.artist}`);
     }
   }
 
@@ -246,11 +235,7 @@ export const seed = mutation({
   fs.writeFileSync(seedPath, seedContent);
   console.log(`Updated: ${seedPath}`);
 
-  const jsonPath = path.join(
-    process.cwd(),
-    "convex",
-    "youtube-search-results.json"
-  );
+  const jsonPath = path.join(process.cwd(), "convex", "youtube-search-results.json");
   fs.writeFileSync(jsonPath, JSON.stringify(results, null, 2));
   console.log(`Saved: ${jsonPath}`);
 

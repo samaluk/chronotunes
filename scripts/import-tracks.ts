@@ -47,11 +47,8 @@ function parseTracks(lines: string[]): TrackData[] {
     const title = parts[1]?.replaceAll(/^"|"$/g, "").trim() || "";
     const artist = parts[2]?.replaceAll(/^"|"$/g, "").trim() || "";
     const year = parseYear(parts[11]?.replaceAll(/^"|"$/g, "") || "");
-    const durationMs = parseDurationToMs(
-      parts[7]?.replaceAll(/^"|"$/g, "") || ""
-    );
-    const spotifyTrackId =
-      parts[19]?.replaceAll(/^"|"$/g, "").trim() || undefined;
+    const durationMs = parseDurationToMs(parts[7]?.replaceAll(/^"|"$/g, "") || "");
+    const spotifyTrackId = parts[19]?.replaceAll(/^"|"$/g, "").trim() || undefined;
     const mbid = parts[20]?.replaceAll(/^"|"$/g, "").trim() || undefined;
 
     if (!(title && artist)) {
@@ -78,7 +75,7 @@ function buildCsvContent(chunk: TrackData[], startIndex: number): string {
   return chunk
     .map(
       (track, index) =>
-        `${startIndex + index}|"${track.title}","${track.artist}",0,0,0,0,00:00,0,0,0,0,${track.year},0,0,0,0,0,0,0,${track.spotifyTrackId || ""},${track.mbid || ""}`
+        `${startIndex + index}|"${track.title}","${track.artist}",0,0,0,0,00:00,0,0,0,0,${track.year},0,0,0,0,0,0,0,${track.spotifyTrackId || ""},${track.mbid || ""}`,
     )
     .join("\n");
 }
@@ -87,29 +84,24 @@ async function importChunk(
   chunk: TrackData[],
   startIndex: number,
   totalTracks: number,
-  clearExisting: boolean
+  clearExisting: boolean,
 ): Promise<{ imported: number; failed: number; progress: number }> {
-  const progress = Math.round(
-    ((startIndex + chunk.length) / totalTracks) * 100
-  );
+  const progress = Math.round(((startIndex + chunk.length) / totalTracks) * 100);
 
   try {
-    const response = await fetch(
-      "http://127.0.0.1:3210/api/tracks/parseAndImportCsv",
-      {
-        body: JSON.stringify({
-          clearExisting,
-          csvContent: buildCsvContent(chunk, startIndex),
-        }),
-        headers: { "Content-Type": "application/json" },
-        method: "POST",
-      }
-    );
+    const response = await fetch("http://127.0.0.1:3210/api/tracks/parseAndImportCsv", {
+      body: JSON.stringify({
+        clearExisting,
+        csvContent: buildCsvContent(chunk, startIndex),
+      }),
+      headers: { "Content-Type": "application/json" },
+      method: "POST",
+    });
 
     if (!response.ok) {
       console.error(
         `Failed to import chunk ${startIndex / chunk.length + 1}:`,
-        response.statusText
+        response.statusText,
       );
       return { failed: chunk.length, imported: 0, progress };
     }
@@ -120,20 +112,13 @@ async function importChunk(
 
     return { failed, imported, progress };
   } catch (error) {
-    console.error(
-      `\nError importing chunk ${startIndex / chunk.length + 1}:`,
-      error
-    );
+    console.error(`\nError importing chunk ${startIndex / chunk.length + 1}:`, error);
     return { failed: chunk.length, imported: 0, progress };
   }
 }
 
 async function importTracks(): Promise<void> {
-  const csvPath = path.join(
-    process.cwd(),
-    "convex",
-    "HITSTER - Español Temazos.csv"
-  );
+  const csvPath = path.join(process.cwd(), "convex", "HITSTER - Español Temazos.csv");
 
   if (!existsSync(csvPath)) {
     console.error("CSV file not found:", csvPath);
@@ -160,9 +145,7 @@ async function importTracks(): Promise<void> {
 
     imported += result.imported;
     failed += result.failed;
-    process.stdout.write(
-      `\rProgress: ${result.progress}% (${imported}/${tracks.length} imported)`
-    );
+    process.stdout.write(`\rProgress: ${result.progress}% (${imported}/${tracks.length} imported)`);
   }
   /* oxlint-enable eslint/no-await-in-loop */
 

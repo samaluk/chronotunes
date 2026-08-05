@@ -26,11 +26,7 @@ export const metadata: Metadata = {
   title: "ChronoTunes - Music Timeline Game",
 };
 
-export default async function Layout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default async function Layout({ children }: { children: React.ReactNode }) {
   const locale = await getLocale();
   const messages = await getMessages();
 
@@ -42,13 +38,9 @@ export default async function Layout({
 
   return (
     <html className={inter.variable} lang={locale} suppressHydrationWarning>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <NextIntlClientProvider locale={locale} messages={messages}>
-          <Providers changeLocaleAction={changeLocaleAction}>
-            {children}
-          </Providers>
+          <Providers changeLocaleAction={changeLocaleAction}>{children}</Providers>
         </NextIntlClientProvider>
       </body>
     </html>

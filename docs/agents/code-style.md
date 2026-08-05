@@ -2,11 +2,12 @@
 
 ## Formatting (Oxfmt)
 
-- Oxfmt is the formatter (see `oxfmt.config.ts` and Ultracite oxfmt preset).
+- Oxfmt is the formatter (see `oxfmt.config.ts`; near-default options, `printWidth: 100`, plus repo ignore patterns).
 - 2-space indentation.
 - Double quotes for strings.
 - Semicolons as needed.
-- Trailing commas in multiline.
+- Trailing commas in multiline (`trailingComma: "all"` default).
+- Print width 100.
 
 ## Imports
 
@@ -28,10 +29,7 @@ import { GameHeader } from "./GameHeader";
 - Use Convex `Id<"tableName">` for document IDs.
 
 ```typescript
-export function computeValidRange(
-  timeline: TimelineEntry[],
-  year: number
-): Range {
+export function computeValidRange(timeline: TimelineEntry[], year: number): Range {
   // ...
 }
 ```

@@ -1,11 +1,6 @@
 import type { Id } from "../../_generated/dataModel";
 import type { MutationCtx, QueryCtx } from "../../_generated/server";
-import type {
-  FactoryResult,
-  LobbyOverrides,
-  PlayerOverrides,
-  TestContext,
-} from "./types";
+import type { FactoryResult, LobbyOverrides, PlayerOverrides, TestContext } from "./types";
 
 const LOBBY_CODE_CHARS = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
 const LOBBY_CODE_LENGTH = 6;
@@ -37,12 +32,9 @@ interface LobbySettings {
 const resolvePlayerOverrides = (
   override: PlayerOverrides | undefined,
   index: number,
-  settings: LobbySettings
+  settings: LobbySettings,
 ): Required<
-  Pick<
-    PlayerOverrides,
-    "sessionId" | "displayName" | "coins" | "timeline" | "timelineSize"
-  >
+  Pick<PlayerOverrides, "sessionId" | "displayName" | "coins" | "timeline" | "timelineSize">
 > => {
   const sessionId = override?.sessionId ?? `player-${index + 1}-session`;
   const displayName = override?.displayName ?? `Player ${index + 1}`;
@@ -78,32 +70,25 @@ export async function create(
   t: TestContext,
   sessionId: string,
   displayName: string,
-  overrides: LobbyOverrides = {}
+  overrides: LobbyOverrides = {},
 ): Promise<FactoryResult<"lobbies"> & { hostPlayerId: Id<"players"> }> {
   const code = overrides.code ?? generateLobbyCode();
   const hostSessionId = sessionId;
   const status: "lobby" | "in_game" | "finished" = overrides.status ?? "lobby";
   const settings = {
     allowBetRetraction:
-      overrides.settings?.allowBetRetraction ??
-      DEFAULT_SETTINGS.allowBetRetraction,
+      overrides.settings?.allowBetRetraction ?? DEFAULT_SETTINGS.allowBetRetraction,
     allowGuessTitleArtist:
-      overrides.settings?.allowGuessTitleArtist ??
-      DEFAULT_SETTINGS.allowGuessTitleArtist,
+      overrides.settings?.allowGuessTitleArtist ?? DEFAULT_SETTINGS.allowGuessTitleArtist,
     bettingWindowSeconds:
-      overrides.settings?.bettingWindowSeconds ??
-      DEFAULT_SETTINGS.bettingWindowSeconds,
+      overrides.settings?.bettingWindowSeconds ?? DEFAULT_SETTINGS.bettingWindowSeconds,
     maxYear: overrides.settings?.maxYear ?? DEFAULT_SETTINGS.maxYear,
     minYear: overrides.settings?.minYear ?? DEFAULT_SETTINGS.minYear,
-    showLiveBets:
-      overrides.settings?.showLiveBets ?? DEFAULT_SETTINGS.showLiveBets,
-    startingCoins:
-      overrides.settings?.startingCoins ?? DEFAULT_SETTINGS.startingCoins,
+    showLiveBets: overrides.settings?.showLiveBets ?? DEFAULT_SETTINGS.showLiveBets,
+    startingCoins: overrides.settings?.startingCoins ?? DEFAULT_SETTINGS.startingCoins,
     targetTimelineSize:
-      overrides.settings?.targetTimelineSize ??
-      DEFAULT_SETTINGS.targetTimelineSize,
-    turnSeconds:
-      overrides.settings?.turnSeconds ?? DEFAULT_SETTINGS.turnSeconds,
+      overrides.settings?.targetTimelineSize ?? DEFAULT_SETTINGS.targetTimelineSize,
+    turnSeconds: overrides.settings?.turnSeconds ?? DEFAULT_SETTINGS.turnSeconds,
   };
 
   let lobbyId: Id<"lobbies"> | null = null;
@@ -136,10 +121,7 @@ export async function create(
   return {
     hostPlayerId,
     id: lobbyId,
-    record: { code, hostSessionId, settings, status } as unknown as Record<
-      string,
-      unknown
-    >,
+    record: { code, hostSessionId, settings, status } as unknown as Record<string, unknown>,
   };
 }
 
@@ -151,30 +133,22 @@ export async function createWithPlayers(
     hostDisplayName?: string;
     playerOverrides?: PlayerOverrides[];
     settings?: LobbyOverrides["settings"];
-  } = {}
+  } = {},
 ): Promise<FactoryResult<"lobbies"> & { playerIds: Id<"players">[] }> {
   const hostName = options.hostDisplayName ?? "Host";
   const code = generateLobbyCode();
   const status: "lobby" | "in_game" | "finished" = "lobby";
   const settings = {
-    allowBetRetraction:
-      options.settings?.allowBetRetraction ??
-      DEFAULT_SETTINGS.allowBetRetraction,
+    allowBetRetraction: options.settings?.allowBetRetraction ?? DEFAULT_SETTINGS.allowBetRetraction,
     allowGuessTitleArtist:
-      options.settings?.allowGuessTitleArtist ??
-      DEFAULT_SETTINGS.allowGuessTitleArtist,
+      options.settings?.allowGuessTitleArtist ?? DEFAULT_SETTINGS.allowGuessTitleArtist,
     bettingWindowSeconds:
-      options.settings?.bettingWindowSeconds ??
-      DEFAULT_SETTINGS.bettingWindowSeconds,
+      options.settings?.bettingWindowSeconds ?? DEFAULT_SETTINGS.bettingWindowSeconds,
     maxYear: options.settings?.maxYear ?? DEFAULT_SETTINGS.maxYear,
     minYear: options.settings?.minYear ?? DEFAULT_SETTINGS.minYear,
-    showLiveBets:
-      options.settings?.showLiveBets ?? DEFAULT_SETTINGS.showLiveBets,
-    startingCoins:
-      options.settings?.startingCoins ?? DEFAULT_SETTINGS.startingCoins,
-    targetTimelineSize:
-      options.settings?.targetTimelineSize ??
-      DEFAULT_SETTINGS.targetTimelineSize,
+    showLiveBets: options.settings?.showLiveBets ?? DEFAULT_SETTINGS.showLiveBets,
+    startingCoins: options.settings?.startingCoins ?? DEFAULT_SETTINGS.startingCoins,
+    targetTimelineSize: options.settings?.targetTimelineSize ?? DEFAULT_SETTINGS.targetTimelineSize,
     turnSeconds: options.settings?.turnSeconds ?? DEFAULT_SETTINGS.turnSeconds,
   };
 
@@ -200,7 +174,7 @@ export async function createWithPlayers(
         sessionId: hostSessionId,
         timeline: [],
         timelineSize: 0,
-      })
+      }),
     );
 
     playerIds.push(
@@ -219,8 +193,8 @@ export async function createWithPlayers(
             timeline: playerData.timeline,
             timelineSize: playerData.timelineSize,
           });
-        })
-      ))
+        }),
+      )),
     );
   });
 
@@ -231,10 +205,7 @@ export async function createWithPlayers(
   return {
     id: lobbyId,
     playerIds,
-    record: { code, hostSessionId, settings, status } as unknown as Record<
-      string,
-      unknown
-    >,
+    record: { code, hostSessionId, settings, status } as unknown as Record<string, unknown>,
   };
 }
 
@@ -246,7 +217,7 @@ export async function createWithGame(
     hostDisplayName?: string;
     playerOverrides?: PlayerOverrides[];
     settings?: LobbyOverrides["settings"];
-  } = {}
+  } = {},
 ): Promise<
   FactoryResult<"lobbies"> & {
     gameId: Id<"games">;
@@ -254,12 +225,7 @@ export async function createWithGame(
     roundId: Id<"rounds">;
   }
 > {
-  const lobbyResult = await createWithPlayers(
-    t,
-    hostSessionId,
-    playerCount,
-    options
-  );
+  const lobbyResult = await createWithPlayers(t, hostSessionId, playerCount, options);
 
   let gameId: Id<"games"> | null = null;
   let roundId: Id<"rounds"> | null = null;
@@ -285,7 +251,7 @@ export async function createWithGame(
     const track = await ctx.db.query("tracks").first();
     if (!track) {
       throw new Error(
-        "No tracks available. Please seed tracks first using factories.tracks.createMany()"
+        "No tracks available. Please seed tracks first using factories.tracks.createMany()",
       );
     }
 
@@ -313,10 +279,9 @@ export async function createWithGame(
 
 export async function findByCode(
   t: TestContext,
-  code: string
+  code: string,
 ): Promise<{ id: Id<"lobbies">; record: Record<string, unknown> } | null> {
-  let result: { id: Id<"lobbies">; record: Record<string, unknown> } | null =
-    null;
+  let result: { id: Id<"lobbies">; record: Record<string, unknown> } | null = null;
 
   await t.run(async (ctx: QueryCtx) => {
     const lobby = await ctx.db
@@ -334,10 +299,9 @@ export async function findByCode(
 
 export async function findById(
   t: TestContext,
-  lobbyId: Id<"lobbies">
+  lobbyId: Id<"lobbies">,
 ): Promise<{ id: Id<"lobbies">; record: Record<string, unknown> } | null> {
-  let result: { id: Id<"lobbies">; record: Record<string, unknown> } | null =
-    null;
+  let result: { id: Id<"lobbies">; record: Record<string, unknown> } | null = null;
 
   await t.run(async (ctx: QueryCtx) => {
     const lobby = await ctx.db.get(lobbyId);

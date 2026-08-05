@@ -20,10 +20,7 @@ interface ErrorBoundaryProps {
   onError?: (error: Error, errorInfo: string) => void;
 }
 
-export class ErrorBoundary extends React.Component<
-  ErrorBoundaryProps,
-  ErrorBoundaryState
-> {
+export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundaryState> {
   constructor(props: ErrorBoundaryProps) {
     super(props);
     this.state = { error: null, errorInfo: null, hasError: false };
@@ -56,7 +53,7 @@ export class ErrorBoundary extends React.Component<
         <div
           className={cn(
             "flex min-h-[200px] flex-col items-center justify-center rounded-xl border border-destructive/20 bg-card p-6",
-            this.props.className
+            this.props.className,
           )}
         >
           <div className="mb-4 flex items-center gap-3">
@@ -114,7 +111,7 @@ export function AsyncErrorBoundary({
       <div
         className={cn(
           "flex min-h-[200px] flex-col items-center justify-center rounded-xl border border-destructive/20 bg-card p-6",
-          className
+          className,
         )}
       >
         <div className="mb-4 flex items-center gap-3">

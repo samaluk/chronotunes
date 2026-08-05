@@ -1,9 +1,6 @@
 "use client";
 
-import {
-  useSessionMutation,
-  useSessionQuery,
-} from "convex-helpers/react/sessions";
+import { useSessionMutation, useSessionQuery } from "convex-helpers/react/sessions";
 import { useQuery } from "convex/react";
 import { Music, Play, Repeat, Trophy } from "lucide-react";
 import { useState } from "react";
@@ -19,16 +16,10 @@ interface GameResultsProps {
   lobbyId: Id<"lobbies">;
 }
 
-export function GameResults({
-  lobbyId,
-  code: _code,
-}: GameResultsProps): React.ReactNode {
+export function GameResults({ lobbyId, code: _code }: GameResultsProps): React.ReactNode {
   const [isPlayingAgain, setIsPlayingAgain] = useState(false);
 
-  const results = useQuery(
-    api.games.getResults,
-    lobbyId ? { lobbyId } : "skip"
-  );
+  const results = useQuery(api.games.getResults, lobbyId ? { lobbyId } : "skip");
   const me = useSessionQuery(api.players.getMe, lobbyId ? { lobbyId } : "skip");
   const playAgain = useSessionMutation(api.games.playAgain);
 
@@ -65,9 +56,7 @@ export function GameResults({
   }
 
   const { game, players, rounds } = results;
-  const sortedPlayers = [...players].toSorted(
-    (a, b) => b.timelineSize - a.timelineSize
-  );
+  const sortedPlayers = [...players].toSorted((a, b) => b.timelineSize - a.timelineSize);
   const winner = sortedPlayers[0];
   const isWinner = winner?._id === me?._id;
 
@@ -104,9 +93,7 @@ export function GameResults({
         </div>
         <div>
           <h1 className="font-bold text-3xl">Game Over!</h1>
-          <p className="mt-2 text-muted-foreground">
-            Congratulations to the winner
-          </p>
+          <p className="mt-2 text-muted-foreground">Congratulations to the winner</p>
         </div>
       </div>
 
@@ -117,9 +104,7 @@ export function GameResults({
               <Trophy className="h-8 w-8 text-amber-600 dark:text-amber-400" />
             </div>
             <div className="text-center">
-              <p className="text-muted-foreground text-sm uppercase tracking-wider">
-                Winner
-              </p>
+              <p className="text-muted-foreground text-sm uppercase tracking-wider">Winner</p>
               <p className="font-bold text-2xl text-amber-700 dark:text-amber-300">
                 {winner?.displayName}
                 {isWinner && <span className="ml-2 text-sm">(You)</span>}
@@ -148,7 +133,7 @@ export function GameResults({
                   index === 0
                     ? "border-amber-200 bg-gradient-to-r from-amber-50 to-yellow-50 dark:border-amber-800 dark:from-amber-950/20 dark:to-yellow-950/20"
                     : "bg-muted/30",
-                  player._id === me?._id && "ring-2 ring-primary/20"
+                  player._id === me?._id && "ring-2 ring-primary/20",
                 )}
                 key={player._id}
               >
@@ -156,7 +141,7 @@ export function GameResults({
                   <div
                     className={cn(
                       "flex h-10 w-10 items-center justify-center rounded-full font-bold",
-                      getRankBadgeClass(index)
+                      getRankBadgeClass(index),
                     )}
                   >
                     {index + 1}
@@ -167,9 +152,7 @@ export function GameResults({
                       {player._id === me?._id && (
                         <span className="ml-2 text-primary text-xs">(You)</span>
                       )}
-                      {index === 0 && (
-                        <Trophy className="ml-2 inline h-4 w-4 text-amber-500" />
-                      )}
+                      {index === 0 && <Trophy className="ml-2 inline h-4 w-4 text-amber-500" />}
                     </p>
                     <p className="text-muted-foreground text-sm">
                       {player.timeline.length} songs collected
@@ -207,9 +190,7 @@ export function GameResults({
                     </div>
                     <div>
                       <p className="font-medium">{item.track.title}</p>
-                      <p className="text-muted-foreground text-sm">
-                        {item.track.artist}
-                      </p>
+                      <p className="text-muted-foreground text-sm">{item.track.artist}</p>
                     </div>
                   </div>
                   <div className="text-right">
@@ -220,21 +201,14 @@ export function GameResults({
               ))}
             </div>
           ) : (
-            <p className="py-8 text-center text-muted-foreground">
-              No songs played
-            </p>
+            <p className="py-8 text-center text-muted-foreground">No songs played</p>
           )}
         </CardContent>
       </Card>
 
       <div className="flex flex-col items-center justify-between gap-4 rounded-xl bg-muted/50 p-6 sm:flex-row">
         <div className="text-muted-foreground text-sm">
-          <p>
-            Game lasted{" "}
-            {game.endedAt
-              ? formatDuration(game.startedAt, game.endedAt)
-              : "N/A"}
-          </p>
+          <p>Game lasted {game.endedAt ? formatDuration(game.startedAt, game.endedAt) : "N/A"}</p>
           <p>{game.currentRoundNumber} rounds played</p>
         </div>
         <Button disabled={isPlayingAgain} onClick={handlePlayAgain} size="lg">

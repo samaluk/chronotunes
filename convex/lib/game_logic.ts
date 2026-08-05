@@ -12,10 +12,7 @@ export interface ValidRange {
   min: number;
 }
 
-export function computeValidIndexRange(
-  timeline: TimelineEntry[],
-  year: number
-): ValidRange {
+export function computeValidIndexRange(timeline: TimelineEntry[], year: number): ValidRange {
   if (timeline.length === 0) {
     return { max: 0, min: 0 };
   }
@@ -59,9 +56,7 @@ export function computeValidIndexRange(
 
   const firstSameYearIndex = timeline.findIndex((entry) => entry.year === year);
   const lastSameYearIndex =
-    timeline.length -
-    1 -
-    [...timeline].toReversed().findIndex((entry) => entry.year === year);
+    timeline.length - 1 - [...timeline].toReversed().findIndex((entry) => entry.year === year);
   const sameYearCount = lastSameYearIndex - firstSameYearIndex + 1;
 
   if (
@@ -74,9 +69,6 @@ export function computeValidIndexRange(
   return { max: lastSameYearIndex + 1, min: firstSameYearIndex };
 }
 
-export function isPlacementCorrect(
-  proposedIndex: number,
-  validRange: ValidRange
-): boolean {
+export function isPlacementCorrect(proposedIndex: number, validRange: ValidRange): boolean {
   return proposedIndex >= validRange.min && proposedIndex <= validRange.max;
 }

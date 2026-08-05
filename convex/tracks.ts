@@ -10,9 +10,7 @@ export const get = query({
   handler: async (ctx, args) => {
     const { trackIds } = args;
 
-    const tracks = await Promise.all(
-      trackIds.map((trackId) => ctx.db.get(trackId))
-    );
+    const tracks = await Promise.all(trackIds.map((trackId) => ctx.db.get(trackId)));
 
     return tracks;
   },
@@ -41,7 +39,7 @@ export const getPublicByIds = query({
           year: track.year,
           youtubeVideoId: track.externalIds.youtubeVideoId ?? undefined,
         };
-      })
+      }),
     );
 
     return tracks.filter((t): t is NonNullable<typeof t> => t !== null);
@@ -159,24 +157,15 @@ function validateTrackItem(item: (typeof trackImportItem)["type"]): void {
   }
 
   if (item.year < MIN_YEAR || item.year > MAX_YEAR) {
-    throw new ConvexError(
-      `Track year must be between ${MIN_YEAR} and ${MAX_YEAR}`
-    );
+    throw new ConvexError(`Track year must be between ${MIN_YEAR} and ${MAX_YEAR}`);
   }
 
-  if (
-    item.youtubeVideoId !== undefined &&
-    item.youtubeVideoId.trim().length === 0
-  ) {
-    throw new ConvexError(
-      "YouTube video ID must be a non-empty string if provided"
-    );
+  if (item.youtubeVideoId !== undefined && item.youtubeVideoId.trim().length === 0) {
+    throw new ConvexError("YouTube video ID must be a non-empty string if provided");
   }
 
   if (item.mbid !== undefined && item.mbid.trim().length === 0) {
-    throw new ConvexError(
-      "MusicBrainz ID must be a non-empty string if provided"
-    );
+    throw new ConvexError("MusicBrainz ID must be a non-empty string if provided");
   }
 
   if (item.durationMs !== undefined && item.durationMs < 0) {
@@ -207,19 +196,15 @@ export const importTracks = mutation({
         return ctx.db.insert("tracks", {
           artist: track.artist.trim(),
           createdAt: now,
-          externalIds: track.youtubeVideoId
-            ? { youtubeVideoId: track.youtubeVideoId.trim() }
-            : {},
+          externalIds: track.youtubeVideoId ? { youtubeVideoId: track.youtubeVideoId.trim() } : {},
           links: {},
           source: "import",
           title: track.title.trim(),
           year: track.year,
           ...(track.mbid ? { mbid: track.mbid.trim() } : {}),
-          ...(track.durationMs === undefined
-            ? {}
-            : { durationMs: track.durationMs }),
+          ...(track.durationMs === undefined ? {} : { durationMs: track.durationMs }),
         });
-      })
+      }),
     );
     importedIds.push(...trackIds);
 

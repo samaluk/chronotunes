@@ -21,7 +21,7 @@ const buttonGroupVariants = cva(
           "flex-col [&>[data-slot]:not(:has(~[data-slot]))]:rounded-b-md! [&>[data-slot]]:rounded-b-none [&>[data-slot]~[data-slot]]:rounded-t-none [&>[data-slot]~[data-slot]]:border-t-0",
       },
     },
-  }
+  },
 );
 
 function ButtonGroup({
@@ -39,21 +39,17 @@ function ButtonGroup({
   );
 }
 
-function ButtonGroupText({
-  className,
-  render,
-  ...props
-}: useRender.ComponentProps<"div">) {
+function ButtonGroupText({ className, render, ...props }: useRender.ComponentProps<"div">) {
   return useRender({
     defaultTagName: "div",
     props: mergeProps<"div">(
       {
         className: cn(
           "flex items-center gap-2 rounded-md border bg-muted px-2.5 font-medium text-sm shadow-xs [&_svg:not([class*='size-'])]:size-4 [&_svg]:pointer-events-none",
-          className
+          className,
         ),
       },
-      props
+      props,
     ),
     render,
     state: {
@@ -71,7 +67,7 @@ function ButtonGroupSeparator({
     <Separator
       className={cn(
         "relative self-stretch bg-input data-[orientation=horizontal]:mx-px data-[orientation=vertical]:my-px data-[orientation=vertical]:h-auto data-[orientation=horizontal]:w-auto",
-        className
+        className,
       )}
       data-slot="button-group-separator"
       orientation={orientation}
@@ -80,9 +76,4 @@ function ButtonGroupSeparator({
   );
 }
 
-export {
-  ButtonGroup,
-  ButtonGroupSeparator,
-  ButtonGroupText,
-  buttonGroupVariants,
-};
+export { ButtonGroup, ButtonGroupSeparator, ButtonGroupText, buttonGroupVariants };

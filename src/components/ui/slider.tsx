@@ -37,7 +37,7 @@ function Slider({
       <SliderPrimitive.Control
         className={cn(
           "relative flex w-full touch-none select-none items-center data-vertical:h-full data-vertical:min-h-40 data-vertical:w-auto data-vertical:flex-col data-disabled:opacity-50",
-          className
+          className,
         )}
       >
         <SliderPrimitive.Track

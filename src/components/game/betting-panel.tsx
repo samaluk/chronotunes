@@ -162,10 +162,7 @@ const buildSlotBets = (safeBets: RoundBet[]) => {
   return map;
 };
 
-const buildSlots = (
-  sortedTimeline: TimelineEntry[],
-  slotBets: Map<number, SlotBetInfo[]>
-) => {
+const buildSlots = (sortedTimeline: TimelineEntry[], slotBets: Map<number, SlotBetInfo[]>) => {
   const result: SlotInfo[] = [];
   for (let index = 0; index <= sortedTimeline.length; index += 1) {
     result.push({
@@ -215,17 +212,10 @@ function BettingTimeline({
 
   const renderBetZone = (slot: SlotInfo): React.ReactNode => {
     const slotState = getSlotState(slot);
-    const isOpenSlot =
-      slotState.slotBetsForIndex.length === 0 && !slotState.isTurnPlayerSlot;
+    const isOpenSlot = slotState.slotBetsForIndex.length === 0 && !slotState.isTurnPlayerSlot;
     const shouldPulse =
-      canBet &&
-      isOpenSlot &&
-      !hasLockedBet &&
-      !hasDeclinedBet &&
-      selectedIndex !== slot.index;
-    const slotHasLockedBet = slotState.slotBetsForIndex.some(
-      (bet) => bet.lockedIn
-    );
+      canBet && isOpenSlot && !hasLockedBet && !hasDeclinedBet && selectedIndex !== slot.index;
+    const slotHasLockedBet = slotState.slotBetsForIndex.some((bet) => bet.lockedIn);
     const slotCoins = (
       <>
         {slotState.slotBetsForIndex.map((bet) => (
@@ -280,11 +270,9 @@ function BettingTimeline({
 
   sortedTimeline.forEach((entry, index) => {
     elements.push(
-      <div
-        key={`timeline-entry-${entry.trackId}-${entry.earnedAtRoundNumber}-${index}`}
-      >
+      <div key={`timeline-entry-${entry.trackId}-${entry.earnedAtRoundNumber}-${index}`}>
         {renderTimelineEntry(entry)}
-      </div>
+      </div>,
     );
 
     const nextSlot = slots[index + 1];
@@ -318,15 +306,9 @@ function BettingActions({
           <p className="hidden font-medium text-foreground text-sm sm:block">
             {t("pressEnterToConfirm")}
           </p>
-          <p className="hidden text-muted-foreground text-xs sm:block">
-            {t("useArrowsToMove")}
-          </p>
-          <p className="font-medium text-foreground text-sm sm:hidden">
-            {t("tapConfirmToLock")}
-          </p>
-          <p className="text-muted-foreground text-xs sm:hidden">
-            {t("tapSlotToPreview")}
-          </p>
+          <p className="hidden text-muted-foreground text-xs sm:block">{t("useArrowsToMove")}</p>
+          <p className="font-medium text-foreground text-sm sm:hidden">{t("tapConfirmToLock")}</p>
+          <p className="text-muted-foreground text-xs sm:hidden">{t("tapSlotToPreview")}</p>
         </div>
         <div className="flex items-center gap-2">
           <Button onClick={onCancel} size="sm" type="button" variant="ghost">
@@ -429,12 +411,7 @@ function ResolveRoundPanel({
 
   return (
     <div className="flex items-center justify-center gap-2 rounded-lg border border-primary bg-primary/10 p-4">
-      <Button
-        disabled={isResolving}
-        onClick={onResolveRound}
-        size="lg"
-        type="button"
-      >
+      <Button disabled={isResolving} onClick={onResolveRound} size="lg" type="button">
         {isResolving ? (
           <>
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -444,9 +421,7 @@ function ResolveRoundPanel({
           tTimer("resolveRound")
         )}
       </Button>
-      <p className="text-muted-foreground text-xs">
-        {tTimer("waitingForBets")}
-      </p>
+      <p className="text-muted-foreground text-xs">{tTimer("waitingForBets")}</p>
     </div>
   );
 }
@@ -482,10 +457,7 @@ export function BettingPanel({
   const declineBet = useSessionMutation(api.rounds.declineBet);
   const resolveRound = useSessionMutation(api.games.resolveRound);
 
-  const existingBets = useQuery(
-    api.bets.listForRound,
-    lobbyId ? { lobbyId } : "skip"
-  );
+  const existingBets = useQuery(api.bets.listForRound, lobbyId ? { lobbyId } : "skip");
   const safeBets = existingBets ?? EMPTY_ROUND_BETS;
   const myBet = safeBets.find((bet) => bet.playerId === me?._id) ?? null;
   const hasLockedBet = myBet?.lockedIn ?? false;
@@ -500,12 +472,8 @@ export function BettingPanel({
   const turnPlayerName =
     players?.find((player) => player._id === turnPlayerId)?.displayName ?? null;
 
-  const canBet = Boolean(
-    me && me.coins >= 1 && !hasLockedBet && !hasDeclinedBet && !isTurnPlayer
-  );
-  const canDecline = Boolean(
-    me && !hasLockedBet && !hasDeclinedBet && !isTurnPlayer
-  );
+  const canBet = Boolean(me && me.coins >= 1 && !hasLockedBet && !hasDeclinedBet && !isTurnPlayer);
+  const canDecline = Boolean(me && !hasLockedBet && !hasDeclinedBet && !isTurnPlayer);
   const myPlayerId = me?._id ?? null;
 
   const triggerForbiddenSlotFeedback = useCallback(
@@ -522,7 +490,7 @@ export function BettingPanel({
         id: "turn-player-slot-blocked",
       });
     },
-    [t]
+    [t],
   );
 
   const getSlotLabel = useCallback(
@@ -540,31 +508,24 @@ export function BettingPanel({
 
       return t("openSlot");
     },
-    [t, turnPlayerName]
+    [t, turnPlayerName],
   );
 
   const getSlotState = useCallback(
     (slot: SlotInfo) => {
       const slotBetsForIndex = slot.bets;
       const lockedBet = slotBetsForIndex.find((bet) => bet.lockedIn);
-      const isTurnPlayerSlot =
-        turnPlayerSlotIndex !== null && slot.index === turnPlayerSlotIndex;
+      const isTurnPlayerSlot = turnPlayerSlotIndex !== null && slot.index === turnPlayerSlotIndex;
       const isSelected = selectedIndex === slot.index;
       const isActive = isSelected && !isTurnPlayerSlot;
       const hasLockedBetByOther = slotBetsForIndex.some(
-        (bet) => bet.lockedIn && bet.playerId !== myPlayerId
+        (bet) => bet.lockedIn && bet.playerId !== myPlayerId,
       );
       const canSelectSlot = canBet && !hasLockedBetByOther && !isTurnPlayerSlot;
       const label = getSlotLabel(isTurnPlayerSlot, lockedBet);
-      const hasMyBet = slotBetsForIndex.some(
-        (bet) => bet.playerId === myPlayerId
-      );
+      const hasMyBet = slotBetsForIndex.some((bet) => bet.playerId === myPlayerId);
       const showPreviewCoin =
-        isActive &&
-        !hasLockedBet &&
-        !hasDeclinedBet &&
-        Boolean(me) &&
-        !hasMyBet;
+        isActive && !hasLockedBet && !hasDeclinedBet && Boolean(me) && !hasMyBet;
       const isDisabled = !(canSelectSlot || isActive);
       const shouldDim = isDisabled && !isTurnPlayerSlot;
 
@@ -587,14 +548,11 @@ export function BettingPanel({
       hasLockedBet,
       hasDeclinedBet,
       me,
-    ]
+    ],
   );
 
   const slotBets = useMemo(() => buildSlotBets(safeBets), [safeBets]);
-  const slots = useMemo(
-    () => buildSlots(sortedTimeline, slotBets),
-    [sortedTimeline, slotBets]
-  );
+  const slots = useMemo(() => buildSlots(sortedTimeline, slotBets), [sortedTimeline, slotBets]);
 
   const getNextIndexForDirection = useCallback(
     (currentIndex: number, direction: "up" | "down") => {
@@ -605,10 +563,7 @@ export function BettingPanel({
         return null;
       }
 
-      if (
-        turnPlayerSlotIndex === null ||
-        candidateIndex !== turnPlayerSlotIndex
-      ) {
+      if (turnPlayerSlotIndex === null || candidateIndex !== turnPlayerSlotIndex) {
         return candidateIndex;
       }
 
@@ -620,7 +575,7 @@ export function BettingPanel({
 
       return skippedIndex;
     },
-    [slots.length, triggerForbiddenSlotFeedback, turnPlayerSlotIndex]
+    [slots.length, triggerForbiddenSlotFeedback, turnPlayerSlotIndex],
   );
 
   const canResolveRound = useMemo(() => {
@@ -639,7 +594,7 @@ export function BettingPanel({
     return nonTurnPlayers.every(
       (player) =>
         lockedBets.some((bet) => bet.playerId === player._id) ||
-        declinedBets.some((bet) => bet.playerId === player._id)
+        declinedBets.some((bet) => bet.playerId === player._id),
     );
   }, [isHost, players, turnPlayerId, safeBets]);
 
@@ -673,9 +628,7 @@ export function BettingPanel({
     }
 
     const slotBetsForIndex = slotBets.get(selectedIndex) ?? [];
-    const otherLockedBet = slotBetsForIndex.find(
-      (bet) => bet.playerId !== me._id && bet.lockedIn
-    );
+    const otherLockedBet = slotBetsForIndex.find((bet) => bet.playerId !== me._id && bet.lockedIn);
 
     if (otherLockedBet) {
       setSelectedIndex(null);
@@ -701,7 +654,7 @@ export function BettingPanel({
         globalThis.clearTimeout(shakeTimeoutRef.current);
       }
     },
-    []
+    [],
   );
 
   useEffect(() => {
@@ -727,7 +680,7 @@ export function BettingPanel({
 
       const slotBetsForIndex = slotBets.get(index) ?? [];
       const otherLockedBet = slotBetsForIndex.find(
-        (bet) => bet.playerId !== me._id && bet.lockedIn
+        (bet) => bet.playerId !== me._id && bet.lockedIn,
       );
       if (otherLockedBet) {
         return;
@@ -757,7 +710,7 @@ export function BettingPanel({
       t,
       triggerForbiddenSlotFeedback,
       turnPlayerSlotIndex,
-    ]
+    ],
   );
 
   const handleConfirm = useCallback(async () => {
@@ -824,13 +777,7 @@ export function BettingPanel({
 
       await handlePreview(index);
     },
-    [
-      isPreviewing,
-      isLockingIn,
-      handlePreview,
-      turnPlayerSlotIndex,
-      triggerForbiddenSlotFeedback,
-    ]
+    [isPreviewing, isLockingIn, handlePreview, turnPlayerSlotIndex, triggerForbiddenSlotFeedback],
   );
 
   const handleArrowMove = useCallback(
@@ -846,7 +793,7 @@ export function BettingPanel({
 
       await handlePreview(nextIndex);
     },
-    [selectedIndex, getNextIndexForDirection, handlePreview]
+    [selectedIndex, getNextIndexForDirection, handlePreview],
   );
 
   const handleKeyDown = useCallback(
@@ -876,7 +823,7 @@ export function BettingPanel({
         }
       }
     },
-    [canBet, selectedIndex, handleArrowMove, handleCancel]
+    [canBet, selectedIndex, handleArrowMove, handleCancel],
   );
 
   useEffect(() => {
@@ -894,17 +841,13 @@ export function BettingPanel({
 
       if (trackInfo) {
         return (
-          <TimelineCard
-            artist={trackInfo.artist}
-            title={trackInfo.title}
-            year={trackInfo.year}
-          />
+          <TimelineCard artist={trackInfo.artist} title={trackInfo.title} year={trackInfo.year} />
         );
       }
 
       return <TimelineCard title={tCommon("knownTrack")} year={entry.year} />;
     },
-    [revealedTrackMap, tCommon]
+    [revealedTrackMap, tCommon],
   );
 
   let activityLabel: string | null = null;

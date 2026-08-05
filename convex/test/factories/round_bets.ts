@@ -17,7 +17,7 @@ export async function create(
   t: TestContext,
   roundId: Id<"rounds">,
   playerId: Id<"players">,
-  overrides: BetOverrides = {}
+  overrides: BetOverrides = {},
 ): Promise<{ id: Id<"roundBets">; record: RoundBet }> {
   const data: RoundBet = {
     lockedIn: overrides.lockedIn ?? false,
@@ -45,7 +45,7 @@ export function createLocked(
   t: TestContext,
   roundId: Id<"rounds">,
   playerId: Id<"players">,
-  proposedIndex: number
+  proposedIndex: number,
 ): Promise<{ id: Id<"roundBets">; record: RoundBet }> {
   return create(t, roundId, playerId, {
     lockedIn: true,
@@ -60,34 +60,29 @@ export async function createMany(
   options: {
     proposedIndex?: number;
     lockedIn?: boolean;
-  } = {}
+  } = {},
 ): Promise<{ id: Id<"roundBets">; record: RoundBet }[]> {
   return await Promise.all(
     playerIds.map((playerId) =>
       create(t, roundId, playerId, {
         lockedIn: options.lockedIn ?? false,
         proposedIndex: options.proposedIndex ?? 0,
-      })
-    )
+      }),
+    ),
   );
 }
 
 export async function findByPlayerAndRound(
   t: TestContext,
   roundId: Id<"rounds">,
-  playerId: Id<"players">
+  playerId: Id<"players">,
 ): Promise<{ id: Id<"roundBets">; record: RoundBet } | null> {
   let result: { id: Id<"roundBets">; record: RoundBet } | null = null;
 
   await t.run(async (ctx: QueryCtx) => {
     const bet = await ctx.db
       .query("roundBets")
-      .filter((q) =>
-        q.and(
-          q.eq(q.field("roundId"), roundId),
-          q.eq(q.field("playerId"), playerId)
-        )
-      )
+      .filter((q) => q.and(q.eq(q.field("roundId"), roundId), q.eq(q.field("playerId"), playerId)))
       .first();
 
     if (bet) {
@@ -100,7 +95,7 @@ export async function findByPlayerAndRound(
 
 export async function findAllInRound(
   t: TestContext,
-  roundId: Id<"rounds">
+  roundId: Id<"rounds">,
 ): Promise<{ id: Id<"roundBets">; record: RoundBet }[]> {
   let results: { id: Id<"roundBets">; record: RoundBet }[] = [];
 

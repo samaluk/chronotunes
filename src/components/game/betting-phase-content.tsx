@@ -20,9 +20,7 @@ export function BettingPhaseContent(): React.ReactNode {
         revealedTracks={state.revealedTracks}
         track={track}
         turnPlayerId={currentRound?.turnPlayerId ?? null}
-        turnPlayerPlacementIndex={
-          currentRound?.placement?.proposedIndex ?? null
-        }
+        turnPlayerPlacementIndex={currentRound?.placement?.proposedIndex ?? null}
         turnPlayerTimeline={turnPlayer?.timeline ?? []}
       />
     );
@@ -35,9 +33,7 @@ export function BettingPhaseContent(): React.ReactNode {
       </div>
       <div className="space-y-2 text-center">
         <p className="font-medium text-lg">{tBetting("placeYourBet")}</p>
-        <p className="text-muted-foreground text-sm">
-          {tBetting("placeBetDescription")}
-        </p>
+        <p className="text-muted-foreground text-sm">{tBetting("placeBetDescription")}</p>
       </div>
     </div>
   );

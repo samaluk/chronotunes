@@ -11,7 +11,7 @@ export interface GameContext {
 
 export async function getGameContext(
   ctx: QueryCtx | MutationCtx,
-  lobbyId: Id<"lobbies">
+  lobbyId: Id<"lobbies">,
 ): Promise<GameContext> {
   const lobby = await ctx.db.get(lobbyId);
 
@@ -41,13 +41,11 @@ export async function getGameContext(
 export async function getPlayerBySession(
   ctx: QueryCtx | MutationCtx,
   lobbyId: Id<"lobbies">,
-  sessionId: string
+  sessionId: string,
 ): Promise<Doc<"players">> {
   const player = await ctx.db
     .query("players")
-    .withIndex("by_lobby_and_session", (q) =>
-      q.eq("lobbyId", lobbyId).eq("sessionId", sessionId)
-    )
+    .withIndex("by_lobby_and_session", (q) => q.eq("lobbyId", lobbyId).eq("sessionId", sessionId))
     .unique();
 
   if (!player) {
@@ -59,7 +57,7 @@ export async function getPlayerBySession(
 
 export async function getLobbyPlayers(
   ctx: QueryCtx | MutationCtx,
-  lobbyId: Id<"lobbies">
+  lobbyId: Id<"lobbies">,
 ): Promise<Doc<"players">[]> {
   return await ctx.db
     .query("players")
@@ -69,7 +67,7 @@ export async function getLobbyPlayers(
 
 export async function getGameAndRound(
   ctx: QueryCtx | MutationCtx,
-  lobbyId: Id<"lobbies">
+  lobbyId: Id<"lobbies">,
 ): Promise<{ game: Doc<"games">; round: Doc<"rounds"> }> {
   const lobby = await ctx.db.get(lobbyId);
 

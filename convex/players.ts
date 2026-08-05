@@ -25,9 +25,7 @@ export const getMe = queryWithSession({
 
     const player = await ctx.db
       .query("players")
-      .withIndex("by_lobby_and_session", (q) =>
-        q.eq("lobbyId", lobbyId).eq("sessionId", sessionId)
-      )
+      .withIndex("by_lobby_and_session", (q) => q.eq("lobbyId", lobbyId).eq("sessionId", sessionId))
       .unique();
 
     return player;

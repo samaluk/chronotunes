@@ -16,12 +16,7 @@ export const checkHostDisconnect = internalMutation({
 
     const lobbies = await ctx.db
       .query("lobbies")
-      .filter((q) =>
-        q.or(
-          q.eq(q.field("status"), "lobby"),
-          q.eq(q.field("status"), "in_game")
-        )
-      )
+      .filter((q) => q.or(q.eq(q.field("status"), "lobby"), q.eq(q.field("status"), "in_game")))
       .collect();
 
     await Promise.all(
@@ -30,19 +25,13 @@ export const checkHostDisconnect = internalMutation({
           return;
         }
 
-        const hostPresence = await presenceComponent.listUser(
-          ctx,
-          lobby.hostSessionId,
-          false
-        );
+        const hostPresence = await presenceComponent.listUser(ctx, lobby.hostSessionId, false);
 
         const isHostOnline = hostPresence.some(
           (presence) =>
             presence.online &&
-            (presence as { lastDisconnected?: number }).lastDisconnected !==
-              undefined &&
-            (presence as { lastDisconnected?: number }).lastDisconnected! <
-              cutoffTime
+            (presence as { lastDisconnected?: number }).lastDisconnected !== undefined &&
+            (presence as { lastDisconnected?: number }).lastDisconnected! < cutoffTime,
         );
 
         if (!isHostOnline) {
@@ -57,7 +46,7 @@ export const checkHostDisconnect = internalMutation({
             }
           }
         }
-      })
+      }),
     );
   },
 });
@@ -70,13 +59,10 @@ export const checkHostTransfer = internalMutation({
       .query("lobbies")
       .filter((q) =>
         q.and(
-          q.or(
-            q.eq(q.field("status"), "lobby"),
-            q.eq(q.field("status"), "in_game")
-          ),
+          q.or(q.eq(q.field("status"), "lobby"), q.eq(q.field("status"), "in_game")),
           q.neq(q.field("hostTransferDeadline"), undefined),
-          q.lt(q.field("hostTransferDeadline"), now)
-        )
+          q.lt(q.field("hostTransferDeadline"), now),
+        ),
       )
       .collect();
 
@@ -92,22 +78,16 @@ export const checkHostTransfer = internalMutation({
         const onlinePlayers = (
           await Promise.all(
             players.map(async (player) => {
-              const presence = await presenceComponent.listUser(
-                ctx,
-                player.sessionId,
-                false
-              );
+              const presence = await presenceComponent.listUser(ctx, player.sessionId, false);
               const isOnline = presence.some(
                 (entry) =>
                   entry.online &&
-                  (entry as { lastDisconnected?: number }).lastDisconnected !==
-                    undefined &&
-                  (entry as { lastDisconnected?: number }).lastDisconnected! <
-                    cutoffTime
+                  (entry as { lastDisconnected?: number }).lastDisconnected !== undefined &&
+                  (entry as { lastDisconnected?: number }).lastDisconnected! < cutoffTime,
               );
 
               return isOnline ? player : null;
-            })
+            }),
           )
         ).filter((player) => player !== null);
 
@@ -136,7 +116,7 @@ export const checkHostTransfer = internalMutation({
             await ctx.db.patch(game._id, { status: "active" });
           }
         }
-      })
+      }),
     );
   },
 });

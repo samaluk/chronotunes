@@ -20,7 +20,7 @@ export interface PlayerOverrides {
 function buildPlayerData(
   lobbyId: Id<"lobbies">,
   overrides: PlayerOverrides,
-  index: number
+  index: number,
 ): Player {
   const sessionId = overrides.sessionId ?? uuid();
   return {
@@ -38,7 +38,7 @@ function buildPlayerData(
 export async function create(
   t: TestContext,
   lobbyId: Id<"lobbies">,
-  overrides: PlayerOverrides = {}
+  overrides: PlayerOverrides = {},
 ): Promise<{ id: Id<"players">; record: Player }> {
   const data = buildPlayerData(lobbyId, overrides, 1);
   let playerId: Id<"players"> | null = null;
@@ -55,7 +55,7 @@ export function createHost(
   lobbyId: Id<"lobbies">,
   sessionId: string,
   displayName: string,
-  overrides: PlayerOverrides = {}
+  overrides: PlayerOverrides = {},
 ): Promise<{ id: Id<"players">; record: Player }> {
   return create(t, lobbyId, {
     ...overrides,
@@ -69,7 +69,7 @@ export async function createMany(
   t: TestContext,
   lobbyId: Id<"lobbies">,
   count: number,
-  overrides: PlayerOverrides = {}
+  overrides: PlayerOverrides = {},
 ): Promise<{ id: Id<"players">; record: Player }[]> {
   return await Promise.all(
     Array.from({ length: count }, (_, i) => {
@@ -81,7 +81,7 @@ export async function createMany(
         const playerId = await ctx.db.insert("players", data);
         return { id: playerId, record: data };
       });
-    })
+    }),
   );
 }
 
@@ -89,7 +89,7 @@ export function createWithTimeline(
   t: TestContext,
   lobbyId: Id<"lobbies">,
   timeline: Player["timeline"],
-  overrides: PlayerOverrides = {}
+  overrides: PlayerOverrides = {},
 ): Promise<{ id: Id<"players">; record: Player }> {
   return create(t, lobbyId, {
     ...overrides,
@@ -102,7 +102,7 @@ export function createWithCoins(
   t: TestContext,
   lobbyId: Id<"lobbies">,
   coins: number,
-  overrides: PlayerOverrides = {}
+  overrides: PlayerOverrides = {},
 ): Promise<{ id: Id<"players">; record: Player }> {
   return create(t, lobbyId, {
     ...overrides,
@@ -112,7 +112,7 @@ export function createWithCoins(
 
 export async function findBySessionId(
   t: TestContext,
-  sessionId: string
+  sessionId: string,
 ): Promise<{ id: Id<"players">; record: Player } | null> {
   let result: { id: Id<"players">; record: Player } | null = null;
 
@@ -132,7 +132,7 @@ export async function findBySessionId(
 
 export async function findById(
   t: TestContext,
-  playerId: Id<"players">
+  playerId: Id<"players">,
 ): Promise<{ id: Id<"players">; record: Player } | null> {
   let result: { id: Id<"players">; record: Player } | null = null;
 
@@ -148,7 +148,7 @@ export async function findById(
 
 export async function getAllInLobby(
   t: TestContext,
-  lobbyId: Id<"lobbies">
+  lobbyId: Id<"lobbies">,
 ): Promise<{ id: Id<"players">; record: Player }[]> {
   let results: { id: Id<"players">; record: Player }[] = [];
 

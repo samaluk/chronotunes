@@ -39,7 +39,7 @@ function buildTrackData(overrides: TrackOverrides, index: number): Track {
 
 export async function create(
   t: TestContext,
-  overrides: TrackOverrides = {}
+  overrides: TrackOverrides = {},
 ): Promise<{ id: Id<"tracks">; record: Track }> {
   const data = buildTrackData(overrides, 1);
   let trackId: Id<"tracks"> | null = null;
@@ -55,7 +55,7 @@ export async function createMany(
   t: TestContext,
   count: number,
   overrides: TrackOverrides = {},
-  options: { startIndex?: number } = {}
+  options: { startIndex?: number } = {},
 ): Promise<{ id: Id<"tracks">; record: Track }[]> {
   const startIndex = options.startIndex ?? 1;
 
@@ -67,14 +67,14 @@ export async function createMany(
         const trackId = await ctx.db.insert("tracks", data);
         return { id: trackId, record: data };
       });
-    })
+    }),
   );
 }
 
 export function createWithYear(
   t: TestContext,
   year: number,
-  overrides: TrackOverrides = {}
+  overrides: TrackOverrides = {},
 ): Promise<{ id: Id<"tracks">; record: Track }> {
   return create(t, { ...overrides, year });
 }
@@ -83,7 +83,7 @@ export function createForTimeline(
   t: TestContext,
   year: number,
   title: string,
-  artist: string
+  artist: string,
 ): Promise<{ id: Id<"tracks">; record: Track }> {
   return create(t, {
     artist,

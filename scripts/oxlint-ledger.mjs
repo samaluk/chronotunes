@@ -24,18 +24,11 @@ const normalize = (contents) => {
 const runOxlint = () => {
   const result = spawnSync(
     "pnpm",
-    [
-      "exec",
-      "oxlint",
-      ".",
-      "--ignore-pattern",
-      ".lint-debt/**",
-      "--format=json",
-    ],
+    ["exec", "oxlint", ".", "--ignore-pattern", ".lint-debt/**", "--format=json"],
     {
       encoding: "utf8",
       shell: process.platform === "win32",
-    }
+    },
   );
 
   if (result.error) {
@@ -69,7 +62,7 @@ if (command === "check") {
 
   if (current !== committed) {
     process.stderr.write(
-      `oxlint ledger changed: ${ledgerPath}\nRun pnpm lint:ledger:update and commit the result if this change is intentional.\n`
+      `oxlint ledger changed: ${ledgerPath}\nRun pnpm lint:ledger:update and commit the result if this change is intentional.\n`,
     );
     process.exit(1);
   }

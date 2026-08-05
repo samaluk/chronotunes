@@ -61,16 +61,12 @@ test("players.create creates a player with defaults", async () => {
 test("players.createHost creates a host player", async () => {
   const t = convexTest(schema, modules);
 
-  const lobbyResult = await factories.lobbies.create(
-    t,
-    "session-host",
-    "Host Player"
-  );
+  const lobbyResult = await factories.lobbies.create(t, "session-host", "Host Player");
   const result = await factories.players.createHost(
     t,
     lobbyResult.id,
     "session-host",
-    "Host Player"
+    "Host Player",
   );
 
   expect(result.record.isHost).toBeTruthy();
@@ -91,11 +87,7 @@ test("players.createMany creates multiple players", async () => {
 test("lobbies.create creates a lobby with host player", async () => {
   const t = convexTest(schema, modules);
 
-  const result = await factories.lobbies.create(
-    t,
-    "session-host",
-    "Host Player"
-  );
+  const result = await factories.lobbies.create(t, "session-host", "Host Player");
 
   expect(result.id).toBeDefined();
   expect(result.hostPlayerId).toBeDefined();
@@ -107,11 +99,7 @@ test("lobbies.create creates a lobby with host player", async () => {
 test("lobbies.createWithPlayers creates lobby with multiple players", async () => {
   const t = convexTest(schema, modules);
 
-  const result = await factories.lobbies.createWithPlayers(
-    t,
-    "host-session",
-    2
-  );
+  const result = await factories.lobbies.createWithPlayers(t, "host-session", 2);
 
   expect(result.id).toBeDefined();
   expect(result.playerIds).toHaveLength(3);
@@ -186,11 +174,7 @@ test("roundBets.create creates a bet with defaults", async () => {
   const game = await factories.games.createInPhase(t, lobby.id, "betting");
 
   expect(lobby.playerIds[1]).toBeDefined();
-  const result = await factories.roundBets.create(
-    t,
-    game.roundId,
-    lobby.playerIds[1]!
-  );
+  const result = await factories.roundBets.create(t, game.roundId, lobby.playerIds[1]!);
 
   expect(result.id).toBeDefined();
   expect(result.record.proposedIndex).toBe(0);
@@ -206,12 +190,7 @@ test("roundBets.createLocked creates a locked bet", async () => {
   const game = await factories.games.createInPhase(t, lobby.id, "betting");
 
   expect(lobby.playerIds[1]).toBeDefined();
-  const result = await factories.roundBets.createLocked(
-    t,
-    game.roundId,
-    lobby.playerIds[1]!,
-    2
-  );
+  const result = await factories.roundBets.createLocked(t, game.roundId, lobby.playerIds[1]!, 2);
 
   expect(result.record.lockedIn).toBeTruthy();
   expect(result.record.proposedIndex).toBe(2);

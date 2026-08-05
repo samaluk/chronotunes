@@ -334,9 +334,7 @@ test("setPlacementPreview fails for non-turn player", async () => {
   await t.run(async (ctx) => {
     const player = await ctx.db
       .query("players")
-      .filter((q) =>
-        q.eq(q.field("sessionId"), asSessionId("player-session-notturn"))
-      )
+      .filter((q) => q.eq(q.field("sessionId"), asSessionId("player-session-notturn")))
       .first();
     if (player) {
       playerId = player._id;
@@ -358,7 +356,7 @@ test("setPlacementPreview fails for non-turn player", async () => {
         lobbyId: lobby!._id,
         proposedIndex: 0,
         sessionId: asSessionId("player-session-notturn"),
-      })
+      }),
     ).rejects.toThrow("Only the turn player can preview placement");
   }
 });
@@ -407,7 +405,7 @@ test("setPlacementPreview fails for negative index", async () => {
       lobbyId: lobby!._id,
       proposedIndex: -1,
       sessionId: turnPlayerSessionId!,
-    })
+    }),
   ).rejects.toThrow("Proposed index cannot be negative");
 });
 
@@ -447,7 +445,7 @@ test("setPlacementPreview fails when not in placing phase", async () => {
       lobbyId: lobby!._id,
       proposedIndex: 0,
       sessionId: asSessionId("host-session-wrong-phase"),
-    })
+    }),
   ).rejects.toThrow("Can only preview placement during placing phase");
 });
 
@@ -642,7 +640,7 @@ test("submitPlacement fails for non-turn player", async () => {
     t.mutation(api.rounds.submitPlacement, {
       lobbyId: lobby!._id,
       sessionId: nonTurnSessionId,
-    })
+    }),
   ).rejects.toThrow("Only the turn player can submit placement");
 });
 
@@ -697,7 +695,7 @@ test("submitPlacement fails when not in placing phase", async () => {
     t.mutation(api.rounds.submitPlacement, {
       lobbyId: lobby!._id,
       sessionId: turnPlayerSessionId!,
-    })
+    }),
   ).rejects.toThrow("Can only submit placement during placing phase");
 });
 
@@ -755,7 +753,7 @@ test("submitPlacement fails when already submitted", async () => {
     t.mutation(api.rounds.submitPlacement, {
       lobbyId: lobby!._id,
       sessionId: turnPlayerSessionId!,
-    })
+    }),
   ).rejects.toThrow("Placement has already been submitted");
 });
 
@@ -802,6 +800,6 @@ test("submitPlacement fails without preview", async () => {
     t.mutation(api.rounds.submitPlacement, {
       lobbyId: lobby!._id,
       sessionId: turnPlayerSessionId!,
-    })
+    }),
   ).rejects.toThrow("Please preview your placement first");
 });

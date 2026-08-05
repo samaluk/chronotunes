@@ -62,7 +62,7 @@ describe(BettingPanel, () => {
           turnPlayerId={null}
           turnPlayerTimeline={[]}
         />
-      </NextIntlClientProvider>
+      </NextIntlClientProvider>,
     );
 
     expect(screen.getByText("5 coins")).toBeInTheDocument();
@@ -82,12 +82,10 @@ describe(BettingPanel, () => {
           turnPlayerId={null}
           turnPlayerTimeline={[]}
         />
-      </NextIntlClientProvider>
+      </NextIntlClientProvider>,
     );
 
-    expect(
-      screen.getByText("Not enough coins to place a bet")
-    ).toBeInTheDocument();
+    expect(screen.getByText("Not enough coins to place a bet")).toBeInTheDocument();
   });
 
   it("shows loading state when track is null", () => {
@@ -104,7 +102,7 @@ describe(BettingPanel, () => {
           turnPlayerId={null}
           turnPlayerTimeline={[]}
         />
-      </NextIntlClientProvider>
+      </NextIntlClientProvider>,
     );
 
     expect(screen.getByText("Loading...")).toBeInTheDocument();
@@ -124,13 +122,11 @@ describe(BettingPanel, () => {
           turnPlayerId={null}
           turnPlayerTimeline={[]}
         />
-      </NextIntlClientProvider>
+      </NextIntlClientProvider>,
     );
 
     expect(screen.getByText("Place Your Bet")).toBeInTheDocument();
-    expect(
-      screen.getByText("Choose an open placement slot for the song")
-    ).toBeInTheDocument();
+    expect(screen.getByText("Choose an open placement slot for the song")).toBeInTheDocument();
     expect(screen.getByText("Open slot")).toBeInTheDocument();
     expect(screen.getByText("Don't bet")).toBeInTheDocument();
   });
@@ -150,7 +146,7 @@ describe(BettingPanel, () => {
           turnPlayerPlacementIndex={0}
           turnPlayerTimeline={[]}
         />
-      </NextIntlClientProvider>
+      </NextIntlClientProvider>,
     );
 
     const label = screen.getByText("Turn player's pick");

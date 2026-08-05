@@ -2,32 +2,16 @@ import { defineSchema, defineTable } from "convex/server";
 import { v } from "convex/values";
 
 // Lobby status enum values
-const lobbyStatus = v.union(
-  v.literal("lobby"),
-  v.literal("in_game"),
-  v.literal("finished")
-);
+const lobbyStatus = v.union(v.literal("lobby"), v.literal("in_game"), v.literal("finished"));
 
 // Game status enum values
-const gameStatus = v.union(
-  v.literal("active"),
-  v.literal("paused"),
-  v.literal("finished")
-);
+const gameStatus = v.union(v.literal("active"), v.literal("paused"), v.literal("finished"));
 
 // Round phase enum values
-const roundPhase = v.union(
-  v.literal("placing"),
-  v.literal("betting"),
-  v.literal("resolved")
-);
+const roundPhase = v.union(v.literal("placing"), v.literal("betting"), v.literal("resolved"));
 
 // Bet status enum values
-const betStatus = v.union(
-  v.literal("pending"),
-  v.literal("won"),
-  v.literal("lost")
-);
+const betStatus = v.union(v.literal("pending"), v.literal("won"), v.literal("lost"));
 
 // Lobby settings object
 const lobbySettings = v.object({
@@ -45,11 +29,7 @@ const lobbySettings = v.object({
 // Timeline entry for player's timeline (embedded array)
 const timelineEntry = v.object({
   earnedAtRoundNumber: v.number(),
-  earnedBy: v.union(
-    v.literal("placement"),
-    v.literal("bet"),
-    v.literal("initial")
-  ),
+  earnedBy: v.union(v.literal("placement"), v.literal("bet"), v.literal("initial")),
   trackId: v.id("tracks"),
   year: v.number(),
 });
@@ -82,7 +62,7 @@ const resolution = v.object({
     v.object({
       delta: v.number(),
       playerId: v.id("players"),
-    })
+    }),
   ),
   resolvedAt: v.number(),
   turnPlayerWasCorrect: v.boolean(),

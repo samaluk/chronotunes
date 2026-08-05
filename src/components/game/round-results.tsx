@@ -35,9 +35,7 @@ const getCorrectnessStyles = (showCorrectness: boolean, isCorrect: boolean) => {
   if (isCorrect) {
     return {
       container: "scale-100 bg-green-100 dark:bg-green-900/30",
-      icon: (
-        <Check className="h-10 w-10 animate-bounce text-green-600 dark:text-green-400" />
-      ),
+      icon: <Check className="h-10 w-10 animate-bounce text-green-600 dark:text-green-400" />,
       label: "correct",
       text: "text-green-600 dark:text-green-400",
     };
@@ -45,9 +43,7 @@ const getCorrectnessStyles = (showCorrectness: boolean, isCorrect: boolean) => {
 
   return {
     container: "scale-100 bg-red-100 dark:bg-red-900/30",
-    icon: (
-      <X className="h-10 w-10 animate-shake text-red-600 dark:text-red-400" />
-    ),
+    icon: <X className="h-10 w-10 animate-shake text-red-600 dark:text-red-400" />,
     label: "incorrect",
     text: "text-red-600 dark:text-red-400",
   };
@@ -57,10 +53,8 @@ const getBetStatusStyles = (status: BetWithPlayer["status"]) => {
   switch (status) {
     case "won": {
       return {
-        badge:
-          "bg-green-100 text-green-600 dark:bg-green-900/50 dark:text-green-400",
-        container:
-          "border-green-200 bg-green-50 dark:border-green-800 dark:bg-green-950/20",
+        badge: "bg-green-100 text-green-600 dark:bg-green-900/50 dark:text-green-400",
+        container: "border-green-200 bg-green-50 dark:border-green-800 dark:bg-green-950/20",
         icon: <Check className="h-4 w-4" />,
         label: "Won",
         labelClass: "text-green-600 dark:text-green-400",
@@ -69,8 +63,7 @@ const getBetStatusStyles = (status: BetWithPlayer["status"]) => {
     case "lost": {
       return {
         badge: "bg-red-100 text-red-600 dark:bg-red-900/50 dark:text-red-400",
-        container:
-          "border-red-200 bg-red-50 dark:border-red-800 dark:bg-red-950/20",
+        container: "border-red-200 bg-red-50 dark:border-red-800 dark:bg-red-950/20",
         icon: <X className="h-4 w-4" />,
         label: "Lost",
         labelClass: "text-red-600 dark:text-red-400",
@@ -100,14 +93,11 @@ export function RoundResults(): React.ReactNode {
   const resolution = currentRound?.resolution;
 
   const resolveAndNext = useSessionMutation(api.games.resolveAndNext);
-  const roundBets = useQuery(
-    api.bets.listForRound,
-    lobbyId ? { lobbyId } : "skip"
-  );
+  const roundBets = useQuery(api.bets.listForRound, lobbyId ? { lobbyId } : "skip");
 
   const isHost = useMemo(
     () => players.find((p) => p._id === me?._id)?.isHost ?? false,
-    [players, me]
+    [players, me],
   );
 
   useEffect(() => {
@@ -126,8 +116,7 @@ export function RoundResults(): React.ReactNode {
     }
   };
 
-  const getPlayerById = (playerId: Id<"players">) =>
-    players.find((p) => p._id === playerId);
+  const getPlayerById = (playerId: Id<"players">) => players.find((p) => p._id === playerId);
 
   const bettingBets = useMemo(() => {
     if (!roundBets) {
@@ -142,10 +131,7 @@ export function RoundResults(): React.ReactNode {
   };
 
   const isTurnPlayerCorrect = resolution?.turnPlayerWasCorrect ?? false;
-  const correctnessStyles = getCorrectnessStyles(
-    showCorrectness,
-    isTurnPlayerCorrect
-  );
+  const correctnessStyles = getCorrectnessStyles(showCorrectness, isTurnPlayerCorrect);
 
   const placementResultText = isTurnPlayerCorrect
     ? t("placementResult", {
@@ -179,17 +165,14 @@ export function RoundResults(): React.ReactNode {
         <div
           className={cn(
             "mx-auto flex h-20 w-20 transform items-center justify-center rounded-full transition-all duration-500",
-            correctnessStyles.container
+            correctnessStyles.container,
           )}
         >
           {correctnessStyles.icon}
         </div>
         <div className="space-y-1">
           <p
-            className={cn(
-              "font-bold text-xl transition-all duration-300",
-              correctnessStyles.text
-            )}
+            className={cn("font-bold text-xl transition-all duration-300", correctnessStyles.text)}
           >
             {t(correctnessStyles.label)}
           </p>
@@ -199,25 +182,17 @@ export function RoundResults(): React.ReactNode {
 
       {showCorrectness && (
         <Card className="fade-in slide-in-from-bottom-2 animate-in p-4 text-center transition-all duration-300">
-          <p className="text-muted-foreground text-xs uppercase tracking-wide">
-            {t("theSongWas")}
-          </p>
+          <p className="text-muted-foreground text-xs uppercase tracking-wide">{t("theSongWas")}</p>
           <div className="flex items-center justify-between">
-            <span className="font-medium text-lg text-muted-foreground">
-              Title
-            </span>
+            <span className="font-medium text-lg text-muted-foreground">Title</span>
             <p className="font-bold text-2xl text-foreground">{track.title}</p>
           </div>
           <div className="flex items-center justify-between">
-            <span className="font-medium text-lg text-muted-foreground">
-              Artist
-            </span>
+            <span className="font-medium text-lg text-muted-foreground">Artist</span>
             <p className="font-bold text-2xl text-foreground">{track.artist}</p>
           </div>
           <div className="flex items-center justify-between">
-            <span className="font-medium text-lg text-muted-foreground">
-              Year
-            </span>
+            <span className="font-medium text-lg text-muted-foreground">Year</span>
             <p className="font-bold text-2xl text-foreground">{track.year}</p>
           </div>
         </Card>
@@ -240,7 +215,7 @@ export function RoundResults(): React.ReactNode {
                 <div
                   className={cn(
                     "flex items-center justify-between rounded-lg border p-3",
-                    isMe ? "border-primary/20 bg-primary/5" : "bg-muted/30"
+                    isMe ? "border-primary/20 bg-primary/5" : "bg-muted/30",
                   )}
                   key={playerId}
                 >
@@ -251,15 +226,10 @@ export function RoundResults(): React.ReactNode {
                     <div>
                       <p className="font-medium">
                         {player.displayName}
-                        {isMe && (
-                          <span className="ml-1 text-primary text-xs">
-                            (You)
-                          </span>
-                        )}
+                        {isMe && <span className="ml-1 text-primary text-xs">(You)</span>}
                       </p>
                       <p className="text-muted-foreground text-xs">
-                        Got the card via{" "}
-                        {playerId === turnPlayer._id ? "placement" : "betting"}
+                        Got the card via {playerId === turnPlayer._id ? "placement" : "betting"}
                       </p>
                     </div>
                   </div>
@@ -295,7 +265,7 @@ export function RoundResults(): React.ReactNode {
                   className={cn(
                     "flex items-center justify-between rounded-lg border p-3",
                     statusStyles.container,
-                    isMe && "ring-2 ring-primary/20"
+                    isMe && "ring-2 ring-primary/20",
                   )}
                   key={bet.playerId}
                 >
@@ -303,7 +273,7 @@ export function RoundResults(): React.ReactNode {
                     <div
                       className={cn(
                         "flex h-8 w-8 items-center justify-center rounded-full",
-                        statusStyles.badge
+                        statusStyles.badge,
                       )}
                     >
                       {statusStyles.icon}
@@ -311,11 +281,7 @@ export function RoundResults(): React.ReactNode {
                     <div>
                       <p className="font-medium">
                         {player.displayName}
-                        {isMe && (
-                          <span className="ml-1 text-primary text-xs">
-                            (You)
-                          </span>
-                        )}
+                        {isMe && <span className="ml-1 text-primary text-xs">(You)</span>}
                       </p>
                       <p className="text-muted-foreground text-xs">
                         Bet on position {bet.proposedIndex + 1}
@@ -342,12 +308,7 @@ export function RoundResults(): React.ReactNode {
       </div>
 
       {isHost && (
-        <Button
-          className="w-full"
-          disabled={isResolving}
-          onClick={handleNextRound}
-          size="lg"
-        >
+        <Button className="w-full" disabled={isResolving} onClick={handleNextRound} size="lg">
           {isResolving ? (
             <>
               <Clock className="mr-2 h-4 w-4 animate-spin" />

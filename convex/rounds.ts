@@ -1,10 +1,6 @@
 import { ConvexError, v } from "convex/values";
 
-import {
-  getGameContext,
-  getLobbyPlayers,
-  getPlayerBySession,
-} from "./lib/game_context";
+import { getGameContext, getLobbyPlayers, getPlayerBySession } from "./lib/game_context";
 import { mutationWithSession, queryWithSession } from "./lib/sessions";
 
 export const getCurrent = queryWithSession({
@@ -147,10 +143,7 @@ export const submitPlacement = mutationWithSession({
     const playersWithBets = new Set(allBets.map((bet) => bet.playerId));
 
     const playersToDecline = players.filter(
-      (p) =>
-        p._id !== round.turnPlayerId &&
-        !playersWithBets.has(p._id) &&
-        p.coins < 1
+      (p) => p._id !== round.turnPlayerId && !playersWithBets.has(p._id) && p.coins < 1,
     );
 
     await Promise.all(
@@ -163,8 +156,8 @@ export const submitPlacement = mutationWithSession({
           proposedIndex: 0,
           roundId: round._id,
           status: "pending",
-        })
-      )
+        }),
+      ),
     );
   },
 });
@@ -190,7 +183,7 @@ export const declineBet = mutationWithSession({
     const existingBet = await ctx.db
       .query("roundBets")
       .withIndex("by_round_and_player", (q) =>
-        q.eq("roundId", round._id).eq("playerId", player._id)
+        q.eq("roundId", round._id).eq("playerId", player._id),
       )
       .unique();
 

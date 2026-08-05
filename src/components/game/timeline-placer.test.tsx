@@ -50,7 +50,7 @@ const createMockPlayer = (
     }[];
     timelineSize: number;
     coins: number;
-  }> = {}
+  }> = {},
 ): {
   _id: GenericId<"players">;
   _creationTime: number;
@@ -87,7 +87,7 @@ const createMockTrack = (
     title: string;
     artist: string;
     year: number;
-  }> = {}
+  }> = {},
 ): {
   _id: GenericId<"tracks">;
   title: string;
@@ -119,7 +119,7 @@ describe(TimelinePlacer, () => {
           player={mockPlayer}
           revealedTracks={[]}
         />
-      </NextIntlClientProvider>
+      </NextIntlClientProvider>,
     );
 
     expect(screen.getByText("Loading track...")).toBeInTheDocument();
@@ -138,15 +138,11 @@ describe(TimelinePlacer, () => {
           player={mockPlayer}
           revealedTracks={[]}
         />
-      </NextIntlClientProvider>
+      </NextIntlClientProvider>,
     );
 
-    expect(
-      screen.getByRole("heading", { name: placeSongHeadingText })
-    ).toBeInTheDocument();
-    expect(
-      screen.getByRole("button", { name: placeOnTimelineText })
-    ).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: placeSongHeadingText })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: placeOnTimelineText })).toBeInTheDocument();
   });
 
   test("renders timeline with existing cards", () => {
@@ -181,7 +177,7 @@ describe(TimelinePlacer, () => {
           player={mockPlayer}
           revealedTracks={[]}
         />
-      </NextIntlClientProvider>
+      </NextIntlClientProvider>,
     );
 
     expect(screen.getAllByText("Known Track")).toHaveLength(2);
@@ -210,11 +206,9 @@ describe(TimelinePlacer, () => {
           player={mockPlayer}
           revealedTracks={[]}
         />
-      </NextIntlClientProvider>
+      </NextIntlClientProvider>,
     );
 
-    expect(
-      screen.getByRole("button", { name: confirmPlacementText })
-    ).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: confirmPlacementText })).toBeInTheDocument();
   });
 });

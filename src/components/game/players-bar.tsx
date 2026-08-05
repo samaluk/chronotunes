@@ -45,8 +45,7 @@ export const PlayersBar = memo(
             const isCurrentUser = player.sessionId === currentSessionId;
             const isTurnPlayer = player._id === highlightPlayerId;
             const { isHost } = player;
-            const isLeader =
-              player.timelineSize === maxTimelineSize && maxTimelineSize > 0;
+            const isLeader = player.timelineSize === maxTimelineSize && maxTimelineSize > 0;
             const { timelineSize } = player;
             const { coins } = player;
 
@@ -55,9 +54,8 @@ export const PlayersBar = memo(
                 className={cn(
                   "relative flex min-w-[160px] items-center gap-2.5 rounded-xl border bg-card px-4 py-2.5 text-left",
                   "transition-all duration-200 hover:shadow-md",
-                  isTurnPlayer &&
-                    "ring-2 ring-amber-500 ring-offset-2 dark:ring-offset-background",
-                  onPlayerClick && "cursor-pointer hover:bg-muted/50"
+                  isTurnPlayer && "ring-2 ring-amber-500 ring-offset-2 dark:ring-offset-background",
+                  onPlayerClick && "cursor-pointer hover:bg-muted/50",
                 )}
                 key={player._id}
                 onClick={() => onPlayerClick?.(player)}
@@ -73,7 +71,7 @@ export const PlayersBar = memo(
                   <div
                     className={cn(
                       "flex h-10 w-10 items-center justify-center rounded-full",
-                      isCurrentUser ? "bg-primary/20" : "bg-muted"
+                      isCurrentUser ? "bg-primary/20" : "bg-muted",
                     )}
                   >
                     {isCurrentUser ? (
@@ -104,7 +102,7 @@ export const PlayersBar = memo(
                     <span
                       className={cn(
                         "truncate font-semibold text-sm",
-                        isCurrentUser ? "text-primary" : "text-foreground"
+                        isCurrentUser ? "text-primary" : "text-foreground",
                       )}
                       title={player.displayName}
                     >
@@ -120,7 +118,7 @@ export const PlayersBar = memo(
                     <span
                       className={cn(
                         "inline-flex items-center gap-1",
-                        timelineSize > 0 && "font-medium text-foreground"
+                        timelineSize > 0 && "font-medium text-foreground",
                       )}
                     >
                       <Music className="h-3 w-3" />
@@ -139,5 +137,5 @@ export const PlayersBar = memo(
         </div>
       </div>
     );
-  }
+  },
 );

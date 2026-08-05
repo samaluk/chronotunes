@@ -287,9 +287,7 @@ export const seed = mutation({
   handler: async (ctx) => {
     const existingTracks = await ctx.db.query("tracks").collect();
     if (existingTracks.length > 0) {
-      await Promise.all(
-        existingTracks.map((track) => ctx.db.delete(track._id))
-      );
+      await Promise.all(existingTracks.map((track) => ctx.db.delete(track._id)));
     }
 
     const lobbyId = await ctx.db.insert("lobbies", {
@@ -330,8 +328,8 @@ export const seed = mutation({
           source: "seed",
           title: track.title,
           year: track.year,
-        })
-      )
+        }),
+      ),
     );
 
     return {

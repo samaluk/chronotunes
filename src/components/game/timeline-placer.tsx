@@ -10,10 +10,7 @@ import { api } from "@/convex/_generated/api";
 import type { Doc, Id } from "@/convex/_generated/dataModel";
 import { sortTimelineByYear } from "@/lib/timeline";
 
-import {
-  getPlacementPositionLabel,
-  TimelinePlacementView,
-} from "./timeline-placement-view";
+import { getPlacementPositionLabel, TimelinePlacementView } from "./timeline-placement-view";
 
 interface TrackInfo {
   _id: Id<"tracks">;
@@ -48,14 +45,10 @@ export function TimelinePlacer({
 }: TimelinePlacerProps): React.ReactNode {
   const t = useTranslations("placing");
 
-  const [selectedIndex, setSelectedIndex] = useState<number>(
-    existingPreviewIndex ?? 0
-  );
+  const [selectedIndex, setSelectedIndex] = useState<number>(existingPreviewIndex ?? 0);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const setPlacementPreview = useSessionMutation(
-    api.rounds.setPlacementPreview
-  );
+  const setPlacementPreview = useSessionMutation(api.rounds.setPlacementPreview);
   const submitPlacement = useSessionMutation(api.rounds.submitPlacement);
 
   const sortedTimeline = sortTimelineByYear(player.timeline);
@@ -70,7 +63,7 @@ export function TimelinePlacer({
         return Math.min(maxPosition, prev + 1);
       });
     },
-    [maxPosition]
+    [maxPosition],
   );
 
   const handleSlotClick = useCallback((index: number) => {
@@ -118,7 +111,7 @@ export function TimelinePlacer({
         handleSubmitRef.current();
       }
     },
-    [moveSelection]
+    [moveSelection],
   );
 
   useEffect(() => {
@@ -154,9 +147,7 @@ export function TimelinePlacer({
   return (
     <div className="w-full space-y-4">
       <div className="flex items-center justify-between">
-        <h3 className="font-medium text-muted-foreground text-sm">
-          {t("placeTheSong")}
-        </h3>
+        <h3 className="font-medium text-muted-foreground text-sm">{t("placeTheSong")}</h3>
       </div>
 
       <TimelinePlacementView
@@ -169,31 +160,18 @@ export function TimelinePlacer({
       />
 
       <div className="flex items-center justify-between border-t pt-4">
-        <p className="font-medium text-foreground text-sm">
-          {getPositionLabel(selectedIndex)}
-        </p>
+        <p className="font-medium text-foreground text-sm">{getPositionLabel(selectedIndex)}</p>
         <div className="text-right">
-          <p className="hidden text-muted-foreground text-xs sm:block">
-            {t("useArrowsToMove")}
-          </p>
+          <p className="hidden text-muted-foreground text-xs sm:block">{t("useArrowsToMove")}</p>
           <p className="hidden text-muted-foreground text-xs sm:block">
             {t("pressEnterToConfirm")}
           </p>
-          <p className="text-muted-foreground text-xs sm:hidden">
-            {t("tapButtonsToMove")}
-          </p>
-          <p className="text-muted-foreground text-xs sm:hidden">
-            {t("tapConfirmToPlace")}
-          </p>
+          <p className="text-muted-foreground text-xs sm:hidden">{t("tapButtonsToMove")}</p>
+          <p className="text-muted-foreground text-xs sm:hidden">{t("tapConfirmToPlace")}</p>
         </div>
       </div>
 
-      <Button
-        className="w-full"
-        disabled={isSubmitting}
-        onClick={handleSubmit}
-        size="lg"
-      >
+      <Button className="w-full" disabled={isSubmitting} onClick={handleSubmit} size="lg">
         {isSubmitting ? (
           <>
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />

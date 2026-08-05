@@ -10,11 +10,9 @@ import { TurnPlayerTimeline } from "./turn-player-timeline";
 export function PlacingPhaseContent(): React.ReactNode {
   const tPlacing = useTranslations("placing");
   const { state } = useGame();
-  const { isMyTurn, lobby, me, players, currentRound, track, turnPlayer } =
-    state;
+  const { isMyTurn, lobby, me, players, currentRound, track, turnPlayer } = state;
 
-  const existingPreviewIndex =
-    currentRound?.placementPreview?.proposedIndex ?? null;
+  const existingPreviewIndex = currentRound?.placementPreview?.proposedIndex ?? null;
   const turnPlayerId = currentRound?.turnPlayerId ?? null;
   const turnPlayerTimeline = turnPlayer?.timeline ?? [];
   const turnPlayerTimelineSize = turnPlayer?.timelineSize ?? 0;

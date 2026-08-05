@@ -18,7 +18,7 @@ interface BetWithPlayer {
 
 const requireBettingRound = (
   round: Doc<"rounds"> | null | undefined,
-  message: string
+  message: string,
 ): Doc<"rounds"> => {
   if (!round || round.phase !== "betting") {
     throw new ConvexError(message);
@@ -36,10 +36,7 @@ const assertCanBet = (player: Doc<"players">, round: Doc<"rounds">) => {
   }
 };
 
-const assertValidProposedIndex = (
-  proposedIndex: number,
-  timelineLength: number
-) => {
+const assertValidProposedIndex = (proposedIndex: number, timelineLength: number) => {
   if (proposedIndex < 0) {
     throw new ConvexError("Proposed index cannot be negative");
   }
@@ -49,32 +46,19 @@ const assertValidProposedIndex = (
   }
 };
 
-const assertNotTurnPlacement = (
-  round: Doc<"rounds">,
-  proposedIndex: number
-) => {
+const assertNotTurnPlacement = (round: Doc<"rounds">, proposedIndex: number) => {
   if (round.placement?.proposedIndex === proposedIndex) {
     throw new ConvexError("Cannot bet on the turn player's placement");
   }
 };
 
-const getBetForPlayer = (
-  ctx: MutationCtx,
-  roundId: Id<"rounds">,
-  playerId: Id<"players">
-) =>
+const getBetForPlayer = (ctx: MutationCtx, roundId: Id<"rounds">, playerId: Id<"players">) =>
   ctx.db
     .query("roundBets")
-    .withIndex("by_round_and_player", (q) =>
-      q.eq("roundId", roundId).eq("playerId", playerId)
-    )
+    .withIndex("by_round_and_player", (q) => q.eq("roundId", roundId).eq("playerId", playerId))
     .first();
 
-const getLockedBetForSlot = (
-  ctx: MutationCtx,
-  roundId: Id<"rounds">,
-  proposedIndex: number
-) =>
+const getLockedBetForSlot = (ctx: MutationCtx, roundId: Id<"rounds">, proposedIndex: number) =>
   ctx.db
     .query("roundBets")
     .withIndex("by_round", (q) => q.eq("roundId", roundId))
@@ -90,7 +74,7 @@ export const preview = mutationWithSession({
     const { round } = await getGameContext(ctx, lobbyId);
     const bettingRound = requireBettingRound(
       round,
-      "Can only place bets after placement is locked in"
+      "Can only place bets after placement is locked in",
     );
 
     const player = await getPlayerBySession(ctx, lobbyId, sessionId);
@@ -106,21 +90,13 @@ export const preview = mutationWithSession({
     assertValidProposedIndex(proposedIndex, turnPlayer.timeline.length);
     assertNotTurnPlacement(bettingRound, proposedIndex);
 
-    const existingBet = await getBetForPlayer(
-      ctx,
-      bettingRound._id,
-      player._id
-    );
+    const existingBet = await getBetForPlayer(ctx, bettingRound._id, player._id);
 
     if (existingBet?.lockedIn) {
       throw new ConvexError("Cannot change a locked bet");
     }
 
-    const slotBet = await getLockedBetForSlot(
-      ctx,
-      bettingRound._id,
-      proposedIndex
-    );
+    const slotBet = await getLockedBetForSlot(ctx, bettingRound._id, proposedIndex);
 
     if (slotBet && slotBet.playerId !== player._id && slotBet.lockedIn) {
       throw new ConvexError("That placement slot is already taken");
@@ -154,18 +130,11 @@ export const lockIn = mutationWithSession({
     const { sessionId } = ctx;
 
     const { round } = await getGameContext(ctx, lobbyId);
-    const bettingRound = requireBettingRound(
-      round,
-      "Can only lock in bets during betting phase"
-    );
+    const bettingRound = requireBettingRound(round, "Can only lock in bets during betting phase");
 
     const player = await getPlayerBySession(ctx, lobbyId, sessionId);
 
-    const existingBet = await getBetForPlayer(
-      ctx,
-      bettingRound._id,
-      player._id
-    );
+    const existingBet = await getBetForPlayer(ctx, bettingRound._id, player._id);
 
     if (!existingBet) {
       throw new ConvexError("No bet to lock in");
@@ -198,18 +167,11 @@ export const cancel = mutationWithSession({
     const { sessionId } = ctx;
 
     const { round } = await getGameContext(ctx, lobbyId);
-    const bettingRound = requireBettingRound(
-      round,
-      "Can only cancel bets during betting phase"
-    );
+    const bettingRound = requireBettingRound(round, "Can only cancel bets during betting phase");
 
     const player = await getPlayerBySession(ctx, lobbyId, sessionId);
 
-    const existingBet = await getBetForPlayer(
-      ctx,
-      bettingRound._id,
-      player._id
-    );
+    const existingBet = await getBetForPlayer(ctx, bettingRound._id, player._id);
 
     if (!existingBet) {
       throw new ConvexError("No bet to cancel");
@@ -259,12 +221,8 @@ export const listForRound = query({
       betsToReturn = bets.filter((bet) => bet.lockedIn || bet.declinedToBet);
     }
 
-    const players = await Promise.all(
-      betsToReturn.map((bet) => ctx.db.get(bet.playerId))
-    );
-    const playersById = new Map(
-      players.filter(Boolean).map((player) => [player!._id, player!])
-    );
+    const players = await Promise.all(betsToReturn.map((bet) => ctx.db.get(bet.playerId)));
+    const playersById = new Map(players.filter(Boolean).map((player) => [player!._id, player!]));
 
     return betsToReturn
       .map((bet) => {

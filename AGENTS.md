@@ -27,13 +27,13 @@ ChronoTunes is a browser-based multiplayer music timeline game (Hitster clone) w
 - [Internationalization](docs/agents/i18n.md)
 - [Project structure](docs/agents/project-structure.md)
 - [UI stack](docs/agents/ui-stack.md)
-- [Ultracite standards](docs/agents/ultracite.md)
+- [Oxlint / Oxfmt standards](docs/agents/ultracite.md)
 - [Agent workflow](docs/agents/workflow.md)
 - [Fallow quality ratchet](docs/fallow.md)
 
 ## Code quality (Oxlint + Oxfmt)
 
-Linting and formatting use **Oxlint** and **Oxfmt**. Shared rule presets come from the **Ultracite** package via [`oxlint.config.ts`](oxlint.config.ts) and [`oxfmt.config.ts`](oxfmt.config.ts) (see [Ultracite standards](docs/agents/ultracite.md)).
+Linting and formatting use **Oxlint** and **Oxfmt** with near-default configs in [`oxlint.config.ts`](oxlint.config.ts) and [`oxfmt.config.ts`](oxfmt.config.ts) (see [Oxlint / Oxfmt standards](docs/agents/ultracite.md)).
 
 ### Quick Reference
 

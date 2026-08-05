@@ -24,7 +24,7 @@ const toggleVariants = cva(
         outline: "border border-input bg-transparent shadow-xs hover:bg-muted",
       },
     },
-  }
+  },
 );
 
 function Toggle({

@@ -65,24 +65,12 @@ const TEST_TRACKS = [
   { artist: "Dua Lipa", title: "Dance The Night", year: 2023 },
 ];
 
-const BLACKLIST_WORDS = [
-  "lyrics",
-  "cover",
-  "remix",
-  "tribute",
-  "live",
-  "reaction",
-  "behind",
-];
+const BLACKLIST_WORDS = ["lyrics", "cover", "remix", "tribute", "live", "reaction", "behind"];
 
 type TrackSeed = (typeof TEST_TRACKS)[number];
 type TrackResult = TrackSeed & { videoId: string | null };
 
-async function searchTrack(
-  title: string,
-  artist: string,
-  retryCount = 0
-): Promise<string | null> {
+async function searchTrack(title: string, artist: string, retryCount = 0): Promise<string | null> {
   const query = `${title} ${artist} official video`;
   process.stdout.write(`Searching: "${query}"... `);
 
@@ -103,16 +91,11 @@ async function searchTrack(
       const titleLower = (video.title || "").toLowerCase();
       const channelName = video.channel?.name || video.channel || "";
       const channelLower = (
-        typeof channelName === "string"
-          ? channelName
-          : JSON.stringify(channelName)
+        typeof channelName === "string" ? channelName : JSON.stringify(channelName)
       ).toLowerCase();
 
       // Prefer official channel matches
-      if (
-        channelLower.includes(artistLower) ||
-        channelLower.includes(artistFirstWord)
-      ) {
+      if (channelLower.includes(artistLower) || channelLower.includes(artistFirstWord)) {
         score += 100;
       }
 
@@ -136,7 +119,7 @@ async function searchTrack(
 
     const best = scored[0];
     console.log(
-      `Found: "${best.video.title}" (score: ${best.score}, channel: ${best.video.channel})`
+      `Found: "${best.video.title}" (score: ${best.score}, channel: ${best.video.channel})`,
     );
 
     return best.video.id;
@@ -153,9 +136,7 @@ async function searchTrack(
 }
 
 async function main() {
-  console.log(
-    `Fetching YouTube video IDs for ${TEST_TRACKS.length} tracks...\n`
-  );
+  console.log(`Fetching YouTube video IDs for ${TEST_TRACKS.length} tracks...\n`);
 
   const results: TrackResult[] = [];
 
@@ -192,9 +173,7 @@ const TEST_TRACKS = [
     } else {
       seedContent += `  // FAILED: { title: "${track.title}", artist: "${track.artist}", year: ${track.year}, videoId: null },
 `;
-      console.log(
-        `Could not find video for: "${track.title}" - ${track.artist}`
-      );
+      console.log(`Could not find video for: "${track.title}" - ${track.artist}`);
     }
   }
 
@@ -268,11 +247,7 @@ export const seed = mutation({
   fs.writeFileSync(seedPath, seedContent);
   console.log(`Updated: ${seedPath}`);
 
-  const jsonPath = path.join(
-    process.cwd(),
-    "convex",
-    "youtube-search-results.json"
-  );
+  const jsonPath = path.join(process.cwd(), "convex", "youtube-search-results.json");
   fs.writeFileSync(jsonPath, JSON.stringify(results, null, 2));
   console.log(`Saved: ${jsonPath}`);
 

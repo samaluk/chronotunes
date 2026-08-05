@@ -19,7 +19,7 @@ const createMockPlayer = (
       earnedBy: "placement" | "bet" | "initial";
     }[];
     timelineSize: number;
-  }> = {}
+  }> = {},
 ): any => ({
   _creationTime: now,
   _id: "player123" as GenericId<"players">,
@@ -34,12 +34,7 @@ const createMockPlayer = (
   ...overrides,
 });
 
-const createMockTrack = (
-  id: string,
-  title: string,
-  artist: string,
-  year: number
-): any => ({
+const createMockTrack = (id: string, title: string, artist: string, year: number): any => ({
   _id: id as GenericId<"tracks">,
   artist,
   title,
@@ -97,9 +92,7 @@ const createGameContext = (player: any): any => ({
 
 beforeEach(() => {
   vi.clearAllMocks();
-  (useQuery as unknown as ReturnType<typeof vi.fn>).mockImplementation(
-    mockUseQuery
-  );
+  (useQuery as unknown as ReturnType<typeof vi.fn>).mockImplementation(mockUseQuery);
 });
 
 describe(MyTimeline, () => {
@@ -108,17 +101,13 @@ describe(MyTimeline, () => {
     mockUseQuery.mockReturnValue([]);
 
     const TestWrapper = ({ children }: { children: React.ReactNode }) => (
-      <GameContext.Provider value={createGameContext(mockPlayer)}>
-        {children}
-      </GameContext.Provider>
+      <GameContext.Provider value={createGameContext(mockPlayer)}>{children}</GameContext.Provider>
     );
 
     render(<MyTimeline />, { wrapper: TestWrapper });
 
     expect(screen.queryByText("No cards yet")).not.toBeNull();
-    expect(
-      screen.queryByText("Place songs on your timeline to collect cards")
-    ).not.toBeNull();
+    expect(screen.queryByText("Place songs on your timeline to collect cards")).not.toBeNull();
   });
 
   test("does not show card count when populated", () => {
@@ -134,14 +123,10 @@ describe(MyTimeline, () => {
       timelineSize: 1,
     });
 
-    mockUseQuery.mockReturnValue([
-      createMockTrack("track1", "Test Song", "Test Artist", 1990),
-    ]);
+    mockUseQuery.mockReturnValue([createMockTrack("track1", "Test Song", "Test Artist", 1990)]);
 
     const TestWrapper = ({ children }: { children: React.ReactNode }) => (
-      <GameContext.Provider value={createGameContext(mockPlayer)}>
-        {children}
-      </GameContext.Provider>
+      <GameContext.Provider value={createGameContext(mockPlayer)}>{children}</GameContext.Provider>
     );
 
     render(<MyTimeline />, { wrapper: TestWrapper });
@@ -174,9 +159,7 @@ describe(MyTimeline, () => {
     ]);
 
     const TestWrapper = ({ children }: { children: React.ReactNode }) => (
-      <GameContext.Provider value={createGameContext(mockPlayer)}>
-        {children}
-      </GameContext.Provider>
+      <GameContext.Provider value={createGameContext(mockPlayer)}>{children}</GameContext.Provider>
     );
 
     render(<MyTimeline />, { wrapper: TestWrapper });
@@ -200,14 +183,10 @@ describe(MyTimeline, () => {
       timelineSize: 1,
     });
 
-    mockUseQuery.mockReturnValue([
-      createMockTrack("track1", "Test Song", "Test Artist", 1990),
-    ]);
+    mockUseQuery.mockReturnValue([createMockTrack("track1", "Test Song", "Test Artist", 1990)]);
 
     const TestWrapper = ({ children }: { children: React.ReactNode }) => (
-      <GameContext.Provider value={createGameContext(mockPlayer)}>
-        {children}
-      </GameContext.Provider>
+      <GameContext.Provider value={createGameContext(mockPlayer)}>{children}</GameContext.Provider>
     );
 
     const { container } = render(<MyTimeline />, { wrapper: TestWrapper });
@@ -228,14 +207,10 @@ describe(MyTimeline, () => {
       timelineSize: 1,
     });
 
-    mockUseQuery.mockReturnValue([
-      createMockTrack("track1", "Test Song", "Test Artist", 1990),
-    ]);
+    mockUseQuery.mockReturnValue([createMockTrack("track1", "Test Song", "Test Artist", 1990)]);
 
     const TestWrapper = ({ children }: { children: React.ReactNode }) => (
-      <GameContext.Provider value={createGameContext(mockPlayer)}>
-        {children}
-      </GameContext.Provider>
+      <GameContext.Provider value={createGameContext(mockPlayer)}>{children}</GameContext.Provider>
     );
 
     const { container } = render(<MyTimeline />, { wrapper: TestWrapper });
@@ -256,14 +231,10 @@ describe(MyTimeline, () => {
       timelineSize: 1,
     });
 
-    mockUseQuery.mockReturnValue([
-      createMockTrack("track1", "Test Song", "Test Artist", 1990),
-    ]);
+    mockUseQuery.mockReturnValue([createMockTrack("track1", "Test Song", "Test Artist", 1990)]);
 
     const TestWrapper = ({ children }: { children: React.ReactNode }) => (
-      <GameContext.Provider value={createGameContext(mockPlayer)}>
-        {children}
-      </GameContext.Provider>
+      <GameContext.Provider value={createGameContext(mockPlayer)}>{children}</GameContext.Provider>
     );
 
     render(<MyTimeline />, { wrapper: TestWrapper });

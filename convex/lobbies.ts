@@ -42,11 +42,7 @@ const getLobbyByCode = async (ctx: MutationCtx, code: string) => {
   return lobby;
 };
 
-const assertHost = (
-  lobby: Doc<"lobbies">,
-  sessionId: string,
-  message: string
-) => {
+const assertHost = (lobby: Doc<"lobbies">, sessionId: string, message: string) => {
   if (lobby.hostSessionId !== sessionId) {
     throw new ConvexError(message);
   }
@@ -137,10 +133,7 @@ export const join = mutationWithSession({
     const existingPlayer = await ctx.db
       .query("players")
       .filter((q) =>
-        q.and(
-          q.eq(q.field("lobbyId"), lobby._id),
-          q.eq(q.field("sessionId"), sessionId)
-        )
+        q.and(q.eq(q.field("lobbyId"), lobby._id), q.eq(q.field("sessionId"), sessionId)),
       )
       .first();
 
@@ -176,10 +169,7 @@ export const leave = mutationWithSession({
     const player = await ctx.db
       .query("players")
       .filter((q) =>
-        q.and(
-          q.eq(q.field("lobbyId"), lobby._id),
-          q.eq(q.field("sessionId"), sessionId)
-        )
+        q.and(q.eq(q.field("lobbyId"), lobby._id), q.eq(q.field("sessionId"), sessionId)),
       )
       .first();
 
@@ -258,7 +248,7 @@ const validateBettingWindowSeconds = (value?: number) => {
 
 const validateYearRange = (
   settings: Partial<Doc<"lobbies">["settings"]>,
-  currentSettings: Doc<"lobbies">["settings"]
+  currentSettings: Doc<"lobbies">["settings"],
 ) => {
   const currentMaxYear = settings.maxYear ?? currentSettings.maxYear;
   const currentMinYear = settings.minYear ?? currentSettings.minYear;
@@ -280,7 +270,7 @@ const validateYearRange = (
 
 const validateSettingsUpdate = (
   settings: Partial<Doc<"lobbies">["settings"]> | undefined,
-  currentSettings: Doc<"lobbies">["settings"]
+  currentSettings: Doc<"lobbies">["settings"],
 ) => {
   if (!settings) {
     return;
@@ -307,9 +297,7 @@ export const updateSettings = mutationWithSession({
     assertHost(lobby, sessionId, "Only the host can update settings");
 
     if (lobby.status !== "lobby") {
-      throw new ConvexError(
-        "Cannot update settings for a lobby that is not in lobby status"
-      );
+      throw new ConvexError("Cannot update settings for a lobby that is not in lobby status");
     }
 
     validateSettingsUpdate(settings, lobby.settings);
@@ -340,10 +328,7 @@ export const transferHost = mutationWithSession({
     const currentHostPlayer = await ctx.db
       .query("players")
       .filter((q) =>
-        q.and(
-          q.eq(q.field("lobbyId"), lobby._id),
-          q.eq(q.field("sessionId"), sessionId)
-        )
+        q.and(q.eq(q.field("lobbyId"), lobby._id), q.eq(q.field("sessionId"), sessionId)),
       )
       .first();
 
@@ -354,10 +339,7 @@ export const transferHost = mutationWithSession({
     const newHostPlayer = await ctx.db
       .query("players")
       .filter((q) =>
-        q.and(
-          q.eq(q.field("lobbyId"), lobby._id),
-          q.eq(q.field("sessionId"), newHostSessionId)
-        )
+        q.and(q.eq(q.field("lobbyId"), lobby._id), q.eq(q.field("sessionId"), newHostSessionId)),
       )
       .first();
 

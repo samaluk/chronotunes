@@ -21,10 +21,7 @@ const MOBILE_BREAKPOINT = 768;
 
 type PlayerStatus = "loading" | "playing" | "error";
 
-export function YouTubePlayer({
-  youtubeVideoId,
-  className,
-}: YouTubePlayerProps): React.ReactNode {
+export function YouTubePlayer({ youtubeVideoId, className }: YouTubePlayerProps): React.ReactNode {
   const isMounted = useIsMounted();
   const tPlayer = useTranslations("player");
   const mounted = isMounted();
@@ -47,7 +44,7 @@ export function YouTubePlayer({
         rel: 0,
       },
     }),
-    []
+    [],
   );
 
   useEffect(() => {
@@ -68,9 +65,7 @@ export function YouTubePlayer({
       return;
     }
 
-    const mediaQuery = window.matchMedia(
-      `(max-width: ${MOBILE_BREAKPOINT - 1}px)`
-    );
+    const mediaQuery = window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT - 1}px)`);
     const updateMobileState = () => {
       const { matches } = mediaQuery;
       setIsMobile(matches);
@@ -91,9 +86,7 @@ export function YouTubePlayer({
   const statusInfo = useMemo(() => {
     if (isMobile && !hasUserInitiated) {
       return {
-        indicator: (
-          <span className="h-2 w-2 animate-pulse rounded-full bg-amber-500" />
-        ),
+        indicator: <span className="h-2 w-2 animate-pulse rounded-full bg-amber-500" />,
         label: tPlayer("tapToEnableAudio"),
         tone: "text-amber-600 dark:text-amber-400",
       };
@@ -101,18 +94,14 @@ export function YouTubePlayer({
 
     if (status === "playing") {
       return {
-        indicator: (
-          <span className="h-2 w-2 animate-pulse rounded-full bg-green-500" />
-        ),
+        indicator: <span className="h-2 w-2 animate-pulse rounded-full bg-green-500" />,
         label: tPlayer("playingAudio"),
         tone: "text-green-600 dark:text-green-400",
       };
     }
 
     return {
-      indicator: (
-        <Loader2 className="h-3 w-3 animate-spin text-muted-foreground" />
-      ),
+      indicator: <Loader2 className="h-3 w-3 animate-spin text-muted-foreground" />,
       label: tPlayer("loadingAudio"),
       tone: "text-muted-foreground",
     };
@@ -123,14 +112,12 @@ export function YouTubePlayer({
       <div
         className={cn(
           "flex items-center justify-center rounded-lg border border-destructive/20 bg-destructive/10 p-4",
-          className
+          className,
         )}
       >
         <div className="flex items-center gap-2 text-destructive">
           <AlertTriangle className="h-5 w-5" data-testid="alert-icon" />
-          <span className="font-medium text-sm">
-            {tPlayer("videoUnavailable")}
-          </span>
+          <span className="font-medium text-sm">{tPlayer("videoUnavailable")}</span>
         </div>
       </div>
     );
@@ -144,7 +131,7 @@ export function YouTubePlayer({
         aria-hidden="true"
         className={cn(
           "pointer-events-none absolute inset-0 overflow-hidden",
-          "h-[1px] w-[1px] -translate-x-full -translate-y-full"
+          "h-[1px] w-[1px] -translate-x-full -translate-y-full",
         )}
         data-testid="hidden-youtube-player"
       >
@@ -156,11 +143,7 @@ export function YouTubePlayer({
           muted={isEffectivelyMuted}
           onError={() => setStatus("error")}
           onPlay={() => setStatus("playing")}
-          onReady={() =>
-            setStatus((previous) =>
-              previous === "playing" ? previous : "loading"
-            )
-          }
+          onReady={() => setStatus((previous) => (previous === "playing" ? previous : "loading"))}
           onStart={() => setStatus("playing")}
           playing={isMobile ? hasUserInitiated : true}
           src={`https://www.youtube.com/watch?v=${youtubeVideoId}`}
@@ -171,10 +154,7 @@ export function YouTubePlayer({
 
       <div className="flex items-center gap-2">
         {statusInfo.indicator}
-        <output
-          aria-live="polite"
-          className={cn("font-medium text-xs", statusInfo.tone)}
-        >
+        <output aria-live="polite" className={cn("font-medium text-xs", statusInfo.tone)}>
           {statusInfo.label}
         </output>
         {isMobile && !hasUserInitiated && (

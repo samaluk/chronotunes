@@ -7,12 +7,7 @@ import { cn } from "@/lib/utils";
 
 function Breadcrumb({ className, ...props }: ComponentProps<"nav">) {
   return (
-    <nav
-      aria-label="breadcrumb"
-      className={cn(className)}
-      data-slot="breadcrumb"
-      {...props}
-    />
+    <nav aria-label="breadcrumb" className={cn(className)} data-slot="breadcrumb" {...props} />
   );
 }
 
@@ -21,7 +16,7 @@ function BreadcrumbList({ className, ...props }: ComponentProps<"ol">) {
     <ol
       className={cn(
         "flex flex-wrap items-center gap-1.5 break-words text-muted-foreground text-sm sm:gap-2.5",
-        className
+        className,
       )}
       data-slot="breadcrumb-list"
       {...props}
@@ -39,18 +34,14 @@ function BreadcrumbItem({ className, ...props }: ComponentProps<"li">) {
   );
 }
 
-function BreadcrumbLink({
-  className,
-  render,
-  ...props
-}: useRender.ComponentProps<"a">) {
+function BreadcrumbLink({ className, render, ...props }: useRender.ComponentProps<"a">) {
   return useRender({
     defaultTagName: "a",
     props: mergeProps<"a">(
       {
         className: cn("transition-colors hover:text-foreground", className),
       },
-      props
+      props,
     ),
     render,
     state: {
@@ -71,11 +62,7 @@ function BreadcrumbPage({ className, ...props }: ComponentProps<"span">) {
   );
 }
 
-function BreadcrumbSeparator({
-  children,
-  className,
-  ...props
-}: ComponentProps<"li">) {
+function BreadcrumbSeparator({ children, className, ...props }: ComponentProps<"li">) {
   return (
     <li
       aria-hidden="true"
@@ -93,10 +80,7 @@ function BreadcrumbEllipsis({ className, ...props }: ComponentProps<"span">) {
   return (
     <span
       aria-hidden="true"
-      className={cn(
-        "flex size-5 items-center justify-center [&>svg]:size-4",
-        className
-      )}
+      className={cn("flex size-5 items-center justify-center [&>svg]:size-4", className)}
       data-slot="breadcrumb-ellipsis"
       role="presentation"
       {...props}
