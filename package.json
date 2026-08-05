@@ -74,7 +74,7 @@
     "scrape-youtube": "2.4.0",
     "tailwindcss": "4.3.3",
     "typescript": "7.0.2",
-    "ultracite": "7.9.4",
+    "ultracite": "7.10.0",
     "vitest": "4.1.10"
   },
   "engines": {
