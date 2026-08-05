@@ -1,10 +1,5 @@
 {
   "finding_counts": {
-    "convex/bets.ts": {
-      "crap_high": {
-        "count": 2
-      }
-    },
     "convex/games.ts": {
       "crap_critical": {
         "count": 1
@@ -15,7 +10,7 @@
     },
     "convex/host_disconnect.ts": {
       "crap_high": {
-        "count": 2
+        "count": 1
       }
     },
     "convex/import_tracks.ts": {
@@ -34,7 +29,7 @@
     },
     "convex/lib/game_context.ts": {
       "crap_moderate": {
-        "count": 2
+        "count": 1
       }
     },
     "convex/lib/game_logic.ts": {
@@ -42,46 +37,33 @@
         "count": 1
       }
     },
-    "convex/lobbies.ts": {
-      "crap_high": {
-        "count": 1
-      }
-    },
-    "convex/players.test.ts": {
+    "convex/rounds.ts": {
       "crap_moderate": {
         "count": 1
       }
     },
-    "convex/rounds.ts": {
+    "convex/test/factories/games.ts": {
+      "complexity_critical": {
+        "count": 1
+      },
       "crap_critical": {
         "count": 1
       },
       "crap_moderate": {
-        "count": 3
-      }
-    },
-    "convex/test/factories/games.ts": {
-      "complexity_moderate": {
         "count": 1
       }
     },
     "convex/test/factories/lobbies.ts": {
       "complexity_moderate": {
         "count": 2
-      },
-      "crap_moderate": {
-        "count": 1
       }
     },
-    "convex/tracks.ts": {
+    "convex/test/factories/rounds.ts": {
       "crap_critical": {
-        "count": 1
-      },
-      "crap_high": {
-        "count": 1
+        "count": 2
       },
       "crap_moderate": {
-        "count": 1
+        "count": 2
       }
     },
     "src/app/landing-page-content.tsx": {
@@ -103,6 +85,11 @@
         "count": 1
       }
     },
+    "src/components/game/bet-coin.tsx": {
+      "crap_high": {
+        "count": 1
+      }
+    },
     "src/components/game/betting-panel.tsx": {
       "complexity_critical": {
         "count": 1
@@ -111,7 +98,7 @@
         "count": 1
       },
       "crap_moderate": {
-        "count": 2
+        "count": 1
       }
     },
     "src/components/game/betting-phase-content.tsx": {
@@ -127,6 +114,11 @@
     "src/components/game/game-provider.tsx": {
       "complexity_moderate": {
         "count": 1
+      }
+    },
+    "src/components/game/game-results.tsx": {
+      "crap_high": {
+        "count": 2
       }
     },
     "src/components/game/game-timer.tsx": {
@@ -174,7 +166,13 @@
       }
     },
     "src/components/game/timeline-card.tsx": {
-      "complexity_moderate": {
+      "complexity_high": {
+        "count": 1
+      },
+      "crap_high": {
+        "count": 1
+      },
+      "crap_moderate": {
         "count": 1
       }
     },
@@ -253,11 +251,6 @@
     }
   },
   "identity_finding_counts": {
-    "convex/bets.ts\u0000handler": {
-      "crap_high": {
-        "count": 2
-      }
-    },
     "convex/games.ts\u0000applyLockedBets": {
       "crap_moderate": {
         "count": 1
@@ -273,7 +266,7 @@
     },
     "convex/host_disconnect.ts\u0000<arrow>": {
       "crap_high": {
-        "count": 2
+        "count": 1
       }
     },
     "convex/import_tracks.ts\u0000handler": {
@@ -309,36 +302,26 @@
         "count": 1
       }
     },
-    "convex/lib/game_context.ts\u0000getGameContext": {
-      "crap_moderate": {
-        "count": 1
-      }
-    },
     "convex/lib/game_logic.ts\u0000computeValidIndexRange": {
       "complexity_moderate": {
         "count": 1
       }
     },
-    "convex/lobbies.ts\u0000validateYearRange": {
-      "crap_high": {
-        "count": 1
-      }
-    },
-    "convex/players.test.ts\u0000<arrow>": {
-      "crap_moderate": {
-        "count": 1
-      }
-    },
     "convex/rounds.ts\u0000handler": {
-      "crap_critical": {
-        "count": 1
-      },
       "crap_moderate": {
-        "count": 3
+        "count": 1
+      }
+    },
+    "convex/test/factories/games.ts\u0000create": {
+      "crap_moderate": {
+        "count": 1
       }
     },
     "convex/test/factories/games.ts\u0000createWithRound": {
-      "complexity_moderate": {
+      "complexity_critical": {
+        "count": 1
+      },
+      "crap_critical": {
         "count": 1
       }
     },
@@ -352,20 +335,17 @@
         "count": 1
       }
     },
-    "convex/test/factories/lobbies.ts\u0000resolvePlayerOverrides": {
+    "convex/test/factories/rounds.ts\u0000<arrow>": {
       "crap_moderate": {
+        "count": 2
+      }
+    },
+    "convex/test/factories/rounds.ts\u0000create": {
+      "crap_critical": {
         "count": 1
       }
     },
-    "convex/tracks.ts\u0000handler": {
-      "crap_high": {
-        "count": 1
-      },
-      "crap_moderate": {
-        "count": 1
-      }
-    },
-    "convex/tracks.ts\u0000validateTrackItem": {
+    "convex/test/factories/rounds.ts\u0000createInPhase": {
       "crap_critical": {
         "count": 1
       }
@@ -396,6 +376,11 @@
         "count": 1
       }
     },
+    "src/components/game/bet-coin.tsx\u0000getInitials": {
+      "crap_high": {
+        "count": 1
+      }
+    },
     "src/components/game/betting-panel.tsx\u0000BettingPanel": {
       "complexity_critical": {
         "count": 1
@@ -404,12 +389,7 @@
         "count": 1
       }
     },
-    "src/components/game/betting-panel.tsx\u0000BettingStatus": {
-      "crap_moderate": {
-        "count": 1
-      }
-    },
-    "src/components/game/betting-panel.tsx\u0000getSlotState": {
+    "src/components/game/betting-panel.tsx\u0000canResolveRound": {
       "crap_moderate": {
         "count": 1
       }
@@ -426,6 +406,16 @@
     },
     "src/components/game/game-provider.tsx\u0000GameProvider": {
       "complexity_moderate": {
+        "count": 1
+      }
+    },
+    "src/components/game/game-results.tsx\u0000<arrow>": {
+      "crap_high": {
+        "count": 1
+      }
+    },
+    "src/components/game/game-results.tsx\u0000GameResults": {
+      "crap_high": {
         "count": 1
       }
     },
@@ -476,7 +466,15 @@
       }
     },
     "src/components/game/timeline-card.tsx\u0000TimelineCard": {
-      "complexity_moderate": {
+      "complexity_high": {
+        "count": 1
+      },
+      "crap_high": {
+        "count": 1
+      }
+    },
+    "src/components/game/timeline-card.tsx\u0000formatYearRange": {
+      "crap_moderate": {
         "count": 1
       }
     },
@@ -589,33 +587,33 @@
   "target_keys": [
     "src/components/ui/collapsible.tsx:dead code",
     "src/components/ui/button-group.tsx:dead code",
-    "src/components/ui/hover-card.tsx:dead code",
     "src/components/ui/resizable.tsx:dead code",
-    "src/components/ui/input-group.tsx:dead code",
+    "src/components/ui/hover-card.tsx:dead code",
     "src/components/ui/chart.tsx:dead code",
+    "src/components/ui/input-group.tsx:dead code",
+    "src/components/ui/pagination.tsx:dead code",
     "src/components/ui/sheet.tsx:dead code",
-    "src/components/game/betting-panel.tsx:complexity",
     "src/components/ui/field.tsx:dead code",
-    "src/components/ui/dropdown-menu.tsx:dead code",
     "src/components/ui/tooltip.tsx:dead code",
     "src/components/ui/carousel.tsx:dead code",
+    "src/components/ui/dropdown-menu.tsx:dead code",
     "src/components/ui/command.tsx:dead code",
-    "src/components/ui/pagination.tsx:dead code",
     "src/components/ui/alert-dialog.tsx:dead code",
     "src/components/ui/menubar.tsx:dead code",
     "src/components/ui/item.tsx:dead code",
-    "src/components/ui/drawer.tsx:dead code",
-    "src/components/ui/breadcrumb.tsx:dead code",
-    "src/components/ui/popover.tsx:dead code",
     "src/components/ui/table.tsx:dead code",
+    "src/components/game/betting-panel.tsx:complexity",
+    "src/components/ui/breadcrumb.tsx:dead code",
+    "src/components/ui/drawer.tsx:dead code",
+    "src/components/ui/popover.tsx:dead code",
+    "src/components/ui/avatar.tsx:dead code",
     "src/components/ui/context-menu.tsx:dead code",
     "src/components/ui/empty.tsx:dead code",
     "src/components/ui/accordion.tsx:dead code",
     "src/components/ui/alert.tsx:dead code",
-    "src/components/ui/avatar.tsx:dead code",
     "src/components/ui/navigation-menu.tsx:dead code",
-    "src/components/ui/tabs.tsx:dead code",
     "src/components/ui/select.tsx:dead code",
+    "src/components/ui/tabs.tsx:dead code",
     "src/components/ui/sidebar.tsx:dead code"
   ]
 }
