@@ -45,7 +45,7 @@ export function MyTimeline(): React.ReactNode {
   const trackIds = player?.timeline.map((entry) => entry.trackId) ?? [];
   const tracks = useQuery(
     api.tracks.get,
-    isMounted() && trackIds.length > 0 ? { trackIds } : "skip"
+    isMounted() && trackIds.length > 0 ? { trackIds } : "skip",
   );
 
   const trackMap = useMemo(() => {
@@ -55,7 +55,7 @@ export function MyTimeline(): React.ReactNode {
     return new Map(
       tracks
         .filter((track): track is NonNullable<typeof track> => track != null)
-        .map((track) => [track._id, track])
+        .map((track) => [track._id, track]),
     );
   }, [tracks]);
 
@@ -73,12 +73,8 @@ export function MyTimeline(): React.ReactNode {
     return (
       <div className="w-full">
         <div className="mb-3 flex items-center justify-between">
-          <h3 className="font-medium text-muted-foreground text-sm">
-            My Timeline
-          </h3>
-          {player && (
-            <span className="text-muted-foreground text-xs">0 cards</span>
-          )}
+          <h3 className="font-medium text-muted-foreground text-sm">My Timeline</h3>
+          {player && <span className="text-muted-foreground text-xs">0 cards</span>}
         </div>
         <div className="flex flex-col items-center justify-center rounded-lg border border-dashed bg-muted/30 py-8">
           <Music className="mb-2 h-8 w-8 text-muted-foreground" />
@@ -101,9 +97,7 @@ export function MyTimeline(): React.ReactNode {
   return (
     <div className="w-full space-y-3">
       <div className="flex items-center justify-between">
-        <h3 className="font-medium text-muted-foreground text-sm">
-          My Timeline
-        </h3>
+        <h3 className="font-medium text-muted-foreground text-sm">My Timeline</h3>
       </div>
 
       {isLoading ? (

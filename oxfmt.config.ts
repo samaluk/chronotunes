@@ -1,7 +1,7 @@
 import { defineConfig } from "oxfmt";
-import ultracite from "ultracite/oxfmt";
 
+// Near-default Oxfmt, with an explicit print width and repo-local ignores.
 export default defineConfig({
-  ...ultracite,
+  printWidth: 100,
   ignorePatterns: [".agents/**", "convex/_generated/**"],
 });

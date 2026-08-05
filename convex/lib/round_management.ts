@@ -18,7 +18,7 @@ interface NextRoundResult {
 export async function createNextRound(
   ctx: MutationCtx,
   game: Doc<"games">,
-  lobby: Doc<"lobbies">
+  lobby: Doc<"lobbies">,
 ): Promise<NextRoundResult | { gameEnded: true; noTracksAvailable: true }> {
   const currentTurnIndex = game.turnOrder.indexOf(game.turnPlayerId!);
 

@@ -8,11 +8,11 @@ ChronoTunes uses [Fallow](https://docs.fallow.tools) 3.14 with type-aware TypeSc
 
 Identity-based snapshots of current findings:
 
-| File | Analysis | Matching mode |
-| --- | --- | --- |
-| `dead-code.json` | Unused code, deps, private type leaks | Per finding identity |
-| `dupes.json` | Semantic clone groups (`minOccurrences: 3`) | Per clone fingerprint |
-| `health.json` | Complexity, CRAP, unit size | Per function identity |
+| File             | Analysis                                    | Matching mode         |
+| ---------------- | ------------------------------------------- | --------------------- |
+| `dead-code.json` | Unused code, deps, private type leaks       | Per finding identity  |
+| `dupes.json`     | Semantic clone groups (`minOccurrences: 3`) | Per clone fingerprint |
+| `health.json`    | Complexity, CRAP, unit size                 | Per function identity |
 
 **Gate A** fails when a finding appears that is not in the committed baseline — even if total count stays the same. Example: remove one unused export and add a different one → CI fails.
 
@@ -113,14 +113,14 @@ CI also expects improved baselines to be committed — `fallow:baseline:check` r
 
 ## Configuration exclusions
 
-| Pattern | Reason |
-| --- | --- |
-| `ignoreFindings: convex/_generated/**` | Hide dead-code noise; files stay in graph for import resolution |
-| `ignoreExports: src/components/ui/*.tsx` | shadcn re-exports full component API |
-| `ignoreExports: src/i18n/routing.ts:usePathname` | next-intl `createNavigation` destructuring breaks type-aware completeness |
-| `ignoreUnresolvedImports: ../../messages/**` | Dynamic locale JSON imports resolved at build time |
-| `ignoreDependencies: tailwindcss, shadcn, oxlint, …` | Tooling/CSS/import-script deps not imported as app modules |
-| `ignorePatterns: oxfmt/oxlint/vitest/next configs, scripts/**` | Tooling entrypoints outside the app graph |
+| Pattern                                                        | Reason                                                                    |
+| -------------------------------------------------------------- | ------------------------------------------------------------------------- |
+| `ignoreFindings: convex/_generated/**`                         | Hide dead-code noise; files stay in graph for import resolution           |
+| `ignoreExports: src/components/ui/*.tsx`                       | shadcn re-exports full component API                                      |
+| `ignoreExports: src/i18n/routing.ts:usePathname`               | next-intl `createNavigation` destructuring breaks type-aware completeness |
+| `ignoreUnresolvedImports: ../../messages/**`                   | Dynamic locale JSON imports resolved at build time                        |
+| `ignoreDependencies: tailwindcss, shadcn, oxlint, …`           | Tooling/CSS/import-script deps not imported as app modules                |
+| `ignorePatterns: oxfmt/oxlint/vitest/next configs, scripts/**` | Tooling entrypoints outside the app graph                                 |
 
 ## CI behavior
 

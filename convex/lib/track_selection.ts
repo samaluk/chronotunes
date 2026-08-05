@@ -16,15 +16,13 @@ interface SelectedTrack {
 
 export async function selectTrackForRound(
   ctx: QueryCtx,
-  options: TrackSelectionOptions
+  options: TrackSelectionOptions,
 ): Promise<SelectedTrack | null> {
   const { gameId, minYear, maxYear } = options;
 
   const allTracks = await ctx.db
     .query("tracks")
-    .filter((q) =>
-      q.and(q.gte(q.field("year"), minYear), q.lte(q.field("year"), maxYear))
-    )
+    .filter((q) => q.and(q.gte(q.field("year"), minYear), q.lte(q.field("year"), maxYear)))
     .collect();
 
   if (allTracks.length === 0) {
@@ -33,9 +31,7 @@ export async function selectTrackForRound(
 
   const usedTrackIds = await getUsedTrackIds(ctx, gameId);
 
-  const availableTracks = allTracks.filter(
-    (track) => !usedTrackIds.has(track._id)
-  );
+  const availableTracks = allTracks.filter((track) => !usedTrackIds.has(track._id));
 
   if (availableTracks.length === 0) {
     return null;
@@ -52,10 +48,7 @@ export async function selectTrackForRound(
   };
 }
 
-async function getUsedTrackIds(
-  ctx: QueryCtx,
-  gameId: Id<"games">
-): Promise<Set<Id<"tracks">>> {
+async function getUsedTrackIds(ctx: QueryCtx, gameId: Id<"games">): Promise<Set<Id<"tracks">>> {
   const usedTrackIds = new Set<Id<"tracks">>();
 
   const rounds = await ctx.db

@@ -35,11 +35,7 @@ export function PlayerList({ lobbyId }: PlayerListProps): React.ReactNode {
   }
 
   if (players.length === 0) {
-    return (
-      <div className="py-8 text-center text-muted-foreground">
-        {t("noPlayers")}
-      </div>
-    );
+    return <div className="py-8 text-center text-muted-foreground">{t("noPlayers")}</div>;
   }
 
   return (
@@ -69,9 +65,7 @@ export function PlayerList({ lobbyId }: PlayerListProps): React.ReactNode {
                   <span className="truncate font-medium">
                     {player.displayName}
                     {isCurrentUser && (
-                      <span className="ml-2 text-muted-foreground text-xs">
-                        {tCommon("you")}
-                      </span>
+                      <span className="ml-2 text-muted-foreground text-xs">{tCommon("you")}</span>
                     )}
                   </span>
                   {player.isHost && (

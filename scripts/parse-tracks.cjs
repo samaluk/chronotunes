@@ -60,11 +60,8 @@ function parseTracks(lines) {
     const title = parts[1]?.replaceAll(/^"|"$/g, "").trim() || "";
     const artist = parts[2]?.replaceAll(/^"|"$/g, "").trim() || "";
     const year = parseYear(parts[11]?.replaceAll(/^"|"$/g, "") || "");
-    const durationMs = parseDurationToMs(
-      parts[7]?.replaceAll(/^"|"$/g, "") || ""
-    );
-    const spotifyTrackId =
-      parts[19]?.replaceAll(/^"|"$/g, "").trim() || undefined;
+    const durationMs = parseDurationToMs(parts[7]?.replaceAll(/^"|"$/g, "") || "");
+    const spotifyTrackId = parts[19]?.replaceAll(/^"|"$/g, "").trim() || undefined;
     const mbid = parts[20]?.replaceAll(/^"|"$/g, "").trim() || undefined;
 
     if (!(title && artist)) {
@@ -106,18 +103,12 @@ function getYearRange(tracks) {
 function logSampleTracks(label, tracks, startIndex) {
   console.log(`\nSample tracks (${label}):`);
   tracks.forEach((track, index) => {
-    console.log(
-      `  ${startIndex + index}. "${track.title}" - ${track.artist} (${track.year})`
-    );
+    console.log(`  ${startIndex + index}. "${track.title}" - ${track.artist} (${track.year})`);
   });
 }
 
 function main() {
-  const csvPath = path.join(
-    process.cwd(),
-    "convex",
-    "HITSTER - Español Temazos.csv"
-  );
+  const csvPath = path.join(process.cwd(), "convex", "HITSTER - Español Temazos.csv");
 
   if (!fs.existsSync(csvPath)) {
     console.error("CSV file not found:", csvPath);
@@ -138,9 +129,7 @@ function main() {
   console.log("Summary:");
   console.log(`  Total tracks: ${tracks.length}`);
   console.log(`  Year range: ${yearMin} - ${yearMax}`);
-  console.log(
-    `  Tracks with Spotify ID: ${tracks.filter((t) => t.spotifyTrackId).length}`
-  );
+  console.log(`  Tracks with Spotify ID: ${tracks.filter((t) => t.spotifyTrackId).length}`);
   console.log(`  Tracks with MBID: ${tracks.filter((t) => t.mbid).length}`);
 
   // Output sample tracks
@@ -152,9 +141,7 @@ function main() {
   fs.writeFileSync(outputPath, JSON.stringify(tracks, null, 2));
   console.log(`\nTrack data saved to: ${outputPath}`);
   console.log("\nTo import, use the Convex dashboard or run:");
-  console.log(
-    "  npx convex run tracks:importTracksFromCsv --argsfile convex/tracks-import.json"
-  );
+  console.log("  npx convex run tracks:importTracksFromCsv --argsfile convex/tracks-import.json");
 }
 
 main();

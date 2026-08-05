@@ -7,13 +7,7 @@
  * do not create false staleness.
  */
 import { spawnSync } from "node:child_process";
-import {
-  copyFileSync,
-  mkdirSync,
-  mkdtempSync,
-  readFileSync,
-  rmSync,
-} from "node:fs";
+import { copyFileSync, mkdirSync, mkdtempSync, readFileSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 
@@ -70,16 +64,15 @@ try {
           "--baseline-mode",
           "identity",
         ],
-        { allowIssueExit: true }
+        { allowIssueExit: true },
       );
       continue;
     }
 
     const command = file.includes("dead-code") ? "dead-code" : "dupes";
-    runFallow(
-      ["-c", tempConfigPath, command, "--save-baseline", generatedPath],
-      { allowIssueExit: true }
-    );
+    runFallow(["-c", tempConfigPath, command, "--save-baseline", generatedPath], {
+      allowIssueExit: true,
+    });
   }
 
   runFallow(["-c", tempConfigPath, "dead-code", "--save-regression-baseline"], {
@@ -90,9 +83,7 @@ try {
 
   for (const file of EXACT_BASELINE_FILES) {
     const committed = canonicalJson(readFileSync(file, "utf-8"));
-    const generated = canonicalJson(
-      readFileSync(path.join(tempRoot, file), "utf-8")
-    );
+    const generated = canonicalJson(readFileSync(path.join(tempRoot, file), "utf-8"));
 
     if (committed !== generated) {
       stale.push(file);
@@ -100,10 +91,10 @@ try {
   }
 
   const committedRegression = JSON.stringify(
-    JSON.parse(readFileSync(".fallowrc.json", "utf-8")).regression ?? null
+    JSON.parse(readFileSync(".fallowrc.json", "utf-8")).regression ?? null,
   );
   const generatedRegression = JSON.stringify(
-    JSON.parse(readFileSync(tempConfigPath, "utf-8")).regression ?? null
+    JSON.parse(readFileSync(tempConfigPath, "utf-8")).regression ?? null,
   );
 
   if (committedRegression !== generatedRegression) {
@@ -112,7 +103,7 @@ try {
 
   if (stale.length > 0) {
     console.error(
-      "\nCommitted Fallow baselines are stale. Run `pnpm fallow:baseline:update` and commit the results:"
+      "\nCommitted Fallow baselines are stale. Run `pnpm fallow:baseline:update` and commit the results:",
     );
     for (const file of stale) {
       console.error(`  - ${file}`);

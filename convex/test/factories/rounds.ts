@@ -21,7 +21,7 @@ export interface RoundOverrides {
 export async function create(
   t: TestContext,
   gameId: Id<"games">,
-  overrides: RoundOverrides = {}
+  overrides: RoundOverrides = {},
 ): Promise<{ id: Id<"rounds">; record: Round }> {
   let { turnPlayerId } = overrides;
   let { trackId } = overrides;
@@ -85,7 +85,7 @@ export async function createInPhase(
     trackId?: Id<"tracks">;
     placementIndex?: number;
     resolution?: Round["resolution"];
-  } = {}
+  } = {},
 ): Promise<{ id: Id<"rounds">; record: Round; turnPlayerId: Id<"players"> }> {
   let { turnPlayerId } = options;
   let { trackId } = options;

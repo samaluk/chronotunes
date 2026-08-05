@@ -31,8 +31,7 @@ export function StartGameButton({
       toast.success(t("gameStarted"));
       router.refresh();
     } catch (error) {
-      const message =
-        error instanceof Error ? error.message : t("failedToStart");
+      const message = error instanceof Error ? error.message : t("failedToStart");
       toast.error(message);
     }
   };

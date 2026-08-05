@@ -5,8 +5,7 @@ import { routing } from "./routing";
 
 type Locale = (typeof routing.locales)[number];
 
-const isLocale = (value: string): value is Locale =>
-  routing.locales.includes(value as Locale);
+const isLocale = (value: string): value is Locale => routing.locales.includes(value as Locale);
 
 export default getRequestConfig(async ({ requestLocale }) => {
   const store = await cookies();

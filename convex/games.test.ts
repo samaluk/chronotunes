@@ -146,7 +146,7 @@ test("start rejects when less than 2 players", async () => {
     t.mutation(api.games.start, {
       lobbyId: lobby!._id,
       sessionId: asSessionId("host-session-min"),
-    })
+    }),
   ).rejects.toThrow("At least 2 players are required to start a game");
 });
 
@@ -172,7 +172,7 @@ test("start rejects when caller is not host", async () => {
     t.mutation(api.games.start, {
       lobbyId: lobby!._id,
       sessionId: asSessionId("player-session-auth"),
-    })
+    }),
   ).rejects.toThrow("Only the host can start the game");
 });
 
@@ -203,7 +203,7 @@ test("start rejects when game already started", async () => {
     t.mutation(api.games.start, {
       lobbyId: lobby!._id,
       sessionId: asSessionId("host-session-started"),
-    })
+    }),
   ).rejects.toThrow("Game has already started");
 });
 
@@ -306,10 +306,7 @@ test("start creates game with correct structure", async () => {
   expect(game?.endedAt).toBeUndefined();
 });
 
-async function seedMoreTestTracks(
-  t: ReturnType<typeof convexTest>,
-  count = 10
-) {
+async function seedMoreTestTracks(t: ReturnType<typeof convexTest>, count = 10) {
   await t.run(async (ctx) => {
     await Promise.all(
       Array.from({ length: count }, (_, i) => {
@@ -323,7 +320,7 @@ async function seedMoreTestTracks(
           title: `Test Song ${i}`,
           year,
         });
-      })
+      }),
     );
   });
 }
@@ -378,10 +375,7 @@ async function setupGameForResolve(t: ReturnType<typeof convexTest>) {
   return { lobbyId: lobby!._id };
 }
 
-async function placeDummyBets(
-  t: ReturnType<typeof convexTest>,
-  lobbyId: string
-) {
+async function placeDummyBets(t: ReturnType<typeof convexTest>, lobbyId: string) {
   const game = await t.query(api.games.getCurrent, {
     lobbyId: lobbyId as Id<"lobbies">,
   });
@@ -392,19 +386,15 @@ async function placeDummyBets(
       await ctx.db
         .query("players")
         .filter((q) => q.eq(q.field("lobbyId"), lobbyId))
-        .collect()
+        .collect(),
   );
 
-  const round = await t.run(
-    async (ctx) => await ctx.db.get(game!.currentRoundId!)
-  );
+  const round = await t.run(async (ctx) => await ctx.db.get(game!.currentRoundId!));
 
   const placementIndex = round?.placement?.proposedIndex ?? 0;
   const proposedIndex = placementIndex === 0 ? 1 : 0;
 
-  const nonTurnPlayers = players.filter(
-    (player) => player._id !== turnPlayerId
-  );
+  const nonTurnPlayers = players.filter((player) => player._id !== turnPlayerId);
 
   await Promise.all(
     nonTurnPlayers.map((player) =>
@@ -412,8 +402,8 @@ async function placeDummyBets(
         lobbyId: lobbyId as Id<"lobbies">,
         proposedIndex,
         sessionId: asSessionId(player.sessionId),
-      })
-    )
+      }),
+    ),
   );
 
   await Promise.all(
@@ -421,15 +411,12 @@ async function placeDummyBets(
       t.mutation(api.bets.lockIn, {
         lobbyId: lobbyId as Id<"lobbies">,
         sessionId: asSessionId(player.sessionId),
-      })
-    )
+      }),
+    ),
   );
 }
 
-async function declineAllNonTurnPlayers(
-  t: ReturnType<typeof convexTest>,
-  lobbyId: string
-) {
+async function declineAllNonTurnPlayers(t: ReturnType<typeof convexTest>, lobbyId: string) {
   const game = await t.query(api.games.getCurrent, {
     lobbyId: lobbyId as Id<"lobbies">,
   });
@@ -440,20 +427,18 @@ async function declineAllNonTurnPlayers(
       await ctx.db
         .query("players")
         .filter((q) => q.eq(q.field("lobbyId"), lobbyId))
-        .collect()
+        .collect(),
   );
 
-  const nonTurnPlayers = players.filter(
-    (player) => player._id !== turnPlayerId
-  );
+  const nonTurnPlayers = players.filter((player) => player._id !== turnPlayerId);
 
   await Promise.all(
     nonTurnPlayers.map((player) =>
       t.mutation(api.rounds.declineBet, {
         lobbyId: lobbyId as Id<"lobbies">,
         sessionId: asSessionId(player.sessionId),
-      })
-    )
+      }),
+    ),
   );
 }
 
@@ -484,7 +469,7 @@ test("skipTurn rejects when caller is not host", async () => {
     t.mutation(api.games.skipTurn, {
       lobbyId: lobby!._id,
       sessionId: asSessionId("player-skip-auth"),
-    })
+    }),
   ).rejects.toThrow("Only the host can skip a turn");
 });
 
@@ -502,7 +487,7 @@ test("skipTurn rejects when no active game", async () => {
     t.mutation(api.games.skipTurn, {
       lobbyId: lobby!._id,
       sessionId: asSessionId("host-skip-game"),
-    })
+    }),
   ).rejects.toThrow("No active game in this lobby");
 });
 
@@ -523,7 +508,7 @@ test("skipTurn rejects when game is not active", async () => {
     t.mutation(api.games.skipTurn, {
       lobbyId,
       sessionId: asSessionId("host-resolve"),
-    })
+    }),
   ).rejects.toThrow("Game is not active");
 });
 
@@ -540,9 +525,7 @@ test("skipTurn advances to next player", async () => {
 
   const nonTurnPlayerId = game!.turnOrder.find((id) => id !== turnPlayerId)!;
 
-  const nonTurnPlayer = await t.run(
-    async (ctx) => await ctx.db.get(nonTurnPlayerId)
-  );
+  const nonTurnPlayer = await t.run(async (ctx) => await ctx.db.get(nonTurnPlayerId));
 
   const nonTurnSessionId = nonTurnPlayer?.sessionId ?? "player1-resolve";
 
@@ -585,9 +568,7 @@ test("skipTurn advances to next player", async () => {
     sessionId: asSessionId("host-resolve"),
   });
 
-  const updatedOtherPlayer = await t.run(
-    async (ctx) => await ctx.db.get(nonTurnPlayerId)
-  );
+  const updatedOtherPlayer = await t.run(async (ctx) => await ctx.db.get(nonTurnPlayerId));
 
   expect(updatedOtherPlayer?.timelineSize).toBe(2);
   expect(updatedOtherPlayer?.timeline).toHaveLength(2);
@@ -619,9 +600,7 @@ test("resolveAndNext sets round phase to resolved", async () => {
     sessionId: asSessionId("host-resolve"),
   });
 
-  const updatedRound = await t.run(
-    async (ctx) => await ctx.db.get(game!.currentRoundId!)
-  );
+  const updatedRound = await t.run(async (ctx) => await ctx.db.get(game!.currentRoundId!));
 
   expect(updatedRound?.phase).toBe("resolved");
   expect(updatedRound?.resolution).toBeDefined();
@@ -675,8 +654,8 @@ test("resolveAndNext handles no tracks available", async () => {
           source: "test",
           title: `Track ${i}`,
           year: 1980 + i,
-        })
-      )
+        }),
+      ),
     );
   });
 

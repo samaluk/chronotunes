@@ -11,10 +11,7 @@ interface NetworkStatusProps {
   showLabel?: boolean;
 }
 
-export function NetworkStatus({
-  className,
-  showLabel = true,
-}: NetworkStatusProps) {
+export function NetworkStatus({ className, showLabel = true }: NetworkStatusProps) {
   const { status, retry } = useConvexStatus();
 
   if (status === "connected") {
@@ -30,7 +27,7 @@ export function NetworkStatus({
         status === "connecting" && "bg-primary/10 text-primary",
         status === "reconnecting" &&
           "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300",
-        className
+        className,
       )}
     >
       <StatusIcon status={status} />
@@ -62,13 +59,7 @@ function StatusIcon({ status }: { status: ConvexConnectionStatus }) {
   }
 }
 
-function StatusLabel({
-  status,
-  onRetry,
-}: {
-  status: ConvexConnectionStatus;
-  onRetry: () => void;
-}) {
+function StatusLabel({ status, onRetry }: { status: ConvexConnectionStatus; onRetry: () => void }) {
   switch (status) {
     case "connecting": {
       return <span>Connecting...</span>;
@@ -134,7 +125,7 @@ export function ConnectionBanner() {
         status === "disconnected" && "bg-muted text-muted-foreground",
         status === "connecting" && "bg-primary/10 text-primary",
         status === "reconnecting" &&
-          "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300"
+          "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300",
       )}
     >
       <StatusIcon status={status} />

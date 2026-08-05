@@ -5,11 +5,7 @@ import { cn } from "@/lib/utils";
 function Spinner({ className, ...props }: React.ComponentProps<"svg">) {
   return (
     <output aria-label="Loading" className="inline-flex">
-      <Loader2Icon
-        aria-hidden
-        className={cn("size-4 animate-spin", className)}
-        {...props}
-      />
+      <Loader2Icon aria-hidden className={cn("size-4 animate-spin", className)} {...props} />
     </output>
   );
 }

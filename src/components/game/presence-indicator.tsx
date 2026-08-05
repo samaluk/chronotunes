@@ -36,7 +36,7 @@ export function PresenceIndicator({
           className={cn(
             "absolute inline-flex h-full w-full animate-ping rounded-full opacity-75",
             pulseSizeClasses[size],
-            "bg-green-400"
+            "bg-green-400",
           )}
         />
       )}
@@ -44,9 +44,7 @@ export function PresenceIndicator({
         className={cn(
           "relative inline-flex rounded-full",
           sizeClasses[size],
-          online
-            ? "fill-green-500 text-green-500"
-            : "fill-muted text-muted-foreground"
+          online ? "fill-green-500 text-green-500" : "fill-muted text-muted-foreground",
         )}
       />
     </span>

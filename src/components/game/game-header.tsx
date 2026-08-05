@@ -11,11 +11,9 @@ import { useGame } from "./game-provider";
 import { GameTimer } from "./game-timer";
 
 const phaseStyles = {
-  betting:
-    "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400",
+  betting: "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400",
   placing: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400",
-  resolved:
-    "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400",
+  resolved: "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400",
 };
 
 export const GameHeader = memo((): React.ReactNode => {
@@ -26,8 +24,7 @@ export const GameHeader = memo((): React.ReactNode => {
   const { game, isMyTurn, phase, turnPlayer, currentRound } = state;
 
   const roundNumber = game?.currentRoundNumber ?? 1;
-  const bettingStartedAt =
-    phase === "betting" ? currentRound?.startedAt : undefined;
+  const bettingStartedAt = phase === "betting" ? currentRound?.startedAt : undefined;
   const { bettingWindowSeconds } = state;
 
   return (
@@ -42,7 +39,7 @@ export const GameHeader = memo((): React.ReactNode => {
               <span
                 className={cn(
                   "inline-flex items-center rounded-full px-2 py-0.5 font-medium text-xs",
-                  phaseStyles[phase]
+                  phaseStyles[phase],
                 )}
               >
                 {tPhase(phase)}
@@ -52,9 +49,7 @@ export const GameHeader = memo((): React.ReactNode => {
               {turnPlayer && (
                 <>
                   <span className="font-semibold text-lg">
-                    {isMyTurn
-                      ? t("yourTurn")
-                      : t("playersTurn", { name: turnPlayer.displayName })}
+                    {isMyTurn ? t("yourTurn") : t("playersTurn", { name: turnPlayer.displayName })}
                   </span>
                   {isMyTurn && phase === "placing" && (
                     <span className="inline-flex animate-pulse items-center gap-1 rounded-full bg-primary/20 px-2 py-0.5 font-medium text-primary text-xs">
@@ -82,7 +77,7 @@ export const GameHeader = memo((): React.ReactNode => {
               "flex items-center gap-2 rounded-lg px-4 py-2 font-medium",
               currentRound.resolution.turnPlayerWasCorrect
                 ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
-                : "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400"
+                : "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400",
             )}
           >
             {currentRound.resolution.turnPlayerWasCorrect ? (

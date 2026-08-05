@@ -14,9 +14,7 @@ interface VolumeSliderProps {
   className?: string;
 }
 
-export function VolumeSlider({
-  className,
-}: VolumeSliderProps): React.ReactNode {
+export function VolumeSlider({ className }: VolumeSliderProps): React.ReactNode {
   const [volume, setVolume] = useLocalStorage(VOLUME_STORAGE_KEY, 80);
   const [isMuted, setIsMuted] = useLocalStorage(MUTED_STORAGE_KEY, false);
 
@@ -52,9 +50,7 @@ export function VolumeSlider({
         className="h-2 w-28"
         max={100}
         min={0}
-        onValueChange={(value: number | readonly number[]) =>
-          handleVolumeChange(value as number)
-        }
+        onValueChange={(value: number | readonly number[]) => handleVolumeChange(value as number)}
         value={isMuted ? 0 : volume}
       />
     </div>

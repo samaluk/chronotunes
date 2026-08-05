@@ -20,7 +20,7 @@ const result = spawnSync(
     "json",
     "--quiet",
   ],
-  { encoding: "utf-8" }
+  { encoding: "utf-8" },
 );
 
 if (result.error) {
@@ -54,15 +54,13 @@ if (!regression) {
 
 if (regression.exceeded) {
   console.error(
-    `Regression baseline exceeded: ${regression.current_total} issues (baseline ${regression.baseline_total}, delta +${regression.delta}).`
+    `Regression baseline exceeded: ${regression.current_total} issues (baseline ${regression.baseline_total}, delta +${regression.delta}).`,
   );
   process.exit(1);
 }
 
 if (regression.status !== "pass") {
-  console.error(
-    `Regression baseline check failed with status: ${regression.status}`
-  );
+  console.error(`Regression baseline check failed with status: ${regression.status}`);
   process.exit(1);
 }
 
@@ -71,5 +69,5 @@ if (result.status !== 0 && result.status !== 1) {
 }
 
 console.log(
-  `Regression baseline OK: ${regression.current_total} issues (baseline ${regression.baseline_total}).`
+  `Regression baseline OK: ${regression.current_total} issues (baseline ${regression.baseline_total}).`,
 );

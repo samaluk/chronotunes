@@ -41,11 +41,7 @@ interface LobbySettings {
   turnSeconds: number;
 }
 
-export function SettingsPanel({
-  code,
-  isHost,
-  currentSettings,
-}: SettingsPanelProps) {
+export function SettingsPanel({ code, isHost, currentSettings }: SettingsPanelProps) {
   const t = useTranslations("settings");
 
   const [sessionId] = useSessionId();
@@ -60,14 +56,14 @@ export function SettingsPanel({
 
   const handleSettingChange = <K extends keyof LobbySettings>(
     key: K,
-    value: LobbySettings[K]
+    value: LobbySettings[K],
   ): void => {
     setOptimisticSettings((prev) => ({ ...prev, [key]: value }));
   };
 
   const handleCommit = async <K extends keyof LobbySettings>(
     key: K,
-    value: LobbySettings[K]
+    value: LobbySettings[K],
   ): Promise<void> => {
     if (!sessionId) {
       return;
@@ -75,8 +71,7 @@ export function SettingsPanel({
     try {
       await updateSettings({ code, sessionId, settings: { [key]: value } });
     } catch (error) {
-      const message =
-        error instanceof Error ? error.message : t("failedToSave");
+      const message = error instanceof Error ? error.message : t("failedToSave");
       toast.error(message);
       setOptimisticSettings(currentSettings);
     }
@@ -91,9 +86,7 @@ export function SettingsPanel({
         </h3>
         <div className="space-y-2 rounded-lg bg-muted p-4 text-sm">
           <div className="flex justify-between">
-            <span className="text-muted-foreground">
-              {t("targetTimelineSize")}
-            </span>
+            <span className="text-muted-foreground">{t("targetTimelineSize")}</span>
             <span className="font-medium">
               {t("targetCards", {
                 count: optimisticSettings.targetTimelineSize,
@@ -102,9 +95,7 @@ export function SettingsPanel({
           </div>
           <div className="flex justify-between">
             <span className="text-muted-foreground">{t("startingCoins")}</span>
-            <span className="font-medium">
-              {optimisticSettings.startingCoins}
-            </span>
+            <span className="font-medium">{optimisticSettings.startingCoins}</span>
           </div>
           <div className="flex justify-between">
             <span className="text-muted-foreground">{t("turnDuration")}</span>
@@ -130,9 +121,7 @@ export function SettingsPanel({
             </span>
           </div>
           <div className="flex justify-between">
-            <span className="text-muted-foreground">
-              {t("allowGuessTitleArtist")}
-            </span>
+            <span className="text-muted-foreground">{t("allowGuessTitleArtist")}</span>
             <span className="font-medium">
               {optimisticSettings.allowGuessTitleArtist ? <Check /> : <X />}
             </span>
@@ -144,9 +133,7 @@ export function SettingsPanel({
             </span>
           </div>
           <div className="flex justify-between">
-            <span className="text-muted-foreground">
-              {t("allowBetRetraction")}
-            </span>
+            <span className="text-muted-foreground">{t("allowBetRetraction")}</span>
             <span className="font-medium">
               {optimisticSettings.allowBetRetraction ? <Check /> : <X />}
             </span>
@@ -167,11 +154,7 @@ export function SettingsPanel({
           <Settings2 className="h-5 w-5" />
           {t("title")}
         </h3>
-        {isExpanded ? (
-          <ChevronUp className="h-5 w-5" />
-        ) : (
-          <ChevronDown className="h-5 w-5" />
-        )}
+        {isExpanded ? <ChevronUp className="h-5 w-5" /> : <ChevronDown className="h-5 w-5" />}
       </Button>
 
       {isExpanded && (

@@ -6,12 +6,7 @@ import { useTranslations } from "next-intl";
 import { useMemo } from "react";
 import { useIsMounted } from "usehooks-ts";
 
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { api } from "@/convex/_generated/api";
 import type { Doc } from "@/convex/_generated/dataModel";
 import { sortTimelineByYear } from "@/lib/timeline";
@@ -35,7 +30,7 @@ export function PlayerTimelineModal({
   const trackIds = player.timeline.map((entry) => entry.trackId);
   const tracks = useQuery(
     api.tracks.get,
-    isMounted() && trackIds.length > 0 ? { trackIds } : "skip"
+    isMounted() && trackIds.length > 0 ? { trackIds } : "skip",
   );
 
   const trackMap = useMemo(() => {
@@ -48,7 +43,7 @@ export function PlayerTimelineModal({
         .map((track) => [
           track._id,
           { artist: track.artist, title: track.title, year: track.year },
-        ])
+        ]),
     );
   }, [tracks]);
   const sortedTimeline = sortTimelineByYear(player.timeline);
@@ -75,9 +70,7 @@ export function PlayerTimelineModal({
           {sortedTimeline.length === 0 ? (
             <div className="flex flex-col items-center justify-center rounded-lg border border-dashed bg-muted/30 py-8">
               <Music className="mb-2 h-8 w-8 text-muted-foreground" />
-              <p className="text-center text-muted-foreground text-sm">
-                {t("noCards")}
-              </p>
+              <p className="text-center text-muted-foreground text-sm">{t("noCards")}</p>
               <p className="mt-1 text-center text-muted-foreground text-xs">
                 {t("noCardsDescription")}
               </p>

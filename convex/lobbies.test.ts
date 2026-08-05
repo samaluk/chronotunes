@@ -80,7 +80,7 @@ describe("lobbies", () => {
       t.mutation(api.lobbies.create, {
         displayName: "",
         sessionId: asSessionId("test-session-empty"),
-      })
+      }),
     ).rejects.toThrow();
   });
 
@@ -90,7 +90,7 @@ describe("lobbies", () => {
       t.mutation(api.lobbies.create, {
         displayName: "A".repeat(51),
         sessionId: asSessionId("test-session-long"),
-      })
+      }),
     ).rejects.toThrow();
   });
 
@@ -151,7 +151,7 @@ describe("lobbies", () => {
         code: "INVALID",
         displayName: "InvalidPlayer",
         sessionId: asSessionId("invalid-session"),
-      })
+      }),
     ).rejects.toThrow();
   });
 
@@ -167,7 +167,7 @@ describe("lobbies", () => {
         code,
         displayName: "",
         sessionId: asSessionId("empty-display-session"),
-      })
+      }),
     ).rejects.toThrow();
   });
 
@@ -183,7 +183,7 @@ describe("lobbies", () => {
         code,
         displayName: "A".repeat(51),
         sessionId: asSessionId("long-name-session"),
-      })
+      }),
     ).rejects.toThrow();
   });
 
@@ -199,7 +199,7 @@ describe("lobbies", () => {
         code,
         displayName: "Player",
         sessionId: asSessionId("duplicate-session"),
-      })
+      }),
     ).rejects.toThrow();
   });
 
@@ -222,7 +222,7 @@ describe("lobbies", () => {
         code,
         displayName: "Player",
         sessionId: asSessionId("game-player"),
-      })
+      }),
     ).rejects.toThrow();
   });
 
@@ -311,7 +311,7 @@ describe("lobbies", () => {
       t.mutation(api.lobbies.leave, {
         code,
         sessionId: asSessionId("not-in-lobby-player"),
-      })
+      }),
     ).rejects.toThrow();
   });
 
@@ -321,7 +321,7 @@ describe("lobbies", () => {
       t.mutation(api.lobbies.leave, {
         code: "NOTFOUND",
         sessionId: asSessionId("not-found-session"),
-      })
+      }),
     ).rejects.toThrow();
   });
 
@@ -348,9 +348,7 @@ describe("lobbies", () => {
       return allPlayers;
     });
 
-    const remainingPlayer = players.find(
-      (p) => p.sessionId === "transfer-player"
-    );
+    const remainingPlayer = players.find((p) => p.sessionId === "transfer-player");
     expect(remainingPlayer?.isHost).toBeTruthy();
   });
 
@@ -557,7 +555,7 @@ describe("lobbies", () => {
         code,
         sessionId: asSessionId("non-host-update-player"),
         settings: { targetTimelineSize: 15 },
-      })
+      }),
     ).rejects.toThrow();
   });
 
@@ -573,7 +571,7 @@ describe("lobbies", () => {
         code,
         sessionId: asSessionId("min-target-host"),
         settings: { targetTimelineSize: 4 },
-      })
+      }),
     ).rejects.toThrow();
   });
 
@@ -589,7 +587,7 @@ describe("lobbies", () => {
         code,
         sessionId: asSessionId("max-target-host"),
         settings: { targetTimelineSize: 16 },
-      })
+      }),
     ).rejects.toThrow();
   });
 
@@ -605,7 +603,7 @@ describe("lobbies", () => {
         code,
         sessionId: asSessionId("min-coins-host"),
         settings: { startingCoins: 0 },
-      })
+      }),
     ).rejects.toThrow();
   });
 
@@ -621,7 +619,7 @@ describe("lobbies", () => {
         code,
         sessionId: asSessionId("max-coins-host"),
         settings: { startingCoins: 11 },
-      })
+      }),
     ).rejects.toThrow();
   });
 
@@ -637,7 +635,7 @@ describe("lobbies", () => {
         code,
         sessionId: asSessionId("min-turn-host"),
         settings: { turnSeconds: 14 },
-      })
+      }),
     ).rejects.toThrow();
   });
 
@@ -653,7 +651,7 @@ describe("lobbies", () => {
         code,
         sessionId: asSessionId("max-turn-host"),
         settings: { turnSeconds: 121 },
-      })
+      }),
     ).rejects.toThrow();
   });
 
@@ -669,7 +667,7 @@ describe("lobbies", () => {
         code,
         sessionId: asSessionId("min-bet-host"),
         settings: { bettingWindowSeconds: 4 },
-      })
+      }),
     ).rejects.toThrow();
   });
 
@@ -685,7 +683,7 @@ describe("lobbies", () => {
         code,
         sessionId: asSessionId("max-bet-host"),
         settings: { bettingWindowSeconds: 61 },
-      })
+      }),
     ).rejects.toThrow();
   });
 
@@ -701,7 +699,7 @@ describe("lobbies", () => {
         code,
         sessionId: asSessionId("min-year-host"),
         settings: { minYear: 1899 },
-      })
+      }),
     ).rejects.toThrow();
   });
 
@@ -726,7 +724,7 @@ describe("lobbies", () => {
         code,
         sessionId: asSessionId("year-range-host"),
         settings: { minYear: 2025 },
-      })
+      }),
     ).rejects.toThrow();
   });
 
@@ -751,7 +749,7 @@ describe("lobbies", () => {
         code,
         sessionId: asSessionId("max-min-year-host"),
         settings: { maxYear: 1990 },
-      })
+      }),
     ).rejects.toThrow();
   });
 
@@ -767,7 +765,7 @@ describe("lobbies", () => {
         code,
         sessionId: asSessionId("max-max-year-host"),
         settings: { maxYear: 2031 },
-      })
+      }),
     ).rejects.toThrow();
   });
 
@@ -778,7 +776,7 @@ describe("lobbies", () => {
         code: "NOTFOUND",
         sessionId: asSessionId("not-found-session"),
         settings: { targetTimelineSize: 12 },
-      })
+      }),
     ).rejects.toThrow();
   });
 
@@ -801,7 +799,7 @@ describe("lobbies", () => {
         code,
         sessionId: asSessionId("game-update-host"),
         settings: { targetTimelineSize: 12 },
-      })
+      }),
     ).rejects.toThrow();
   });
 

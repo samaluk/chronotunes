@@ -20,7 +20,7 @@ test("get returns track by ID", async () => {
         source: "test",
         title: "Test Track",
         year: 1990,
-      })
+      }),
   );
 
   const track = await t.query(api.tracks.get, { trackIds: [trackId] });
@@ -45,7 +45,7 @@ test("get returns multiple tracks by ID", async () => {
         source: "test",
         title: "Track 1",
         year: 1980,
-      })
+      }),
   );
 
   const trackId2 = await t.run(
@@ -58,7 +58,7 @@ test("get returns multiple tracks by ID", async () => {
         source: "test",
         title: "Track 2",
         year: 1990,
-      })
+      }),
   );
 
   const trackId3 = await t.run(
@@ -71,7 +71,7 @@ test("get returns multiple tracks by ID", async () => {
         source: "test",
         title: "Track 3",
         year: 2000,
-      })
+      }),
   );
 
   const tracks = await t.query(api.tracks.get, {
@@ -126,7 +126,7 @@ test("importTracks validates required title", async () => {
   const tracks = [{ artist: "Artist", title: "", year: 1990 }];
 
   await expect(t.mutation(api.tracks.importTracks, { tracks })).rejects.toThrow(
-    "Track title is required"
+    "Track title is required",
   );
 });
 
@@ -136,7 +136,7 @@ test("importTracks validates required artist", async () => {
   const tracks = [{ artist: "", title: "Song", year: 1990 }];
 
   await expect(t.mutation(api.tracks.importTracks, { tracks })).rejects.toThrow(
-    "Track artist is required"
+    "Track artist is required",
   );
 });
 
@@ -146,20 +146,20 @@ test("importTracks validates year range", async () => {
   const tracksTooEarly = [{ artist: "Artist", title: "Song", year: 1800 }];
   const tracksTooLate = [{ artist: "Artist", title: "Song", year: 2050 }];
 
-  await expect(
-    t.mutation(api.tracks.importTracks, { tracks: tracksTooEarly })
-  ).rejects.toThrow("Track year must be between 1900 and 2030");
-  await expect(
-    t.mutation(api.tracks.importTracks, { tracks: tracksTooLate })
-  ).rejects.toThrow("Track year must be between 1900 and 2030");
+  await expect(t.mutation(api.tracks.importTracks, { tracks: tracksTooEarly })).rejects.toThrow(
+    "Track year must be between 1900 and 2030",
+  );
+  await expect(t.mutation(api.tracks.importTracks, { tracks: tracksTooLate })).rejects.toThrow(
+    "Track year must be between 1900 and 2030",
+  );
 });
 
 test("importTracks validates empty array", async () => {
   const t = convexTest(schema, modules);
 
-  await expect(
-    t.mutation(api.tracks.importTracks, { tracks: [] })
-  ).rejects.toThrow("At least one track must be provided");
+  await expect(t.mutation(api.tracks.importTracks, { tracks: [] })).rejects.toThrow(
+    "At least one track must be provided",
+  );
 });
 
 test("importTracks validates max batch size", async () => {
@@ -172,31 +172,27 @@ test("importTracks validates max batch size", async () => {
   }));
 
   await expect(t.mutation(api.tracks.importTracks, { tracks })).rejects.toThrow(
-    "Cannot import more than 1000 tracks at once"
+    "Cannot import more than 1000 tracks at once",
   );
 });
 
 test("importTracks validates empty youtubeVideoId", async () => {
   const t = convexTest(schema, modules);
 
-  const tracks = [
-    { artist: "Artist", title: "Song", year: 1990, youtubeVideoId: "   " },
-  ];
+  const tracks = [{ artist: "Artist", title: "Song", year: 1990, youtubeVideoId: "   " }];
 
   await expect(t.mutation(api.tracks.importTracks, { tracks })).rejects.toThrow(
-    "YouTube video ID must be a non-empty string if provided"
+    "YouTube video ID must be a non-empty string if provided",
   );
 });
 
 test("importTracks validates negative durationMs", async () => {
   const t = convexTest(schema, modules);
 
-  const tracks = [
-    { artist: "Artist", durationMs: -100, title: "Song", year: 1990 },
-  ];
+  const tracks = [{ artist: "Artist", durationMs: -100, title: "Song", year: 1990 }];
 
   await expect(t.mutation(api.tracks.importTracks, { tracks })).rejects.toThrow(
-    "Duration must be a non-negative number if provided"
+    "Duration must be a non-negative number if provided",
   );
 });
 
@@ -223,9 +219,7 @@ test("importTracks with optional mbid", async () => {
 test("importTracks with optional durationMs", async () => {
   const t = convexTest(schema, modules);
 
-  const tracks = [
-    { artist: "Artist", durationMs: 180_000, title: "Song", year: 1990 },
-  ];
+  const tracks = [{ artist: "Artist", durationMs: 180_000, title: "Song", year: 1990 }];
 
   const result = await t.mutation(api.tracks.importTracks, { tracks });
 
@@ -238,9 +232,7 @@ test("importTracks with optional durationMs", async () => {
 test("importTracks trims whitespace from strings", async () => {
   const t = convexTest(schema, modules);
 
-  const tracks = [
-    { artist: "  Artist Name  ", title: "  Song Title  ", year: 1990 },
-  ];
+  const tracks = [{ artist: "  Artist Name  ", title: "  Song Title  ", year: 1990 }];
 
   const result = await t.mutation(api.tracks.importTracks, { tracks });
 
@@ -344,9 +336,7 @@ test("getForRound returns full track info for host", async () => {
 
   await seedRoundTestData(t);
 
-  const lobby = await t.run(
-    async (ctx) => await ctx.db.query("lobbies").first()
-  );
+  const lobby = await t.run(async (ctx) => await ctx.db.query("lobbies").first());
 
   expect(lobby).not.toBeNull();
 
@@ -370,9 +360,7 @@ test("getForRound returns null for non-host", async () => {
 
   await seedRoundTestData(t);
 
-  const lobby = await t.run(
-    async (ctx) => await ctx.db.query("lobbies").first()
-  );
+  const lobby = await t.run(async (ctx) => await ctx.db.query("lobbies").first());
 
   expect(lobby).not.toBeNull();
 
@@ -437,9 +425,7 @@ test("getPublic returns null when round is not resolved", async () => {
 
   await seedRoundTestData(t);
 
-  const round = await t.run(
-    async (ctx) => await ctx.db.query("rounds").first()
-  );
+  const round = await t.run(async (ctx) => await ctx.db.query("rounds").first());
 
   expect(round).not.toBeNull();
 
@@ -471,7 +457,7 @@ test("getPublic returns null youtubeVideoId when not set", async () => {
         source: "test",
         title: "No Video Song",
         year: 2000,
-      })
+      }),
   );
 
   const lobbyId = await t.run(
@@ -491,7 +477,7 @@ test("getPublic returns null youtubeVideoId when not set", async () => {
           turnSeconds: 30,
         },
         status: "lobby",
-      })
+      }),
   );
 
   const gameId = await t.run(
@@ -502,7 +488,7 @@ test("getPublic returns null youtubeVideoId when not set", async () => {
         startedAt: Date.now(),
         status: "active",
         turnOrder: [],
-      })
+      }),
   );
 
   const player = await t.run(
@@ -516,7 +502,7 @@ test("getPublic returns null youtubeVideoId when not set", async () => {
         sessionId: asSessionId("host2"),
         timeline: [],
         timelineSize: 0,
-      })
+      }),
   );
 
   const roundId = await t.run(async (ctx) => {

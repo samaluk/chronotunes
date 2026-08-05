@@ -103,7 +103,7 @@ const createContextValue = (
   overrides: {
     state?: Record<string, unknown>;
     meta?: Record<string, unknown>;
-  } = {}
+  } = {},
 ) => ({
   actions: {
     handleModalClose: vi.fn(),
@@ -140,15 +140,11 @@ describe(RoundResults, () => {
     render(
       <GameContext.Provider value={createContextValue() as any}>
         <RoundResults />
-      </GameContext.Provider>
+      </GameContext.Provider>,
     );
 
-    expect(
-      screen.getByText((content) => content.includes("Test Song"))
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText((content) => content.includes("Test Artist"))
-    ).toBeInTheDocument();
+    expect(screen.getByText((content) => content.includes("Test Song"))).toBeInTheDocument();
+    expect(screen.getByText((content) => content.includes("Test Artist"))).toBeInTheDocument();
     expect(screen.getByText("2020")).toBeInTheDocument();
   });
 
@@ -156,7 +152,7 @@ describe(RoundResults, () => {
     render(
       <GameContext.Provider value={createContextValue() as any}>
         <RoundResults />
-      </GameContext.Provider>
+      </GameContext.Provider>,
     );
 
     expect(screen.getByText("correct")).toBeInTheDocument();
@@ -177,7 +173,7 @@ describe(RoundResults, () => {
         }
       >
         <RoundResults />
-      </GameContext.Provider>
+      </GameContext.Provider>,
     );
 
     expect(screen.getByText("incorrect")).toBeInTheDocument();
@@ -187,7 +183,7 @@ describe(RoundResults, () => {
     render(
       <GameContext.Provider value={createContextValue() as any}>
         <RoundResults />
-      </GameContext.Provider>
+      </GameContext.Provider>,
     );
 
     expect(screen.getByText("Card Awards")).toBeInTheDocument();
@@ -198,7 +194,7 @@ describe(RoundResults, () => {
     render(
       <GameContext.Provider value={createContextValue() as any}>
         <RoundResults />
-      </GameContext.Provider>
+      </GameContext.Provider>,
     );
 
     expect(screen.getByText(resolvedAtRegex)).toBeInTheDocument();
@@ -220,19 +216,17 @@ describe(RoundResults, () => {
         }
       >
         <RoundResults />
-      </GameContext.Provider>
+      </GameContext.Provider>,
     );
 
-    expect(
-      screen.getByText("No cards were awarded this round")
-    ).toBeInTheDocument();
+    expect(screen.getByText("No cards were awarded this round")).toBeInTheDocument();
   });
 
   it("highlights current user with (You) indicator", () => {
     render(
       <GameContext.Provider value={createContextValue() as any}>
         <RoundResults />
-      </GameContext.Provider>
+      </GameContext.Provider>,
     );
 
     expect(screen.getByText("(You)")).toBeInTheDocument();
@@ -242,21 +236,17 @@ describe(RoundResults, () => {
     render(
       <GameContext.Provider value={createContextValue() as any}>
         <RoundResults />
-      </GameContext.Provider>
+      </GameContext.Provider>,
     );
 
-    expect(
-      screen.getByRole("button", { name: startNextRoundRegex })
-    ).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: startNextRoundRegex })).toBeInTheDocument();
   });
 
   it("shows waiting state when user is not host", () => {
     render(
-      <GameContext.Provider
-        value={createContextValue({ state: { me: mockPlayers[1] } }) as any}
-      >
+      <GameContext.Provider value={createContextValue({ state: { me: mockPlayers[1] } }) as any}>
         <RoundResults />
-      </GameContext.Provider>
+      </GameContext.Provider>,
     );
 
     expect(screen.getByText(waitingForHostRegex)).toBeInTheDocument();

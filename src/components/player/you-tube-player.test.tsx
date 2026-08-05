@@ -18,7 +18,7 @@ const renderPlayer = (props: PlayerProps) =>
   render(
     <NextIntlClientProvider locale="en" messages={messages}>
       <YouTubePlayer {...props} />
-    </NextIntlClientProvider>
+    </NextIntlClientProvider>,
   );
 
 test("displays loading state initially", () => {
@@ -30,25 +30,19 @@ test("displays loading state initially", () => {
 test("displays error state when video ID is empty", () => {
   renderPlayer({ youtubeVideoId: "" });
 
-  expect(
-    screen.getByText(messages.player.videoUnavailable)
-  ).toBeInTheDocument();
+  expect(screen.getByText(messages.player.videoUnavailable)).toBeInTheDocument();
 });
 
 test("displays error state when video ID is undefined", () => {
   renderPlayer({ youtubeVideoId: undefined as unknown as string });
 
-  expect(
-    screen.getByText(messages.player.videoUnavailable)
-  ).toBeInTheDocument();
+  expect(screen.getByText(messages.player.videoUnavailable)).toBeInTheDocument();
 });
 
 test("applies custom className", () => {
   renderPlayer({ className: "custom-class", youtubeVideoId: "test-video-id" });
 
-  const container = screen
-    .getByText(messages.player.loadingAudio)
-    .closest("div");
+  const container = screen.getByText(messages.player.loadingAudio).closest("div");
   expect(container?.parentElement).toHaveClass("custom-class");
 });
 
@@ -56,17 +50,13 @@ test("contains hidden YouTube iframe container", () => {
   renderPlayer({ youtubeVideoId: "test-video-id" });
 
   const hiddenContainer = screen.getByTestId("hidden-youtube-player");
-  expect(hiddenContainer).toHaveClass(
-    "w-[1px] h-[1px] -translate-x-full -translate-y-full"
-  );
+  expect(hiddenContainer).toHaveClass("w-[1px] h-[1px] -translate-x-full -translate-y-full");
 });
 
 test("error state has correct styling", () => {
   renderPlayer({ youtubeVideoId: "" });
 
-  const errorContainer = screen
-    .getByText(messages.player.videoUnavailable)
-    .closest("div");
+  const errorContainer = screen.getByText(messages.player.videoUnavailable).closest("div");
   expect(errorContainer).toHaveClass("text-destructive");
   expect(errorContainer).toHaveClass("flex");
   expect(errorContainer).toHaveClass("items-center");

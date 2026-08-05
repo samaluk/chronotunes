@@ -74,9 +74,7 @@ mkdirSync("fallow-baselines", { recursive: true });
 
 for (const step of BASELINES) {
   console.log(`\n==> ${step.label}`);
-  for (const baselinePath of step.args.filter((arg) =>
-    arg.startsWith("fallow-baselines/")
-  )) {
+  for (const baselinePath of step.args.filter((arg) => arg.startsWith("fallow-baselines/"))) {
     mkdirSync(path.dirname(baselinePath), { recursive: true });
   }
   runFallow(step.args, { allowIssueExit: step.allowIssueExit });

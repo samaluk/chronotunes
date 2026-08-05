@@ -9,11 +9,7 @@ import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {
-  InputOTP,
-  InputOTPGroup,
-  InputOTPSlot,
-} from "@/components/ui/input-otp";
+import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
 import { Label } from "@/components/ui/label";
 import { LocaleSwitcher } from "@/components/ui/locale-switcher";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
@@ -86,8 +82,7 @@ export function LandingPageContent() {
       });
       window.location.href = `/lobby/${result.code}`;
     } catch (error) {
-      const message =
-        error instanceof Error ? error.message : t("failedToCreate");
+      const message = error instanceof Error ? error.message : t("failedToCreate");
       toast.error(message);
     } finally {
       setIsCreating(false);
@@ -105,9 +100,7 @@ export function LandingPageContent() {
       return;
     }
 
-    const cleanedCode = joinCode
-      .toUpperCase()
-      .replaceAll(/[^A-Z23456789]/g, "");
+    const cleanedCode = joinCode.toUpperCase().replaceAll(/[^A-Z23456789]/g, "");
     if (!validateLobbyCode(cleanedCode)) {
       toast.error(t("invalidLobbyCode", { length: LOBBY_CODE_LENGTH }));
       return;
@@ -125,8 +118,7 @@ export function LandingPageContent() {
       toast.success(t("joinedGame"));
       window.location.href = `/lobby/${cleanedCode}`;
     } catch (error) {
-      const message =
-        error instanceof Error ? error.message : t("failedToJoin");
+      const message = error instanceof Error ? error.message : t("failedToJoin");
       toast.error(message);
     } finally {
       setIsJoining(false);
@@ -140,9 +132,7 @@ export function LandingPageContent() {
         <header className="flex w-full items-center justify-between">
           <div className="flex items-center gap-2">
             <Music className="h-8 w-8 text-primary" />
-            <span className="font-bold text-2xl text-foreground">
-              {t("title")}
-            </span>
+            <span className="font-bold text-2xl text-foreground">{t("title")}</span>
           </div>
           <div className="flex items-center gap-2">
             <LocaleSwitcher />
@@ -162,10 +152,7 @@ export function LandingPageContent() {
 
           <div className="flex w-full max-w-lg flex-col gap-4 rounded-3xl border border-border/60 bg-card/90 p-6 shadow-lg shadow-primary/10 backdrop-blur sm:p-8">
             <div className="flex flex-col gap-2">
-              <Label
-                className="font-medium text-foreground text-sm"
-                htmlFor="displayName"
-              >
+              <Label className="font-medium text-foreground text-sm" htmlFor="displayName">
                 {t("displayNameLabel")}
               </Label>
               <Input
@@ -181,10 +168,7 @@ export function LandingPageContent() {
             {showJoinForm ? (
               <div className="flex flex-col gap-4">
                 <div className="flex flex-col gap-2">
-                  <Label
-                    className="font-medium text-foreground text-sm"
-                    htmlFor="joinCode"
-                  >
+                  <Label className="font-medium text-foreground text-sm" htmlFor="joinCode">
                     {t("lobbyCodeLabel")}
                   </Label>
                   <div className="flex w-full items-center justify-center">

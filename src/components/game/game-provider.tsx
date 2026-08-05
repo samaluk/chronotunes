@@ -1,12 +1,6 @@
 "use client";
 
-import {
-  createContext,
-  useCallback,
-  useContext,
-  useMemo,
-  useState,
-} from "react";
+import { createContext, useCallback, useContext, useMemo, useState } from "react";
 
 import type { Doc, Id } from "@/convex/_generated/dataModel";
 
@@ -148,8 +142,9 @@ export function GameProvider({
   revealedTracks,
   sessionId,
 }: Readonly<GameProviderProps>): React.ReactNode {
-  const [selectedPlayerForTimeline, setSelectedPlayerForTimeline] =
-    useState<Doc<"players"> | null>(null);
+  const [selectedPlayerForTimeline, setSelectedPlayerForTimeline] = useState<Doc<"players"> | null>(
+    null,
+  );
 
   const turnPlayer = useMemo(() => {
     if (!currentRound) {
@@ -165,10 +160,7 @@ export function GameProvider({
     return currentRound.turnPlayerId === me._id;
   }, [currentRound, me]);
 
-  const phase = useMemo(
-    (): RoundPhase => currentRound?.phase ?? "placing",
-    [currentRound]
-  );
+  const phase = useMemo((): RoundPhase => currentRound?.phase ?? "placing", [currentRound]);
 
   const track = useMemo((): TrackInfo | null => {
     if (!currentRound?.track) {
@@ -221,7 +213,7 @@ export function GameProvider({
       track,
       isGameFinished,
       selectedPlayerForTimeline,
-    ]
+    ],
   );
 
   const actions: GameActions = useMemo(
@@ -229,7 +221,7 @@ export function GameProvider({
       handleModalClose,
       setSelectedPlayerForTimeline,
     }),
-    [handleModalClose]
+    [handleModalClose],
   );
 
   const meta: GameMeta = useMemo(
@@ -238,7 +230,7 @@ export function GameProvider({
       lobbyId,
       sessionId,
     }),
-    [sessionId, lobbyId, code]
+    [sessionId, lobbyId, code],
   );
 
   const value: GameContextValue = useMemo(
@@ -247,7 +239,7 @@ export function GameProvider({
       meta,
       state,
     }),
-    [state, actions, meta]
+    [state, actions, meta],
   );
 
   return <GameContext value={value}>{children}</GameContext>;

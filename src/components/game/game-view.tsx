@@ -97,7 +97,7 @@ function GamePlayersBar(): React.ReactNode {
     (player: Doc<"players">) => {
       setSelectedPlayerForTimeline(player);
     },
-    [setSelectedPlayerForTimeline]
+    [setSelectedPlayerForTimeline],
   );
 
   return (
@@ -139,21 +139,12 @@ export function GameView({ lobbyId, code }: GameViewProps): React.ReactNode {
   const mounted = isMounted();
 
   const lobby = useQuery(api.lobbies.get, mounted && code ? { code } : "skip");
-  const players = useQuery(
-    api.players.list,
-    mounted && lobbyId ? { lobbyId } : "skip"
-  );
-  const me = useSessionQuery(
-    api.players.getMe,
-    mounted && lobbyId ? { lobbyId } : "skip"
-  );
-  const game = useQuery(
-    api.games.getCurrent,
-    mounted && lobbyId ? { lobbyId } : "skip"
-  );
+  const players = useQuery(api.players.list, mounted && lobbyId ? { lobbyId } : "skip");
+  const me = useSessionQuery(api.players.getMe, mounted && lobbyId ? { lobbyId } : "skip");
+  const game = useQuery(api.games.getCurrent, mounted && lobbyId ? { lobbyId } : "skip");
   const currentRound = useSessionQuery(
     api.rounds.getCurrent,
-    mounted && lobbyId ? { lobbyId } : "skip"
+    mounted && lobbyId ? { lobbyId } : "skip",
   );
 
   const turnPlayer = players?.find((p) => p._id === currentRound?.turnPlayerId);
@@ -167,7 +158,7 @@ export function GameView({ lobbyId, code }: GameViewProps): React.ReactNode {
 
   const revealedTracks = useQuery(
     api.tracks.getPublicByIds,
-    turnPlayerTrackIds.length > 0 ? { trackIds: turnPlayerTrackIds } : "skip"
+    turnPlayerTrackIds.length > 0 ? { trackIds: turnPlayerTrackIds } : "skip",
   );
 
   if (!mounted) {

@@ -51,11 +51,7 @@ export const LocaleSwitcher = memo((): React.ReactNode => {
 
       {isOpen && (
         <>
-          <div
-            aria-hidden="true"
-            className="fixed inset-0 z-40"
-            onClick={() => setIsOpen(false)}
-          />
+          <div aria-hidden="true" className="fixed inset-0 z-40" onClick={() => setIsOpen(false)} />
           <div className="absolute top-full right-0 z-50 mt-2 w-40 rounded-md border bg-popover p-1 shadow-lg">
             <div className="px-2 py-1.5 font-semibold text-muted-foreground text-sm">
               {t("selectLanguage")}
@@ -67,15 +63,13 @@ export const LocaleSwitcher = memo((): React.ReactNode => {
                     "flex w-full items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors",
                     loc === locale
                       ? "bg-accent font-medium text-accent-foreground"
-                      : "hover:bg-accent hover:text-accent-foreground"
+                      : "hover:bg-accent hover:text-accent-foreground",
                   )}
                   key={loc}
                   onClick={() => handleLocaleChange(loc)}
                   type="button"
                 >
-                  {loc === locale && (
-                    <span className="mr-2 text-primary">✓</span>
-                  )}
+                  {loc === locale && <span className="mr-2 text-primary">✓</span>}
                   {loc !== locale && <span className="w-5" />}
                   {localeNames[loc]}
                 </button>

@@ -1,9 +1,6 @@
 "use client";
 
-import {
-  useSessionId,
-  useSessionMutation,
-} from "convex-helpers/react/sessions";
+import { useSessionId, useSessionMutation } from "convex-helpers/react/sessions";
 import { useQuery } from "convex/react";
 import { Copy, LogOut, Music, Users } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -17,20 +14,14 @@ import { SettingsPanel } from "@/components/lobby/settings-panel";
 import { StartGameButton } from "@/components/lobby/start-game-button";
 import { ErrorBoundary } from "@/components/ui/error-boundary";
 import { LocaleSwitcher } from "@/components/ui/locale-switcher";
-import {
-  SkeletonLobbyCode,
-  SkeletonPage,
-  SkeletonPlayerList,
-} from "@/components/ui/skeletons";
+import { SkeletonLobbyCode, SkeletonPage, SkeletonPlayerList } from "@/components/ui/skeletons";
 import { api } from "@/convex/_generated/api";
 
 interface LobbyPageContentProps {
   code: string;
 }
 
-export function LobbyPageContent({
-  code,
-}: LobbyPageContentProps): React.ReactNode {
+export function LobbyPageContent({ code }: LobbyPageContentProps): React.ReactNode {
   const t = useTranslations("lobby");
   const tCommon = useTranslations("common");
 
@@ -41,13 +32,11 @@ export function LobbyPageContent({
   const lobby = useQuery(api.lobbies.get, mounted && code ? { code } : "skip");
   const players = useQuery(
     api.players.list,
-    mounted && lobby?._id ? { lobbyId: lobby._id } : "skip"
+    mounted && lobby?._id ? { lobbyId: lobby._id } : "skip",
   );
   const me = useQuery(
     api.players.getMe,
-    mounted && lobby?._id && sessionId
-      ? { lobbyId: lobby._id, sessionId }
-      : "skip"
+    mounted && lobby?._id && sessionId ? { lobbyId: lobby._id, sessionId } : "skip",
   );
   const leaveLobby = useSessionMutation(api.lobbies.leave);
 
@@ -76,8 +65,7 @@ export function LobbyPageContent({
       toast.success(t("leftLobby"));
       router.push("/");
     } catch (error) {
-      const message =
-        error instanceof Error ? error.message : t("failedToLeave");
+      const message = error instanceof Error ? error.message : t("failedToLeave");
       toast.error(message);
     }
   };
@@ -108,9 +96,7 @@ export function LobbyPageContent({
                 </div>
                 <div>
                   <h1 className="font-bold text-xl">{t("title")}</h1>
-                  <p className="text-muted-foreground text-sm">
-                    {t("subtitle")}
-                  </p>
+                  <p className="text-muted-foreground text-sm">{t("subtitle")}</p>
                 </div>
               </div>
             </div>
@@ -162,9 +148,7 @@ export function LobbyPageContent({
             </div>
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-2 rounded-md bg-muted/50 px-3 py-1.5">
-                <code className="font-bold font-mono text-lg tracking-widest">
-                  {code}
-                </code>
+                <code className="font-bold font-mono text-lg tracking-widest">{code}</code>
                 <button
                   className="inline-flex h-8 w-8 items-center justify-center rounded-md transition-colors hover:bg-background"
                   onClick={handleCopyCode}
@@ -199,18 +183,10 @@ export function LobbyPageContent({
                 <ErrorBoundary>
                   <PlayerList lobbyId={lobby._id} />
                 </ErrorBoundary>
-                <StartGameButton
-                  isHost={isHost}
-                  lobbyId={lobby._id}
-                  playerCount={players.length}
-                />
+                <StartGameButton isHost={isHost} lobbyId={lobby._id} playerCount={players.length} />
               </div>
               <div className="space-y-6">
-                <SettingsPanel
-                  code={code}
-                  currentSettings={lobby.settings}
-                  isHost={isHost}
-                />
+                <SettingsPanel code={code} currentSettings={lobby.settings} isHost={isHost} />
               </div>
             </div>
           )}

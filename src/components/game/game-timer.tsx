@@ -52,11 +52,8 @@ export const GameTimer = memo(
 
     const isExpired = timeRemaining !== null && timeRemaining <= 0;
     const isLowTime =
-      timeRemaining !== null &&
-      timeRemaining > 0 &&
-      timeRemaining <= lowTimeThreshold;
-    const isOverdue =
-      variant === "turn" && timeRemaining !== null && timeRemaining <= -60;
+      timeRemaining !== null && timeRemaining > 0 && timeRemaining <= lowTimeThreshold;
+    const isOverdue = variant === "turn" && timeRemaining !== null && timeRemaining <= -60;
     const progressValue =
       timeRemaining === null
         ? null
@@ -77,13 +74,11 @@ export const GameTimer = memo(
         <div
           className={cn(
             "inline-flex items-center gap-2 rounded-lg px-4 py-2 font-mono text-lg",
-            timerStateClass
+            timerStateClass,
           )}
         >
           <Timer className={cn("h-5 w-5", isLowTime && "animate-pulse")} />
-          <span>
-            {timeRemaining === null ? "--:--" : formatTime(timeRemaining)}
-          </span>
+          <span>{timeRemaining === null ? "--:--" : formatTime(timeRemaining)}</span>
           {isLowTime && <AlertTriangle className="h-4 w-4 animate-pulse" />}
           {isExpired && variant === "betting" && (
             <span className="ml-1 font-medium text-xs">Time&apos;s up</span>
@@ -94,5 +89,5 @@ export const GameTimer = memo(
         )}
       </div>
     );
-  }
+  },
 );

@@ -78,7 +78,7 @@ export function usePresence({
               path: "presence:disconnectPresence",
             }),
           ],
-          { type: "application/json" }
+          { type: "application/json" },
         );
         navigator.sendBeacon(`${baseUrl}/api/mutation`, blob);
       }
@@ -122,7 +122,7 @@ export function usePresence({
 
   const state = useQuery(
     api.presence.getPresenceList,
-    roomTokenRef.current ? { roomToken: roomTokenRef.current } : "skip"
+    roomTokenRef.current ? { roomToken: roomTokenRef.current } : "skip",
   );
 
   return useMemo(() => {
@@ -141,10 +141,7 @@ export function usePresence({
   }, [state, userId]);
 }
 
-export function useIsOnline(
-  userId: string,
-  presence: PresenceState[] | null | undefined
-): boolean {
+export function useIsOnline(userId: string, presence: PresenceState[] | null | undefined): boolean {
   const myPresence = presence?.find((p) => p.userId === userId);
   return myPresence?.online ?? false;
 }

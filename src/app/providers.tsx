@@ -22,11 +22,7 @@ export function Providers({
 }): ReactNode {
   return (
     <ConvexProvider client={convex}>
-      <SessionProvider
-        ssrFriendly
-        storageKey="chronotunes-session-id"
-        useStorage={useLocalStorage}
-      >
+      <SessionProvider ssrFriendly storageKey="chronotunes-session-id" useStorage={useLocalStorage}>
         <ThemeProvider
           attribute="class"
           defaultTheme="system"

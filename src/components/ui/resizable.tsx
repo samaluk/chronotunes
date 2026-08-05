@@ -6,16 +6,10 @@ import { Group, Panel, Separator } from "react-resizable-panels";
 
 import { cn } from "@/lib/utils";
 
-function ResizablePanelGroup({
-  className,
-  ...props
-}: ComponentProps<typeof Group>) {
+function ResizablePanelGroup({ className, ...props }: ComponentProps<typeof Group>) {
   return (
     <Group
-      className={cn(
-        "flex h-full w-full aria-[orientation=vertical]:flex-col",
-        className
-      )}
+      className={cn("flex h-full w-full aria-[orientation=vertical]:flex-col", className)}
       data-slot="resizable-panel-group"
       {...props}
     />
@@ -48,7 +42,7 @@ function ResizableHandle({
         "aria-[orientation=vertical]:after:left-0 aria-[orientation=vertical]:after:h-1 aria-[orientation=vertical]:after:w-full aria-[orientation=vertical]:after:translate-x-0 aria-[orientation=vertical]:after:-translate-y-1/2",
         // icon
         "[&[aria-orientation=horizontal]>div]:rotate-90",
-        className
+        className,
       )}
       data-slot="resizable-handle"
       {...props}

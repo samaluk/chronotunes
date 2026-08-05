@@ -36,7 +36,7 @@ interface TimelinePlacementViewProps {
 export const getPlacementPositionLabel = (
   t: ReturnType<typeof useTranslations>,
   timeline: TimelineEntry[],
-  index: number
+  index: number,
 ): string => {
   if (index === 0 && timeline.length === 0) {
     return t("emptyTimeline");
@@ -105,7 +105,7 @@ export function TimelinePlacementView({
                   year={entry.year}
                 />
               )}
-            </div>
+            </div>,
           );
 
           elements.push(renderSlot(idx + 1));

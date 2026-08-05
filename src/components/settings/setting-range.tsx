@@ -11,22 +11,10 @@ interface SettingRangeProps {
   maxValue: number;
   minRange: number;
   minValue: number;
-  onMaxChange: <K extends keyof LobbySettings>(
-    key: K,
-    value: LobbySettings[K]
-  ) => void;
-  onMaxCommit: <K extends keyof LobbySettings>(
-    key: K,
-    value: LobbySettings[K]
-  ) => void;
-  onMinChange: <K extends keyof LobbySettings>(
-    key: K,
-    value: LobbySettings[K]
-  ) => void;
-  onMinCommit: <K extends keyof LobbySettings>(
-    key: K,
-    value: LobbySettings[K]
-  ) => void;
+  onMaxChange: <K extends keyof LobbySettings>(key: K, value: LobbySettings[K]) => void;
+  onMaxCommit: <K extends keyof LobbySettings>(key: K, value: LobbySettings[K]) => void;
+  onMinChange: <K extends keyof LobbySettings>(key: K, value: LobbySettings[K]) => void;
+  onMinCommit: <K extends keyof LobbySettings>(key: K, value: LobbySettings[K]) => void;
 }
 
 interface LobbySettings {

@@ -16,16 +16,11 @@ interface CsvTrackImportItem {
   youtubeVideoId?: string;
 }
 
-const normalizeText = (value: string | undefined) =>
-  value?.replaceAll(/^"|"$/g, "").trim();
+const normalizeText = (value: string | undefined) => value?.replaceAll(/^"|"$/g, "").trim();
 
 const buildExternalIds = (track: CsvTrackImportItem) => ({
-  ...(track.spotifyTrackId
-    ? { spotifyTrackId: track.spotifyTrackId.trim() }
-    : {}),
-  ...(track.youtubeVideoId
-    ? { youtubeVideoId: track.youtubeVideoId.trim() }
-    : {}),
+  ...(track.spotifyTrackId ? { spotifyTrackId: track.spotifyTrackId.trim() } : {}),
+  ...(track.youtubeVideoId ? { youtubeVideoId: track.youtubeVideoId.trim() } : {}),
 });
 
 const buildLinks = (track: CsvTrackImportItem) =>
@@ -94,9 +89,7 @@ const parseCsvTracks = (csvContent: string) => {
   return tracks;
 };
 
-function parseDurationToMs(
-  durationRaw: string | undefined
-): number | undefined {
+function parseDurationToMs(durationRaw: string | undefined): number | undefined {
   if (!durationRaw) {
     return;
   }
@@ -129,24 +122,15 @@ function validateTrackItem(item: CsvTrackImportItem): void {
   }
 
   if (item.year < MIN_YEAR || item.year > MAX_YEAR) {
-    throw new ConvexError(
-      `Track year must be between ${MIN_YEAR} and ${MAX_YEAR}`
-    );
+    throw new ConvexError(`Track year must be between ${MIN_YEAR} and ${MAX_YEAR}`);
   }
 
-  if (
-    item.youtubeVideoId !== undefined &&
-    item.youtubeVideoId.trim().length === 0
-  ) {
-    throw new ConvexError(
-      "YouTube video ID must be a non-empty string if provided"
-    );
+  if (item.youtubeVideoId !== undefined && item.youtubeVideoId.trim().length === 0) {
+    throw new ConvexError("YouTube video ID must be a non-empty string if provided");
   }
 
   if (item.mbid !== undefined && item.mbid.trim().length === 0) {
-    throw new ConvexError(
-      "MusicBrainz ID must be a non-empty string if provided"
-    );
+    throw new ConvexError("MusicBrainz ID must be a non-empty string if provided");
   }
 
   if (item.durationMs !== undefined && item.durationMs < 0) {
@@ -166,7 +150,7 @@ export const importTracksFromCsv = mutation({
         title: v.string(),
         year: v.number(),
         youtubeVideoId: v.optional(v.string()),
-      })
+      }),
     ),
   },
   handler: async (ctx, args) => {
@@ -183,9 +167,7 @@ export const importTracksFromCsv = mutation({
     let deletedCount = 0;
     if (clearExisting) {
       const existingTracks = await ctx.db.query("tracks").collect();
-      await Promise.all(
-        existingTracks.map((track) => ctx.db.delete(track._id))
-      );
+      await Promise.all(existingTracks.map((track) => ctx.db.delete(track._id)));
       deletedCount = existingTracks.length;
     }
 
@@ -206,9 +188,7 @@ export const importTracksFromCsv = mutation({
             title: track.title.trim(),
             year: track.year,
             ...(track.mbid ? { mbid: track.mbid.trim() } : {}),
-            ...(track.durationMs === undefined
-              ? {}
-              : { durationMs: track.durationMs }),
+            ...(track.durationMs === undefined ? {} : { durationMs: track.durationMs }),
           });
 
           return { success: true as const, trackId };
@@ -216,7 +196,7 @@ export const importTracksFromCsv = mutation({
           console.error(`Failed to import track "${track.title}":`, error);
           return { success: false as const };
         }
-      })
+      }),
     );
 
     for (const result of importResults) {
@@ -230,9 +210,7 @@ export const importTracksFromCsv = mutation({
       deletedCount,
       hasErrors,
       importedCount: importedIds.length,
-      message: hasErrors
-        ? "Import completed with some errors"
-        : "Import completed successfully",
+      message: hasErrors ? "Import completed with some errors" : "Import completed successfully",
       skippedCount: 0,
       trackIds: importedIds,
     };
@@ -246,7 +224,7 @@ export const parseAndImportCsv = mutation({
   },
   handler: async (
     ctx,
-    args
+    args,
   ): Promise<{
     message: string;
     importedCount: number;

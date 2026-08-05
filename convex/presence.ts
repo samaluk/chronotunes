@@ -14,25 +14,17 @@ export const sendHeartbeat = mutation({
     userId: v.string(),
   },
   handler: async (ctx, { roomId, userId, sessionId, interval }) =>
-    await presenceComponent.heartbeat(
-      ctx,
-      roomId,
-      userId,
-      sessionId,
-      interval ?? 15_000
-    ),
+    await presenceComponent.heartbeat(ctx, roomId, userId, sessionId, interval ?? 15_000),
 });
 
 export const getPresenceList = query({
   args: { roomToken: v.string() },
-  handler: async (ctx, { roomToken }) =>
-    await presenceComponent.list(ctx, roomToken),
+  handler: async (ctx, { roomToken }) => await presenceComponent.list(ctx, roomToken),
 });
 
 export const disconnectPresence = mutation({
   args: { sessionToken: v.string() },
-  handler: async (ctx, { sessionToken }) =>
-    await presenceComponent.disconnect(ctx, sessionToken),
+  handler: async (ctx, { sessionToken }) => await presenceComponent.disconnect(ctx, sessionToken),
 });
 
 export const getRoomPresence = query({

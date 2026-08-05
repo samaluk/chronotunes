@@ -21,7 +21,7 @@ async function seedTracks(t: ReturnType<typeof convexTest>) {
           title: `Song ${year}`,
           year,
         });
-      })
+      }),
     );
   });
 }
@@ -29,7 +29,7 @@ async function seedTracks(t: ReturnType<typeof convexTest>) {
 async function createGameWithPlayers(
   t: ReturnType<typeof convexTest>,
   minYear: number,
-  maxYear: number
+  maxYear: number,
 ) {
   const { code } = await t.mutation(api.lobbies.create, {
     displayName: "Host",
@@ -149,7 +149,7 @@ test("selectTrackForRound never returns track already used in game", async () =>
     await Promise.all(
       rounds
         .filter((round) => round.trackId !== firstTrack!.trackId)
-        .map((round) => ctx.db.delete(round._id))
+        .map((round) => ctx.db.delete(round._id)),
     );
   });
 
@@ -182,7 +182,7 @@ test("selectTrackForRound returns null if no tracks available", async () => {
           title: `Song ${year}`,
           year,
         });
-      })
+      }),
     );
   });
 
@@ -193,7 +193,7 @@ test("selectTrackForRound returns null if no tracks available", async () => {
       await ctx.db
         .query("rounds")
         .filter((q) => q.eq(q.field("gameId"), gameId))
-        .collect()
+        .collect(),
   );
 
   await Promise.all(
@@ -219,11 +219,11 @@ test("selectTrackForRound returns null if no tracks available", async () => {
                 year: 1990,
               }),
               timelineSize: player.timeline.length + 1,
-            })
-          )
+            }),
+          ),
         );
-      })
-    )
+      }),
+    ),
   );
 
   const game = await t.run(async (ctx) => await ctx.db.get(gameId));
@@ -234,7 +234,7 @@ test("selectTrackForRound returns null if no tracks available", async () => {
         await ctx.db
           .query("players")
           .filter((q) => q.eq(q.field("lobbyId"), game.lobbyId))
-          .collect()
+          .collect(),
     );
 
     const usedTrackIds = new Set<string>();
@@ -244,13 +244,9 @@ test("selectTrackForRound returns null if no tracks available", async () => {
       }
     }
 
-    const allTracks = await t.run(
-      async (ctx) => await ctx.db.query("tracks").collect()
-    );
+    const allTracks = await t.run(async (ctx) => await ctx.db.query("tracks").collect());
 
-    const unusedTracks = allTracks.filter(
-      (track) => !usedTrackIds.has(track._id)
-    );
+    const unusedTracks = allTracks.filter((track) => !usedTrackIds.has(track._id));
 
     await Promise.all(
       unusedTracks.flatMap((track) =>
@@ -265,9 +261,9 @@ test("selectTrackForRound returns null if no tracks available", async () => {
               }),
               timelineSize: player.timeline.length + 1,
             });
-          })
-        )
-      )
+          }),
+        ),
+      ),
     );
 
     for (const track of unusedTracks) {
@@ -303,7 +299,7 @@ test("selectTrackForRound respects year range boundaries", async () => {
           title: `Song ${year}`,
           year,
         });
-      })
+      }),
     );
   });
 
