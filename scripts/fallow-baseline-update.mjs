@@ -3,14 +3,10 @@
  * Regenerate all Fallow exact baselines and the embedded regression baseline.
  * Exact baselines are written to fallow-baselines/*.json.
  * Regression counts are embedded in .fallowrc.json via --save-regression-baseline.
- *
- * Local ./coverage is parked during regeneration so CRAP scores match CI (no coverage).
  */
 import { spawnSync } from "node:child_process";
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
-
-import { withCoverageIsolated } from "./lib/fallow-coverage.mjs";
 
 const EXACT_BASELINE_FILES = [
   "fallow-baselines/dead-code.json",
@@ -47,7 +43,7 @@ const BASELINES = [
   },
 ];
 
-function runFallow(args, env, { allowIssueExit = false } = {}) {
+function runFallow(args, env = process.env, { allowIssueExit = false } = {}) {
   const result = spawnSync("pnpm", ["exec", "fallow", ...args, "--quiet"], {
     stdio: "inherit",
     env,
@@ -74,27 +70,25 @@ function rewriteJsonWithTrailingNewline(filePath) {
   writeFileSync(filePath, `${JSON.stringify(value, null, 2)}\n`);
 }
 
-withCoverageIsolated((env) => {
-  mkdirSync("fallow-baselines", { recursive: true });
+mkdirSync("fallow-baselines", { recursive: true });
 
-  for (const step of BASELINES) {
-    console.log(`\n==> ${step.label}`);
-    for (const baselinePath of step.args.filter((arg) => arg.startsWith("fallow-baselines/"))) {
-      mkdirSync(path.dirname(baselinePath), { recursive: true });
-    }
-    runFallow(step.args, env, { allowIssueExit: step.allowIssueExit });
+for (const step of BASELINES) {
+  console.log(`\n==> ${step.label}`);
+  for (const baselinePath of step.args.filter((arg) => arg.startsWith("fallow-baselines/"))) {
+    mkdirSync(path.dirname(baselinePath), { recursive: true });
   }
+  runFallow(step.args, process.env, { allowIssueExit: step.allowIssueExit });
+}
 
-  for (const file of EXACT_BASELINE_FILES) {
-    rewriteJsonWithTrailingNewline(file);
-  }
+for (const file of EXACT_BASELINE_FILES) {
+  rewriteJsonWithTrailingNewline(file);
+}
 
-  // Fallow may append a second regression block; normalize to a single embedded baseline.
-  const config = JSON.parse(readFileSync(".fallowrc.json", "utf-8"));
-  if (config.regression?.baseline) {
-    config.regression = { baseline: config.regression.baseline };
-    writeFileSync(".fallowrc.json", `${JSON.stringify(config, null, 2)}\n`);
-  }
+// Fallow may append a second regression block; normalize to a single embedded baseline.
+const config = JSON.parse(readFileSync(".fallowrc.json", "utf-8"));
+if (config.regression?.baseline) {
+  config.regression = { baseline: config.regression.baseline };
+  writeFileSync(".fallowrc.json", `${JSON.stringify(config, null, 2)}\n`);
+}
 
-  console.log("\nFallow baselines updated.");
-});
+console.log("\nFallow baselines updated.");
