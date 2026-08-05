@@ -27,14 +27,14 @@ jobs:
       - name: Typecheck
         run: pnpm next:typegen
 
+      - name: Unit tests (with coverage)
+        run: pnpm test:coverage
+
       - name: Fallow
         run: pnpm fallow:ci
 
       - name: Validate Frog friction log
         run: pnpx --yes frog@1.0.15 list
-
-      - name: Unit tests
-        run: pnpm test:once
 
       - name: Cache Next.js
         if: runner.environment != 'self-hosted'

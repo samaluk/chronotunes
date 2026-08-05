@@ -107,7 +107,7 @@ git add .fallowrc.json fallow-baselines/
 
 `baseline:update` writes exact baselines to `fallow-baselines/` and embeds regression counts in `.fallowrc.json`.
 
-Generate baselines without a local `coverage/` directory (or other Istanbul artifacts). CRAP scores change when coverage is present, which makes CI freshness checks fail on runners that have no coverage data.
+Generate baselines after running unit tests (`pnpm test:coverage`). In CI, unit tests generate test coverage before `pnpm fallow:ci` executes so CRAP scores in Fallow health baselines incorporate coverage data.
 
 CI also expects improved baselines to be committed — `fallow:baseline:check` regenerates into a temp workspace and diffs.
 

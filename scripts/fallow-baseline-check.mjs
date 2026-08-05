@@ -5,15 +5,11 @@
  *
  * Comparisons use canonical JSON so trailing newlines / key formatting from Fallow
  * do not create false staleness.
- *
- * Local ./coverage is parked during regeneration so CRAP scores match CI (no coverage).
  */
 import { spawnSync } from "node:child_process";
 import { copyFileSync, mkdirSync, mkdtempSync, readFileSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
-
-import { withCoverageIsolated } from "./lib/fallow-coverage.mjs";
 
 const EXACT_BASELINE_FILES = [
   "fallow-baselines/dead-code.json",
@@ -21,7 +17,7 @@ const EXACT_BASELINE_FILES = [
   "fallow-baselines/health.json",
 ];
 
-function runFallow(args, env, { allowIssueExit = false } = {}) {
+function runFallow(args, env = process.env, { allowIssueExit = false } = {}) {
   const result = spawnSync("pnpm", ["exec", "fallow", ...args, "--quiet"], {
     stdio: "inherit",
     env,
@@ -47,78 +43,76 @@ function canonicalJson(text) {
   return JSON.stringify(JSON.parse(text));
 }
 
-withCoverageIsolated((env) => {
-  const tempRoot = mkdtempSync(path.join(tmpdir(), "fallow-baseline-check-"));
-  const tempConfigPath = path.join(tempRoot, ".fallowrc.json");
+const tempRoot = mkdtempSync(path.join(tmpdir(), "fallow-baseline-check-"));
+const tempConfigPath = path.join(tempRoot, ".fallowrc.json");
 
-  try {
-    copyFileSync(".fallowrc.json", tempConfigPath);
+try {
+  copyFileSync(".fallowrc.json", tempConfigPath);
 
-    for (const file of EXACT_BASELINE_FILES) {
-      const generatedPath = path.join(tempRoot, file);
-      mkdirSync(path.join(tempRoot, "fallow-baselines"), { recursive: true });
+  for (const file of EXACT_BASELINE_FILES) {
+    const generatedPath = path.join(tempRoot, file);
+    mkdirSync(path.join(tempRoot, "fallow-baselines"), { recursive: true });
 
-      if (file.endsWith("health.json")) {
-        runFallow(
-          [
-            "-c",
-            tempConfigPath,
-            "health",
-            "--save-baseline",
-            generatedPath,
-            "--baseline-mode",
-            "identity",
-          ],
-          env,
-          { allowIssueExit: true },
-        );
-        continue;
-      }
-
-      const command = file.includes("dead-code") ? "dead-code" : "dupes";
-      runFallow(["-c", tempConfigPath, command, "--save-baseline", generatedPath], env, {
-        allowIssueExit: true,
-      });
+    if (file.endsWith("health.json")) {
+      runFallow(
+        [
+          "-c",
+          tempConfigPath,
+          "health",
+          "--save-baseline",
+          generatedPath,
+          "--baseline-mode",
+          "identity",
+        ],
+        process.env,
+        { allowIssueExit: true },
+      );
+      continue;
     }
 
-    runFallow(["-c", tempConfigPath, "dead-code", "--save-regression-baseline"], env, {
+    const command = file.includes("dead-code") ? "dead-code" : "dupes";
+    runFallow(["-c", tempConfigPath, command, "--save-baseline", generatedPath], process.env, {
       allowIssueExit: true,
     });
-
-    const stale = [];
-
-    for (const file of EXACT_BASELINE_FILES) {
-      const committed = canonicalJson(readFileSync(file, "utf-8"));
-      const generated = canonicalJson(readFileSync(path.join(tempRoot, file), "utf-8"));
-
-      if (committed !== generated) {
-        stale.push(file);
-      }
-    }
-
-    const committedRegression = JSON.stringify(
-      JSON.parse(readFileSync(".fallowrc.json", "utf-8")).regression ?? null,
-    );
-    const generatedRegression = JSON.stringify(
-      JSON.parse(readFileSync(tempConfigPath, "utf-8")).regression ?? null,
-    );
-
-    if (committedRegression !== generatedRegression) {
-      stale.push(".fallowrc.json (regression.baseline)");
-    }
-
-    if (stale.length > 0) {
-      console.error(
-        "\nCommitted Fallow baselines are stale. Run `pnpm fallow:baseline:update` and commit the results:",
-      );
-      for (const file of stale) {
-        console.error(`  - ${file}`);
-      }
-      process.exit(1);
-    }
-
-    console.log("Fallow baselines match the current repository state.");
-  } finally {
-    rmSync(tempRoot, { recursive: true, force: true });
   }
-});
+
+  runFallow(["-c", tempConfigPath, "dead-code", "--save-regression-baseline"], process.env, {
+    allowIssueExit: true,
+  });
+
+  const stale = [];
+
+  for (const file of EXACT_BASELINE_FILES) {
+    const committed = canonicalJson(readFileSync(file, "utf-8"));
+    const generated = canonicalJson(readFileSync(path.join(tempRoot, file), "utf-8"));
+
+    if (committed !== generated) {
+      stale.push(file);
+    }
+  }
+
+  const committedRegression = JSON.stringify(
+    JSON.parse(readFileSync(".fallowrc.json", "utf-8")).regression ?? null,
+  );
+  const generatedRegression = JSON.stringify(
+    JSON.parse(readFileSync(tempConfigPath, "utf-8")).regression ?? null,
+  );
+
+  if (committedRegression !== generatedRegression) {
+    stale.push(".fallowrc.json (regression.baseline)");
+  }
+
+  if (stale.length > 0) {
+    console.error(
+      "\nCommitted Fallow baselines are stale. Run `pnpm fallow:baseline:update` and commit the results:",
+    );
+    for (const file of stale) {
+      console.error(`  - ${file}`);
+    }
+    process.exit(1);
+  }
+
+  console.log("Fallow baselines match the current repository state.");
+} finally {
+  rmSync(tempRoot, { recursive: true, force: true });
+}
