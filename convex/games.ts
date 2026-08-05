@@ -63,13 +63,11 @@ const ensureAllNonTurnPlayersActed = (
 ) => {
   const nonTurnPlayers = players.filter((player) => player._id !== turnPlayerId);
 
-  const allNonTurnPlayersActed =
-    nonTurnPlayers.length === 0 ||
-    nonTurnPlayers.every(
-      (player) =>
-        lockedBets.some((bet) => bet.playerId === player._id) ||
-        declinedBets.some((bet) => bet.playerId === player._id),
-    );
+  const allNonTurnPlayersActed = nonTurnPlayers.every(
+    (player) =>
+      lockedBets.some((bet) => bet.playerId === player._id) ||
+      declinedBets.some((bet) => bet.playerId === player._id),
+  );
 
   if (!allNonTurnPlayersActed) {
     throw new ConvexError("Not all players have placed bets or declined");

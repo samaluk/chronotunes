@@ -1,6 +1,5 @@
 pre-commit:
   jobs:
-    # Oxfmt only: oxlint has a large backlog; full `pnpm fix` blocks commits.
     # Run `pnpm check` locally or rely on CI before merging.
     - run: pnpm exec oxfmt {staged_files}
       glob:

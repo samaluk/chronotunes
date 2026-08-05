@@ -604,7 +604,6 @@
     "src/components/ui/menubar.tsx:dead code",
     "src/components/ui/item.tsx:dead code",
     "src/components/ui/table.tsx:dead code",
-    "src/components/game/betting-panel.tsx:complexity",
     "src/components/ui/breadcrumb.tsx:dead code",
     "src/components/ui/drawer.tsx:dead code",
     "src/components/ui/popover.tsx:dead code",
@@ -616,6 +615,7 @@
     "src/components/ui/navigation-menu.tsx:dead code",
     "src/components/ui/select.tsx:dead code",
     "src/components/ui/tabs.tsx:dead code",
-    "src/components/ui/sidebar.tsx:dead code"
+    "src/components/ui/sidebar.tsx:dead code",
+    "src/components/game/betting-panel.tsx:complexity"
   ]
 }
