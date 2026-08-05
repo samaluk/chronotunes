@@ -1,6 +1,6 @@
-# Ultracite standards
+# Oxlint / Oxfmt standards
 
-This project uses **Oxlint** for linting and **Oxfmt** for formatting. The **Ultracite** npm package supplies shared presets: they are composed in [`oxlint.config.ts`](../../oxlint.config.ts) and [`oxfmt.config.ts`](../../oxfmt.config.ts) at the repository root (import paths such as `ultracite/oxlint/core` and `ultracite/oxfmt`). There is no Biome configuration in this repo.
+This project uses **Oxlint** for linting and **Oxfmt** for formatting with near-default configs in [`oxlint.config.ts`](../../oxlint.config.ts) and [`oxfmt.config.ts`](../../oxfmt.config.ts). There is no Biome configuration and no Ultracite dependency.
 
 ## Core principles
 
