@@ -19,7 +19,19 @@
     "prepare": "lefthook install",
     "check": "node scripts/oxlint-ledger.mjs check && oxfmt --check .",
     "fix": "oxlint --fix . && oxfmt .",
-    "lint:ledger:update": "node scripts/oxlint-ledger.mjs update"
+    "lint:ledger:update": "node scripts/oxlint-ledger.mjs update",
+    "fallow": "fallow",
+    "fallow:status": "fallow type-aware status",
+    "fallow:dead-code": "fallow dead-code --baseline fallow-baselines/dead-code.json --fail-on-issues",
+    "fallow:dupes": "fallow dupes --baseline fallow-baselines/dupes.json --fail-on-issues",
+    "fallow:health": "fallow health --baseline fallow-baselines/health.json --baseline-mode identity --fail-on-issues",
+    "fallow:audit": "fallow audit --gate new-only --dead-code-baseline fallow-baselines/dead-code.json --health-baseline fallow-baselines/health.json --dupes-baseline fallow-baselines/dupes.json",
+    "fallow:regression": "node scripts/fallow-regression-check.mjs",
+    "fallow:ci": "node scripts/fallow-ci.mjs",
+    "fallow:baseline:update": "node scripts/fallow-baseline-update.mjs",
+    "fallow:baseline:check": "node scripts/fallow-baseline-check.mjs",
+    "fallow:fix:preview": "fallow fix --type-aware --dry-run",
+    "fallow:fix": "fallow fix --type-aware"
   },
   "dependencies": {
     "@base-ui/react": "1.6.0",
@@ -66,6 +78,7 @@
     "convex-test": "0.0.54",
     "eslint-plugin-github": "6.1.2",
     "eslint-plugin-sonarjs": "4.2.0",
+    "fallow": "3.14.0",
     "jsdom": "30.0.1",
     "lefthook": "2.1.10",
     "oxfmt": "0.61.0",

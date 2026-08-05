@@ -29,6 +29,7 @@ ChronoTunes is a browser-based multiplayer music timeline game (Hitster clone) w
 - [UI stack](docs/agents/ui-stack.md)
 - [Ultracite standards](docs/agents/ultracite.md)
 - [Agent workflow](docs/agents/workflow.md)
+- [Fallow quality ratchet](docs/fallow.md)
 
 ## Code quality (Oxlint + Oxfmt)
 

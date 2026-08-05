@@ -1,0 +1,112 @@
+{
+  "$schema": "./node_modules/fallow/schema.json",
+  "entry": [
+    "src/app/**/{page,layout,loading,error,not-found,route,default}.{ts,tsx}",
+    "convex/**/*.ts",
+    "src/i18n/request.ts"
+  ],
+  "ignorePatterns": [
+    ".next/**",
+    "scripts/**",
+    "oxfmt.config.ts",
+    "oxlint.config.ts",
+    "next.config.ts",
+    "postcss.config.*",
+    "vitest.config.ts",
+    "vitest.setup.ts",
+    "convex/test.setup.ts"
+  ],
+  "ignoreFindings": ["convex/_generated/**"],
+  "ignoreExports": [
+    {
+      "file": "src/components/ui/*.tsx",
+      "exports": ["*"]
+    },
+    {
+      "file": "src/i18n/routing.ts",
+      "exports": ["usePathname"]
+    }
+  ],
+  "ignoreUnresolvedImports": ["../../messages/**"],
+  "ignoreDependencies": [
+    "@base-ui/react",
+    "class-variance-authority",
+    "shadcn",
+    "tw-animate-css",
+    "tailwindcss",
+    "fluid-tailwindcss",
+    "convex-test",
+    "@edge-runtime/vm",
+    "eslint-plugin-github",
+    "eslint-plugin-sonarjs",
+    "oxlint-plugin-react-doctor",
+    "ultracite",
+    "lefthook",
+    "oxfmt",
+    "oxlint",
+    "scrape-yt",
+    "scrape-youtube",
+    "youtube-sr",
+    "yt-search"
+  ],
+  "typeAware": {
+    "enabled": true,
+    "require": "best-effort",
+    "projects": ["tsconfig.json", "tsconfig.tests.json", "convex/tsconfig.json"]
+  },
+  "rules": {
+    "private-type-leaks": "warn"
+  },
+  "duplicates": {
+    "mode": "semantic",
+    "minLines": 8,
+    "minTokens": 60,
+    "minOccurrences": 3,
+    "ignoreImports": true
+  },
+  "health": {
+    "maxCyclomatic": 20,
+    "maxCognitive": 15,
+    "maxCrap": 30,
+    "maxUnitSize": 60
+  },
+  "audit": {
+    "gate": "new-only",
+    "deadCodeBaseline": "fallow-baselines/dead-code.json",
+    "healthBaseline": "fallow-baselines/health.json",
+    "dupesBaseline": "fallow-baselines/dupes.json"
+  },
+  "regression": {
+    "baseline": {
+      "analysisIdentity": {
+        "mode": "type-aware",
+        "semantic_schema_version": 2,
+        "capabilities": ["symbol-use", "api-surface"],
+        "project_config_hash": "sha256:924ab077ee75a72c18d7260d4c0f3fe6e252860bd20b92d99cc8864a43287f6a",
+        "backend_family": "typescript-go",
+        "completeness": "partial"
+      },
+      "totalIssues": 91,
+      "unusedFiles": 48,
+      "unusedExports": 1,
+      "unusedTypes": 2,
+      "unusedDependencies": 1,
+      "unusedDevDependencies": 0,
+      "unusedOptionalDependencies": 0,
+      "unusedEnumMembers": 0,
+      "unusedClassMembers": 0,
+      "unresolvedImports": 0,
+      "unlistedDependencies": 0,
+      "duplicateExports": 0,
+      "circularDependencies": 0,
+      "reExportCycles": 0,
+      "typeOnlyDependencies": 0,
+      "testOnlyDependencies": 0,
+      "devDependenciesInProduction": 0,
+      "boundaryViolations": 0,
+      "boundaryCoverageViolations": 0,
+      "boundaryCallViolations": 0,
+      "policyViolations": 0
+    }
+  }
+}
