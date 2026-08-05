@@ -2,7 +2,7 @@
   "finding_counts": {
     "convex/bets.ts": {
       "crap_high": {
-        "count": 1
+        "count": 2
       }
     },
     "convex/games.ts": {
@@ -34,7 +34,7 @@
     },
     "convex/lib/game_context.ts": {
       "crap_moderate": {
-        "count": 1
+        "count": 2
       }
     },
     "convex/lib/game_logic.ts": {
@@ -47,6 +47,11 @@
         "count": 1
       }
     },
+    "convex/players.test.ts": {
+      "crap_moderate": {
+        "count": 1
+      }
+    },
     "convex/rounds.ts": {
       "crap_critical": {
         "count": 1
@@ -56,27 +61,16 @@
       }
     },
     "convex/test/factories/games.ts": {
-      "complexity_critical": {
-        "count": 1
-      },
-      "crap_critical": {
-        "count": 1
-      },
-      "crap_moderate": {
+      "complexity_moderate": {
         "count": 1
       }
     },
     "convex/test/factories/lobbies.ts": {
       "complexity_moderate": {
         "count": 2
-      }
-    },
-    "convex/test/factories/rounds.ts": {
-      "crap_critical": {
-        "count": 2
       },
       "crap_moderate": {
-        "count": 2
+        "count": 1
       }
     },
     "convex/tracks.ts": {
@@ -109,11 +103,6 @@
         "count": 1
       }
     },
-    "src/components/game/bet-coin.tsx": {
-      "crap_high": {
-        "count": 1
-      }
-    },
     "src/components/game/betting-panel.tsx": {
       "complexity_critical": {
         "count": 1
@@ -121,11 +110,8 @@
       "crap_critical": {
         "count": 1
       },
-      "crap_high": {
-        "count": 1
-      },
       "crap_moderate": {
-        "count": 1
+        "count": 2
       }
     },
     "src/components/game/betting-phase-content.tsx": {
@@ -188,13 +174,7 @@
       }
     },
     "src/components/game/timeline-card.tsx": {
-      "complexity_high": {
-        "count": 1
-      },
-      "crap_high": {
-        "count": 1
-      },
-      "crap_moderate": {
+      "complexity_moderate": {
         "count": 1
       }
     },
@@ -275,7 +255,7 @@
   "identity_finding_counts": {
     "convex/bets.ts\u0000handler": {
       "crap_high": {
-        "count": 1
+        "count": 2
       }
     },
     "convex/games.ts\u0000applyLockedBets": {
@@ -329,6 +309,11 @@
         "count": 1
       }
     },
+    "convex/lib/game_context.ts\u0000getGameContext": {
+      "crap_moderate": {
+        "count": 1
+      }
+    },
     "convex/lib/game_logic.ts\u0000computeValidIndexRange": {
       "complexity_moderate": {
         "count": 1
@@ -336,6 +321,11 @@
     },
     "convex/lobbies.ts\u0000validateYearRange": {
       "crap_high": {
+        "count": 1
+      }
+    },
+    "convex/players.test.ts\u0000<arrow>": {
+      "crap_moderate": {
         "count": 1
       }
     },
@@ -347,16 +337,8 @@
         "count": 3
       }
     },
-    "convex/test/factories/games.ts\u0000create": {
-      "crap_moderate": {
-        "count": 1
-      }
-    },
     "convex/test/factories/games.ts\u0000createWithRound": {
-      "complexity_critical": {
-        "count": 1
-      },
-      "crap_critical": {
+      "complexity_moderate": {
         "count": 1
       }
     },
@@ -370,18 +352,8 @@
         "count": 1
       }
     },
-    "convex/test/factories/rounds.ts\u0000<arrow>": {
+    "convex/test/factories/lobbies.ts\u0000resolvePlayerOverrides": {
       "crap_moderate": {
-        "count": 2
-      }
-    },
-    "convex/test/factories/rounds.ts\u0000create": {
-      "crap_critical": {
-        "count": 1
-      }
-    },
-    "convex/test/factories/rounds.ts\u0000createInPhase": {
-      "crap_critical": {
         "count": 1
       }
     },
@@ -424,11 +396,6 @@
         "count": 1
       }
     },
-    "src/components/game/bet-coin.tsx\u0000getInitials": {
-      "crap_high": {
-        "count": 1
-      }
-    },
     "src/components/game/betting-panel.tsx\u0000BettingPanel": {
       "complexity_critical": {
         "count": 1
@@ -437,13 +404,13 @@
         "count": 1
       }
     },
-    "src/components/game/betting-panel.tsx\u0000canResolveRound": {
+    "src/components/game/betting-panel.tsx\u0000BettingStatus": {
       "crap_moderate": {
         "count": 1
       }
     },
-    "src/components/game/betting-panel.tsx\u0000renderBetZone": {
-      "crap_high": {
+    "src/components/game/betting-panel.tsx\u0000getSlotState": {
+      "crap_moderate": {
         "count": 1
       }
     },
@@ -509,15 +476,7 @@
       }
     },
     "src/components/game/timeline-card.tsx\u0000TimelineCard": {
-      "complexity_high": {
-        "count": 1
-      },
-      "crap_high": {
-        "count": 1
-      }
-    },
-    "src/components/game/timeline-card.tsx\u0000formatYearRange": {
-      "crap_moderate": {
+      "complexity_moderate": {
         "count": 1
       }
     },
