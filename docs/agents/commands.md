@@ -18,6 +18,17 @@ just fix                    # Same as pnpm fix
 pnpm exec oxlint --print-config   # Print resolved Oxlint configuration
 ```
 
+## Fallow quality ratchet
+
+```bash
+pnpm fallow:ci              # Full CI gate (baseline freshness + Gate A + Gate B)
+pnpm fallow:status          # Type-aware companion status
+pnpm fallow:baseline:update # Regenerate exact + regression baselines after genuine fixes
+pnpm fallow:baseline:check  # Fail if committed baselines are stale
+```
+
+See [docs/fallow.md](../fallow.md) for Gate A/B details and inspection commands.
+
 ## Type generation
 
 ```bash

@@ -25,6 +25,9 @@ jobs:
       - name: Typecheck
         run: pnpm next:typegen
 
+      - name: Fallow
+        run: pnpm fallow:ci
+
       - name: Validate Frog friction log
         run: pnpx --yes frog@1.0.15 list
 
