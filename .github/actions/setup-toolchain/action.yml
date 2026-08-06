@@ -21,7 +21,7 @@ runs:
 
     # Composite actions do not pass setup-node's PATH to nested JS actions; standalone
     # installs @pnpm/exe without using the runner's default Node 20.
-    - uses: pnpm/action-setup@v6.0.9
+    - uses: pnpm/action-setup@v6.0.10
       with:
         standalone: true
         # Self-hosted runners run concurrent jobs on one machine; the default ~/setup-pnpm
