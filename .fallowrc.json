@@ -82,7 +82,7 @@
         "backend_family": "typescript-go",
         "completeness": "partial"
       },
-      "totalIssues": 91,
+      "totalIssues": 88,
       "unusedFiles": 48,
       "unusedExports": 1,
       "unusedTypes": 2,
