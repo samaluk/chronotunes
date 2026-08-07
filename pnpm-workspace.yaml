@@ -1,15 +1,6 @@
 packages:
   - .
-# Allow immediate install of fresh Next.js releases (pnpm 11 enforces minimumReleaseAge by default).
-minimumReleaseAgeExclude:
-  - "@next/*"
-  - next
-  - react
-  - react-dom
-  - react-is
-  - react-server-dom-*
-  - nanoid
-  - undici
+minimumReleaseAgeStrict: true
 allowBuilds:
   "@parcel/watcher": true
   "@swc/core": true
