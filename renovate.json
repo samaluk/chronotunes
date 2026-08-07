@@ -1,6 +1,6 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": ["config:recommended", ":pinAllExceptPeerDependencies"],
+  "extends": ["config:recommended", ":disableRateLimiting", ":pinAllExceptPeerDependencies"],
   "labels": ["dependencies"],
   "minimumReleaseAge": "3 days"
 }
