@@ -32,5 +32,5 @@ export function PlayerCard({ player }: PlayerCardProps) {
 ## Next.js specifics
 
 - Use the Next.js `<Image>` component instead of `<img>` tags.
-- Use `next/head` or the App Router metadata API for head elements.
+- Use the App Router metadata API (`export const metadata` / `generateMetadata`) for head elements, not `next/head` (Pages Router only).
 - Use Server Components for async data fetching instead of async Client Components.
