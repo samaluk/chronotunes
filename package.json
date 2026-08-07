@@ -79,7 +79,7 @@
     "jsdom": "30.0.1",
     "lefthook": "2.1.10",
     "oxfmt": "0.62.0",
-    "oxlint": "1.76.0",
+    "oxlint": "1.77.0",
     "scrape-youtube": "2.4.0",
     "tailwindcss": "4.3.3",
     "typescript": "7.0.2",
