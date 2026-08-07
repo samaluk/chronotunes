@@ -237,6 +237,10 @@
     "somethingWrong": "Algo salió mal",
     "unexpectedError": "Ocurrió un error inesperado. Por favor intenta de nuevo o recarga la página."
   },
+  "notFound": {
+    "title": "Página no encontrada",
+    "description": "La página que buscas no existe o se ha movido."
+  },
   "locale": {
     "selectLanguage": "Seleccionar idioma",
     "english": "Inglés",

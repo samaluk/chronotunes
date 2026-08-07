@@ -240,6 +240,10 @@
     "somethingWrong": "Something went wrong",
     "unexpectedError": "An unexpected error occurred. Please try again or refresh the page."
   },
+  "notFound": {
+    "title": "Page not found",
+    "description": "The page you're looking for doesn't exist or has been moved."
+  },
   "locale": {
     "selectLanguage": "Select Language",
     "english": "English",
