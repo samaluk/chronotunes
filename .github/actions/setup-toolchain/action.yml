@@ -21,7 +21,7 @@ runs:
 
     # pnpm/setup downloads the exact self-contained version from packageManager,
     # avoiding action-setup's bootstrap and self-update path.
-    - uses: pnpm/setup@v2
+    - uses: pnpm/setup@v2.0.2
       with:
         # Self-hosted runners run concurrent jobs on one machine; the default ~/setup-pnpm
         # is shared and pnpm version switches in one job can break another job's shims.
