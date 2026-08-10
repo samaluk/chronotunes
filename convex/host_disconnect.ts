@@ -30,7 +30,9 @@ export const checkHostDisconnect = internalMutation({
         const isHostOnline = hostPresence.some(
           (presence) =>
             presence.online &&
+            // oxlint-disable-next-line typescript/consistent-type-assertions
             (presence as { lastDisconnected?: number }).lastDisconnected !== undefined &&
+            // oxlint-disable-next-line typescript/consistent-type-assertions, typescript/no-non-null-assertion
             (presence as { lastDisconnected?: number }).lastDisconnected! < cutoffTime,
         );
 
@@ -82,7 +84,9 @@ export const checkHostTransfer = internalMutation({
               const isOnline = presence.some(
                 (entry) =>
                   entry.online &&
+                  // oxlint-disable-next-line typescript/consistent-type-assertions
                   (entry as { lastDisconnected?: number }).lastDisconnected !== undefined &&
+                  // oxlint-disable-next-line typescript/consistent-type-assertions, typescript/no-non-null-assertion
                   (entry as { lastDisconnected?: number }).lastDisconnected! < cutoffTime,
               );
 
@@ -96,6 +100,7 @@ export const checkHostTransfer = internalMutation({
         }
 
         const randomIndex = Math.floor(Math.random() * onlinePlayers.length);
+        // oxlint-disable-next-line typescript/no-non-null-assertion, typescript/no-unnecessary-type-assertion
         const newHost = onlinePlayers[randomIndex]!;
 
         const oldHost = players.find((p) => p.isHost);

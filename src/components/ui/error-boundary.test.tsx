@@ -27,6 +27,7 @@ describe(ErrorBoundary, () => {
       </ErrorBoundary>,
     );
 
+    // oxlint-disable-next-line typescript/no-unsafe-call
     expect(screen.getByText("All good")).toBeInTheDocument();
   });
 
@@ -37,7 +38,9 @@ describe(ErrorBoundary, () => {
       </ErrorBoundary>,
     );
 
+    // oxlint-disable-next-line typescript/no-unsafe-call
     expect(screen.getByText("Something went wrong")).toBeInTheDocument();
+    // oxlint-disable-next-line typescript/no-unsafe-call
     expect(screen.getByRole("button", { name: "Try Again" })).toBeInTheDocument();
   });
 
@@ -56,12 +59,15 @@ describe(ErrorBoundary, () => {
       </ErrorBoundary>,
     );
 
+    // oxlint-disable-next-line typescript/no-unsafe-call
     expect(screen.getByText("Something went wrong")).toBeInTheDocument();
 
     fail = false;
     fireEvent.click(screen.getByRole("button", { name: "Try Again" }));
 
+    // oxlint-disable-next-line typescript/no-unsafe-call
     expect(screen.queryByText("Something went wrong")).not.toBeInTheDocument();
+    // oxlint-disable-next-line typescript/no-unsafe-call
     expect(screen.getByText("Recovered content")).toBeInTheDocument();
   });
 
@@ -72,6 +78,7 @@ describe(ErrorBoundary, () => {
       </ErrorBoundary>,
     );
 
+    // oxlint-disable-next-line typescript/no-unsafe-call
     expect(screen.getByText("Custom fallback")).toBeInTheDocument();
   });
 });

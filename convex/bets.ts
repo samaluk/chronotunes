@@ -222,6 +222,7 @@ export const listForRound = query({
     }
 
     const players = await Promise.all(betsToReturn.map((bet) => ctx.db.get(bet.playerId)));
+    // oxlint-disable-next-line typescript/no-non-null-assertion
     const playersById = new Map(players.filter(Boolean).map((player) => [player!._id, player!]));
 
     return betsToReturn

@@ -39,6 +39,7 @@ if (!output) {
 
 let report;
 try {
+  // oxlint-disable-next-line typescript/no-unsafe-assignment
   report = JSON.parse(output);
 } catch {
   console.error("Fallow regression check returned invalid JSON.");
@@ -46,20 +47,25 @@ try {
   process.exit(2);
 }
 
+// oxlint-disable-next-line typescript/no-unsafe-assignment, typescript/no-unsafe-member-access
 const regression = report.regression;
 if (!regression) {
   console.error("Fallow regression check JSON is missing `regression`.");
   process.exit(2);
 }
 
+// oxlint-disable-next-line typescript/no-unsafe-member-access
 if (regression.exceeded) {
   console.error(
+    // oxlint-disable-next-line typescript/no-unsafe-member-access
     `Regression baseline exceeded: ${regression.current_total} issues (baseline ${regression.baseline_total}, delta +${regression.delta}).`,
   );
   process.exit(1);
 }
 
+// oxlint-disable-next-line typescript/no-unsafe-member-access
 if (regression.status !== "pass") {
+  // oxlint-disable-next-line typescript/no-unsafe-member-access
   console.error(`Regression baseline check failed with status: ${regression.status}`);
   process.exit(1);
 }
@@ -69,5 +75,6 @@ if (result.status !== 0 && result.status !== 1) {
 }
 
 console.log(
+  // oxlint-disable-next-line typescript/no-unsafe-member-access
   `Regression baseline OK: ${regression.current_total} issues (baseline ${regression.baseline_total}).`,
 );

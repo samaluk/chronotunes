@@ -44,6 +44,7 @@ const BASELINES = [
 ];
 
 function runFallow(args, env = process.env, { allowIssueExit = false } = {}) {
+  // oxlint-disable-next-line typescript/no-unsafe-assignment
   const result = spawnSync("pnpm", ["exec", "fallow", ...args, "--quiet"], {
     stdio: "inherit",
     env,
@@ -66,7 +67,9 @@ function runFallow(args, env = process.env, { allowIssueExit = false } = {}) {
 }
 
 function rewriteJsonWithTrailingNewline(filePath) {
+  // oxlint-disable-next-line typescript/no-unsafe-argument, typescript/no-unsafe-assignment
   const value = JSON.parse(readFileSync(filePath, "utf-8"));
+  // oxlint-disable-next-line typescript/no-unsafe-argument
   writeFileSync(filePath, `${JSON.stringify(value, null, 2)}\n`);
 }
 
@@ -85,8 +88,11 @@ for (const file of EXACT_BASELINE_FILES) {
 }
 
 // Fallow may append a second regression block; normalize to a single embedded baseline.
+// oxlint-disable-next-line typescript/no-unsafe-assignment
 const config = JSON.parse(readFileSync(".fallowrc.json", "utf-8"));
+// oxlint-disable-next-line typescript/no-unsafe-member-access
 if (config.regression?.baseline) {
+  // oxlint-disable-next-line typescript/no-unsafe-assignment, typescript/no-unsafe-member-access
   config.regression = { baseline: config.regression.baseline };
   writeFileSync(".fallowrc.json", `${JSON.stringify(config, null, 2)}\n`);
 }

@@ -20,6 +20,7 @@ export async function createNextRound(
   game: Doc<"games">,
   lobby: Doc<"lobbies">,
 ): Promise<NextRoundResult | { gameEnded: true; noTracksAvailable: true }> {
+  // oxlint-disable-next-line typescript/no-non-null-assertion
   const currentTurnIndex = game.turnOrder.indexOf(game.turnPlayerId!);
 
   if (currentTurnIndex === -1) {
@@ -27,6 +28,7 @@ export async function createNextRound(
   }
 
   const nextTurnIndex = (currentTurnIndex + 1) % game.turnOrder.length;
+  // oxlint-disable-next-line typescript/no-non-null-assertion, typescript/no-unnecessary-type-assertion
   const nextTurnPlayerId = game.turnOrder[nextTurnIndex]!;
   const nextRoundNumber = game.currentRoundNumber + 1;
 
@@ -70,7 +72,9 @@ export function shuffleArray<T>(array: readonly T[]): T[] {
 
   for (let i = shuffled.length - 1; i >= 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
+    // oxlint-disable-next-line typescript/no-non-null-assertion, typescript/no-unnecessary-type-assertion
     const temp = shuffled[i]!;
+    // oxlint-disable-next-line typescript/no-non-null-assertion
     shuffled[i] = shuffled[j]!;
     shuffled[j] = temp;
   }

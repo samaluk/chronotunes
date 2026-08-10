@@ -8,6 +8,7 @@ function createTimelineEntry(year: number, index: number): TimelineEntry {
   return {
     earnedAtRoundNumber: index,
     earnedBy: "placement",
+    // oxlint-disable-next-line typescript/consistent-type-assertions, typescript/no-unsafe-type-assertion
     trackId: `track${index}` as Id<"tracks">,
     year,
   };

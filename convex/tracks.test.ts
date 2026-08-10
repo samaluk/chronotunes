@@ -306,6 +306,7 @@ async function seedRoundTestData(t: ReturnType<typeof convexTest>) {
 
     await ctx.db.patch(lobbyId, { activeGameId: gameId });
 
+    // oxlint-disable-next-line typescript/no-unsafe-assignment
     const player = await ctx.db
       .query("players")
       .filter((q) => q.eq(q.field("sessionId"), "host-session"))
@@ -318,11 +319,13 @@ async function seedRoundTestData(t: ReturnType<typeof convexTest>) {
         roundNumber: 1,
         startedAt: Date.now(),
         trackId,
+        // oxlint-disable-next-line typescript/no-unsafe-assignment, typescript/no-unsafe-member-access
         turnPlayerId: player._id,
       });
 
       await ctx.db.patch(gameId, {
         currentRoundId: roundId,
+        // oxlint-disable-next-line typescript/no-unsafe-member-access
         turnOrder: [player._id],
       });
     }
@@ -341,6 +344,7 @@ test("getForRound returns full track info for host", async () => {
   expect(lobby).not.toBeNull();
 
   const result = await t.query(api.tracks.getForRound, {
+    // oxlint-disable-next-line typescript/no-non-null-assertion
     lobbyId: lobby!._id,
     sessionId: asSessionId("host-session"),
   });
@@ -365,6 +369,7 @@ test("getForRound returns null for non-host", async () => {
   expect(lobby).not.toBeNull();
 
   const result = await t.query(api.tracks.getForRound, {
+    // oxlint-disable-next-line typescript/no-non-null-assertion
     lobbyId: lobby!._id,
     sessionId: asSessionId("player-session"),
   });
@@ -388,6 +393,7 @@ test("getForRound returns null when no active game", async () => {
   expect(lobby).not.toBeNull();
 
   const result = await t.query(api.tracks.getForRound, {
+    // oxlint-disable-next-line typescript/no-non-null-assertion
     lobbyId: lobby!._id,
     sessionId: asSessionId("host-session"),
   });
@@ -411,6 +417,7 @@ test("getPublic returns track info when round is resolved", async () => {
 
   expect(roundId).not.toBeNull();
 
+  // oxlint-disable-next-line typescript/no-non-null-assertion
   const result = await t.query(api.tracks.getPublic, { roundId: roundId! });
 
   expect(result).not.toBeNull();
@@ -429,6 +436,7 @@ test("getPublic returns null when round is not resolved", async () => {
 
   expect(round).not.toBeNull();
 
+  // oxlint-disable-next-line typescript/no-non-null-assertion
   const result = await t.query(api.tracks.getPublic, { roundId: round!._id });
 
   expect(result).toBeNull();
@@ -438,6 +446,7 @@ test("getPublic returns null for non-existent round", async () => {
   const t = convexTest(schema, modules);
 
   const result = await t.query(api.tracks.getPublic, {
+    // oxlint-disable-next-line typescript/consistent-type-assertions, typescript/no-unsafe-type-assertion
     roundId: "99999999999999999999999999999999rounds" as Id<"rounds">,
   });
 

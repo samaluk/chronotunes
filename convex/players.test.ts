@@ -27,9 +27,11 @@ test("list returns all players in lobby", async () => {
   });
 
   const lobby = await t.query(api.lobbies.get, { code });
+  // oxlint-disable-next-line typescript/no-non-null-assertion
   const players = await t.query(api.players.list, { lobbyId: lobby!._id });
 
   expect(players).toHaveLength(3);
+  // oxlint-disable-next-line typescript/no-unsafe-assignment, typescript/no-unsafe-call
   const displayNames = players.map((p) => p.displayName).toSorted();
   expect(displayNames).toStrictEqual(["ListHost", "Player1", "Player2"]);
 });
@@ -43,6 +45,7 @@ test("list returns empty array for lobby with no players", async () => {
   });
 
   const lobby = await t.query(api.lobbies.get, { code });
+  // oxlint-disable-next-line typescript/no-non-null-assertion
   const players = await t.query(api.players.list, { lobbyId: lobby!._id });
 
   expect(players).toHaveLength(1);
@@ -63,6 +66,7 @@ test("list returns players with correct properties", async () => {
   });
 
   const lobby = await t.query(api.lobbies.get, { code });
+  // oxlint-disable-next-line typescript/no-non-null-assertion
   const players = await t.query(api.players.list, { lobbyId: lobby!._id });
 
   const host = players.find((p) => p.isHost);
@@ -99,6 +103,7 @@ test("getMe returns current player by sessionId", async () => {
   const lobby = await t.query(api.lobbies.get, { code });
 
   const me = await t.query(api.players.getMe, {
+    // oxlint-disable-next-line typescript/no-non-null-assertion
     lobbyId: lobby!._id,
     sessionId: asSessionId("me-player-session"),
   });
@@ -120,6 +125,7 @@ test("getMe returns host player", async () => {
   const lobby = await t.query(api.lobbies.get, { code });
 
   const me = await t.query(api.players.getMe, {
+    // oxlint-disable-next-line typescript/no-non-null-assertion
     lobbyId: lobby!._id,
     sessionId: asSessionId("me-real-host-session"),
   });
@@ -140,6 +146,7 @@ test("getMe returns null when session not in lobby", async () => {
   const lobby = await t.query(api.lobbies.get, { code });
 
   const me = await t.query(api.players.getMe, {
+    // oxlint-disable-next-line typescript/no-non-null-assertion
     lobbyId: lobby!._id,
     sessionId: asSessionId("random-session-not-in-lobby"),
   });

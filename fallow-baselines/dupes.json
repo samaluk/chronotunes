@@ -2,7 +2,7 @@
   "clone_groups": [
     "convex/bets.ts:115-132|convex/bets.ts:157-169|convex/rounds.ts:89-104",
     "convex/seed.ts:130-166|convex/seed.ts:167-203|convex/seed.ts:204-240|convex/seed.ts:241-282|convex/seed.ts:4-45|convex/seed.ts:46-87|convex/seed.ts:88-129",
-    "convex/test/factories/games.ts:245-253|convex/test/factories/games.ts:264-272|convex/test/factories/players.ts:133-141",
+    "convex/test/factories/games.ts:254-262|convex/test/factories/games.ts:274-282|convex/test/factories/players.ts:135-143",
     "src/app/globals.css:104-115|src/app/globals.css:52-63|src/app/globals.css:64-75|src/app/globals.css:87-98",
     "src/app/globals.css:103-111|src/app/globals.css:52-60|src/app/globals.css:61-69|src/app/globals.css:75-83|src/app/globals.css:87-95",
     "src/components/game/betting-panel.tsx:717-731|src/components/game/betting-panel.tsx:734-748|src/components/game/betting-panel.tsx:751-765",
@@ -14,12 +14,12 @@
     "src/components/ui/alert.tsx:32-74|src/components/ui/card.tsx:53-92|src/components/ui/item.tsx:145-181|src/components/ui/table.tsx:50-89",
     "src/components/ui/alert.tsx:51-74|src/components/ui/avatar.tsx:67-93|src/components/ui/card.tsx:69-92|src/components/ui/empty.tsx:69-95|src/components/ui/item.tsx:157-179|src/components/ui/kbd.tsx:3-26|src/components/ui/table.tsx:69-89",
     "src/components/ui/avatar.tsx:58-93|src/components/ui/card.tsx:62-92|src/components/ui/empty.tsx:62-95|src/components/ui/item.tsx:153-183|src/components/ui/table.tsx:60-89",
-    "src/components/ui/avatar.tsx:67-93|src/components/ui/card.tsx:69-92|src/components/ui/empty.tsx:69-95|src/components/ui/input-group.tsx:113-145|src/components/ui/item.tsx:157-183|src/components/ui/table.tsx:69-89",
+    "src/components/ui/avatar.tsx:67-93|src/components/ui/card.tsx:69-92|src/components/ui/empty.tsx:69-95|src/components/ui/input-group.tsx:114-146|src/components/ui/item.tsx:157-183|src/components/ui/table.tsx:69-89",
     "src/components/ui/card.tsx:18-88|src/components/ui/item.tsx:107-173|src/components/ui/table.tsx:15-75",
     "src/components/ui/card.tsx:54-92|src/components/ui/empty.tsx:54-95|src/components/ui/item.tsx:146-183|src/components/ui/table.tsx:51-89",
     "src/components/ui/context-menu.tsx:200-231|src/components/ui/dropdown-menu.tsx:209-240|src/components/ui/item.tsx:159-187",
     "src/components/ui/popover.tsx:49-77|src/components/ui/progress.tsx:38-66|src/components/ui/sheet.tsx:88-121",
-    "src/components/ui/sidebar.tsx:319-347|src/components/ui/sidebar.tsx:352-383|src/components/ui/sidebar.tsx:436-464"
+    "src/components/ui/sidebar.tsx:321-349|src/components/ui/sidebar.tsx:354-385|src/components/ui/sidebar.tsx:438-466"
   ],
   "clone_fingerprints": [
     "dup:d8a1f487:3",

@@ -16,7 +16,9 @@ describe(ErrorPage, () => {
   it("renders translated error UI", () => {
     render(<ErrorPage error={new Error("boom")} retry={() => {}} />);
 
+    // oxlint-disable-next-line typescript/no-unsafe-call
     expect(screen.getByText("translated:somethingWrong")).toBeInTheDocument();
+    // oxlint-disable-next-line typescript/no-unsafe-call
     expect(screen.getByRole("button", { name: "translated:tryAgain" })).toBeInTheDocument();
   });
 

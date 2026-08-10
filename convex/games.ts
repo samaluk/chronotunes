@@ -229,6 +229,7 @@ export const start = mutationWithSession({
       }
 
       const randomIndex = Math.floor(Math.random() * availableTracks.length);
+      // oxlint-disable-next-line typescript/no-non-null-assertion, typescript/no-unnecessary-type-assertion
       const selectedTrack = availableTracks[randomIndex]!;
 
       usedTrackIds.add(selectedTrack._id);
@@ -279,6 +280,7 @@ export const start = mutationWithSession({
     }
 
     const randomIndex = Math.floor(Math.random() * availableRoundTracks.length);
+    // oxlint-disable-next-line typescript/no-non-null-assertion, typescript/no-unnecessary-type-assertion
     const firstTrack = availableRoundTracks[randomIndex]!;
 
     const roundId = await ctx.db.insert("rounds", {

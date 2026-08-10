@@ -106,10 +106,14 @@ async function importChunk(
       return { failed: chunk.length, imported: 0, progress };
     }
 
+    // oxlint-disable-next-line typescript/no-unsafe-assignment
     const result = await response.json();
+    // oxlint-disable-next-line typescript/no-unsafe-assignment, typescript/no-unsafe-member-access
     const imported = result.importedCount || 0;
+    // oxlint-disable-next-line typescript/no-unsafe-member-access
     const failed = result.hasErrors ? chunk.length - imported : 0;
 
+    // oxlint-disable-next-line typescript/no-unsafe-assignment
     return { failed, imported, progress };
   } catch (error) {
     console.error(`\nError importing chunk ${startIndex / chunk.length + 1}:`, error);

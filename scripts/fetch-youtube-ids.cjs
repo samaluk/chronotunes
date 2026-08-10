@@ -82,12 +82,16 @@ async function searchTrack(title, artist) {
     // Score each result
     const scored = results.map((video) => {
       let score = 0;
+      // oxlint-disable-next-line typescript/no-unsafe-assignment, typescript/no-unsafe-call, typescript/no-unsafe-member-access
       const titleLower = (video.title || "").toLowerCase();
+      // oxlint-disable-next-line typescript/no-unsafe-assignment, typescript/no-unsafe-call, typescript/no-unsafe-member-access
       const channelLower = (video.channel?.name || "").toLowerCase();
 
       // Prefer official channel matches
       if (
+        // oxlint-disable-next-line typescript/no-unsafe-call, typescript/no-unsafe-member-access
         channelLower.includes(artist.toLowerCase()) ||
+        // oxlint-disable-next-line typescript/no-unsafe-call, typescript/no-unsafe-member-access
         channelLower.includes(artist.toLowerCase().split(" ")[0])
       ) {
         score += 100;
@@ -95,6 +99,7 @@ async function searchTrack(title, artist) {
 
       // Penalize blacklisted words
       for (const word of BLACKLIST_WORDS) {
+        // oxlint-disable-next-line typescript/no-unsafe-call, typescript/no-unsafe-member-access
         if (titleLower.includes(word)) {
           score -= 50;
         }
@@ -102,6 +107,7 @@ async function searchTrack(title, artist) {
 
       // Bonus for high views
       if (video.views) {
+        // oxlint-disable-next-line typescript/no-unsafe-argument
         score += Math.log10(video.views + 1) * 10;
       }
 
@@ -113,6 +119,7 @@ async function searchTrack(title, artist) {
 
     const best = scored[0];
     console.log(
+      // oxlint-disable-next-line typescript/no-unsafe-call, typescript/no-unsafe-member-access
       `Found: "${best.video.title}" (score: ${best.score.toFixed(1)}, channel: ${best.video.channel?.name}, views: ${best.video.views?.toLocaleString()})`,
     );
 

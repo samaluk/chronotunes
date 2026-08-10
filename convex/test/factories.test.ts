@@ -174,6 +174,7 @@ test("roundBets.create creates a bet with defaults", async () => {
   const game = await factories.games.createInPhase(t, lobby.id, "betting");
 
   expect(lobby.playerIds[1]).toBeDefined();
+  // oxlint-disable-next-line typescript/no-non-null-assertion, typescript/no-unnecessary-type-assertion
   const result = await factories.roundBets.create(t, game.roundId, lobby.playerIds[1]!);
 
   expect(result.id).toBeDefined();
@@ -190,6 +191,7 @@ test("roundBets.createLocked creates a locked bet", async () => {
   const game = await factories.games.createInPhase(t, lobby.id, "betting");
 
   expect(lobby.playerIds[1]).toBeDefined();
+  // oxlint-disable-next-line typescript/no-non-null-assertion, typescript/no-unnecessary-type-assertion
   const result = await factories.roundBets.createLocked(t, game.roundId, lobby.playerIds[1]!, 2);
 
   expect(result.record.lockedIn).toBeTruthy();

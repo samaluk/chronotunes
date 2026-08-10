@@ -82,12 +82,14 @@ describe("checkHostTransfer with presence", () => {
     const lobbyInfo = await t.query(api.lobbies.get, { code });
 
     await t.mutation(api.presence.sendHeartbeat, {
+      // oxlint-disable-next-line typescript/no-non-null-assertion
       roomId: lobbyInfo!._id,
       sessionId: "player1-session",
       userId: "player1-session",
     });
 
     await t.mutation(api.presence.sendHeartbeat, {
+      // oxlint-disable-next-line typescript/no-non-null-assertion
       roomId: lobbyInfo!._id,
       sessionId: "player2-session",
       userId: "player2-session",
@@ -173,6 +175,7 @@ describe("checkHostTransfer with presence", () => {
     const lobbyInfo = await t.query(api.lobbies.get, { code });
 
     await t.mutation(api.presence.sendHeartbeat, {
+      // oxlint-disable-next-line typescript/no-non-null-assertion
       roomId: lobbyInfo!._id,
       sessionId: "player1-paused",
       userId: "player1-paused",
@@ -228,6 +231,7 @@ describe("checkHostTransfer with presence", () => {
     const lobbyInfo = await t.query(api.lobbies.get, { code });
 
     await t.mutation(api.presence.sendHeartbeat, {
+      // oxlint-disable-next-line typescript/no-non-null-assertion
       roomId: lobbyInfo!._id,
       sessionId: "player-clear",
       userId: "player-clear",

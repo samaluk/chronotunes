@@ -62,14 +62,20 @@ export function SettingRange({
           min={minRange}
           onValueChange={(val) => {
             const values = Array.isArray(val) ? val : [val, val];
+            // oxlint-disable-next-line typescript/no-unsafe-assignment
             const sortedValues = [...values].toSorted((a, b) => a - b);
+            // oxlint-disable-next-line typescript/no-unsafe-argument
             onMinChange("minYear", sortedValues[0]);
+            // oxlint-disable-next-line typescript/no-unsafe-argument
             onMaxChange("maxYear", sortedValues[1]);
           }}
           onValueCommitted={(val) => {
             const values = Array.isArray(val) ? val : [val, val];
+            // oxlint-disable-next-line typescript/no-unsafe-assignment
             const sortedValues = [...values].toSorted((a, b) => a - b);
+            // oxlint-disable-next-line typescript/no-unsafe-argument
             onMinCommit("minYear", sortedValues[0]);
+            // oxlint-disable-next-line typescript/no-unsafe-argument
             onMaxCommit("maxYear", sortedValues[1]);
           }}
           step={1}

@@ -26,14 +26,20 @@ vi.mock(import("convex-helpers/react/sessions"), () => ({
 }));
 
 vi.mock(import("react"), () => ({
+  // oxlint-disable-next-line typescript/no-unsafe-return
   useCallback: vi.fn((fn) => fn),
+  // oxlint-disable-next-line typescript/no-unsafe-call, typescript/no-unsafe-return
   useEffect: vi.fn((fn) => fn()),
+  // oxlint-disable-next-line typescript/no-unsafe-call, typescript/no-unsafe-return
   useMemo: vi.fn((fn) => fn()),
+  // oxlint-disable-next-line typescript/no-unsafe-assignment
   useRef: vi.fn((initial) => ({ current: initial })),
   useState: vi.fn((initial) => {
     if (typeof initial === "function") {
+      // oxlint-disable-next-line typescript/no-unsafe-call, typescript/no-unsafe-return
       return [initial(), vi.fn()];
     }
+    // oxlint-disable-next-line typescript/no-unsafe-return
     return [initial, vi.fn()];
   }),
 }));
@@ -69,11 +75,13 @@ const createMockPlayer = (
   createdAt: number;
 } => ({
   _creationTime: Date.now(),
+  // oxlint-disable-next-line typescript/consistent-type-assertions, typescript/no-unsafe-type-assertion
   _id: "player123" as GenericId<"players">,
   coins: 3,
   createdAt: Date.now(),
   displayName: "Test Player",
   isHost: false,
+  // oxlint-disable-next-line typescript/consistent-type-assertions, typescript/no-unsafe-type-assertion
   lobbyId: "lobby123" as GenericId<"lobbies">,
   sessionId: "session123",
   timeline: [],
@@ -94,6 +102,7 @@ const createMockTrack = (
   artist: string;
   year: number;
 } => ({
+  // oxlint-disable-next-line typescript/consistent-type-assertions, typescript/no-unsafe-type-assertion
   _id: "track123" as GenericId<"tracks">,
   artist: "Test Artist",
   title: "Test Song",
@@ -101,6 +110,7 @@ const createMockTrack = (
   ...overrides,
 });
 
+// oxlint-disable-next-line typescript/consistent-type-assertions, typescript/no-unsafe-type-assertion
 const lobbyId = "lobby123" as GenericId<"lobbies">;
 const placeSongHeadingText = "Place the Song";
 const placeOnTimelineText = /Place on timeline/i;
@@ -122,6 +132,7 @@ describe(TimelinePlacer, () => {
       </NextIntlClientProvider>,
     );
 
+    // oxlint-disable-next-line typescript/no-unsafe-call
     expect(screen.getByText("Loading track...")).toBeInTheDocument();
   });
 
@@ -141,7 +152,9 @@ describe(TimelinePlacer, () => {
       </NextIntlClientProvider>,
     );
 
+    // oxlint-disable-next-line typescript/no-unsafe-call
     expect(screen.getByRole("heading", { name: placeSongHeadingText })).toBeInTheDocument();
+    // oxlint-disable-next-line typescript/no-unsafe-call
     expect(screen.getByRole("button", { name: placeOnTimelineText })).toBeInTheDocument();
   });
 
@@ -151,12 +164,14 @@ describe(TimelinePlacer, () => {
         {
           earnedAtRoundNumber: 1,
           earnedBy: "placement",
+          // oxlint-disable-next-line typescript/consistent-type-assertions, typescript/no-unsafe-type-assertion
           trackId: "track1" as GenericId<"tracks">,
           year: 1980,
         },
         {
           earnedAtRoundNumber: 2,
           earnedBy: "bet",
+          // oxlint-disable-next-line typescript/consistent-type-assertions, typescript/no-unsafe-type-assertion
           trackId: "track2" as GenericId<"tracks">,
           year: 1990,
         },
@@ -189,6 +204,7 @@ describe(TimelinePlacer, () => {
         {
           earnedAtRoundNumber: 1,
           earnedBy: "placement",
+          // oxlint-disable-next-line typescript/consistent-type-assertions, typescript/no-unsafe-type-assertion
           trackId: "track1" as GenericId<"tracks">,
           year: 1980,
         },
@@ -209,6 +225,7 @@ describe(TimelinePlacer, () => {
       </NextIntlClientProvider>,
     );
 
+    // oxlint-disable-next-line typescript/no-unsafe-call
     expect(screen.getByRole("button", { name: confirmPlacementText })).toBeInTheDocument();
   });
 });

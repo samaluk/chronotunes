@@ -14,6 +14,7 @@ import { spawnSync } from "node:child_process";
 const FALLOW_VERSION = "3.14.0";
 
 function run(command, args, env = process.env, { allowIssueExit = false } = {}) {
+  // oxlint-disable-next-line typescript/no-unsafe-argument
   const result = spawnSync(command, args, {
     stdio: "inherit",
     env,
@@ -36,6 +37,7 @@ function run(command, args, env = process.env, { allowIssueExit = false } = {}) 
 }
 
 function fallow(args, options) {
+  // oxlint-disable-next-line typescript/no-unsafe-argument, typescript/no-unsafe-assignment
   run("pnpm", ["exec", "fallow", ...args], process.env, options);
 }
 

@@ -47,6 +47,7 @@ export async function create(
     playerId = await ctx.db.insert("players", data);
   });
 
+  // oxlint-disable-next-line typescript/no-non-null-assertion
   return { id: playerId!, record: data };
 }
 
@@ -123,6 +124,7 @@ export async function findBySessionId(
       .first();
 
     if (player) {
+      // oxlint-disable-next-line typescript/consistent-type-assertions, typescript/no-unnecessary-type-assertion
       result = { id: player._id, record: player as Player };
     }
   });
@@ -139,6 +141,7 @@ export async function findById(
   await t.run(async (ctx: QueryCtx) => {
     const player = await ctx.db.get(playerId);
     if (player) {
+      // oxlint-disable-next-line typescript/consistent-type-assertions, typescript/no-unnecessary-type-assertion
       result = { id: player._id, record: player as Player };
     }
   });
@@ -160,6 +163,7 @@ export async function getAllInLobby(
 
     results = players.map((p) => ({
       id: p._id,
+      // oxlint-disable-next-line typescript/consistent-type-assertions
       record: p as Player,
     }));
   });

@@ -78,8 +78,16 @@ export function SettingSlider({
         id={sliderId}
         max={max}
         min={min}
-        onValueChange={(val) => onChange(label as keyof LobbySettings, Number(val))}
-        onValueCommitted={(val) => onCommit(label as keyof LobbySettings, Number(val))}
+        onValueChange={
+          /* oxlint-disable typescript/consistent-type-assertions, typescript/no-unsafe-type-assertion */
+          (val) => onChange(label as keyof LobbySettings, Number(val))
+          /* oxlint-enable typescript/consistent-type-assertions, typescript/no-unsafe-type-assertion */
+        }
+        onValueCommitted={
+          /* oxlint-disable typescript/consistent-type-assertions, typescript/no-unsafe-type-assertion */
+          (val) => onCommit(label as keyof LobbySettings, Number(val))
+          /* oxlint-enable typescript/consistent-type-assertions, typescript/no-unsafe-type-assertion */
+        }
         step={step}
         value={value}
       />
