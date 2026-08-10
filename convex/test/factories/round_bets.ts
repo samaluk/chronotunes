@@ -86,6 +86,7 @@ export async function findByPlayerAndRound(
       .first();
 
     if (bet) {
+      // oxlint-disable-next-line typescript/consistent-type-assertions, typescript/no-unnecessary-type-assertion
       result = { id: bet._id, record: bet as RoundBet };
     }
   });
@@ -107,6 +108,7 @@ export async function findAllInRound(
 
     results = bets.map((b) => ({
       id: b._id,
+      // oxlint-disable-next-line typescript/consistent-type-assertions
       record: b as RoundBet,
     }));
   });

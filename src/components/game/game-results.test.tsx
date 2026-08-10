@@ -4,6 +4,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { GameResults } from "./game-results";
 
+// oxlint-disable-next-line typescript/consistent-type-assertions, typescript/no-unsafe-type-assertion
 const mockLobbyId = "lobby123" as GenericId<"lobbies">;
 
 vi.mock(import("convex/react"), () => ({
@@ -20,8 +21,10 @@ vi.mock(import("convex-helpers/react/sessions"), () => ({
 vi.mock(import("react"), () => ({
   useState: vi.fn((initial) => {
     if (typeof initial === "function") {
+      // oxlint-disable-next-line typescript/no-unsafe-call, typescript/no-unsafe-return
       return [initial(), vi.fn()];
     }
+    // oxlint-disable-next-line typescript/no-unsafe-return
     return [initial, vi.fn()];
   }),
 }));
@@ -35,6 +38,7 @@ describe(GameResults, () => {
   it("shows empty state when no results found", () => {
     render(<GameResults code="ABC123" lobbyId={mockLobbyId} />);
 
+    // oxlint-disable-next-line typescript/no-unsafe-call
     expect(screen.getByText("No game results found")).toBeInTheDocument();
   });
 });

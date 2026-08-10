@@ -45,7 +45,13 @@ function ToggleGroup({
       data-slot="toggle-group"
       data-spacing={spacing}
       data-variant={variant}
-      style={{ "--gap": spacing } as CSSProperties}
+      style={
+        /* oxlint-disable typescript/consistent-type-assertions, typescript/no-unsafe-type-assertion */
+        {
+          "--gap": spacing,
+        } as CSSProperties
+        /* oxlint-enable typescript/consistent-type-assertions, typescript/no-unsafe-type-assertion */
+      }
       {...props}
     >
       <ToggleGroupContext.Provider value={{ orientation, size, spacing, variant }}>

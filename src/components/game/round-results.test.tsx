@@ -5,11 +5,13 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { GameContext } from "./game-provider";
 import { RoundResults } from "./round-results";
 
+// oxlint-disable-next-line typescript/consistent-type-assertions, typescript/no-unsafe-type-assertion
 const mockLobbyId = "lobby123" as GenericId<"lobbies">;
 const now = Date.now();
 
 const createMockPlayer = (overrides = {}) => ({
   _creationTime: now,
+  // oxlint-disable-next-line typescript/consistent-type-assertions, typescript/no-unsafe-type-assertion
   _id: "player1" as GenericId<"players">,
   coins: 3,
   createdAt: now,
@@ -24,12 +26,14 @@ const createMockPlayer = (overrides = {}) => ({
 
 const mockPlayers = [
   createMockPlayer({
+    // oxlint-disable-next-line typescript/consistent-type-assertions, typescript/no-unsafe-type-assertion
     _id: "player1" as GenericId<"players">,
     displayName: "Player1",
     isHost: true,
     sessionId: "session1",
   }),
   createMockPlayer({
+    // oxlint-disable-next-line typescript/consistent-type-assertions, typescript/no-unsafe-type-assertion
     _id: "player2" as GenericId<"players">,
     coins: 2,
     displayName: "Player2",
@@ -40,6 +44,7 @@ const mockPlayers = [
 ];
 
 const mockTrack = {
+  // oxlint-disable-next-line typescript/consistent-type-assertions, typescript/no-unsafe-type-assertion
   _id: "track1" as GenericId<"tracks">,
   artist: "Test Artist",
   title: "Test Song",
@@ -47,6 +52,7 @@ const mockTrack = {
 };
 
 const mockResolution = {
+  // oxlint-disable-next-line typescript/consistent-type-assertions, typescript/no-unsafe-type-assertion
   awardedPlayerIds: ["player1"] as GenericId<"players">[],
   coinDeltas: [],
   resolvedAt: now,
@@ -76,6 +82,7 @@ vi.mock(import("react"), async () => {
   const actual = await vi.importActual("react");
   return {
     ...actual,
+    // oxlint-disable-next-line typescript/no-unsafe-call, typescript/no-unsafe-return
     useMemo: vi.fn((fn) => fn()),
     useState: vi.fn((initial) => {
       useStateCallCount += 1;
@@ -83,8 +90,10 @@ vi.mock(import("react"), async () => {
         return [true, vi.fn()];
       }
       if (typeof initial === "function") {
+        // oxlint-disable-next-line typescript/no-unsafe-call, typescript/no-unsafe-return
         return [initial(), vi.fn()];
       }
+      // oxlint-disable-next-line typescript/no-unsafe-return
       return [initial, vi.fn()];
     }),
   };
@@ -138,23 +147,29 @@ const createContextValue = (
 describe(RoundResults, () => {
   it("displays song title, artist, and year", () => {
     render(
+      // oxlint-disable-next-line typescript/consistent-type-assertions, typescript/no-explicit-any, typescript/no-unsafe-assignment, typescript/no-unsafe-type-assertion
       <GameContext.Provider value={createContextValue() as any}>
         <RoundResults />
       </GameContext.Provider>,
     );
 
+    // oxlint-disable-next-line typescript/no-unsafe-call
     expect(screen.getByText((content) => content.includes("Test Song"))).toBeInTheDocument();
+    // oxlint-disable-next-line typescript/no-unsafe-call
     expect(screen.getByText((content) => content.includes("Test Artist"))).toBeInTheDocument();
+    // oxlint-disable-next-line typescript/no-unsafe-call
     expect(screen.getByText("2020")).toBeInTheDocument();
   });
 
   it("shows correct placement result when turn player was correct", () => {
     render(
+      // oxlint-disable-next-line typescript/consistent-type-assertions, typescript/no-explicit-any, typescript/no-unsafe-assignment, typescript/no-unsafe-type-assertion
       <GameContext.Provider value={createContextValue() as any}>
         <RoundResults />
       </GameContext.Provider>,
     );
 
+    // oxlint-disable-next-line typescript/no-unsafe-call
     expect(screen.getByText("correct")).toBeInTheDocument();
   });
 
@@ -167,8 +182,10 @@ describe(RoundResults, () => {
     render(
       <GameContext.Provider
         value={
+          // oxlint-disable-next-line typescript/consistent-type-assertions, typescript/no-unsafe-assignment, typescript/no-unsafe-type-assertion
           createContextValue({
             state: { currentRound: { resolution: wrongResolution } },
+            // oxlint-disable-next-line typescript/no-explicit-any
           }) as any
         }
       >
@@ -176,27 +193,33 @@ describe(RoundResults, () => {
       </GameContext.Provider>,
     );
 
+    // oxlint-disable-next-line typescript/no-unsafe-call
     expect(screen.getByText("incorrect")).toBeInTheDocument();
   });
 
   it("displays card awards for awarded players", () => {
     render(
+      // oxlint-disable-next-line typescript/consistent-type-assertions, typescript/no-explicit-any, typescript/no-unsafe-assignment, typescript/no-unsafe-type-assertion
       <GameContext.Provider value={createContextValue() as any}>
         <RoundResults />
       </GameContext.Provider>,
     );
 
+    // oxlint-disable-next-line typescript/no-unsafe-call
     expect(screen.getByText("Card Awards")).toBeInTheDocument();
+    // oxlint-disable-next-line typescript/no-unsafe-call
     expect(screen.getByText("Player1")).toBeInTheDocument();
   });
 
   it("displays resolved timestamp", () => {
     render(
+      // oxlint-disable-next-line typescript/consistent-type-assertions, typescript/no-explicit-any, typescript/no-unsafe-assignment, typescript/no-unsafe-type-assertion
       <GameContext.Provider value={createContextValue() as any}>
         <RoundResults />
       </GameContext.Provider>,
     );
 
+    // oxlint-disable-next-line typescript/no-unsafe-call
     expect(screen.getByText(resolvedAtRegex)).toBeInTheDocument();
   });
 
@@ -210,8 +233,10 @@ describe(RoundResults, () => {
     render(
       <GameContext.Provider
         value={
+          // oxlint-disable-next-line typescript/consistent-type-assertions, typescript/no-unsafe-assignment, typescript/no-unsafe-type-assertion
           createContextValue({
             state: { currentRound: { resolution: noAwardResolution } },
+            // oxlint-disable-next-line typescript/no-explicit-any
           }) as any
         }
       >
@@ -219,36 +244,43 @@ describe(RoundResults, () => {
       </GameContext.Provider>,
     );
 
+    // oxlint-disable-next-line typescript/no-unsafe-call
     expect(screen.getByText("No cards were awarded this round")).toBeInTheDocument();
   });
 
   it("highlights current user with (You) indicator", () => {
     render(
+      // oxlint-disable-next-line typescript/consistent-type-assertions, typescript/no-explicit-any, typescript/no-unsafe-assignment, typescript/no-unsafe-type-assertion
       <GameContext.Provider value={createContextValue() as any}>
         <RoundResults />
       </GameContext.Provider>,
     );
 
+    // oxlint-disable-next-line typescript/no-unsafe-call
     expect(screen.getByText("(You)")).toBeInTheDocument();
   });
 
   it("shows host controls when user is host", () => {
     render(
+      // oxlint-disable-next-line typescript/consistent-type-assertions, typescript/no-explicit-any, typescript/no-unsafe-assignment, typescript/no-unsafe-type-assertion
       <GameContext.Provider value={createContextValue() as any}>
         <RoundResults />
       </GameContext.Provider>,
     );
 
+    // oxlint-disable-next-line typescript/no-unsafe-call
     expect(screen.getByRole("button", { name: startNextRoundRegex })).toBeInTheDocument();
   });
 
   it("shows waiting state when user is not host", () => {
     render(
+      // oxlint-disable-next-line typescript/consistent-type-assertions, typescript/no-explicit-any, typescript/no-unsafe-assignment, typescript/no-unsafe-type-assertion
       <GameContext.Provider value={createContextValue({ state: { me: mockPlayers[1] } }) as any}>
         <RoundResults />
       </GameContext.Provider>,
     );
 
+    // oxlint-disable-next-line typescript/no-unsafe-call
     expect(screen.getByText(waitingForHostRegex)).toBeInTheDocument();
   });
 });

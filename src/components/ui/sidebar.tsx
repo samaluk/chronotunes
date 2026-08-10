@@ -139,6 +139,7 @@ function SidebarProvider({
         )}
         data-slot="sidebar-wrapper"
         style={
+          // oxlint-disable-next-line typescript/consistent-type-assertions
           {
             "--sidebar-width": SIDEBAR_WIDTH,
             "--sidebar-width-icon": SIDEBAR_WIDTH_ICON,
@@ -192,6 +193,7 @@ function Sidebar({
           data-slot="sidebar"
           side={side}
           style={
+            // oxlint-disable-next-line typescript/consistent-type-assertions, typescript/no-unsafe-type-assertion
             {
               "--sidebar-width": SIDEBAR_WIDTH_MOBILE,
             } as CSSProperties
@@ -607,6 +609,7 @@ function SidebarMenuSkeleton({
         className="h-4 max-w-(--skeleton-width) flex-1"
         data-sidebar="menu-skeleton-text"
         style={
+          // oxlint-disable-next-line typescript/consistent-type-assertions, typescript/no-unsafe-type-assertion
           {
             "--skeleton-width": width,
           } as CSSProperties

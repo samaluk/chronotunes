@@ -108,6 +108,7 @@ export function MyTimeline(): React.ReactNode {
       ) : (
         <div className="space-y-2">
           {sortedTimeline.map((entry) => {
+            // oxlint-disable-next-line typescript/no-unsafe-assignment
             const track = trackMap.get(entry.trackId);
             if (!track) {
               return (
@@ -126,12 +127,18 @@ export function MyTimeline(): React.ReactNode {
 
             return (
               <TimelineCard
-                artist={track.artist}
+                artist={
+                  track.artist /* oxlint-disable-line typescript/no-unsafe-assignment, typescript/no-unsafe-member-access */
+                }
                 icon={isPlacement ? "target" : "trophy"}
                 iconColor={isPlacement ? "primary" : "amber"}
                 key={`${entry.trackId}-${entry.earnedAtRoundNumber}`}
-                title={track.title}
-                year={track.year}
+                title={
+                  track.title /* oxlint-disable-line typescript/no-unsafe-assignment, typescript/no-unsafe-member-access */
+                }
+                year={
+                  track.year /* oxlint-disable-line typescript/no-unsafe-assignment, typescript/no-unsafe-member-access */
+                }
               />
             );
           })}

@@ -18,19 +18,26 @@ vi.mock(import("convex-helpers/react/sessions"), () => ({
 }));
 
 vi.mock(import("react"), () => ({
+  // oxlint-disable-next-line typescript/no-unsafe-return
   useCallback: vi.fn((fn) => fn),
+  // oxlint-disable-next-line typescript/no-unsafe-call, typescript/no-unsafe-return
   useEffect: vi.fn((fn) => fn()),
+  // oxlint-disable-next-line typescript/no-unsafe-call, typescript/no-unsafe-return
   useMemo: vi.fn((fn) => fn()),
+  // oxlint-disable-next-line typescript/no-unsafe-assignment
   useRef: vi.fn((initial) => ({ current: initial })),
   useState: vi.fn((initial) => {
     if (typeof initial === "function") {
+      // oxlint-disable-next-line typescript/no-unsafe-call, typescript/no-unsafe-return
       return [initial(), vi.fn()];
     }
+    // oxlint-disable-next-line typescript/no-unsafe-return
     return [initial, vi.fn()];
   }),
 }));
 
 const createMockPlayer = (overrides = {}) => ({
+  // oxlint-disable-next-line typescript/consistent-type-assertions, typescript/no-unsafe-type-assertion
   _id: "player123" as GenericId<"players">,
   coins: 3,
   displayName: "Test Player",
@@ -41,6 +48,7 @@ const createMockPlayer = (overrides = {}) => ({
 });
 
 const mockTrack = {
+  // oxlint-disable-next-line typescript/consistent-type-assertions, typescript/no-unsafe-type-assertion
   _id: "track123" as GenericId<"tracks">,
   artist: "Test Artist",
   title: "Test Song",
@@ -54,7 +62,11 @@ describe(BettingPanel, () => {
     render(
       <NextIntlClientProvider locale="en" messages={messages}>
         <BettingPanel
-          lobbyId={"lobby123" as GenericId<"lobbies">}
+          lobbyId={
+            /* oxlint-disable typescript/consistent-type-assertions, typescript/no-unnecessary-type-assertion, typescript/no-unsafe-type-assertion */
+            "lobby123" as GenericId<"lobbies">
+            /* oxlint-enable typescript/consistent-type-assertions, typescript/no-unnecessary-type-assertion, typescript/no-unsafe-type-assertion */
+          }
           me={player}
           players={[]}
           revealedTracks={[]}
@@ -65,6 +77,7 @@ describe(BettingPanel, () => {
       </NextIntlClientProvider>,
     );
 
+    // oxlint-disable-next-line typescript/no-unsafe-call
     expect(screen.getByText("5 coins")).toBeInTheDocument();
   });
 
@@ -74,7 +87,11 @@ describe(BettingPanel, () => {
     render(
       <NextIntlClientProvider locale="en" messages={messages}>
         <BettingPanel
-          lobbyId={"lobby123" as GenericId<"lobbies">}
+          lobbyId={
+            /* oxlint-disable typescript/consistent-type-assertions, typescript/no-unnecessary-type-assertion, typescript/no-unsafe-type-assertion */
+            "lobby123" as GenericId<"lobbies">
+            /* oxlint-enable typescript/consistent-type-assertions, typescript/no-unnecessary-type-assertion, typescript/no-unsafe-type-assertion */
+          }
           me={player}
           players={[]}
           revealedTracks={[]}
@@ -85,6 +102,7 @@ describe(BettingPanel, () => {
       </NextIntlClientProvider>,
     );
 
+    // oxlint-disable-next-line typescript/no-unsafe-call
     expect(screen.getByText("Not enough coins to place a bet")).toBeInTheDocument();
   });
 
@@ -94,7 +112,11 @@ describe(BettingPanel, () => {
     render(
       <NextIntlClientProvider locale="en" messages={messages}>
         <BettingPanel
-          lobbyId={"lobby123" as GenericId<"lobbies">}
+          lobbyId={
+            /* oxlint-disable typescript/consistent-type-assertions, typescript/no-unnecessary-type-assertion, typescript/no-unsafe-type-assertion */
+            "lobby123" as GenericId<"lobbies">
+            /* oxlint-enable typescript/consistent-type-assertions, typescript/no-unnecessary-type-assertion, typescript/no-unsafe-type-assertion */
+          }
           me={player}
           players={[]}
           revealedTracks={[]}
@@ -105,6 +127,7 @@ describe(BettingPanel, () => {
       </NextIntlClientProvider>,
     );
 
+    // oxlint-disable-next-line typescript/no-unsafe-call
     expect(screen.getByText("Loading...")).toBeInTheDocument();
   });
 
@@ -114,7 +137,11 @@ describe(BettingPanel, () => {
     render(
       <NextIntlClientProvider locale="en" messages={messages}>
         <BettingPanel
-          lobbyId={"lobby123" as GenericId<"lobbies">}
+          lobbyId={
+            /* oxlint-disable typescript/consistent-type-assertions, typescript/no-unnecessary-type-assertion, typescript/no-unsafe-type-assertion */
+            "lobby123" as GenericId<"lobbies">
+            /* oxlint-enable typescript/consistent-type-assertions, typescript/no-unnecessary-type-assertion, typescript/no-unsafe-type-assertion */
+          }
           me={player}
           players={[]}
           revealedTracks={[]}
@@ -125,9 +152,13 @@ describe(BettingPanel, () => {
       </NextIntlClientProvider>,
     );
 
+    // oxlint-disable-next-line typescript/no-unsafe-call
     expect(screen.getByText("Place Your Bet")).toBeInTheDocument();
+    // oxlint-disable-next-line typescript/no-unsafe-call
     expect(screen.getByText("Choose an open placement slot for the song")).toBeInTheDocument();
+    // oxlint-disable-next-line typescript/no-unsafe-call
     expect(screen.getByText("Open slot")).toBeInTheDocument();
+    // oxlint-disable-next-line typescript/no-unsafe-call
     expect(screen.getByText("Don't bet")).toBeInTheDocument();
   });
 
@@ -137,7 +168,11 @@ describe(BettingPanel, () => {
     render(
       <NextIntlClientProvider locale="en" messages={messages}>
         <BettingPanel
-          lobbyId={"lobby123" as GenericId<"lobbies">}
+          lobbyId={
+            /* oxlint-disable typescript/consistent-type-assertions, typescript/no-unnecessary-type-assertion, typescript/no-unsafe-type-assertion */
+            "lobby123" as GenericId<"lobbies">
+            /* oxlint-enable typescript/consistent-type-assertions, typescript/no-unnecessary-type-assertion, typescript/no-unsafe-type-assertion */
+          }
           me={player}
           players={[]}
           revealedTracks={[]}
@@ -152,6 +187,7 @@ describe(BettingPanel, () => {
     const label = screen.getByText("Turn player's pick");
     const button = label.closest("button");
 
+    // oxlint-disable-next-line typescript/no-unsafe-call
     expect(button).toHaveAttribute("aria-disabled", "true");
   });
 });

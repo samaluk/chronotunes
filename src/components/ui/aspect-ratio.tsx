@@ -10,6 +10,7 @@ function AspectRatio({
       className={cn("relative aspect-(--ratio)", className)}
       data-slot="aspect-ratio"
       style={
+        // oxlint-disable-next-line typescript/consistent-type-assertions, typescript/no-unsafe-type-assertion
         {
           "--ratio": ratio,
         } as React.CSSProperties

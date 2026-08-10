@@ -11,6 +11,7 @@ import { useLocalStorage } from "usehooks-ts";
 import { ConnectionBanner } from "@/components/ui/network-status";
 import { LocaleActionProvider } from "@/i18n/locale-action";
 
+// oxlint-disable-next-line typescript/no-non-null-assertion
 const convex = new ConvexReactClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
 
 export function Providers({

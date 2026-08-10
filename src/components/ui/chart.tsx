@@ -89,6 +89,7 @@ const ChartStyle = ({ id, config }: { id: string; config: ChartConfig }) => {
 ${prefix} [data-chart=${id}] {
 ${colorConfig
   .map(([key, itemConfig]) => {
+    // oxlint-disable-next-line typescript/consistent-type-assertions, typescript/no-unsafe-type-assertion
     const color = itemConfig.theme?.[theme as keyof typeof itemConfig.theme] || itemConfig.color;
     return color ? `  --color-${key}: ${color};` : null;
   })
@@ -137,7 +138,8 @@ function ChartTooltipContent({
     const itemConfig = getPayloadConfigFromPayload(config, item, key);
     const value =
       !labelKey && typeof label === "string"
-        ? config[label as keyof typeof config]?.label || label
+        ? // oxlint-disable-next-line typescript/consistent-type-assertions, typescript/no-unnecessary-type-assertion
+          config[label as keyof typeof config]?.label || label
         : itemConfig?.label;
 
     if (labelFormatter) {
@@ -173,6 +175,7 @@ function ChartTooltipContent({
           .map((item, index) => {
             const key = `${nameKey || item.name || item.dataKey || "value"}`;
             const itemConfig = getPayloadConfigFromPayload(config, item, key);
+            // oxlint-disable-next-line typescript/no-unsafe-assignment, typescript/no-unsafe-member-access
             const indicatorColor = color || item.payload.fill || item.color;
 
             return (
@@ -184,6 +187,7 @@ function ChartTooltipContent({
                 key={String(item.dataKey ?? item.name ?? index)}
               >
                 {formatter && item?.value !== undefined && item.name ? (
+                  // oxlint-disable-next-line typescript/no-unsafe-argument
                   formatter(item.value, item.name, item, index, item.payload)
                 ) : (
                   <>
@@ -203,8 +207,11 @@ function ChartTooltipContent({
                             },
                           )}
                           style={
+                            // oxlint-disable-next-line typescript/consistent-type-assertions, typescript/no-unsafe-type-assertion
                             {
+                              // oxlint-disable-next-line typescript/no-unsafe-assignment
                               "--color-bg": indicatorColor,
+                              // oxlint-disable-next-line typescript/no-unsafe-assignment
                               "--color-border": indicatorColor,
                             } as CSSProperties
                           }
@@ -309,16 +316,21 @@ function getPayloadConfigFromPayload(config: ChartConfig, payload: unknown, key:
 
   let configLabelKey: string = key;
 
+  // oxlint-disable-next-line typescript/consistent-type-assertions, typescript/no-unsafe-type-assertion
   if (key in payload && typeof payload[key as keyof typeof payload] === "string") {
+    // oxlint-disable-next-line typescript/consistent-type-assertions, typescript/no-unnecessary-type-assertion, typescript/no-unsafe-type-assertion
     configLabelKey = payload[key as keyof typeof payload] as string;
   } else if (
     payloadPayload &&
     key in payloadPayload &&
+    // oxlint-disable-next-line typescript/consistent-type-assertions, typescript/no-unsafe-type-assertion
     typeof payloadPayload[key as keyof typeof payloadPayload] === "string"
   ) {
+    // oxlint-disable-next-line typescript/consistent-type-assertions, typescript/no-unnecessary-type-assertion, typescript/no-unsafe-type-assertion
     configLabelKey = payloadPayload[key as keyof typeof payloadPayload] as string;
   }
 
+  // oxlint-disable-next-line typescript/consistent-type-assertions, typescript/no-unnecessary-type-assertion
   return configLabelKey in config ? config[configLabelKey] : config[key as keyof typeof config];
 }
 

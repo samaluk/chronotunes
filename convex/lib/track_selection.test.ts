@@ -75,6 +75,7 @@ async function createGameWithPlayers(
     sessionId: asSessionId("host-session"),
   });
 
+  // oxlint-disable-next-line typescript/consistent-type-assertions, typescript/no-unnecessary-type-assertion
   return { code, gameId: result.gameId as Id<"games"> };
 }
 
@@ -95,7 +96,9 @@ test("selectTrackForRound returns track within year range", async () => {
   });
 
   expect(track).not.toBeNull();
+  // oxlint-disable-next-line typescript/no-non-null-assertion
   expect(track!.year).toBeGreaterThanOrEqual(1980);
+  // oxlint-disable-next-line typescript/no-non-null-assertion
   expect(track!.year).toBeLessThanOrEqual(2000);
 });
 
@@ -128,13 +131,16 @@ test("selectTrackForRound never returns track already used in game", async () =>
       .filter((q) => q.eq(q.field("lobbyId"), game.lobbyId))
       .collect();
 
+    // oxlint-disable-next-line typescript/no-non-null-assertion, typescript/no-unnecessary-type-assertion
     const player = players[0]!;
     await ctx.db.patch(player._id, {
       timeline: [
         {
           earnedAtRoundNumber: 1,
           earnedBy: "placement",
+          // oxlint-disable-next-line typescript/no-non-null-assertion
           trackId: firstTrack!.trackId,
+          // oxlint-disable-next-line typescript/no-non-null-assertion
           year: firstTrack!.year,
         },
       ],
@@ -148,6 +154,7 @@ test("selectTrackForRound never returns track already used in game", async () =>
 
     await Promise.all(
       rounds
+        // oxlint-disable-next-line typescript/no-non-null-assertion
         .filter((round) => round.trackId !== firstTrack!.trackId)
         .map((round) => ctx.db.delete(round._id)),
     );
@@ -163,6 +170,7 @@ test("selectTrackForRound never returns track already used in game", async () =>
   });
 
   expect(secondTrack).not.toBeNull();
+  // oxlint-disable-next-line typescript/no-non-null-assertion
   expect(secondTrack!.trackId).not.toBe(firstTrack!.trackId);
 });
 
@@ -315,6 +323,8 @@ test("selectTrackForRound respects year range boundaries", async () => {
   });
 
   expect(track).not.toBeNull();
+  // oxlint-disable-next-line typescript/no-non-null-assertion
   expect(track!.year).toBeGreaterThanOrEqual(1985);
+  // oxlint-disable-next-line typescript/no-non-null-assertion
   expect(track!.year).toBeLessThanOrEqual(1995);
 });

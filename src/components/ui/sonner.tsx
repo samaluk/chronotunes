@@ -25,6 +25,7 @@ const Toaster = ({ ...props }: ToasterProps) => {
         warning: <TriangleAlertIcon className="size-4" />,
       }}
       style={
+        // oxlint-disable-next-line typescript/consistent-type-assertions, typescript/no-unsafe-type-assertion
         {
           "--border-radius": "var(--radius)",
           "--normal-bg": "var(--popover)",
@@ -32,7 +33,9 @@ const Toaster = ({ ...props }: ToasterProps) => {
           "--normal-text": "var(--popover-foreground)",
         } as React.CSSProperties
       }
-      theme={theme as ToasterProps["theme"]}
+      theme={
+        theme as ToasterProps["theme"] /* oxlint-disable-line typescript/consistent-type-assertions, typescript/no-unsafe-type-assertion */
+      }
       toastOptions={{
         classNames: {
           toast: "cn-toast",

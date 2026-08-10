@@ -11,6 +11,7 @@ export type { SessionId } from "convex-helpers/server/sessions";
  * Only use this in test files.
  */
 export function asSessionId(id: string): SessionId {
+  // oxlint-disable-next-line typescript/consistent-type-assertions, typescript/no-unsafe-type-assertion
   return id as unknown as SessionId;
 }
 

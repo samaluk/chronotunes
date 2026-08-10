@@ -50,7 +50,11 @@ export function VolumeSlider({ className }: VolumeSliderProps): React.ReactNode 
         className="h-2 w-28"
         max={100}
         min={0}
-        onValueChange={(value: number | readonly number[]) => handleVolumeChange(value as number)}
+        onValueChange={
+          /* oxlint-disable typescript/consistent-type-assertions, typescript/no-unsafe-type-assertion */
+          (value: number | readonly number[]) => handleVolumeChange(value as number)
+          /* oxlint-enable typescript/consistent-type-assertions, typescript/no-unsafe-type-assertion */
+        }
         value={isMuted ? 0 : volume}
       />
     </div>

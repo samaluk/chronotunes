@@ -92,6 +92,7 @@ export const create = mutationWithSession({
     /* oxlint-enable eslint/no-await-in-loop */
 
     const lobbyId = await ctx.db.insert("lobbies", {
+      // oxlint-disable-next-line typescript/no-non-null-assertion
       code: code!,
       hostSessionId: sessionId,
       settings: DEFAULT_SETTINGS,
@@ -109,6 +110,7 @@ export const create = mutationWithSession({
       timelineSize: 0,
     });
 
+    // oxlint-disable-next-line typescript/no-non-null-assertion
     return { code: code! };
   },
 });
@@ -188,6 +190,7 @@ export const leave = mutationWithSession({
       if (remainingPlayers.length === 0) {
         await ctx.db.delete(lobby._id);
       } else {
+        // oxlint-disable-next-line typescript/no-non-null-assertion, typescript/no-unnecessary-type-assertion
         const newHost = remainingPlayers[0]!;
         await ctx.db.patch(newHost._id, { isHost: true });
         await ctx.db.patch(lobby._id, { hostSessionId: newHost.sessionId });

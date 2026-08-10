@@ -38,6 +38,7 @@ export async function selectTrackForRound(
   }
 
   const randomIndex = Math.floor(Math.random() * availableTracks.length);
+  // oxlint-disable-next-line typescript/no-non-null-assertion, typescript/no-unnecessary-type-assertion
   const selectedTrack = availableTracks[randomIndex]!;
 
   return {

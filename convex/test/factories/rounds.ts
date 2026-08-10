@@ -110,7 +110,9 @@ export async function createInPhase(
     phase,
     roundNumber: options.roundNumber ?? 1,
     startedAt: Date.now(),
+    // oxlint-disable-next-line typescript/no-non-null-assertion, typescript/no-unnecessary-type-assertion
     trackId: trackId!,
+    // oxlint-disable-next-line typescript/no-non-null-assertion, typescript/no-unnecessary-type-assertion
     turnPlayerId: turnPlayerId!,
   };
 
@@ -145,6 +147,7 @@ export async function createInPhase(
   return {
     id: roundId,
     record: roundData,
+    // oxlint-disable-next-line typescript/no-non-null-assertion, typescript/no-unnecessary-type-assertion
     turnPlayerId: turnPlayerId!,
   };
 }

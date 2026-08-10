@@ -18,9 +18,11 @@ export function computeValidIndexRange(timeline: TimelineEntry[], year: number):
   }
 
   if (timeline.length === 1) {
+    // oxlint-disable-next-line typescript/no-non-null-assertion, typescript/no-unnecessary-type-assertion
     if (timeline[0]!.year === year) {
       return { max: 1, min: 0 };
     }
+    // oxlint-disable-next-line typescript/no-non-null-assertion, typescript/no-unnecessary-type-assertion
     if (timeline[0]!.year > year) {
       return { max: 0, min: 0 };
     }
@@ -29,6 +31,7 @@ export function computeValidIndexRange(timeline: TimelineEntry[], year: number):
 
   let firstIndexWithYearGreaterThanOrEqual = -1;
   for (let i = 0; i < timeline.length; i++) {
+    // oxlint-disable-next-line typescript/no-non-null-assertion, typescript/no-unnecessary-type-assertion
     if (timeline[i]!.year >= year) {
       firstIndexWithYearGreaterThanOrEqual = i;
       break;
@@ -37,6 +40,7 @@ export function computeValidIndexRange(timeline: TimelineEntry[], year: number):
 
   let lastIndexWithYearLessThanOrEqual = -1;
   for (let i = timeline.length - 1; i >= 0; i--) {
+    // oxlint-disable-next-line typescript/no-non-null-assertion, typescript/no-unnecessary-type-assertion
     if (timeline[i]!.year <= year) {
       lastIndexWithYearLessThanOrEqual = i;
       break;
@@ -56,6 +60,7 @@ export function computeValidIndexRange(timeline: TimelineEntry[], year: number):
 
   const firstSameYearIndex = timeline.findIndex((entry) => entry.year === year);
   const lastSameYearIndex =
+    // oxlint-disable-next-line typescript/no-unsafe-call, typescript/no-unsafe-member-access
     timeline.length - 1 - [...timeline].toReversed().findIndex((entry) => entry.year === year);
   const sameYearCount = lastSameYearIndex - firstSameYearIndex + 1;
 

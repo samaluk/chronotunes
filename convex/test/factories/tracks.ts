@@ -48,6 +48,7 @@ export async function create(
     trackId = await ctx.db.insert("tracks", data);
   });
 
+  // oxlint-disable-next-line typescript/no-non-null-assertion
   return { id: trackId!, record: data };
 }
 

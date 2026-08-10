@@ -76,6 +76,7 @@ test("start creates game with active status", async () => {
   const lobby = await t.query(api.lobbies.get, { code });
 
   const result = await t.mutation(api.games.start, {
+    // oxlint-disable-next-line typescript/no-non-null-assertion
     lobbyId: lobby!._id,
     sessionId: asSessionId("host-session-start"),
   });
@@ -119,10 +120,12 @@ test("start randomizes turn order", async () => {
   const lobby = await t.query(api.lobbies.get, { code });
 
   await t.mutation(api.games.start, {
+    // oxlint-disable-next-line typescript/no-non-null-assertion
     lobbyId: lobby!._id,
     sessionId: asSessionId("host-session-order"),
   });
 
+  // oxlint-disable-next-line typescript/no-non-null-assertion
   const game = await t.query(api.games.getCurrent, { lobbyId: lobby!._id });
 
   expect(game).not.toBeNull();
@@ -144,6 +147,7 @@ test("start rejects when less than 2 players", async () => {
 
   await expect(
     t.mutation(api.games.start, {
+      // oxlint-disable-next-line typescript/no-non-null-assertion
       lobbyId: lobby!._id,
       sessionId: asSessionId("host-session-min"),
     }),
@@ -170,6 +174,7 @@ test("start rejects when caller is not host", async () => {
 
   await expect(
     t.mutation(api.games.start, {
+      // oxlint-disable-next-line typescript/no-non-null-assertion
       lobbyId: lobby!._id,
       sessionId: asSessionId("player-session-auth"),
     }),
@@ -195,12 +200,14 @@ test("start rejects when game already started", async () => {
   const lobby = await t.query(api.lobbies.get, { code });
 
   await t.mutation(api.games.start, {
+    // oxlint-disable-next-line typescript/no-non-null-assertion
     lobbyId: lobby!._id,
     sessionId: asSessionId("host-session-started"),
   });
 
   await expect(
     t.mutation(api.games.start, {
+      // oxlint-disable-next-line typescript/no-non-null-assertion
       lobbyId: lobby!._id,
       sessionId: asSessionId("host-session-started"),
     }),
@@ -226,6 +233,7 @@ test("start creates first round with phase placing", async () => {
   const lobby = await t.query(api.lobbies.get, { code });
 
   const result = await t.mutation(api.games.start, {
+    // oxlint-disable-next-line typescript/no-non-null-assertion
     lobbyId: lobby!._id,
     sessionId: asSessionId("host-session-round"),
   });
@@ -261,10 +269,12 @@ test("start sets turnPlayerId correctly", async () => {
   const lobby = await t.query(api.lobbies.get, { code });
 
   await t.mutation(api.games.start, {
+    // oxlint-disable-next-line typescript/no-non-null-assertion
     lobbyId: lobby!._id,
     sessionId: asSessionId("host-session-turn"),
   });
 
+  // oxlint-disable-next-line typescript/no-non-null-assertion
   const game = await t.query(api.games.getCurrent, { lobbyId: lobby!._id });
 
   expect(game?.turnPlayerId).toBeDefined();
@@ -290,6 +300,7 @@ test("start creates game with correct structure", async () => {
   const lobby = await t.query(api.lobbies.get, { code });
 
   const result = await t.mutation(api.games.start, {
+    // oxlint-disable-next-line typescript/no-non-null-assertion
     lobbyId: lobby!._id,
     sessionId: asSessionId("host-session-structure"),
   });
@@ -340,30 +351,41 @@ async function setupGameForResolve(t: ReturnType<typeof convexTest>) {
   const lobby = await t.query(api.lobbies.get, { code });
 
   await t.mutation(api.games.start, {
+    // oxlint-disable-next-line typescript/no-non-null-assertion
     lobbyId: lobby!._id,
     sessionId: asSessionId("host-resolve"),
   });
 
+  // oxlint-disable-next-line typescript/no-non-null-assertion
   const game = await t.query(api.games.getCurrent, { lobbyId: lobby!._id });
+  // oxlint-disable-next-line typescript/no-non-null-assertion
   const _roundId = game!.currentRoundId!;
 
   await t.run(async (ctx) => {
+    // oxlint-disable-next-line typescript/no-non-null-assertion, typescript/no-unsafe-assignment
     const round = await ctx.db.get(game!.currentRoundId!);
+    // oxlint-disable-next-line typescript/no-unsafe-argument, typescript/no-unsafe-assignment, typescript/no-unsafe-member-access
     const track = round ? await ctx.db.get(round.trackId) : null;
 
     if (!(round && track)) {
       return;
     }
 
+    // oxlint-disable-next-line typescript/no-unsafe-argument, typescript/no-unsafe-assignment, typescript/no-unsafe-member-access
     const turnPlayer = await ctx.db.get(round.turnPlayerId);
 
+    // oxlint-disable-next-line typescript/no-unsafe-member-access
     if (turnPlayer && turnPlayer.timeline.length === 0) {
+      // oxlint-disable-next-line typescript/no-unsafe-argument, typescript/no-unsafe-member-access
       await ctx.db.patch(turnPlayer._id, {
         timeline: [
           {
+            // oxlint-disable-next-line typescript/no-unsafe-assignment, typescript/no-unsafe-member-access
             earnedAtRoundNumber: round.roundNumber,
             earnedBy: "placement",
+            // oxlint-disable-next-line typescript/no-unsafe-assignment, typescript/no-unsafe-member-access
             trackId: track._id,
+            // oxlint-disable-next-line typescript/no-unsafe-assignment, typescript/no-unsafe-member-access
             year: track.year,
           },
         ],
@@ -372,35 +394,44 @@ async function setupGameForResolve(t: ReturnType<typeof convexTest>) {
     }
   });
 
+  // oxlint-disable-next-line typescript/no-non-null-assertion
   return { lobbyId: lobby!._id };
 }
 
 async function placeDummyBets(t: ReturnType<typeof convexTest>, lobbyId: string) {
   const game = await t.query(api.games.getCurrent, {
+    // oxlint-disable-next-line typescript/consistent-type-assertions, typescript/no-unsafe-type-assertion
     lobbyId: lobbyId as Id<"lobbies">,
   });
+  // oxlint-disable-next-line typescript/no-non-null-assertion
   const turnPlayerId = game!.turnPlayerId!;
 
   const players = await t.run(
     async (ctx) =>
+      // oxlint-disable-next-line typescript/no-unsafe-return
       await ctx.db
         .query("players")
         .filter((q) => q.eq(q.field("lobbyId"), lobbyId))
         .collect(),
   );
 
+  // oxlint-disable-next-line typescript/no-non-null-assertion, typescript/no-unsafe-assignment, typescript/no-unsafe-return
   const round = await t.run(async (ctx) => await ctx.db.get(game!.currentRoundId!));
 
+  // oxlint-disable-next-line typescript/no-unsafe-assignment, typescript/no-unsafe-member-access
   const placementIndex = round?.placement?.proposedIndex ?? 0;
   const proposedIndex = placementIndex === 0 ? 1 : 0;
 
+  // oxlint-disable-next-line typescript/no-unsafe-member-access
   const nonTurnPlayers = players.filter((player) => player._id !== turnPlayerId);
 
   await Promise.all(
     nonTurnPlayers.map((player) =>
       t.mutation(api.bets.preview, {
+        // oxlint-disable-next-line typescript/consistent-type-assertions, typescript/no-unsafe-type-assertion
         lobbyId: lobbyId as Id<"lobbies">,
         proposedIndex,
+        // oxlint-disable-next-line typescript/no-unsafe-argument, typescript/no-unsafe-member-access
         sessionId: asSessionId(player.sessionId),
       }),
     ),
@@ -409,7 +440,9 @@ async function placeDummyBets(t: ReturnType<typeof convexTest>, lobbyId: string)
   await Promise.all(
     nonTurnPlayers.map((player) =>
       t.mutation(api.bets.lockIn, {
+        // oxlint-disable-next-line typescript/consistent-type-assertions, typescript/no-unsafe-type-assertion
         lobbyId: lobbyId as Id<"lobbies">,
+        // oxlint-disable-next-line typescript/no-unsafe-argument, typescript/no-unsafe-member-access
         sessionId: asSessionId(player.sessionId),
       }),
     ),
@@ -418,24 +451,30 @@ async function placeDummyBets(t: ReturnType<typeof convexTest>, lobbyId: string)
 
 async function declineAllNonTurnPlayers(t: ReturnType<typeof convexTest>, lobbyId: string) {
   const game = await t.query(api.games.getCurrent, {
+    // oxlint-disable-next-line typescript/consistent-type-assertions, typescript/no-unsafe-type-assertion
     lobbyId: lobbyId as Id<"lobbies">,
   });
+  // oxlint-disable-next-line typescript/no-non-null-assertion
   const turnPlayerId = game!.turnPlayerId!;
 
   const players = await t.run(
     async (ctx) =>
+      // oxlint-disable-next-line typescript/no-unsafe-return
       await ctx.db
         .query("players")
         .filter((q) => q.eq(q.field("lobbyId"), lobbyId))
         .collect(),
   );
 
+  // oxlint-disable-next-line typescript/no-unsafe-member-access
   const nonTurnPlayers = players.filter((player) => player._id !== turnPlayerId);
 
   await Promise.all(
     nonTurnPlayers.map((player) =>
       t.mutation(api.rounds.declineBet, {
+        // oxlint-disable-next-line typescript/consistent-type-assertions, typescript/no-unsafe-type-assertion
         lobbyId: lobbyId as Id<"lobbies">,
+        // oxlint-disable-next-line typescript/no-unsafe-argument, typescript/no-unsafe-member-access
         sessionId: asSessionId(player.sessionId),
       }),
     ),
@@ -461,12 +500,14 @@ test("skipTurn rejects when caller is not host", async () => {
   const lobby = await t.query(api.lobbies.get, { code });
 
   await t.mutation(api.games.start, {
+    // oxlint-disable-next-line typescript/no-non-null-assertion
     lobbyId: lobby!._id,
     sessionId: asSessionId("host-skip-auth"),
   });
 
   await expect(
     t.mutation(api.games.skipTurn, {
+      // oxlint-disable-next-line typescript/no-non-null-assertion
       lobbyId: lobby!._id,
       sessionId: asSessionId("player-skip-auth"),
     }),
@@ -485,6 +526,7 @@ test("skipTurn rejects when no active game", async () => {
 
   await expect(
     t.mutation(api.games.skipTurn, {
+      // oxlint-disable-next-line typescript/no-non-null-assertion
       lobbyId: lobby!._id,
       sessionId: asSessionId("host-skip-game"),
     }),
@@ -501,6 +543,7 @@ test("skipTurn rejects when game is not active", async () => {
   const game = await t.query(api.games.getCurrent, { lobbyId });
 
   await t.run(async (ctx) => {
+    // oxlint-disable-next-line typescript/no-non-null-assertion
     await ctx.db.patch(game!._id, { status: "finished" });
   });
 
@@ -521,8 +564,10 @@ test("skipTurn advances to next player", async () => {
 
   const game = await t.query(api.games.getCurrent, { lobbyId });
 
+  // oxlint-disable-next-line typescript/no-non-null-assertion
   const turnPlayerId = game!.turnPlayerId!;
 
+  // oxlint-disable-next-line typescript/no-non-null-assertion
   const nonTurnPlayerId = game!.turnOrder.find((id) => id !== turnPlayerId)!;
 
   const nonTurnPlayer = await t.run(async (ctx) => await ctx.db.get(nonTurnPlayerId));
@@ -530,21 +575,27 @@ test("skipTurn advances to next player", async () => {
   const nonTurnSessionId = nonTurnPlayer?.sessionId ?? "player1-resolve";
 
   await t.run(async (ctx) => {
+    // oxlint-disable-next-line typescript/no-non-null-assertion
     const round = await ctx.db.get(game!.currentRoundId!);
+    // oxlint-disable-next-line typescript/no-non-null-assertion, typescript/no-unnecessary-type-assertion
     const track = await ctx.db.get(round!.trackId!);
 
+    // oxlint-disable-next-line typescript/no-non-null-assertion
     await ctx.db.patch(round!._id, {
       phase: "betting",
       placement: { proposedIndex: 100, submittedAt: Date.now() },
     });
 
     const player = await ctx.db.get(turnPlayerId);
+    // oxlint-disable-next-line typescript/no-non-null-assertion
     await ctx.db.patch(player!._id, {
       timeline: [
         {
           earnedAtRoundNumber: 1,
           earnedBy: "placement",
+          // oxlint-disable-next-line typescript/no-non-null-assertion
           trackId: track!._id,
+          // oxlint-disable-next-line typescript/no-non-null-assertion
           year: track!.year + 10,
         },
       ],
@@ -583,10 +634,12 @@ test("resolveAndNext sets round phase to resolved", async () => {
   const { lobbyId } = await setupGameForResolve(t);
 
   const game = await t.query(api.games.getCurrent, { lobbyId });
+  // oxlint-disable-next-line typescript/no-non-null-assertion
   const roundId = game!.currentRoundId!;
 
   await t.run(async (ctx) => {
     const round = await ctx.db.get(roundId);
+    // oxlint-disable-next-line typescript/no-non-null-assertion
     await ctx.db.patch(round!._id, {
       phase: "betting",
       placement: { proposedIndex: 0, submittedAt: Date.now() },
@@ -600,6 +653,7 @@ test("resolveAndNext sets round phase to resolved", async () => {
     sessionId: asSessionId("host-resolve"),
   });
 
+  // oxlint-disable-next-line typescript/no-non-null-assertion
   const updatedRound = await t.run(async (ctx) => await ctx.db.get(game!.currentRoundId!));
 
   expect(updatedRound?.phase).toBe("resolved");
@@ -617,7 +671,9 @@ test("resolveAndNext handles empty betting phase", async () => {
   const game = await t.query(api.games.getCurrent, { lobbyId });
 
   await t.run(async (ctx) => {
+    // oxlint-disable-next-line typescript/no-non-null-assertion
     const round = await ctx.db.get(game!.currentRoundId!);
+    // oxlint-disable-next-line typescript/no-non-null-assertion
     await ctx.db.patch(round!._id, {
       phase: "betting",
       placement: { proposedIndex: 0, submittedAt: Date.now() },
@@ -673,24 +729,31 @@ test("resolveAndNext handles no tracks available", async () => {
   const lobby = await t.query(api.lobbies.get, { code });
 
   await t.mutation(api.games.start, {
+    // oxlint-disable-next-line typescript/no-non-null-assertion
     lobbyId: lobby!._id,
     sessionId: asSessionId("host-notracks"),
   });
 
+  // oxlint-disable-next-line typescript/no-non-null-assertion
   const game = await t.query(api.games.getCurrent, { lobbyId: lobby!._id });
+  // oxlint-disable-next-line typescript/no-non-null-assertion
   const roundId = game!.currentRoundId!;
 
   await t.run(async (ctx) => {
+    // oxlint-disable-next-line typescript/no-non-null-assertion
     const round = await ctx.db.get(game!.currentRoundId!);
+    // oxlint-disable-next-line typescript/no-non-null-assertion
     await ctx.db.patch(round!._id, {
       phase: "betting",
       placement: { proposedIndex: 0, submittedAt: Date.now() },
     });
   });
 
+  // oxlint-disable-next-line typescript/no-non-null-assertion
   await placeDummyBets(t, lobby!._id);
 
   await t.mutation(api.games.resolveRound, {
+    // oxlint-disable-next-line typescript/no-non-null-assertion
     lobbyId: lobby!._id,
     sessionId: asSessionId("host-notracks"),
   });
@@ -699,6 +762,7 @@ test("resolveAndNext handles no tracks available", async () => {
   expect(resolvedRound?.phase).toBe("resolved");
 
   const result = await t.mutation(api.games.resolveAndNext, {
+    // oxlint-disable-next-line typescript/no-non-null-assertion
     lobbyId: lobby!._id,
     sessionId: asSessionId("host-notracks"),
   });
@@ -756,6 +820,7 @@ test("start sets all players' coins to lobby's startingCoins setting", async () 
   }
 
   await t.mutation(api.games.start, {
+    // oxlint-disable-next-line typescript/no-non-null-assertion
     lobbyId: lobby!._id,
     sessionId: asSessionId("host-coins-start"),
   });
@@ -809,6 +874,7 @@ test("start ignores settings changes and uses final lobby startingCoins", async 
   const lobby = await t.query(api.lobbies.get, { code });
 
   await t.mutation(api.games.start, {
+    // oxlint-disable-next-line typescript/no-non-null-assertion
     lobbyId: lobby!._id,
     sessionId: asSessionId("host-coins-final"),
   });

@@ -32,6 +32,7 @@ export async function create(
   turnOrder: Id<"players">[],
   overrides: GameOverrides = {},
 ): Promise<{ id: Id<"games">; record: Game }> {
+  // oxlint-disable-next-line typescript/no-non-null-assertion, typescript/no-unnecessary-type-assertion
   const turnPlayerId = overrides.turnPlayerId ?? turnOrder[0]!;
 
   const data: Game = {
@@ -71,6 +72,7 @@ export async function createWithRound(
   roundId: Id<"rounds">;
   turnPlayerId: Id<"players">;
 }> {
+  // oxlint-disable-next-line typescript/no-non-null-assertion, typescript/no-unnecessary-type-assertion
   const turnPlayerId = options.gameOverrides?.turnPlayerId ?? turnOrder[0]!;
   let trackId: Id<"tracks"> | undefined;
 
@@ -93,6 +95,7 @@ export async function createWithRound(
   };
 
   const roundData = {
+    // oxlint-disable-next-line typescript/consistent-type-assertions, typescript/no-unsafe-type-assertion
     gameId: "" as Id<"games">,
     phase: options.roundOverrides?.phase ?? "placing",
     roundNumber: options.roundOverrides?.roundNumber ?? 1,
@@ -120,8 +123,10 @@ export async function createWithRound(
     gameId = await ctx.db.insert("games", gameData);
     await ctx.db.patch(lobbyId, { activeGameId: gameId, status: "in_game" });
 
+    // oxlint-disable-next-line typescript/no-non-null-assertion
     roundData.gameId = gameId!;
     roundId = await ctx.db.insert("rounds", roundData);
+    // oxlint-disable-next-line typescript/no-non-null-assertion, typescript/no-unnecessary-type-assertion
     await ctx.db.patch(gameId!, { currentRoundId: roundId });
   });
 
@@ -170,6 +175,7 @@ export async function createInPhase(
     throw new Error("No players found in lobby");
   }
 
+  // oxlint-disable-next-line typescript/no-non-null-assertion, typescript/no-unnecessary-type-assertion
   const turnPlayerId = playerIds[0]!;
   let trackId: Id<"tracks"> | undefined;
 
@@ -192,6 +198,7 @@ export async function createInPhase(
   };
 
   const roundData: Round = {
+    // oxlint-disable-next-line typescript/consistent-type-assertions, typescript/no-unsafe-type-assertion
     gameId: "" as Id<"games">,
     phase,
     roundNumber: options.roundNumber ?? 1,
@@ -225,8 +232,10 @@ export async function createInPhase(
     gameId = await ctx.db.insert("games", gameData);
     await ctx.db.patch(lobbyId, { activeGameId: gameId, status: "in_game" });
 
+    // oxlint-disable-next-line typescript/no-non-null-assertion
     roundData.gameId = gameId!;
     roundId = await ctx.db.insert("rounds", roundData);
+    // oxlint-disable-next-line typescript/no-non-null-assertion, typescript/no-unnecessary-type-assertion
     await ctx.db.patch(gameId!, { currentRoundId: roundId });
   });
 
@@ -253,6 +262,7 @@ export async function findCurrent(
     if (lobby?.activeGameId) {
       const game = await ctx.db.get(lobby.activeGameId);
       if (game) {
+        // oxlint-disable-next-line typescript/consistent-type-assertions, typescript/no-unnecessary-type-assertion
         result = { id: game._id, record: game as Game };
       }
     }
@@ -270,6 +280,7 @@ export async function findById(
   await t.run(async (ctx: QueryCtx) => {
     const game = await ctx.db.get(gameId);
     if (game) {
+      // oxlint-disable-next-line typescript/consistent-type-assertions, typescript/no-unnecessary-type-assertion
       result = { id: game._id, record: game as Game };
     }
   });

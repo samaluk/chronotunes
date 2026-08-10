@@ -15,9 +15,11 @@ function Slider({
 }: SliderPrimitive.Root.Props) {
   const _values = useMemo(() => {
     if (Array.isArray(value)) {
+      // oxlint-disable-next-line typescript/no-unsafe-return
       return value;
     }
     if (Array.isArray(defaultValue)) {
+      // oxlint-disable-next-line typescript/no-unsafe-return
       return defaultValue;
     }
     return [min, max];

@@ -82,6 +82,7 @@ export function GameResults({ lobbyId, code: _code }: GameResultsProps): React.R
     .toSorted((a, b) => a.roundNumber - b.roundNumber)
     .map((round) => ({
       roundNumber: round.roundNumber,
+      // oxlint-disable-next-line typescript/no-non-null-assertion
       track: round.track!,
     }));
 

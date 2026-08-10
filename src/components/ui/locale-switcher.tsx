@@ -28,6 +28,7 @@ export const LocaleSwitcher = memo((): React.ReactNode => {
       return;
     }
     startTransition(() => {
+      // oxlint-disable-next-line typescript/consistent-type-assertions, typescript/no-unnecessary-type-assertion
       changeLocaleAction(newLocale as Locale).catch((error) => {
         console.error("Failed to change locale", error);
       });

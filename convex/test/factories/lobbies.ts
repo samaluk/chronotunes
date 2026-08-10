@@ -121,6 +121,7 @@ export async function create(
   return {
     hostPlayerId,
     id: lobbyId,
+    // oxlint-disable-next-line typescript/consistent-type-assertions, typescript/no-unsafe-type-assertion
     record: { code, hostSessionId, settings, status } as unknown as Record<string, unknown>,
   };
 }
@@ -205,6 +206,7 @@ export async function createWithPlayers(
   return {
     id: lobbyId,
     playerIds,
+    // oxlint-disable-next-line typescript/consistent-type-assertions, typescript/no-unsafe-type-assertion
     record: { code, hostSessionId, settings, status } as unknown as Record<string, unknown>,
   };
 }
@@ -232,6 +234,7 @@ export async function createWithGame(
 
   await t.run(async (ctx: MutationCtx) => {
     const turnOrder = lobbyResult.playerIds;
+    // oxlint-disable-next-line typescript/no-non-null-assertion, typescript/no-unnecessary-type-assertion
     const turnPlayerId = turnOrder[0]!;
 
     gameId = await ctx.db.insert("games", {
@@ -271,8 +274,11 @@ export async function createWithGame(
 
   return {
     ...lobbyResult,
+    // oxlint-disable-next-line typescript/no-non-null-assertion
     gameId: gameId!,
+    // oxlint-disable-next-line typescript/consistent-type-assertions, typescript/no-non-null-assertion, typescript/no-unnecessary-type-assertion, typescript/no-unsafe-type-assertion
     record: updatedLobby!.record as unknown as Record<string, unknown>,
+    // oxlint-disable-next-line typescript/no-non-null-assertion
     roundId: roundId!,
   };
 }
@@ -290,6 +296,7 @@ export async function findByCode(
       .first();
 
     if (lobby) {
+      // oxlint-disable-next-line typescript/consistent-type-assertions, typescript/no-unnecessary-type-assertion
       result = { id: lobby._id, record: lobby as Record<string, unknown> };
     }
   });
@@ -306,6 +313,7 @@ export async function findById(
   await t.run(async (ctx: QueryCtx) => {
     const lobby = await ctx.db.get(lobbyId);
     if (lobby) {
+      // oxlint-disable-next-line typescript/consistent-type-assertions, typescript/no-unnecessary-type-assertion
       result = { id: lobby._id, record: lobby as Record<string, unknown> };
     }
   });
