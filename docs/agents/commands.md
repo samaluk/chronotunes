@@ -51,6 +51,19 @@ pnpm test --watch           # Watch mode
 pnpx --yes frog@1.0.15 list  # Validate the unresolved friction inbox
 ```
 
+## Git hooks (hk)
+
+```bash
+mise install                 # Install the pinned hk version
+hk install --global          # Install hooks once for all hk-enabled repositories
+hk check --all               # Check all repository files without modifying them
+hk fix --all                 # Fix all repository files
+hk run pre-commit --all      # Exercise the configured pre-commit hook
+```
+
+The pre-commit hook uses hk's built-in Oxfmt and Oxlint integrations, coordinates fixes with
+file locks, stashes unstaged changes, and runs the read-only Fallow gate concurrently.
+
 ## Pre-commit (must pass)
 
 ```bash
