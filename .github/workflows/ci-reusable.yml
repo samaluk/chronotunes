@@ -18,9 +18,6 @@ jobs:
 
       - uses: ./.github/actions/setup-toolchain
 
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
       - name: Lint and format (Oxlint + Oxfmt)
         run: pnpm check
 
