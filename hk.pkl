@@ -1,0 +1,34 @@
+amends "package://github.com/jdx/hk/releases/download/v1.54.1/hk@1.54.1#/Config.pkl"
+import "package://github.com/jdx/hk/releases/download/v1.54.1/hk@1.54.1#/Builtins.pkl"
+
+fail_fast = false
+
+local linters = new Mapping<String, Step> {
+  ["oxfmt"] = (Builtins.oxfmt) {
+    prefix = "pnpm exec --"
+  }
+  ["oxlint"] = (Builtins.ox_lint) {
+    prefix = "pnpm exec --"
+    check = "oxlint {{files}}"
+    fix = "oxlint --fix {{files}}"
+  }
+  ["fallow"] {
+    check = "pnpm fallow:ci"
+    stomp = true
+  }
+}
+
+hooks {
+  ["pre-commit"] {
+    fix = true
+    stash = "git"
+    steps = linters
+  }
+  ["check"] {
+    steps = linters
+  }
+  ["fix"] {
+    fix = true
+    steps = linters
+  }
+}
