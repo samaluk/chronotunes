@@ -19,11 +19,10 @@ runs:
       with:
         node-version-file: package.json
 
-    # Composite actions do not pass setup-node's PATH to nested JS actions; standalone
-    # installs @pnpm/exe without using the runner's default Node 20.
+    # Install pnpm only after the project Node version is on PATH. Avoid standalone
+    # mode because @pnpm/exe self-updates can race or leave broken shims.
     - uses: pnpm/action-setup@v6.0.10
       with:
-        standalone: true
         # Self-hosted runners run concurrent jobs on one machine; the default ~/setup-pnpm
         # is shared and pnpm version switches in one job can break another job's shims.
         dest: ${{ runner.environment == 'self-hosted' && format('{0}/setup-pnpm', runner.temp) || '~/setup-pnpm' }}
