@@ -76,7 +76,7 @@
     "convex-test": "0.0.54",
     "fallow": "3.14.0",
     "jsdom": "30.0.1",
-    "oxfmt": "0.62.0",
+    "oxfmt": "0.63.0",
     "oxlint": "1.77.0",
     "oxlint-tsgolint": "7.0.2001",
     "scrape-youtube": "2.4.0",
