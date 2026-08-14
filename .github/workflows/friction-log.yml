@@ -20,7 +20,7 @@ jobs:
     if: >-
       (github.event_name != 'push' || github.ref_name == github.event.repository.default_branch) && (github.event_name != 'issues' || github.event.issue.user.login == 'github-actions[bot]')
     # USE_SELF_HOSTED_RUNNERS repo variable (Settings → Actions → Variables)
-    runs-on: ${{ vars.USE_SELF_HOSTED_RUNNERS == 'true' && (vars.SELF_HOSTED_RUNNER_LABELS != '' && fromJSON(vars.SELF_HOSTED_RUNNER_LABELS) || fromJSON('["self-hosted"]')) || 'ubuntu-latest' }}
+    runs-on: ${{ github.event.pull_request.head.repo.fork && 'ubuntu-latest' || (vars.USE_SELF_HOSTED_RUNNERS == 'true' && fromJSON('["self-hosted","docker"]') || 'ubuntu-slim') }}
     permissions:
       contents: write
       issues: write
