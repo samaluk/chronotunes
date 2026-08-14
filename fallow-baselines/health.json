@@ -240,11 +240,6 @@
       "crap_moderate": {
         "count": 1
       }
-    },
-    "src/i18n/request.ts": {
-      "crap_moderate": {
-        "count": 1
-      }
     }
   },
   "identity_finding_counts": {
@@ -565,11 +560,6 @@
       }
     },
     "src/components/ui/toggle-group.tsx\u0000ToggleGroupItem": {
-      "crap_moderate": {
-        "count": 1
-      }
-    },
-    "src/i18n/request.ts\u0000default": {
       "crap_moderate": {
         "count": 1
       }
