@@ -8,10 +8,10 @@ type Locale = (typeof routing.locales)[number];
 // oxlint-disable-next-line typescript/consistent-type-assertions, typescript/no-unsafe-type-assertion
 const isLocale = (value: string): value is Locale => routing.locales.includes(value as Locale);
 
-export default getRequestConfig(async ({ requestLocale }) => {
+export default getRequestConfig(async () => {
   const store = await cookies();
   const cookieLocale = store.get("locale")?.value;
-  let locale = (await requestLocale) || cookieLocale || routing.defaultLocale;
+  let locale = cookieLocale || routing.defaultLocale;
 
   // Ensure locale is valid, fallback to default
   if (!isLocale(locale)) {
