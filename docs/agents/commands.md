@@ -75,11 +75,10 @@ pnpm test
 
 ## CI / self-hosted runners
 
-CI runs on GitHub-hosted `ubuntu-latest` by default. To opt into a self-hosted runner, set repository variables under **Settings → Actions → Variables**:
+Each workflow job declares its own `runs-on` under **.github/workflows/**, gated on the `USE_SELF_HOSTED_RUNNERS` repository variable (**Settings → Actions → Variables**):
 
-| Variable                    | Value                                                  |
-| --------------------------- | ------------------------------------------------------ |
-| `USE_SELF_HOSTED_RUNNERS`   | `true` to enable                                       |
-| `SELF_HOSTED_RUNNER_LABELS` | (optional) JSON array, e.g. `["self-hosted", "macOS"]` |
+| Variable                  | Value                             |
+| ------------------------- | --------------------------------- |
+| `USE_SELF_HOSTED_RUNNERS` | `true` to use self-hosted runners |
 
-Leave `USE_SELF_HOSTED_RUNNERS` unset to keep using `ubuntu-latest`.
+When enabled, jobs route to the `[self-hosted, docker]` container runners (node24 toolchain); fork PRs always fall back to GitHub-hosted `ubuntu-latest`. When disabled (or the variable is unset), jobs use GitHub-hosted runners — `ubuntu-slim` for light jobs (`actionlint`, `friction-log`), `ubuntu-latest` for CI/build/agent jobs (`ci-reusable`, `pullfrog`).
