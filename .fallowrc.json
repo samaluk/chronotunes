@@ -16,18 +16,26 @@
     "vitest.setup.ts",
     "convex/test.setup.ts"
   ],
-  "ignoreFindings": ["convex/_generated/**"],
+  "ignoreFindings": [
+    "convex/_generated/**"
+  ],
   "ignoreExports": [
     {
       "file": "src/components/ui/*.tsx",
-      "exports": ["*"]
+      "exports": [
+        "*"
+      ]
     },
     {
       "file": "src/i18n/routing.ts",
-      "exports": ["usePathname"]
+      "exports": [
+        "usePathname"
+      ]
     }
   ],
-  "ignoreUnresolvedImports": ["../../messages/**"],
+  "ignoreUnresolvedImports": [
+    "../../messages/**"
+  ],
   "ignoreDependencies": [
     "@base-ui/react",
     "class-variance-authority",
@@ -48,7 +56,11 @@
   "typeAware": {
     "enabled": true,
     "require": "best-effort",
-    "projects": ["tsconfig.json", "tsconfig.tests.json", "convex/tsconfig.json"]
+    "projects": [
+      "tsconfig.json",
+      "tsconfig.tests.json",
+      "convex/tsconfig.json"
+    ]
   },
   "rules": {
     "private-type-leaks": "warn"
@@ -77,7 +89,10 @@
       "analysisIdentity": {
         "mode": "type-aware",
         "semantic_schema_version": 2,
-        "capabilities": ["symbol-use", "api-surface"],
+        "capabilities": [
+          "symbol-use",
+          "api-surface"
+        ],
         "project_config_hash": "sha256:924ab077ee75a72c18d7260d4c0f3fe6e252860bd20b92d99cc8864a43287f6a",
         "backend_family": "typescript-go",
         "completeness": "partial"
