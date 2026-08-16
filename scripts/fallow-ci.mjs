@@ -11,7 +11,7 @@
  */
 import { spawnSync } from "node:child_process";
 
-const FALLOW_VERSION = "3.14.0";
+const FALLOW_VERSION = "3.15.0";
 
 function run(command, args, env = process.env, { allowIssueExit = false } = {}) {
   // oxlint-disable-next-line typescript/no-unsafe-argument
