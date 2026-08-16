@@ -11,3 +11,41 @@ jobs:
   ci:
     uses: ./.github/workflows/ci-reusable.yml
     secrets: inherit
+
+  # Changed-code Fallow audit: fails the PR on newly introduced findings,
+  # surfaces inline annotations, a sticky PR summary, and SARIF for Code
+  # Scanning. The full-repo ratchet (baselines + regression + freshness) runs
+  # in the `ci` job above via `pnpm fallow:ci`; this job covers the PR diff.
+  fallow-audit:
+    # USE_SELF_HOSTED_RUNNERS repo variable (Settings → Actions → Variables)
+    runs-on: ${{ github.event.pull_request.head.repo.fork && 'ubuntu-latest' || (vars.USE_SELF_HOSTED_RUNNERS == 'true' && fromJSON('["self-hosted","docker"]') || 'ubuntu-latest') }}
+    permissions:
+      contents: read
+      id-token: write
+      pull-requests: write
+      checks: write
+      security-events: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+
+      - uses: ./.github/actions/setup-toolchain
+
+      # Coverage feeds health CRAP scores in the audit's complexity sub-analysis.
+      - name: Unit tests (with coverage)
+        run: pnpm test:coverage
+
+      # Version: omitted so the action resolves the package.json `fallow` pin
+      # (3.16.0), keeping the CI binary aligned with the local dependency.
+      - name: Fallow changed-code audit
+        uses: fallow-rs/fallow@v3
+        with:
+          command: audit
+          gate: new-only
+          type-aware: auto
+          fail-on-issues: true
+          annotations: true
+          sarif: true
+          comment: true

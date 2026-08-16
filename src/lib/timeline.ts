@@ -11,17 +11,6 @@ export function sortTimelineByYear<T extends Pick<TimelineEntry, "year">>(entrie
   return [...entries].toSorted((a, b) => a.year - b.year);
 }
 
-export function buildTrackMap<T extends { _id: Id<"tracks"> }>(
-  tracks: T[] | undefined,
-): Map<Id<"tracks">, T> {
-  if (!(tracks && Array.isArray(tracks))) {
-    return new Map();
-  }
-  return new Map(
-    tracks.filter((track): track is T => track != null).map((track) => [track._id, track]),
-  );
-}
-
 export function getRevealedTrackMap(
   tracks: {
     trackId: Id<"tracks">;

@@ -1,11 +1,17 @@
 #!/usr/bin/env node
 /**
- * Gate B: embedded regression baseline in .fallowrc.json.
+ * Gate B: embedded regression baseline in .fallowrc.json + type-aware
+ * completeness watch.
  *
- * `fallow dead-code --fail-on-regression` still exits 1 when issues exist even if
- * the regression gate passes. Parse JSON and fail only on count regression.
+ * `fallow dead-code --fail-on-regression` still exits 1 when issues exist even
+ * if the regression gate passes, so this wrapper parses JSON and fails only on:
+ *   - `regression.exceeded` (issue counts grew beyond the committed baseline)
+ *   - `_meta.type_aware.abstained_count` above the committed expectation
+ *     (semantic completeness must not silently regress further)
  */
 import { spawnSync } from "node:child_process";
+
+const MAX_ABSTAINED = 2;
 
 const result = spawnSync(
   "pnpm",
@@ -13,6 +19,7 @@ const result = spawnSync(
     "exec",
     "fallow",
     "dead-code",
+    "--type-aware",
     "--fail-on-regression",
     "--tolerance",
     "0",
@@ -70,11 +77,24 @@ if (regression.status !== "pass") {
   process.exit(1);
 }
 
+// oxlint-disable-next-line typescript/no-unsafe-assignment, typescript/no-unsafe-member-access
+const abstained = report._meta?.type_aware?.abstained_count ?? 0;
+if (abstained > MAX_ABSTAINED) {
+  console.error(
+    `Type-aware completeness regressed: ${abstained} abstained semantic queries (expected at most ${MAX_ABSTAINED}). ` +
+      "The semantic sidecar now covers less evidence than when the baselines were committed. " +
+      "Investigate the abstention reasons (fallow dead-code --type-aware --format json), fix the cause, " +
+      "and only then regenerate baselines.",
+  );
+  process.exit(1);
+}
+
 if (result.status !== 0 && result.status !== 1) {
   process.exit(result.status ?? 2);
 }
 
 console.log(
   // oxlint-disable-next-line typescript/no-unsafe-member-access
-  `Regression baseline OK: ${regression.current_total} issues (baseline ${regression.baseline_total}).`,
+  `Regression baseline OK: ${regression.current_total} issues (baseline ${regression.baseline_total}); ` +
+    `${abstained} abstained semantic queries (at most ${MAX_ABSTAINED}).`,
 );

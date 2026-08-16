@@ -1,134 +1,204 @@
 # Fallow quality ratchet
 
-ChronoTunes uses [Fallow](https://docs.fallow.tools) 3.14 with type-aware TypeScript analysis as a strict quality ratchet. Existing technical debt is baselined; new debt is rejected.
+ChronoTunes uses [Fallow](https://docs.fallow.tools) 3.16.0 with type-aware TypeScript analysis as a strict, continuously improving quality ratchet: existing technical debt is baselined, new debt is rejected, and committed baselines must only move downward.
 
-## Two baseline layers
+## 1. Purpose / quality-ratchet model
 
-### Exact baselines (`fallow-baselines/*.json`)
+Fallow analyzes the whole project graph (unused code, duplication, complexity, architecture boundaries). The ratchet has four complementary guarantees:
 
-Identity-based snapshots of current findings:
+| Gate                       | Mechanism                                                                                    | Fails when                                                                                       |
+| -------------------------- | -------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| **A — exact baselines**    | Identity-matched baselines in `fallow-baselines/*.json`                                      | A finding appears that is not in the committed baseline — even if the total count stays the same |
+| **B — regression counts**  | Embedded `regression.baseline` in `.fallowrc.json` (written by `--save-regression-baseline`) | Dead-code issue counts grow beyond the committed totals (zero tolerance)                         |
+| **B — completeness watch** | `_meta.type_aware.abstained_count` from the type-aware run                                   | The semantic sidecar abstains on more queries than when baselines were committed (currently 2)   |
+| **D — baseline freshness** | `scripts/fallow-baseline-check.mjs` regenerates into a temp workspace and diffs              | Code improved but the committed baselines did not improve with it                                |
 
-| File             | Analysis                                    | Matching mode         |
-| ---------------- | ------------------------------------------- | --------------------- |
-| `dead-code.json` | Unused code, deps, private type leaks       | Per finding identity  |
-| `dupes.json`     | Semantic clone groups (`minOccurrences: 3`) | Per clone fingerprint |
-| `health.json`    | Complexity, CRAP, unit size                 | Per function identity |
+Together these create a one-way ratchet: **worse → fails analysis; better but baseline unchanged → fails freshness; better + baseline reduced → passes**. Regenerating a worse baseline to silence CI is never acceptable.
 
-**Gate A** fails when a finding appears that is not in the committed baseline — even if total count stays the same. Example: remove one unused export and add a different one → CI fails.
+## 2. Fallow version
 
-### Regression baseline (embedded in `.fallowrc.json`)
+Pinned exactly in `package.json` (`devDependencies.fallow`). The local binary (`pnpm exec fallow`) is the same version CI runs — `pnpm fallow:ci` refuses to proceed when the installed CLI does not match the pin. The GitHub Action resolves the same pin. Keep the vendored agent skill in `.agents/skills/fallow/` in sync with the installed package (`rm -rf .agents/skills/fallow && cp -R node_modules/fallow/skills/fallow .agents/skills/fallow`, then re-add the repo-notes section).
 
-The `regression.baseline` block stores issue **counts** from a known-good state. It is written by:
+## 3. Enabled analyses
 
-```bash
-pnpm exec fallow dead-code --save-regression-baseline
+**Dead code** (`fallow dead-code`): unused files/exports/types/deps, private type leaks (**error** — 36 baselined; new leaks fail CI), stale suppressions, unresolved imports, circular deps, re-export cycles, duplicate exports, boundary violations, catalog/override hygiene. Suppression hygiene: `require-suppression-reason: error` — every `fallow-ignore-*` marker must carry a reason.
+
+**Duplication** (`fallow dupes`): semantic mode (Type-2 renamed-variable detection), near-miss detection (`duplicates.near: true` for function-scoped clones with small structural edits), `minLines: 8`, `minTokens: 60`, `minOccurrences: 3` (pair-only clones are below threshold: 70 groups — raising the threshold keeps the report actionable), import wiring excluded. Clone groups carry `spread` (rank with `--top`) and near groups carry `similarity`. No `ignoredClones` are configured: the shadcn UI boilerplate groups stay visible in reports so the real groups (`convex/bets.ts` ↔ `convex/rounds.ts`, test factories) are not buried by blanket suppression.
+
+**Health** (`fallow health`): cyclomatic (20), cognitive (15), CRAP (30), unit size (60), health score, file scores, hotspots, refactoring targets, ownership, type coupling, coverage gaps. Thresholds are the fallow defaults — deliberately not loosened; debt is baselined instead.
+
+**Boundaries** (`fallow list --boundaries`): custom zones matching the actual architecture, enforced at error severity with `coverage.requireAllFiles: true`.
+
+**Security** (`fallow security`): opt-in advisory candidate surfacing. Candidates are _verification requests_ for agents/humans, not deterministic violations — they never gate CI. Currently 2 `open-redirect` candidates (`window.location.href` with dynamic paths in `src/app/landing-page-content.tsx`). Verify and fix them in the normal code-review flow.
+
+**Styling/CSS**: `css-token-drift`, `css-duplicate-block`, `css-selector-complexity`, `css-dead-surface`, `css-broken-reference` run at their default `warn` severity (advisory; reportable via `fallow health --css`).
+
+**Feature flags** (`fallow flags`): not applicable — the app uses no feature-flag library or config-toggle pattern.
+
+**Rule packs** (`rulePacks`): not used — the architectural invariants this repo actually has are expressed by the boundary zones; an artificial pack would add no signal.
+
+## 4. Type-aware configuration / completeness
+
+```jsonc
+"typeAware": {
+  "enabled": true,
+  "require": "best-effort",
+  "projects": ["tsconfig.json", "tsconfig.tests.json", "convex/tsconfig.json"]
+}
 ```
 
-with no path argument (updates `.fallowrc.json` in place).
+All three TypeScript projects are selected: the Next.js app, the Vitest test project, and the Convex backend. `require: complete` is **not supportable here**: the sidecar abstains on 2 candidates (`BetCoinState`, `TimelineEntry` — unused type exports) with reason `dynamic-behavior`, because the declarations are owned by two TypeScript projects (the app project plus the tests project that imports them transitively). This is inherent to the standard app + tests project layout, not fixable without dropping the tests project from the analysis (which would remove test-consumer evidence — worse analysis). With `require: complete`, those 2 abstentions would fail every run.
 
-**Gate B** fails when total dead-code issue count increases beyond tolerance (zero):
+`best-effort` keeps the strongest working mode, and Gate B's completeness watch (max 2 abstained queries) ensures completeness cannot silently regress further. Evidence: `pnpm exec fallow dead-code --type-aware --format json` → `_meta.type_aware.abstained_count` / `abstention_reasons`.
 
-```bash
-pnpm fallow:regression
-# runs scripts/fallow-regression-check.mjs, which reads regression.baseline from .fallowrc.json
+Audit is type-aware too (`audit.typeAware: true`), so the changed-code gate uses the same semantic evidence as the full-repo baselines.
+
+## 5. Architecture boundaries
+
+```jsonc
+"boundaries": {
+  "zones": [
+    { "name": "convex-api", "patterns": ["convex/_generated/**"] },
+    { "name": "backend",    "patterns": ["convex/**"] },
+    { "name": "app",        "patterns": ["src/app/**"] },
+    { "name": "components", "patterns": ["src/components/**"] },
+    { "name": "lib",        "patterns": ["src/lib/**"] },
+    { "name": "i18n",       "patterns": ["src/i18n/**"] }
+  ],
+  "rules": [
+    { "from": "backend",    "allow": ["convex-api"] },
+    { "from": "app",        "allow": ["components", "lib", "i18n", "convex-api"] },
+    { "from": "components", "allow": ["lib", "i18n", "convex-api"] },
+    { "from": "lib",        "allow": ["i18n", "convex-api"] },
+    { "from": "i18n",       "allow": [] }
+  ],
+  "coverage": { "requireAllFiles": true, "allowUnmatched": ["global.d.ts", "next.config.ts", "oxlint.config.ts", "vitest.config.ts", "vitest.setup.ts"] }
+}
 ```
 
-Fallow exits 1 whenever issues exist; the wrapper parses JSON and fails only when `regression.exceeded` is true.
+The model: `convex/_generated/**` is the backend's public API (unrestricted — both sides import it); `backend` may only reach its own generated API; `i18n` is fully isolated; everything else flows `app → components → lib → i18n/convex-api`. `requireAllFiles: true` fails CI when a new source file falls outside every zone (the listed tooling entrypoints are intentional exceptions). Boundary violations are error-severity; current count: 0. Inspect with `pnpm exec fallow list --boundaries`.
 
-Regenerating a worse baseline to silence CI is not acceptable — fix the code or justify narrow config changes.
+## 6. Baseline layers
 
-## Type-aware analysis
+**Exact baselines** (`fallow-baselines/*.json`) — identity-matched:
 
-Enabled in `.fallowrc.json` via `typeAware.enabled: true` with `require: best-effort`. Projects:
+| File             | Analysis                                          | Matching mode                                      |
+| ---------------- | ------------------------------------------------- | -------------------------------------------------- |
+| `dead-code.json` | Unused code, deps, private type leaks, boundaries | Per finding identity                               |
+| `dupes.json`     | Clone groups (semantic + near-miss)               | Per clone fingerprint                              |
+| `health.json`    | Complexity, CRAP, unit size                       | Per function identity (`--baseline-mode identity`) |
 
-- `tsconfig.json` — production sources
-- `tsconfig.tests.json` — Vitest and Convex tests
-- `convex/tsconfig.json` — Convex functions
+**Regression baseline** — issue **counts** embedded in `.fallowrc.json` (`regression.baseline`), written by `fallow dead-code --type-aware --save-regression-baseline`. Current: 86 total issues (48 unused files, 2 unused types, 36 private type leaks).
 
-`best-effort` keeps type-aware refinement on while a handful of candidates abstain (`unsupported_syntax` / dynamic-behavior). Flip-x can use `require: complete`; ChronoTunes stays on best-effort until those abstentions clear. Type-aware analysis does **not** replace `tsc` or Oxlint.
+The dead-code baseline's `analysis_identity` (mode, capabilities, completeness) is checked against the enforcing run — baselines must be regenerated with the same semantic mode they are enforced with (`--type-aware`), which the baseline scripts do.
 
-Check companion status:
-
-```bash
-pnpm fallow:status
-```
-
-## Enabled analyses
-
-**Dead code:** unused files/exports/types/deps, enum/class members, server actions, unresolved imports, circular deps, re-export cycles, stale suppressions, private type leaks (warn).
-
-**Duplication:** semantic mode, `minLines: 8`, `minTokens: 60`, `minOccurrences: 3`, import wiring excluded. Focuses on meaningful copy-paste, not shadcn or test boilerplate.
-
-**Health:** cyclomatic (20), cognitive (15), CRAP (30), unit size (60). Identity baseline tracks per-function hotspots. Use `--hotspots`, `--targets`, `--ownership`, `--type-coupling` for inspection.
-
-## Commands
+## 7. Local commands
 
 ```bash
+pnpm fallow                # combined analysis (human output)
+pnpm fallow:config         # resolved config (validates shapes; run before upgrades)
+pnpm fallow:recommend      # project-tailored config suggestions (read-only)
+pnpm fallow:status         # type-aware companion status
 pnpm fallow:dead-code      # Gate A: dead-code exact baseline
 pnpm fallow:dupes          # Gate A: duplication exact baseline
 pnpm fallow:health         # Gate A: health identity baseline
-pnpm fallow:regression     # Gate B: embedded count regression
-pnpm fallow:audit          # Changed-files review (new-only gate)
-pnpm fallow:ci             # Full CI gate (freshness + A + B on full repo)
-pnpm fallow:baseline:update   # Regenerate all baselines after genuine fixes
-pnpm fallow:baseline:check    # Fail if committed baselines are stale
-pnpm fallow:fix:preview    # Type-aware dry-run fixes
-pnpm fallow:fix            # Apply safe fixes (not run in CI)
+pnpm fallow:audit          # changed-code gate (type-aware, new-only) — the pre-commit gate
+pnpm fallow:regression     # Gate B: regression counts + completeness watch
+pnpm fallow:security       # advisory security candidates (always exit 0; candidates are informational)
+pnpm fallow:suppressions   # inventory of active fallow-ignore markers
+pnpm fallow:ci             # authoritative full ratchet (version + freshness + A + B)
+pnpm fallow:baseline:update  # regenerate every committed baseline (after genuine fixes)
+pnpm fallow:baseline:check   # fail if committed baselines are stale (never mutates the tree)
+pnpm fallow:fix:preview    # dry-run of safe auto-fixes
+pnpm fallow:fix            # apply safe auto-fixes (never in CI)
 ```
 
-## Inspecting findings
+`pnpm fallow:ci` is the local equivalent of the CI gate. Exit codes: 0 = pass, 1 = gate failure (findings beyond baseline / regression / stale baselines), 2 = tool or configuration error. Never use `|| true` around fallow without preserving exit code 2 semantics.
+
+## 8. CI behavior
+
+`.github/workflows/ci-reusable.yml` runs on every PR and push to master:
+
+1. `pnpm check` (oxlint + oxfmt)
+2. `pnpm next:typegen` (tsc)
+3. `pnpm test:coverage` (writes `coverage/coverage-final.json`)
+4. `pnpm fallow:ci` — version pin → type-aware status → coverage precondition → Gate D freshness → Gate A exact baselines → Gate B regression + completeness
+
+`.github/workflows/ci-pull-request.yml` adds a second job using the official `fallow-rs/fallow@v3` action: `command: audit`, `gate: new-only`, `type-aware: auto`, with inline annotations, a sticky PR summary comment, a check run, and SARIF upload to Code Scanning (skipped with a warning on private repos without Advanced Security). Version alignment: the action's `version` input is omitted, so it resolves the `package.json` fallow pin — the CI binary and local binary are the same release. Each job has a distinct purpose: the action is the changed-code PR gate; `fallow:ci` is the full-repo ratchet.
+
+## 9. Git-hook behavior (`hk.pkl`)
+
+- **pre-commit**: oxfmt + oxlint + `pnpm fallow:audit` — fast changed-code gate rejecting newly introduced findings
+- **pre-push**: `pnpm fallow:ci` — the full ratchet, where its runtime is acceptable
+- **check / fix**: the fast steps (oxfmt, oxlint, fallow-audit)
+
+## 10. Agent / MCP integration
+
+- The version-matched skill is vendored at `.agents/skills/fallow/` (copied from `node_modules/fallow/skills/fallow` with a repo-notes section). Prefer it over stale reference docs; re-vendor on fallow upgrades.
+- The `fallow` MCP server is registered in `.opencode/opencode.json` (`pnpm exec fallow-mcp`) for structured tool access (trace, symbol-impact, duplication trace, health, audit, fix preview).
+- `AGENTS.md` points agents at the ratchet model; agents should use `pnpm fallow:audit` before committing and `--trace`/`--symbol-impact` before deleting anything fallow flags.
+
+## 11. Coverage behavior
+
+`health.coverage: "coverage/coverage-final.json"` in `.fallowrc.json` feeds real Istanbul coverage into CRAP scores (model: `istanbul`, vs the static-estimate fallback). `vitest.config.ts` emits both `text` and `json` reporters; `pnpm test:coverage` produces the coverage file. The baseline scripts and `fallow:ci` ensure coverage exists first (running tests if missing) so a coverage-less regeneration can never silently flip the health baseline to the static model. Note: per-statement execution counts from the Convex edge-runtime tests vary slightly between runs, but this does not shift any CRAP finding across the threshold — the health identity baseline is deterministic (verified by repeated regeneration). `coverageRoot` is not configured: coverage paths are absolute but rooted under the project checkout, which fallow strips automatically in CI.
+
+## 12. Intentional exclusions (and why they are needed)
+
+| Exclusion                                                              | Reason                                                                                                                                                              |
+| ---------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ignorePatterns: scripts/**`                                           | Standalone data-import tooling outside the app graph (their imports would otherwise be invisible)                                                                   |
+| `ignorePatterns: oxfmt.config.ts`                                      | Tooling config, not app code (oxlint/vitest/next configs are handled natively by fallow plugins — verified by removal test)                                         |
+| `ignoreExports: src/components/ui/*.tsx`                               | shadcn components re-export their full component API; without this, 37 unused exports are reported (the directory is a local component library by convention)       |
+| `ignoreDependencies: youtube-sr, yt-search, scrape-yt, scrape-youtube` | Used only by `scripts/fetch-youtube-ids.ts`, which is outside the app graph                                                                                         |
+| `ignoreDependencies: @edge-runtime/vm`                                 | Vitest `edge-runtime` environment provider, resolved by vitest rather than imported                                                                                 |
+| `ignoreDependencies: tailwindcss`                                      | Build-time `@import "tailwindcss"` directive in `globals.css`, compiled away by PostCSS — not a runtime import (otherwise reported as dev-dependency-in-production) |
+| `boundaries.coverage.allowUnmatched`                                   | Tooling entrypoints (`next.config.ts`, `oxlint.config.ts`, `vitest.config.ts`, `vitest.setup.ts`, `global.d.ts`) have no architectural zone                         |
+
+No `fallow-ignore-*` comments exist in the source. Everything else that was previously excluded (`.next/**`, `convex/_generated/**` findings, `messages/**` unresolved imports, `src/i18n/routing.ts:usePathname`, ten dependency entries) was removed after proving current fallow handles it natively.
+
+## 13. Investigating a finding
 
 ```bash
-# Why is an export flagged?
-pnpm exec fallow dead-code --trace src/i18n/routing.ts:usePathname
+# Why is this export flagged?
+pnpm exec fallow dead-code --type-aware --trace src/lib/timeline.ts:getRevealedTrackMap
 
-# Exact TypeScript consumers
-pnpm exec fallow dead-code --type-aware --symbol-impact src/lib/timeline.ts:buildTrackMap
+# Exact TypeScript consumers (type-aware)
+pnpm exec fallow dead-code --type-aware --symbol-impact src/lib/hooks/use-presence.ts:usePresence
 
-# Duplication fingerprint
-pnpm exec fallow dupes --trace dup:57820f45
+# Where is this dependency used?
+pnpm exec fallow dead-code --trace-dependency sonner
 
-# Health hotspots and targets
+# Duplication fingerprint deep-dive (findings carry `fingerprint`)
+pnpm exec fallow dupes --trace dup:c77b3abb6f87acd9-2
+
+# Health hotspots / refactoring targets / ownership
 pnpm exec fallow health --hotspots --targets --ownership
 
-# Explain an issue type
+# Which boundary rules apply to a file you are about to edit?
+pnpm exec fallow guard src/components/game/betting-panel.tsx
+
+# Explain an issue type without running analysis
 pnpm exec fallow explain private-type-leak
+
+# Suppression inventory
+pnpm fallow:suppressions
 ```
 
-## Updating baselines after improvements
+## 14. Updating baselines after improvements
 
-When you remove findings legitimately:
+When you legitimately remove findings (or change config), regenerate **all** committed baselines coherently:
 
 ```bash
-pnpm fallow:baseline:update
-pnpm fallow:baseline:check
+pnpm test:coverage          # required for the health baseline's CRAP evidence
+pnpm fallow:baseline:update # writes fallow-baselines/*.json + .fallowrc.json regression counts
+pnpm fallow:baseline:check  # proves the committed baselines are now fresh
 git add .fallowrc.json fallow-baselines/
 ```
 
-`baseline:update` writes exact baselines to `fallow-baselines/` and embeds regression counts in `.fallowrc.json`.
+Baseline updates are appropriate **only** after genuine fixes or intentional config changes — never to silence a gate. CI enforces freshness (Gate D), so an improvement without a baseline update fails CI with a clear message.
 
-Generate baselines after running unit tests (`pnpm test:coverage`). In CI, unit tests generate test coverage before `pnpm fallow:ci` executes so CRAP scores in Fallow health baselines incorporate coverage data.
+## 15. Known upstream limitations
 
-CI also expects improved baselines to be committed — `fallow:baseline:check` regenerates into a temp workspace and diffs.
-
-## Configuration exclusions
-
-| Pattern                                                        | Reason                                                                    |
-| -------------------------------------------------------------- | ------------------------------------------------------------------------- |
-| `ignoreFindings: convex/_generated/**`                         | Hide dead-code noise; files stay in graph for import resolution           |
-| `ignoreExports: src/components/ui/*.tsx`                       | shadcn re-exports full component API                                      |
-| `ignoreExports: src/i18n/routing.ts:usePathname`               | next-intl `createNavigation` destructuring breaks type-aware completeness |
-| `ignoreUnresolvedImports: ../../messages/**`                   | Dynamic locale JSON imports resolved at build time                        |
-| `ignoreDependencies: tailwindcss, shadcn, oxlint, …`           | Tooling/CSS/import-script deps not imported as app modules                |
-| `ignorePatterns: oxfmt/oxlint/vitest/next configs, scripts/**` | Tooling entrypoints outside the app graph                                 |
-
-## CI behavior
-
-On pull requests, `pnpm fallow:ci`:
-
-1. Verifies Fallow 3.14.0 and type-aware companion
-2. Runs `fallow:baseline:check` so committed exact + regression baselines are not stale
-3. Runs Gate A (exact baselines on the full repo)
-4. Runs Gate B via `scripts/fallow-regression-check.mjs` (parses JSON; fails only when `regression.exceeded` is true)
-
-`pnpm fallow:audit` remains available for local changed-file review. It is not in CI today because type-aware baselines currently fail audit identity checks (`capabilities` mismatch in Fallow 3.14.0).
+1. **`audit` + baseline files + type-aware are incompatible in fallow 3.16.0.** The audit's internal check run always requests the `type-coupling` semantic capability (its dead-code analysis shares a parse with health — `retain_modules_for_health` in `crates/cli/src/audit.rs`), while `fallow dead-code --save-baseline` can never produce a baseline whose identity includes that capability (no CLI surface for it). Baseline identity comparison requires exact capability equality (`incompatible_fields` in `crates/types/src/semantic.rs`) and hard-errors (exit 2) with no fallback (`load_and_compare_baseline` in `crates/cli/src/check/mod.rs`). **Consequence:** the audit config deliberately carries **no** baseline files; the changed-code gate relies on audit's own base-snapshot attribution (`--gate new-only`), which has the documented fallback to syntactic key sets when base/HEAD semantic identities differ (`type_aware_attribution_degrade_reason`). The exact baselines are enforced on the standalone analyses in `fallow:ci`. Revisit on every fallow upgrade — this may be fixed upstream.
+2. **`require: complete` unsupportable** (see section 4): 2 `dynamic-behavior` abstentions from multi-project symbol ownership. Monitored by the completeness watch.
+3. **Coverage counts vary slightly between Convex test runs**, though CRAP findings are threshold-stable (verified). If a future coverage change flips a boundary function, regenerate baselines — the ratchet still holds.
