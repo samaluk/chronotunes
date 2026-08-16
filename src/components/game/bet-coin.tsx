@@ -5,7 +5,7 @@ import type { ReactNode } from "react";
 
 import { cn } from "@/lib/utils";
 
-export type BetCoinState = "pending" | "locked" | "blocked";
+type BetCoinState = "pending" | "locked" | "blocked";
 
 interface BetCoinProps {
   isPreview?: boolean;

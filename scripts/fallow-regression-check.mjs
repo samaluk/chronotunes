@@ -7,11 +7,13 @@
  * if the regression gate passes, so this wrapper parses JSON and fails only on:
  *   - `regression.exceeded` (issue counts grew beyond the committed baseline)
  *   - `_meta.type_aware.abstained_count` above the committed expectation
- *     (semantic completeness must not silently regress further)
+ *     (semantic completeness must not silently regress; `typeAware.require:
+ *     complete` already makes partial runs fail, this watch just names the
+ *     cause clearly)
  */
 import { spawnSync } from "node:child_process";
 
-const MAX_ABSTAINED = 2;
+const MAX_ABSTAINED = 0;
 
 const result = spawnSync(
   "pnpm",

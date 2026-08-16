@@ -27,7 +27,7 @@
   ],
   "typeAware": {
     "enabled": true,
-    "require": "best-effort",
+    "require": "complete",
     "projects": [
       "tsconfig.json",
       "tsconfig.tests.json",
@@ -154,12 +154,12 @@
         ],
         "project_config_hash": "sha256:924ab077ee75a72c18d7260d4c0f3fe6e252860bd20b92d99cc8864a43287f6a",
         "backend_family": "typescript-go",
-        "completeness": "partial"
+        "completeness": "complete"
       },
-      "totalIssues": 86,
+      "totalIssues": 84,
       "unusedFiles": 48,
       "unusedExports": 0,
-      "unusedTypes": 2,
+      "unusedTypes": 0,
       "unusedDependencies": 0,
       "unusedDevDependencies": 0,
       "unusedOptionalDependencies": 0,

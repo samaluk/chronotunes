@@ -39,7 +39,7 @@ This repo pins `fallow@3.16.0` (exact) and runs a three-gate ratchet in CI via `
 - Gate B: embedded `regression.baseline` counts in `.fallowrc.json` + type-aware completeness watch
 - Gate D: baseline freshness (`pnpm fallow:baseline:check`)
 
-Type-aware: enabled with `require: best-effort` (2 `dynamic-behavior` abstentions; see `docs/fallow.md`). The changed-code gate is `pnpm fallow:audit` (type-aware, new-only, no baseline files — upstream identity limitation, see docs). `fallow audit`/`guard` are safe to run on any change set.
+Type-aware: enabled with `require: complete` (no abstentions; static locale imports keep the semantic pass complete — see `docs/fallow.md`). The changed-code gate is `pnpm fallow:audit` (type-aware, new-only, no baseline files — upstream identity limitation, see docs). `fallow audit`/`guard` are safe to run on any change set.
 
 Prefer project scripts over ad-hoc flags: `pnpm fallow:baseline:update`, `pnpm fallow:baseline:check`, `pnpm fallow:ci`. Never run `pnpm fallow:fix` in CI. When a gate fails, fix the debt or update baselines only after a genuine improvement.
 

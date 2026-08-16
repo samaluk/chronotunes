@@ -25,7 +25,7 @@
     "fallow:dead-code": "fallow dead-code --type-aware --baseline fallow-baselines/dead-code.json --fail-on-issues",
     "fallow:dupes": "fallow dupes --baseline fallow-baselines/dupes.json --fail-on-issues",
     "fallow:health": "fallow health --baseline fallow-baselines/health.json --baseline-mode identity --fail-on-issues",
-    "fallow:audit": "fallow audit --gate new-only --type-aware",
+    "fallow:audit": "node scripts/fallow-audit.mjs",
     "fallow:security": "fallow security",
     "fallow:suppressions": "fallow suppressions",
     "fallow:regression": "node scripts/fallow-regression-check.mjs",

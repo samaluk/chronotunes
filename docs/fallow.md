@@ -6,12 +6,12 @@ ChronoTunes uses [Fallow](https://docs.fallow.tools) 3.16.0 with type-aware Type
 
 Fallow analyzes the whole project graph (unused code, duplication, complexity, architecture boundaries). The ratchet has four complementary guarantees:
 
-| Gate                       | Mechanism                                                                                    | Fails when                                                                                       |
-| -------------------------- | -------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
-| **A — exact baselines**    | Identity-matched baselines in `fallow-baselines/*.json`                                      | A finding appears that is not in the committed baseline — even if the total count stays the same |
-| **B — regression counts**  | Embedded `regression.baseline` in `.fallowrc.json` (written by `--save-regression-baseline`) | Dead-code issue counts grow beyond the committed totals (zero tolerance)                         |
-| **B — completeness watch** | `_meta.type_aware.abstained_count` from the type-aware run                                   | The semantic sidecar abstains on more queries than when baselines were committed (currently 2)   |
-| **D — baseline freshness** | `scripts/fallow-baseline-check.mjs` regenerates into a temp workspace and diffs              | Code improved but the committed baselines did not improve with it                                |
+| Gate                       | Mechanism                                                                                    | Fails when                                                                                                                   |
+| -------------------------- | -------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| **A — exact baselines**    | Identity-matched baselines in `fallow-baselines/*.json`                                      | A finding appears that is not in the committed baseline — even if the total count stays the same                             |
+| **B — regression counts**  | Embedded `regression.baseline` in `.fallowrc.json` (written by `--save-regression-baseline`) | Dead-code issue counts grow beyond the committed totals (zero tolerance)                                                     |
+| **B — completeness watch** | `_meta.type_aware.abstained_count` from the type-aware run                                   | The semantic sidecar abstains on any query (`require: complete` already fails such runs; this watch names the cause clearly) |
+| **D — baseline freshness** | `scripts/fallow-baseline-check.mjs` regenerates into a temp workspace and diffs              | Code improved but the committed baselines did not improve with it                                                            |
 
 Together these create a one-way ratchet: **worse → fails analysis; better but baseline unchanged → fails freshness; better + baseline reduced → passes**. Regenerating a worse baseline to silence CI is never acceptable.
 
@@ -42,14 +42,16 @@ Pinned exactly in `package.json` (`devDependencies.fallow`). The local binary (`
 ```jsonc
 "typeAware": {
   "enabled": true,
-  "require": "best-effort",
+  "require": "complete",
   "projects": ["tsconfig.json", "tsconfig.tests.json", "convex/tsconfig.json"]
 }
 ```
 
-All three TypeScript projects are selected: the Next.js app, the Vitest test project, and the Convex backend. `require: complete` is **not supportable here**: the sidecar abstains on 2 candidates (`BetCoinState`, `TimelineEntry` — unused type exports) with reason `dynamic-behavior`, because the declarations are owned by two TypeScript projects (the app project plus the tests project that imports them transitively). This is inherent to the standard app + tests project layout, not fixable without dropping the tests project from the analysis (which would remove test-consumer evidence — worse analysis). With `require: complete`, those 2 abstentions would fail every run.
+All three TypeScript projects are selected: the Next.js app, the Vitest test project, and the Convex backend. `require: "complete"` makes incomplete semantic evidence fail the run, and it is supportable because the analysis is genuinely complete: `fallow dead-code --type-aware --format json` reports `_meta.type_aware.identity.completeness: "complete"` with `abstained_count: 0`.
 
-`best-effort` keeps the strongest working mode, and Gate B's completeness watch (max 2 abstained queries) ensures completeness cannot silently regress further. Evidence: `pnpm exec fallow dead-code --type-aware --format json` → `_meta.type_aware.abstained_count` / `abstention_reasons`.
+This was not always true. The type-aware pass used to abstain on 2 candidates (`BetCoinState`, `TimelineEntry`) with `dynamic-behavior`, caused by the non-literal dynamic import in `src/i18n/request.ts` (`import(`../../messages/${locale}.json`)`): the sidecar's `recordDynamicImportUncertainty` marks **every** project export as uncertain when it sees a non-literal dynamic import, making every symbol-use query partial. The import was replaced with static per-locale imports (`messagesByLocale`), which also surfaced and fixed a latent i18n gap (the `es` catalog was missing `betting.beforeYear/afterYear/betweenYears`). Two unused type exports that were previously "retained with abstention" became confirmed-unused and were removed.
+
+Gate B's completeness watch (max 0 abstained queries) still runs as a belt-and-suspenders check with a clearer message than the raw `require: complete` failure. Evidence: `pnpm exec fallow dead-code --type-aware --format json` → `_meta.type_aware.abstained_count` / `abstention_reasons`.
 
 Audit is type-aware too (`audit.typeAware: true`), so the changed-code gate uses the same semantic evidence as the full-repo baselines.
 
@@ -102,7 +104,7 @@ pnpm fallow:status         # type-aware companion status
 pnpm fallow:dead-code      # Gate A: dead-code exact baseline
 pnpm fallow:dupes          # Gate A: duplication exact baseline
 pnpm fallow:health         # Gate A: health identity baseline
-pnpm fallow:audit          # changed-code gate (type-aware, new-only) — the pre-commit gate
+pnpm fallow:audit          # changed-code gate (type-aware, new-only; passes coverage explicitly so the base-snapshot run uses the same CRAP evidence) — the pre-commit gate
 pnpm fallow:regression     # Gate B: regression counts + completeness watch
 pnpm fallow:security       # advisory security candidates (always exit 0; candidates are informational)
 pnpm fallow:suppressions   # inventory of active fallow-ignore markers
@@ -124,7 +126,7 @@ pnpm fallow:fix            # apply safe auto-fixes (never in CI)
 3. `pnpm test:coverage` (writes `coverage/coverage-final.json`)
 4. `pnpm fallow:ci` — version pin → type-aware status → coverage precondition → Gate D freshness → Gate A exact baselines → Gate B regression + completeness
 
-`.github/workflows/ci-pull-request.yml` adds a second job using the official `fallow-rs/fallow@v3` action: `command: audit`, `gate: new-only`, `type-aware: auto`, with inline annotations, a sticky PR summary comment, a check run, and SARIF upload to Code Scanning (skipped with a warning on private repos without Advanced Security). Version alignment: the action's `version` input is omitted, so it resolves the `package.json` fallow pin — the CI binary and local binary are the same release. Each job has a distinct purpose: the action is the changed-code PR gate; `fallow:ci` is the full-repo ratchet.
+`.github/workflows/ci-pull-request.yml` adds a second job using the official `fallow-rs/fallow@v3` action: `command: audit`, `gate: new-only`, `type-aware: auto`, with inline annotations, a sticky PR summary comment, a check run, and SARIF upload to Code Scanning (skipped with a warning on private repos without Advanced Security), with coverage and coverage-root passed explicitly for base-snapshot parity. Version alignment: the action's `version` input is omitted, so it resolves the `package.json` fallow pin — the CI binary and local binary are the same release. Each job has a distinct purpose: the action is the changed-code PR gate; `fallow:ci` is the full-repo ratchet.
 
 ## 9. Git-hook behavior (`hk.pkl`)
 
@@ -200,5 +202,4 @@ Baseline updates are appropriate **only** after genuine fixes or intentional con
 ## 15. Known upstream limitations
 
 1. **`audit` + baseline files + type-aware are incompatible in fallow 3.16.0.** The audit's internal check run always requests the `type-coupling` semantic capability (its dead-code analysis shares a parse with health — `retain_modules_for_health` in `crates/cli/src/audit.rs`), while `fallow dead-code --save-baseline` can never produce a baseline whose identity includes that capability (no CLI surface for it). Baseline identity comparison requires exact capability equality (`incompatible_fields` in `crates/types/src/semantic.rs`) and hard-errors (exit 2) with no fallback (`load_and_compare_baseline` in `crates/cli/src/check/mod.rs`). **Consequence:** the audit config deliberately carries **no** baseline files; the changed-code gate relies on audit's own base-snapshot attribution (`--gate new-only`), which has the documented fallback to syntactic key sets when base/HEAD semantic identities differ (`type_aware_attribution_degrade_reason`). The exact baselines are enforced on the standalone analyses in `fallow:ci`. Revisit on every fallow upgrade — this may be fixed upstream.
-2. **`require: complete` unsupportable** (see section 4): 2 `dynamic-behavior` abstentions from multi-project symbol ownership. Monitored by the completeness watch.
-3. **Coverage counts vary slightly between Convex test runs**, though CRAP findings are threshold-stable (verified). If a future coverage change flips a boundary function, regenerate baselines — the ratchet still holds.
+2. **Audit base-snapshot runs only receive coverage via CLI flags.** The audit's temp-worktree base snapshot has no `coverage/` directory (it is gitignored), so config-relative `health.coverage` resolves to nothing there and `FALLOW_COVERAGE` is not honored on that path — only `--coverage`/`--coverage-root` flow into `build_base_audit_options`. Without them, the base run uses static CRAP estimation, boundary functions (e.g. a function at exactly `maxCrap: 30`) flip across the threshold, and inherited complexity findings are wrongly attributed as introduced. That is why `fallow:audit` (scripts/fallow-audit.mjs) and the CI action job pass both flags explicitly.
