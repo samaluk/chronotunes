@@ -2,7 +2,10 @@
   "analysis_identity": {
     "mode": "type-aware",
     "semantic_schema_version": 2,
-    "capabilities": ["symbol-use", "api-surface"],
+    "capabilities": [
+      "symbol-use",
+      "api-surface"
+    ],
     "project_config_hash": "sha256:924ab077ee75a72c18d7260d4c0f3fe6e252860bd20b92d99cc8864a43287f6a",
     "backend_family": "typescript-go",
     "completeness": "partial"
@@ -57,7 +60,9 @@
     "src/lib/hooks/use-mobile.ts",
     "src/lib/hooks/use-presence.ts"
   ],
-  "unused_exports": ["src/lib/timeline.ts:buildTrackMap"],
+  "unused_exports": [
+    "src/lib/timeline.ts:buildTrackMap"
+  ],
   "unused_types": [
     "src/components/game/bet-coin.tsx:BetCoinState",
     "src/components/game/game-provider.tsx:TimelineEntry"
@@ -100,7 +105,9 @@
     "src/lib/hooks/use-presence.ts:useIsOnline->PresenceState",
     "src/lib/timeline.ts:sortTimelineByYear->TimelineEntry"
   ],
-  "unused_dependencies": ["package.json:@uidotdev/usehooks"],
+  "unused_dependencies": [
+    "package.json:@uidotdev/usehooks"
+  ],
   "unused_dev_dependencies": [],
   "circular_dependencies": [],
   "re_export_cycles": [],
