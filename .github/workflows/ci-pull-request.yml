@@ -34,6 +34,8 @@ jobs:
       - uses: ./.github/actions/setup-toolchain
 
       # Coverage feeds health CRAP scores in the audit's complexity sub-analysis.
+      # coverage/coverage-root are passed explicitly so the audit's base-snapshot
+      # worktree run (which has no coverage/ directory) uses the same evidence.
       - name: Unit tests (with coverage)
         run: pnpm test:coverage
 
@@ -49,3 +51,5 @@ jobs:
           annotations: true
           sarif: true
           comment: true
+          coverage: coverage/coverage-final.json
+          coverage-root: ${{ github.workspace }}
