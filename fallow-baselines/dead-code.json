@@ -60,9 +60,7 @@
     "src/lib/hooks/use-mobile.ts",
     "src/lib/hooks/use-presence.ts"
   ],
-  "unused_exports": [
-    "src/lib/timeline.ts:buildTrackMap"
-  ],
+  "unused_exports": [],
   "unused_types": [
     "src/components/game/bet-coin.tsx:BetCoinState",
     "src/components/game/game-provider.tsx:TimelineEntry"
@@ -105,9 +103,7 @@
     "src/lib/hooks/use-presence.ts:useIsOnline->PresenceState",
     "src/lib/timeline.ts:sortTimelineByYear->TimelineEntry"
   ],
-  "unused_dependencies": [
-    "package.json:@uidotdev/usehooks"
-  ],
+  "unused_dependencies": [],
   "unused_dev_dependencies": [],
   "circular_dependencies": [],
   "re_export_cycles": [],

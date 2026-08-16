@@ -21,8 +21,12 @@ pnpm exec oxlint --print-config   # Print resolved Oxlint configuration
 ## Fallow quality ratchet
 
 ```bash
-pnpm fallow:ci              # Full CI gate (baseline freshness + Gate A + Gate B)
+pnpm fallow:ci              # Full CI gate (version + freshness + Gate A + Gate B)
+pnpm fallow:audit           # Changed-code gate (type-aware, new-only) — pre-commit gate
 pnpm fallow:status          # Type-aware companion status
+pnpm fallow:regression      # Gate B: regression counts + completeness watch
+pnpm fallow:security        # Advisory security candidates
+pnpm fallow:suppressions    # Inventory of active fallow-ignore markers
 pnpm fallow:baseline:update # Regenerate exact + regression baselines after genuine fixes
 pnpm fallow:baseline:check  # Fail if committed baselines are stale
 ```
@@ -62,7 +66,8 @@ hk run pre-commit --all      # Exercise the configured pre-commit hook
 ```
 
 The pre-commit hook uses hk's built-in Oxfmt and Oxlint integrations, coordinates fixes with
-file locks, stashes unstaged changes, and runs the read-only Fallow gate concurrently.
+file locks, stashes unstaged changes, and runs the changed-code Fallow audit concurrently;
+pre-push runs the full `pnpm fallow:ci` ratchet.
 
 ## Pre-commit (must pass)
 

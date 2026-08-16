@@ -4,6 +4,11 @@ import { defineConfig } from "vitest/config";
 
 export default defineConfig({
   test: {
+    coverage: {
+      // "json" emits coverage/coverage-final.json, which Fallow health reads
+      // for exact CRAP scores (see health.coverage in .fallowrc.json).
+      reporter: ["text", "json"],
+    },
     projects: [
       // Project for React component tests (jsdom environment)
       {

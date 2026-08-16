@@ -3,7 +3,17 @@ import "package://github.com/jdx/hk/releases/download/v1.55.0/hk@1.55.0#/Builtin
 
 fail_fast = false
 
-local linters = new Mapping<String, Step> {
+local fallow_audit = Step {
+  check = "pnpm fallow:audit"
+  stomp = true
+}
+
+local fallow_ci = Step {
+  check = "pnpm fallow:ci"
+  stomp = true
+}
+
+local fast_steps = new Mapping<String, Step> {
   ["oxfmt"] = (Builtins.oxfmt) {
     prefix = "pnpm exec --"
   }
@@ -12,23 +22,31 @@ local linters = new Mapping<String, Step> {
     check = "oxlint {{files}}"
     fix = "oxlint --fix {{files}}"
   }
-  ["fallow"] {
-    check = "pnpm fallow:ci"
-    stomp = true
-  }
+  // Fast changed-code gate: reject newly introduced Fallow findings in the
+  // staged/working changes before committing.
+  ["fallow-audit"] = fallow_audit
+}
+
+local push_steps = new Mapping<String, Step> {
+  // Full quality ratchet (freshness + exact baselines + regression): runs on
+  // push, where the seconds it takes are acceptable.
+  ["fallow-ci"] = fallow_ci
 }
 
 hooks {
   ["pre-commit"] {
     fix = true
     stash = "git"
-    steps = linters
+    steps = fast_steps
+  }
+  ["pre-push"] {
+    steps = push_steps
   }
   ["check"] {
-    steps = linters
+    steps = fast_steps
   }
   ["fix"] {
     fix = true
-    steps = linters
+    steps = fast_steps
   }
 }

@@ -12,7 +12,7 @@ Complete command and flag specifications for all fallow CLI commands.
 - [`list`: Project Introspection](#list-project-introspection)
 - [`init`: Config Generation](#init-config-generation)
 - [`migrate`: Config Migration](#migrate-config-migration)
-- [`health`: Function Complexity Analysis](#health-function-complexity-analysis)
+- [`health`: Function Complexity and File Health Analysis](#health-function-complexity-and-file-health-analysis)
 - [`audit`: Changed-File Quality Gate](#audit-changed-file-quality-gate)
 - [`flags`: Feature Flag Detection](#flags-feature-flag-detection)
 - [`security`: Security Candidate Detection](#security-security-candidate-detection)
@@ -20,7 +20,7 @@ Complete command and flag specifications for all fallow CLI commands.
 - [`trace`: Symbol Call Chains](#trace-symbol-call-chains)
 - [`decision-surface`: Structural Decisions](#decision-surface-structural-decisions)
 - [`explain`: Rule Explanation](#explain-rule-explanation)
-- [`schema`: CLI Introspection](#schema-cli-introspection)
+- [`schema`: Capability Manifest](#schema-capability-manifest)
 - [`config-schema`: Config JSON Schema](#config-schema-config-json-schema)
 - [`plugin-schema`: Plugin JSON Schema](#plugin-schema-plugin-json-schema)
 - [`plugin-check`: Verify external plugins](#plugin-check-verify-external-plugins)
@@ -65,7 +65,7 @@ Common global flags for this command: [`--format`](#global-flags), [`--quiet`](#
 | `--unused-exports` | Unused exports |
 | `--unused-deps` | Unused dependencies, devDependencies, optionalDependencies, type-only production deps, and test-only production deps |
 | `--unused-types` | Unused types |
-| `--private-type-leaks` | Opt-in API hygiene check (default `off`) for exported signatures that reference same-file private types. Storybook `*.stories.*` story files and framework routing convention files (Next.js App + Pages Router, Gatsby, Remix v2, TanStack Router, Expo Router) are skipped to avoid noise. Enable via this flag or `private-type-leaks: "warn"` / `"error"` in [`rules`](#rules-configuration). |
+| `--private-type-leaks` | Opt-in API hygiene check (default `off`) for exported signatures that reference same-file private types. Storybook `*.stories.*` story files and framework routing convention files (Next.js App + Pages Router, Gatsby, Remix v2, TanStack Router, Expo Router) are skipped to avoid noise. Enable via this flag or `private-type-leaks: "warn"` / `"error"` in [`rules`](#configuration-file-format). |
 | `--unused-enum-members` | Unused enum members |
 | `--unused-class-members` | Unused class members |
 | `--unused-store-members` | Unused Pinia store members |
@@ -158,6 +158,7 @@ By default, `fallow dupes` skips generated framework output matching `**/.next/*
 | Flag | Type | Default | Description |
 |---|---|---|---|
 | `--mode` | `strict\|mild\|weak\|semantic` | - | Detection mode |
+| `--near` | `bool` | `false` | Enable function-scoped near-miss clone detection |
 | `--min-tokens` | `string` | - | Minimum token count for a clone |
 | `--min-lines` | `string` | - | Minimum line count for a clone |
 | `--min-occurrences` | `string` | - | Minimum number of occurrences before a clone group is reported (must be ≥ 2). Raise to skip pair-only clones and focus on widespread copy-paste worth refactoring. `fallow init` writes `minOccurrences: 3` into new projects. |
@@ -166,7 +167,7 @@ By default, `fallow dupes` skips generated framework output matching `**/.next/*
 | `--cross-language` | `bool` | `false` | Strip type annotations for TS↔JS matching |
 | `--ignore-imports` | `bool` | `false` | Exclude module wiring from clone detection |
 | `--no-ignore-imports` | `bool` | `false` | Count module wiring as clone candidates (opt out of the default exclusion) |
-| `--top` | `string` | - | Show only the N most-duplicated clone groups (sorted by instance count desc, tiebreak: line count desc, then path/line). Summary stats reflect the full project. |
+| `--top` | `string` | - | Show only the N highest-ranked clone groups. Ranking multiplies token count and occurrences, then adds a capped spread boost for distant files or same-file locations. Summary stats reflect the scoped project. |
 | `--trace` | `string` | - | Deep-dive clones. `FILE:LINE` traces all clones at a location; `dup:<id>` traces a clone group by the stable fingerprint shown in the listing and on `clone_groups[].fingerprint` in JSON. Fingerprints are usually `dup:<8hex>` and widen only on rare report collisions. Trace output adds an extract-function suggestion, estimated savings, and a best-effort proposed name per group |
 
 Common global flags for this command: [`--format`](#global-flags), [`--quiet`](#global-flags), [`--changed-since`](#global-flags), [`--baseline`](#global-flags), [`--save-baseline`](#global-flags), [`--workspace`](#global-flags), [`--changed-workspaces`](#global-flags), [`--group-by`](#global-flags), [`--explain-skipped`](#global-flags).
@@ -179,6 +180,9 @@ Common global flags for this command: [`--format`](#global-flags), [`--quiet`](#
 | `mild` | Syntax normalized (whitespace, semicolons) |
 | `weak` | Different literal values treated as equivalent |
 | `semantic` | Renamed variables also treated as equivalent |
+
+Near-miss detection is an independent opt-in, not another normalization mode.
+Near groups include `similarity`; every clone-group finding includes `spread`.
 
 ### Examples
 
@@ -378,11 +382,11 @@ fallow migrate --from knip.jsonc
 
 ---
 
-## `health`: Function Complexity & File Health Analysis
+## `health`: Function Complexity and File Health Analysis
 
 Analyzes function complexity across the project using cyclomatic and cognitive complexity metrics. By default all sections are included (health score, complexity findings, file scores, hotspots, and refactoring targets). Use `--complexity`, `--file-scores`, `--hotspots`, `--targets`, or `--score` to show only specific sections.
 
-Angular templates contribute synthetic `<template>` complexity findings whenever they use `@if`/`@for`/`@switch`/`@case`/`@defer (when ...)`/`@let` blocks, legacy structural directives (`*ngIf`, `*ngFor`), bound attributes (`[x]`, `(x)`, `bind-x`, `on-x`), or `{{ }}` interpolations. Both standalone external `.html` files referenced via `templateUrl` AND inline `@Component({ template: \`...\` })` literals are scanned. Inline-template findings anchor at the host `.ts` file's `@Component` decorator line and emit a `suppress-line` action with `// fallow-ignore-next-line complexity` (place the comment directly above the `@Component` decorator). External-template findings emit a `suppress-file` action with `<!-- fallow-ignore-file complexity -->` (place at the top of the `.html` file; HTML cannot express line-level comments). Tagged template literals containing `${...}` interpolations and `template:` properties bound to a variable are skipped (out of scope for the first cut).
+Angular templates contribute synthetic `<template>` complexity findings whenever they use `@if`/`@for`/`@switch`/`@case`/`@defer (when ...)`/`@let` blocks, legacy structural directives (`*ngIf`, `*ngFor`), bound attributes (`[x]`, `(x)`, `bind-x`, `on-x`), or `{{ }}` interpolations. Both standalone external `.html` files referenced via `templateUrl` AND inline `@Component({ template: \`...\` })` literals are scanned. Inline-template findings anchor at the host `.ts` file's `@Component` decorator line and emit a `suppress-line` action with `// fallow-ignore-next-line complexity` (place the comment directly above the `@Component` decorator). External-template findings emit a `suppress-file` action with `<!-- fallow-ignore-file complexity -->` (place at the top of the `.html` file; HTML cannot express line-level comments). Tagged template literals containing `${...}` interpolations and `template:` properties bound to a variable are skipped (out of scope for the first cut). Vue, Svelte, and Astro single-file components contribute synthetic `<template>` findings too, each scored against its own control-flow vocabulary; those findings emit a `suppress-line` action with the markup comment `<!-- fallow-ignore-next-line complexity -->` placed on the line immediately above the reported line (`placement: "above-template-anchor-line"`), because the synthetic template unit anchors at its first contributing construct rather than the top of the file.
 
 ### Flags
 
@@ -517,7 +521,7 @@ fallow health --format json --quiet --trend
 {
   "kind": "health",
   "schema_version": 7,
-  "version": "3.14.0",
+  "version": "3.16.0",
   "elapsed_ms": 32,
   "summary": {
     "files_analyzed": 482,
@@ -541,7 +545,7 @@ fallow health --format json --quiet --trend
 }
 ```
 
-`health.thresholdOverrides[]` config entries can raise local cyclomatic, cognitive, CRAP, or unit-size (large-function line-count) ceilings for matching files and optional exact function names. When an override affects output, health JSON includes top-level `threshold_overrides[]` state entries (`active`, `stale`, or `no_match`). Complexity findings evaluated with local ceilings include `effective_thresholds` and `threshold_source: "override"` so agents can see which thresholds drove the finding and avoid treating configured exceptions as hidden suppressions.
+`health.thresholdOverrides[]` config entries can raise local cyclomatic, cognitive, CRAP, or unit-size (large-function line-count) ceilings for matching files and optional exact function names. When an override affects output, health JSON includes top-level `threshold_overrides[]` state entries (`active`, `stale`, `insufficient`, or `no_match`). Each entry names the `dimension` it describes (`complexity` or `crap`): one configured override produces one entry per dimension it participates in, so group on `override_index` to count configured overrides rather than counting entries. `insufficient` means the override raised that dimension's ceiling but the matched code still exceeds the raised value, so the finding survives the override. An entry's `outstanding[]` lists every dimension the matched unit still breaches after the override applied, whether or not the entry configures that ceiling, which is how an `active` override can sit next to a surviving finding. `no_match` entries are emitted on full-repo runs (they are suppressed only when the run is scoped by `--changed-since`, `--diff-index`, `--workspace`, or `--changed-workspaces`), so a glob that matches nothing is reported instead of silently doing nothing. Complexity findings evaluated with local ceilings include `effective_thresholds` and `threshold_source: "override"` so agents can see which thresholds drove the finding and avoid treating configured exceptions as hidden suppressions.
 
 When the unit size very-high-risk percentage is >= 3%, the JSON output includes a `large_functions` array listing functions exceeding 60 lines of code:
 
@@ -591,7 +595,7 @@ With `--file-scores`, the JSON output also includes `file_scores` array and `sum
 
 The `file_scores` array is sorted by risk-aware triage concern: the larger of low-MI concern and CRAP risk. This keeps files with very high untested complexity near the top even when their Maintainability Index is not the lowest.
 
-The `crap_max` field is the highest CRAP (Change Risk Anti-Patterns) score among functions in the file, using the canonical formula `CC^2 * (1 - cov/100)^3 + CC`. The default model (`static_estimated`) estimates per-function coverage from export references: directly test-referenced = 85%, indirectly test-reachable = 40%, untested = 0%. Provide `--coverage <path>` with Istanbul-format `coverage-final.json` for exact scores (`istanbul` model). The `crap_above_threshold` field counts functions with CRAP >= 30. When `--file-scores` is active, `summary.coverage_model` indicates the model used (`"static_estimated"` or `"istanbul"`). When CRAP findings carry `coverage_source`, `summary.coverage_source_consistency` is `uniform` or `mixed`; grouped health JSON mirrors this as `groups[].coverage_source_consistency`.
+The `crap_max` field is the highest CRAP (Change Risk Anti-Patterns) score among functions in the file, using the canonical formula `CC^2 * (1 - cov/100)^3 + CC`. It is always the raw measured value. The default model (`static_estimated`) estimates per-function coverage from export references: directly test-referenced = 85%, indirectly test-reachable = 40%, untested = 0%. Provide `--coverage <path>` with Istanbul-format `coverage-final.json` for exact scores (`istanbul` model). The `crap_above_threshold` field counts functions whose rounded CRAP meets or exceeds their effective ceiling, resolved from `health.thresholdOverrides` over the global `maxCrap` / `--max-crap` value (default 30); it is 0 when CRAP enforcement is disabled (`maxCrap: 0`). Rows whose breaches were let through by configuration carry two additional fields: `crap_exempted` (functions at or above the canonical 30 baseline but below their effective ceiling; omitted when 0) and `crap_effective_threshold` (the lowest effective ceiling among the file's functions, present only when it differs from `summary.max_crap_threshold`). When `--file-scores` is active, `summary.coverage_model` indicates the model used (`"static_estimated"` or `"istanbul"`). When CRAP findings carry `coverage_source`, `summary.coverage_source_consistency` is `uniform` or `mixed`; grouped health JSON mirrors this as `groups[].coverage_source_consistency`.
 
 Maintainability index formula: `100 - (complexity_density × 30) - (dead_code_ratio × 20) - min(ln(fan_out+1) × 4, 15)`, clamped to 0–100. Higher is better. Type-only exports are excluded from dead_code_ratio. Zero-function files (barrels) are excluded by default.
 
@@ -664,7 +668,7 @@ With `--targets`, the JSON output includes a `targets` array with ranked refacto
 
 Targets are sorted by `efficiency` (priority / effort_numeric) descending, surfacing quick wins first. The `target_thresholds` object exposes the adaptive percentile-based thresholds used for scoring. Priority formula: `min(complexity_density, 1) x 30 + hotspot_boost x 25 + dead_code_ratio x 20 + fan_in_norm x 15 + fan_out_norm x 10`, clamped to 0-100. Fan-in and fan-out normalization uses the project's p95 values (with floors). Categories: `urgent_churn_complexity`, `break_circular_dependency`, `split_high_impact`, `remove_dead_code`, `extract_complex_functions`, `extract_dependencies`, `add_test_coverage`. Each target includes `efficiency`, `effort` (low/medium/high), `confidence` (high/medium/low, data source reliability), and contributing `factors`.
 
-The `add_test_coverage` category fires when a file has 2+ functions with CRAP scores >= 30 and complexity density > 0.3. The `crap_max` metric appears in contributing factors for these targets.
+The `add_test_coverage` category fires when a file has 2+ functions whose rounded CRAP meets or exceeds their effective ceiling (`health.thresholdOverrides` over the global `maxCrap` / `--max-crap`, default 30) and complexity density > 0.3. A file whose breaching functions are all exempted by configuration produces no target. The `crap_max` metric appears in contributing factors for these targets, with `threshold` set to the file's lowest effective ceiling (the run global when no override applies).
 
 ### Vital Signs
 
@@ -915,7 +919,7 @@ fallow audit \
 {
   "kind": "audit",
   "schema_version": 7,
-  "version": "3.14.0",
+  "version": "3.16.0",
   "command": "audit",
   "verdict": "fail",
   "changed_files_count": 12,
@@ -992,7 +996,7 @@ fallow flags --format json --quiet --workspace my-package
 ```json
 {
   "schema_version": 7,
-  "version": "3.14.0",
+  "version": "3.16.0",
   "elapsed_ms": 116,
   "feature_flags": [],
   "total_flags": 0
@@ -1093,7 +1097,7 @@ fallow security --gate newly-reachable --changed-since origin/main
 {
   "kind": "security",
   "schema_version": "4",
-  "version": "3.14.0",
+  "version": "3.16.0",
   "elapsed_ms": 42,
   "config": {
     "rules": {
@@ -1122,7 +1126,7 @@ fallow security --gate newly-reachable --changed-since origin/main
 {
   "kind": "security",
   "schema_version": "4",
-  "version": "3.14.0",
+  "version": "3.16.0",
   "elapsed_ms": 42,
   "config": {
     "rules": {
@@ -1357,7 +1361,7 @@ fallow plugin-schema > plugin-schema.json
 
 ## `plugin-check`: Verify external plugins
 
-Read-only dry-run of your external plugins. Reports, per plugin, whether it activated (with the unmet `detection`/`enabler` requirement when inactive), and for `manifestEntries` rules which manifests each matched, what it seeded (with `path_exists`), and typed warnings (`manifests-matched-none`, `when-excluded-all`, `field-path-unresolved`, `entries-empty`, `manifest-parse-failed`, `entry-outside-root`, `seeded-paths-missing`). Run it after authoring a `fallow-plugin-*.jsonc` to verify it before a full analysis. Deterministic output; always exits 0 (advisory, never a gate).
+Read-only dry-run of your external plugins. Reports, per plugin, whether it activated (with the unmet `detection`/`enabler` requirement when inactive), and for `manifestEntries` rules which manifests each matched, what it seeded (with `path_exists`), and typed warnings (`manifests-matched-none`, `when-excluded-all`, `field-path-unresolved`, `entries-empty`, `manifest-parse-failed`, `field-values-limit-exceeded`, `entry-expansion-limit-exceeded`, `entry-outside-root`, `seeded-paths-missing`). Run it after authoring a `fallow-plugin-*.jsonc` to verify it before a full analysis. Deterministic output; always exits 0 (advisory, never a gate).
 
 ```bash
 fallow plugin-check --format json
@@ -1708,6 +1712,7 @@ Available on all commands:
 | `--only` | `dead-code\|dupes\|health` | - | Run only specific analyses (e.g., `--only dead-code,dupes`). Values: `dead-code` (alias: `check`), `dupes`, `health` |
 | `--skip` | `dead-code\|dupes\|health` | - | Skip specific analyses (e.g., `--skip health`). Values: `dead-code` (alias: `check`), `dupes`, `health` |
 | `--dupes-mode` | `strict\|mild\|weak\|semantic` | - | Override duplication detection mode in combined mode |
+| `--dupes-near` | `bool` | `false` | Enable function-scoped near-miss clone detection in combined mode |
 | `--dupes-threshold` | `string` | - | Override duplication threshold in combined mode |
 | `--dupes-min-tokens` | `string` | - | Override the minimum token count for clones in combined mode |
 | `--dupes-min-lines` | `string` | - | Override the minimum line count for clones in combined mode |
@@ -1782,7 +1787,7 @@ These are global flags with behavior specific to bare `fallow` combined mode.
 | `FALLOW_COVERAGE_ROOT` | Absolute coverage-data prefix to strip before matching Istanbul paths in `health`, `audit`, and bare `fallow`. |
 | `FALLOW_TYPE_AWARE` | Enable or disable TypeScript semantic (type-aware) analysis for the run. Accepts `true`/`false`/`1`/`0`/`yes`/`no`/`on`/`off`; any other value is a hard error. Sits mid-chain in the precedence: the `--type-aware`/`--no-type-aware` CLI flags win over it, and it wins over the `audit.typeAware` config field, which wins over `typeAware.enabled`. |
 | `FALLOW_AUDIT_BASE` | Pin the `fallow audit` comparison base when `--base` / `--changed-since` is unset (precedence: flag > env > auto-detect). Escape hatch for the agent gate and forks, e.g. `FALLOW_AUDIT_BASE=upstream/main`. When unset, audit auto-detects the `git merge-base` against the branch's upstream or the remote default. A malformed value exits 2. |
-| `FALLOW_AUDIT_CACHE_MAX_AGE_DAYS` | Max age (in days since last reuse or fresh create) of a persistent reusable `fallow audit` base-snapshot worktree cache. Older entries are reclaimed at the top of the next `fallow audit` invocation (default: `30`). Wins over `audit.cacheMaxAgeDays` config field. `0` disables the GC; invalid values silently fall back to config / default. |
+| `FALLOW_AUDIT_CACHE_MAX_AGE_DAYS` | Max age (in days since last reuse or fresh create) of a persistent reusable `fallow audit` base-snapshot worktree cache. Older entries are reclaimed at the top of the next `fallow audit` invocation (default: `30`). Wins over `audit.cacheMaxAgeDays` config field. `0` disables the GC; invalid values log a warning and fall back to config / default. Each sweep also reclaims abandoned entries from other repo identities (deleted or moved repos, other git worktrees); entries whose recorded owner root still exists are left to that repo's own sweep and setting. |
 | `FALLOW_UPDATE_CHECK` | Set to `off`, `0`, `false`, `disabled`, or `no` to disable the human-TTY upgrade nudge and its background latest-version check. `DO_NOT_TRACK`, `FALLOW_TELEMETRY_DISABLED`, and CI also suppress it. |
 | `FALLOW_SUGGESTIONS` | Set to `off`, `0`, `false`, `no`, or `disabled` to suppress the top-level `next_steps[]` array of read-only follow-up commands in JSON output (and the human `Next:` line on bare `fallow`). Default on. Inherited by the MCP-spawned CLI, so it disables `next_steps` on MCP responses too. Useful for CI consumers that snapshot-diff raw `--format json`. |
 | `FALLOW_COMMAND` | GitLab CI: command to run (default: `dead-code`). |
@@ -1886,7 +1891,7 @@ The HTTP layer mirrors the bash `gh_api_retry` / `curl_retry` helpers: `FALLOW_A
 {
   "kind": "dead-code",
   "schema_version": 7,
-  "version": "3.14.0",
+  "version": "3.16.0",
   "elapsed_ms": 45,
   "total_issues": 12,
   "entry_points": {
@@ -2046,7 +2051,7 @@ When `--baseline` is used in combined output, the JSON includes a `baseline_delt
 {
   "kind": "dupes",
   "schema_version": 7,
-  "version": "3.14.0",
+  "version": "3.16.0",
   "elapsed_ms": 82,
   "total_clones": 15,
   "total_lines_duplicated": 230,
@@ -2090,11 +2095,11 @@ When running `fallow` with no subcommand (all analyses), the JSON output combine
 {
   "kind": "combined",
   "schema_version": 7,
-  "version": "3.14.0",
+  "version": "3.16.0",
   "elapsed_ms": 159,
   "check": {
     "schema_version": 7,
-    "version": "3.14.0",
+    "version": "3.16.0",
     "elapsed_ms": 45,
     "total_issues": 12,
     "unused_files": [],
@@ -2194,10 +2199,12 @@ Config files are searched in priority order: `.fallowrc.json` > `.fallowrc.jsonc
   // Duplication settings
   "duplicates": {
     "mode": "mild",
+    "near": false,
     "minTokens": 50,
     "minLines": 5,
     "threshold": 0,
     "ignoreDefaults": true,
+    "ignoredClones": ["dup:6f12ab34:2"],
     "skipLocal": false,
     "ignorePatterns": ["**/*.generated.ts"]
   },
@@ -2280,9 +2287,11 @@ unused-types = "off"
 
 [duplicates]
 mode = "mild"
+near = false
 minTokens = 50
 minLines = 5
 ignoreDefaults = true
+ignoredClones = ["dup:6f12ab34:2"]
 
 [[overrides]]
 files = ["*.test.ts"]

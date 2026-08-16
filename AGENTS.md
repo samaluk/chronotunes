@@ -33,6 +33,10 @@ ChronoTunes is a browser-based multiplayer music timeline game (Hitster clone) w
 - [Agent workflow](docs/agents/workflow.md)
 - [Fallow quality ratchet](docs/fallow.md)
 
+## Fallow (quality ratchet)
+
+Fallow enforces a strict code-quality ratchet: existing debt is baselined, new debt is rejected. The full gate is `pnpm fallow:ci`; the changed-code gate is `pnpm fallow:audit`. When fallow flags something you changed, fix it — do not regenerate baselines to silence CI (see `docs/fallow.md` for when baseline updates are legitimate). Prefer the version-matched skill at `.agents/skills/fallow/` (vendored from the installed package) over docs from memory, and use the `fallow` MCP server (`pnpm exec fallow-mcp`) for structured tool access.
+
 ## Code quality (Oxlint + Oxfmt)
 
 Linting and formatting use **Oxlint** and **Oxfmt** with near-default configs in [`oxlint.config.ts`](oxlint.config.ts) and [`oxfmt.config.ts`](oxfmt.config.ts) (see [Oxlint / Oxfmt standards](docs/agents/ultracite.md)).

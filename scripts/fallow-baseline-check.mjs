@@ -1,13 +1,19 @@
 #!/usr/bin/env node
 /**
- * Regenerate baselines into a temp workspace and fail when committed files differ.
- * Exact baselines live in fallow-baselines/*.json; regression counts live in .fallowrc.json.
+ * Gate D: baseline freshness.
  *
- * Comparisons use canonical JSON so trailing newlines / key formatting from Fallow
- * do not create false staleness.
+ * Regenerates every committed baseline into a temp workspace (never touching
+ * the working tree) and fails when the committed files differ from a fresh
+ * regeneration. This is the one-way ratchet:
+ *   - worse            -> analysis gate fails
+ *   - better but stale -> freshness fails
+ *   - better + updated -> passes
+ *
+ * Health CRAP uses real coverage evidence, so the fresh regeneration runs with
+ * the same coverage/coverage-final.json the committed baseline was saved with.
  */
 import { spawnSync } from "node:child_process";
-import { copyFileSync, mkdirSync, mkdtempSync, readFileSync, rmSync } from "node:fs";
+import { copyFileSync, existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 
@@ -17,15 +23,12 @@ const EXACT_BASELINE_FILES = [
   "fallow-baselines/health.json",
 ];
 
-function runFallow(args, env = process.env, { allowIssueExit = false } = {}) {
-  // oxlint-disable-next-line typescript/no-unsafe-assignment
-  const result = spawnSync("pnpm", ["exec", "fallow", ...args, "--quiet"], {
-    stdio: "inherit",
-    env,
-  });
+function run(command, args, env = process.env, { allowIssueExit = false } = {}) {
+  // oxlint-disable-next-line typescript/no-unsafe-argument
+  const result = spawnSync(command, args, { stdio: "inherit", env });
 
   if (result.error) {
-    console.error(`fallow failed to start: ${result.error.message}`);
+    console.error(`${command} failed to start: ${result.error.message}`);
     process.exit(2);
   }
 
@@ -40,9 +43,22 @@ function runFallow(args, env = process.env, { allowIssueExit = false } = {}) {
   process.exit(result.status ?? 2);
 }
 
+function fallow(args, options) {
+  // oxlint-disable-next-line typescript/no-unsafe-argument, typescript/no-unsafe-assignment
+  run("pnpm", ["exec", "fallow", ...args], process.env, options);
+}
+
 function canonicalJson(text) {
   // oxlint-disable-next-line typescript/no-unsafe-argument
   return JSON.stringify(JSON.parse(text));
+}
+
+if (!existsSync("coverage/coverage-final.json")) {
+  console.error(
+    "coverage/coverage-final.json missing. Run `pnpm test:coverage` first so the freshness " +
+      "regeneration uses the same coverage evidence as the committed health baseline.",
+  );
+  process.exit(2);
 }
 
 const tempRoot = mkdtempSync(path.join(tmpdir(), "fallow-baseline-check-"));
@@ -56,7 +72,7 @@ try {
     mkdirSync(path.join(tempRoot, "fallow-baselines"), { recursive: true });
 
     if (file.endsWith("health.json")) {
-      runFallow(
+      fallow(
         [
           "-c",
           tempConfigPath,
@@ -66,19 +82,19 @@ try {
           "--baseline-mode",
           "identity",
         ],
-        process.env,
         { allowIssueExit: true },
       );
       continue;
     }
 
     const command = file.includes("dead-code") ? "dead-code" : "dupes";
-    runFallow(["-c", tempConfigPath, command, "--save-baseline", generatedPath], process.env, {
+    const typeAwareFlag = command === "dead-code" ? ["--type-aware"] : [];
+    fallow(["-c", tempConfigPath, command, ...typeAwareFlag, "--save-baseline", generatedPath], {
       allowIssueExit: true,
     });
   }
 
-  runFallow(["-c", tempConfigPath, "dead-code", "--save-regression-baseline"], process.env, {
+  fallow(["-c", tempConfigPath, "dead-code", "--type-aware", "--save-regression-baseline"], {
     allowIssueExit: true,
   });
 

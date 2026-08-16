@@ -1,24 +1,35 @@
 #!/usr/bin/env node
 /**
- * CI entrypoint for Fallow quality gates:
- * - Stale check: committed baselines must match a fresh regenerate
- * - Gate A: exact baselines (new finding identity)
- * - Gate B: embedded regression baseline (total issue count)
+ * Authoritative Fallow CI gate (`pnpm fallow:ci`).
  *
- * PR audit (`fallow audit`) is available locally via `pnpm fallow:audit` but is not
- * run here: type-aware baselines currently fail audit identity checks (capabilities).
- * Full-repo Gates A + B enforce the ratchet in CI.
+ * Runs the full quality ratchet exactly as CI does:
+ *   1. Version pin check (installed CLI must match the package.json pin)
+ *   2. Type-aware companion status
+ *   3. Coverage precondition (health CRAP uses coverage/coverage-final.json)
+ *   4. Gate D: baseline freshness (scripts/fallow-baseline-check.mjs)
+ *   5. Gate A: exact identity baselines (dead-code, dupes, health)
+ *   6. Gate B: embedded regression counts + type-aware completeness watch
+ *
+ * Exit semantics: 0 = all gates pass; 1 = a gate failed (findings beyond a
+ * baseline, stale baselines, regression, completeness regression); 2 = tool
+ * or configuration error. Never use `|| true` around this script.
  */
 import { spawnSync } from "node:child_process";
+import { existsSync, readFileSync } from "node:fs";
 
-const FALLOW_VERSION = "3.15.0";
+// oxlint-disable-next-line typescript/no-unsafe-assignment
+const packageJson = JSON.parse(readFileSync(new URL("../package.json", import.meta.url), "utf-8"));
+// oxlint-disable-next-line typescript/no-unsafe-assignment, typescript/no-unsafe-member-access
+const PINNED_FALLOW = packageJson.devDependencies?.fallow;
+
+if (!PINNED_FALLOW) {
+  console.error("package.json has no fallow devDependency pin; add one first.");
+  process.exit(2);
+}
 
 function run(command, args, env = process.env, { allowIssueExit = false } = {}) {
   // oxlint-disable-next-line typescript/no-unsafe-argument
-  const result = spawnSync(command, args, {
-    stdio: "inherit",
-    env,
-  });
+  const result = spawnSync(command, args, { stdio: "inherit", env });
 
   if (result.error) {
     console.error(`${command} failed to start: ${result.error.message}`);
@@ -53,20 +64,36 @@ if (version.status !== 0) {
 
 const versionMatch = version.stdout.match(/fallow\s+(?<version>\S+)/u);
 const installedVersion = versionMatch?.groups?.version;
-if (installedVersion !== FALLOW_VERSION) {
-  console.error(`Expected fallow ${FALLOW_VERSION}, found ${installedVersion ?? "unknown"}.`);
+if (installedVersion !== PINNED_FALLOW) {
+  console.error(
+    `Expected fallow ${PINNED_FALLOW} (package.json pin), found ${installedVersion ?? "unknown"}.`,
+  );
   process.exit(2);
 }
 
 console.log(`==> Fallow ${installedVersion}`);
 fallow(["type-aware", "status"]);
 
-console.log("\n==> Baseline freshness");
+console.log("\n==> Coverage precondition");
+if (!existsSync("coverage/coverage-final.json")) {
+  console.log("coverage/coverage-final.json missing; running `pnpm test:coverage` first.");
+  run("pnpm", ["test:coverage"]);
+}
+console.log("coverage present; health CRAP uses real coverage evidence.");
+
+console.log("\n==> Gate D: baseline freshness");
 run("node", ["scripts/fallow-baseline-check.mjs"]);
 
 console.log("\n==> Gate A: exact baselines");
 fallow(
-  ["dead-code", "--baseline", "fallow-baselines/dead-code.json", "--fail-on-issues", "--quiet"],
+  [
+    "dead-code",
+    "--type-aware",
+    "--baseline",
+    "fallow-baselines/dead-code.json",
+    "--fail-on-issues",
+    "--quiet",
+  ],
   { allowIssueExit: false },
 );
 fallow(["dupes", "--baseline", "fallow-baselines/dupes.json", "--fail-on-issues", "--quiet"], {
@@ -85,7 +112,7 @@ fallow(
   { allowIssueExit: false },
 );
 
-console.log("\n==> Gate B: regression baseline (embedded in .fallowrc.json)");
+console.log("\n==> Gate B: regression counts + type-aware completeness");
 run("node", ["scripts/fallow-regression-check.mjs"]);
 
 console.log("\nFallow CI passed.");
