@@ -8,7 +8,7 @@
     ],
     "project_config_hash": "sha256:924ab077ee75a72c18d7260d4c0f3fe6e252860bd20b92d99cc8864a43287f6a",
     "backend_family": "typescript-go",
-    "completeness": "partial"
+    "completeness": "complete"
   },
   "unused_files": [
     "src/components/game/presence-indicator.tsx",
@@ -61,10 +61,7 @@
     "src/lib/hooks/use-presence.ts"
   ],
   "unused_exports": [],
-  "unused_types": [
-    "src/components/game/bet-coin.tsx:BetCoinState",
-    "src/components/game/game-provider.tsx:TimelineEntry"
-  ],
+  "unused_types": [],
   "private_type_leaks": [
     "convex/lib/round_management.ts:createNextRound->NextRoundResult",
     "convex/lib/track_selection.ts:selectTrackForRound->TrackSelectionOptions",

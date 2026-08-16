@@ -6,7 +6,7 @@ import type { Doc, Id } from "@/convex/_generated/dataModel";
 
 export type RoundPhase = "placing" | "betting" | "resolved";
 
-export interface TimelineEntry {
+interface TimelineEntry {
   earnedAtRoundNumber: number;
   earnedBy: "placement" | "bet" | "initial";
   trackId: Id<"tracks">;
