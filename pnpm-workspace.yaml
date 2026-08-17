@@ -1,6 +1,8 @@
 packages:
   - .
 minimumReleaseAgeStrict: true
+minimumReleaseAgeExclude:
+  - fallow@3.17.0
 allowBuilds:
   "@parcel/watcher": true
   "@swc/core": true
