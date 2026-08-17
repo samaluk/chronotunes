@@ -6,18 +6,8 @@
     "src/i18n/request.ts"
   ],
   "ignorePatterns": [
-    ".next/**",
     "scripts/**",
-    "oxfmt.config.ts",
-    "oxlint.config.ts",
-    "next.config.ts",
-    "postcss.config.*",
-    "vitest.config.ts",
-    "vitest.setup.ts",
-    "convex/test.setup.ts"
-  ],
-  "ignoreFindings": [
-    "convex/_generated/**"
+    "oxfmt.config.ts"
   ],
   "ignoreExports": [
     {
@@ -25,37 +15,17 @@
       "exports": [
         "*"
       ]
-    },
-    {
-      "file": "src/i18n/routing.ts",
-      "exports": [
-        "usePathname"
-      ]
     }
   ],
-  "ignoreUnresolvedImports": [
-    "../../messages/**"
-  ],
   "ignoreDependencies": [
-    "@base-ui/react",
-    "class-variance-authority",
-    "shadcn",
-    "tw-animate-css",
-    "tailwindcss",
-    "fluid-tailwindcss",
-    "convex-test",
-    "@edge-runtime/vm",
-    "lefthook",
-    "oxfmt",
-    "oxlint",
     "scrape-yt",
     "scrape-youtube",
-    "youtube-sr",
-    "yt-search"
+    "@edge-runtime/vm",
+    "tailwindcss"
   ],
   "typeAware": {
     "enabled": true,
-    "require": "best-effort",
+    "require": "complete",
     "projects": [
       "tsconfig.json",
       "tsconfig.tests.json",
@@ -63,22 +33,114 @@
     ]
   },
   "rules": {
-    "private-type-leaks": "warn"
+    "private-type-leaks": "error",
+    "stale-suppressions": "error",
+    "require-suppression-reason": "error"
   },
   "duplicates": {
     "mode": "semantic",
+    "near": true,
     "minLines": 8,
     "minTokens": 60,
-    "minOccurrences": 3,
+    "minOccurrences": 2,
     "ignoreImports": true
   },
   "health": {
     "maxCyclomatic": 20,
     "maxCognitive": 15,
     "maxCrap": 30,
-    "maxUnitSize": 60
+    "maxUnitSize": 60,
+    "coverage": "coverage/coverage-final.json"
   },
   "audit": {
-    "gate": "new-only"
+    "gate": "new-only",
+    "typeAware": true
+  },
+  "boundaries": {
+    "zones": [
+      {
+        "name": "convex-api",
+        "patterns": [
+          "convex/_generated/**"
+        ]
+      },
+      {
+        "name": "backend",
+        "patterns": [
+          "convex/**"
+        ]
+      },
+      {
+        "name": "app",
+        "patterns": [
+          "src/app/**"
+        ]
+      },
+      {
+        "name": "components",
+        "patterns": [
+          "src/components/**"
+        ]
+      },
+      {
+        "name": "lib",
+        "patterns": [
+          "src/lib/**"
+        ]
+      },
+      {
+        "name": "i18n",
+        "patterns": [
+          "src/i18n/**"
+        ]
+      }
+    ],
+    "rules": [
+      {
+        "from": "backend",
+        "allow": [
+          "convex-api"
+        ]
+      },
+      {
+        "from": "app",
+        "allow": [
+          "components",
+          "lib",
+          "i18n",
+          "convex-api"
+        ]
+      },
+      {
+        "from": "components",
+        "allow": [
+          "lib",
+          "i18n",
+          "convex-api"
+        ]
+      },
+      {
+        "from": "lib",
+        "allow": [
+          "i18n",
+          "convex-api"
+        ]
+      },
+      {
+        "from": "i18n",
+        "allow": []
+      }
+    ],
+    "coverage": {
+      "requireAllFiles": true,
+      "allowUnmatched": [
+        "global.d.ts",
+        "next.config.ts",
+        "oxlint.config.ts",
+        "postcss.config.mjs",
+        "vitest.config.ts",
+        "vitest.setup.ts"
+      ]
+    }
   }
 }

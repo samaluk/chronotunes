@@ -168,7 +168,10 @@
     "turnPlayerCannotBet": "Es tu turno, no puedes apostar",
     "declinedToBet": "Has decidido no apostar",
     "previewDiscarded": "Vista previa descartada",
-    "yourPreview": "Tu vista previa"
+    "yourPreview": "Tu vista previa",
+    "beforeYear": "Antes de {year}",
+    "afterYear": "Después de {year}",
+    "betweenYears": "Entre {year1} y {year2}"
   },
   "phase": {
     "placing": "Colocando",
