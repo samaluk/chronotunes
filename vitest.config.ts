@@ -4,6 +4,9 @@ import { defineConfig } from "vitest/config";
 
 export default defineConfig({
   test: {
+    coverage: {
+      reporter: ["text", "json"],
+    },
     projects: [
       // Project for React component tests (jsdom environment)
       {
