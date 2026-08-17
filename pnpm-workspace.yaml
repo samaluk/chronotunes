@@ -3,6 +3,15 @@ packages:
 minimumReleaseAgeStrict: true
 minimumReleaseAgeExclude:
   - fallow@3.17.0
+  - '@fallow-cli/darwin-arm64@3.17.0'
+  - '@fallow-cli/darwin-x64@3.17.0'
+  - '@fallow-cli/linux-arm64-gnu@3.17.0'
+  - '@fallow-cli/linux-arm64-musl@3.17.0'
+  - '@fallow-cli/linux-x64-gnu@3.17.0'
+  - '@fallow-cli/linux-x64-musl@3.17.0'
+  - '@fallow-cli/win32-arm64-msvc@3.17.0'
+  - '@fallow-cli/win32-x64-msvc@3.17.0'
+  - fallow-type-aware@3.17.0
 allowBuilds:
   "@parcel/watcher": true
   "@swc/core": true
