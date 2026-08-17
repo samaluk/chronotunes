@@ -7,6 +7,7 @@ The zero-debt work is tracked in [#313](https://github.com/samaluk/chronotunes/i
 ## Version and execution model
 
 - The `fallow` dev dependency, type-aware companion, and MCP server are pinned to `3.17.0`.
+- pnpm's strict one-day minimum release-age policy remains enabled; it has exact `3.17.0` exceptions only for Fallow and the eight Fallow platform packages plus the type-aware companion required by the lockfile.
 - The pull-request action uses `fallow-rs/fallow@ecf5a314fd3e10974acb4f5a7f867c433030522d` (`v3.17.0`).
 - Local and CI commands run through pnpm, so the repository lockfile controls the executable version.
 - The repo-local MCP entry in `.opencode/opencode.json` runs `pnpm exec fallow-mcp`.
