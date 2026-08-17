@@ -33,8 +33,8 @@ importers:
         specifier: 1.43.0
         version: 1.43.0(react@19.2.8)
       convex-helpers:
-        specifier: 0.1.122
-        version: 0.1.122(@standard-schema/spec@1.1.0)(convex@1.43.0(react@19.2.8))(hono@4.12.19)(react@19.2.8)(typescript@7.0.2)(zod@3.25.76)
+        specifier: 0.1.123
+        version: 0.1.123(@standard-schema/spec@1.1.0)(convex@1.43.0(react@19.2.8))(hono@4.12.19)(react@19.2.8)(typescript@7.0.2)(zod@3.25.76)
       embla-carousel-react:
         specifier: 8.6.0
         version: 8.6.0(react@19.2.8)
@@ -2712,8 +2712,8 @@ packages:
   convert-source-map@2.0.0:
     resolution: {integrity: sha512-Kvp459HrV2FEJ1CAsi1Ku+MY3kasH19TFykTz2xWmMeq6bk2NU3XXvfJ+Q61m0xktWwt+1HSYf3JZsTms3aRJg==}
 
-  convex-helpers@0.1.122:
-    resolution: {integrity: sha512-G5b54+RUPyitwEou7VPBxnz5/Tgy8gjtyN0zPgagOjguyBqoh9IjlsVQtWOKY7pxo/IREjF+N1khZmyEuzqbiw==}
+  convex-helpers@0.1.123:
+    resolution: {integrity: sha512-E9W4tscZy6ZtNnwPDdL5UhMc7Rj9aUYlzjdYiKsfVIAwdarABWqvPB8+St3Q6IwS83r+QIGSO1lTidTamDdyPQ==}
     hasBin: true
     peerDependencies:
       '@standard-schema/spec': ^1.0.0
@@ -6758,7 +6758,7 @@ snapshots:
 
   convert-source-map@2.0.0: {}
 
-  convex-helpers@0.1.122(@standard-schema/spec@1.1.0)(convex@1.43.0(react@19.2.8))(hono@4.12.19)(react@19.2.8)(typescript@7.0.2)(zod@3.25.76):
+  convex-helpers@0.1.123(@standard-schema/spec@1.1.0)(convex@1.43.0(react@19.2.8))(hono@4.12.19)(react@19.2.8)(typescript@7.0.2)(zod@3.25.76):
     dependencies:
       convex: 1.43.0(react@19.2.8)
     optionalDependencies:
