@@ -7,5 +7,14 @@
     "helpers:pinGitHubActionDigests"
   ],
   "labels": ["dependencies"],
-  "minimumReleaseAge": "3 days"
+  "minimumReleaseAge": "3 days",
+  "packageRules": [
+    {
+      "description": "Keep Pullfrog on major-version tags",
+      "matchDepTypes": ["action"],
+      "matchPackageNames": ["pullfrog/pullfrog"],
+      "pinDigests": false,
+      "rangeStrategy": "replace"
+    }
+  ]
 }
