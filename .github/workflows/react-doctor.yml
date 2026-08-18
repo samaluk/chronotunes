@@ -1,0 +1,71 @@
+# React Doctor — independent React quality gate.
+#
+# Reviews every pull request and reports ONLY the issues the change introduces
+# relative to its merge-base (`scope: changed`), so pre-existing React debt never
+# blocks a PR. Because `blocking: warning`, any newly introduced warning (or
+# error) fails the check; `blocking: error` alone would let warnings slip through.
+#
+# This is intentionally a dedicated job, NOT folded into the reusable CI
+# (ci-reusable.yml), which still owns Oxlint/Oxfmt, typecheck, tests, Fallow, and
+# build. React Doctor fills the one gap that toolchain does not cover:
+# framework-specific React correctness (state/effects, performance,
+# accessibility, security). The official `millionco/react-doctor@v2` composite
+# action installs its own Node and manages its scan/product caches internally, so
+# this workflow needs no pnpm install, no Node setup, no build, no tests, and no
+# dedicated caching steps.
+#
+# The app lives at the repository root, so the `directory` input is left at its
+# "." default (no subdirectory configuration needed).
+#
+# To make this an enforced merge gate, add the "react-doctor" check run (and/or
+# the "React Doctor" commit status) as a required status check under
+# Settings → Branches → Branch protection rules. That is repository-settings
+# state, not something this file can declare.
+
+name: React Doctor
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+  push:
+    branches:
+      - master
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+  statuses: write
+
+# Cancels any in-flight scan for the same PR (or branch, on push) the moment a
+# new commit arrives, so reviewers only ever see the latest run.
+concurrency:
+  group: react-doctor-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  react-doctor:
+    # USE_SELF_HOSTED_RUNNERS repo variable — same fork/self-hosted policy as the
+    # other workflow jobs; fork PRs always fall back to GitHub-hosted runners.
+    runs-on: ${{ github.event.pull_request.head.repo.fork && 'ubuntu-latest' || (vars.USE_SELF_HOSTED_RUNNERS == 'true' && fromJSON('["self-hosted","docker"]') || 'ubuntu-latest') }}
+    timeout-minutes: 20
+    steps:
+      # Full history so React Doctor can resolve the PR merge-base and report only
+      # issues the change introduced (deep-history baseline for `scope: changed`).
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+
+      - uses: millionco/react-doctor@736abc183ac491b4e954fc6bedec3a9a1b73d38b # v2
+        with:
+          # Changed-code scope: report only issues the PR introduces vs its base,
+          # so historical debt does not suddenly block all pull requests.
+          scope: changed
+          # Newly introduced warnings (and errors) fail the check.
+          blocking: warning
+          # v2 PR feedback: sticky summary comment + inline review comments +
+          # commit status.
+          comment: true
+          review-comments: true
+          commit-status: true
