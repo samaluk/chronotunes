@@ -47,7 +47,7 @@ jobs:
   react-doctor:
     # USE_SELF_HOSTED_RUNNERS repo variable — same fork/self-hosted policy as the
     # other workflow jobs; fork PRs always fall back to GitHub-hosted runners.
-    runs-on: ${{ github.event.pull_request.head.repo.fork && 'ubuntu-latest' || (vars.USE_SELF_HOSTED_RUNNERS == 'true' && fromJSON('["self-hosted","docker"]') || 'ubuntu-latest') }}
+    runs-on: ${{ github.event.pull_request.head.repo.fork && 'ubuntu-latest' || (vars.USE_SELF_HOSTED_RUNNERS == 'true' && fromJSON('["self-hosted","macOS","ARM64"]') || 'ubuntu-latest') }}
     timeout-minutes: 20
     steps:
       # Full history so React Doctor can resolve the PR merge-base and report only
