@@ -16,8 +16,13 @@ permissions:
 
 jobs:
   pullfrog:
-    # USE_SELF_HOSTED_RUNNERS repo variable (Settings → Actions → Variables)
-    runs-on: ${{ vars.USE_SELF_HOSTED_RUNNERS == 'true' && fromJSON('["self-hosted","macOS","ARM64"]') || 'ubuntu-latest' }}
+    # PULLFROG_RUNNER_LABELS repo variable (Settings → Actions → Variables):
+    # a JSON array of labels matching the homerun-managed Docker runner, e.g.
+    # ["self-hosted","docker"]. Unset or empty falls back to GitHub-hosted
+    # ubuntu-latest. Pullfrog needs a Linux runner: its shell tool requires
+    # PID-namespace isolation and fails closed on macOS
+    # (docs.pullfrog.com/security#self-hosted-runners).
+    runs-on: ${{ vars.PULLFROG_RUNNER_LABELS && fromJSON(vars.PULLFROG_RUNNER_LABELS) || 'ubuntu-latest' }}
     permissions:
       id-token: write
       contents: read
