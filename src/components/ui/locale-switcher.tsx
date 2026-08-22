@@ -3,7 +3,7 @@
 import { Globe } from "lucide-react";
 import type { Locale } from "next-intl";
 import { useLocale, useTranslations } from "next-intl";
-import { memo, useState, useTransition } from "react";
+import { useState, useTransition } from "react";
 
 import { useLocaleAction } from "@/i18n/locale-action";
 import { cn } from "@/lib/utils";
@@ -15,7 +15,7 @@ const localeNames: Record<string, string> = {
 
 const availableLocales = ["en", "es"] as const;
 
-export const LocaleSwitcher = memo((): React.ReactNode => {
+export const LocaleSwitcher = (): React.ReactNode => {
   const t = useTranslations("locale");
   const [isOpen, setIsOpen] = useState(false);
   const locale = useLocale();
@@ -81,4 +81,4 @@ export const LocaleSwitcher = memo((): React.ReactNode => {
       )}
     </div>
   );
-});
+};

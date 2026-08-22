@@ -3,14 +3,16 @@
 import { useSessionMutation } from "convex-helpers/react/sessions";
 import { Check, Loader2 } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { api } from "@/convex/_generated/api";
 import type { Doc, Id } from "@/convex/_generated/dataModel";
+import { runWithLoading } from "@/lib/run-safely";
 import { sortTimelineByYear } from "@/lib/timeline";
 
-import { getPlacementPositionLabel, TimelinePlacementView } from "./timeline-placement-view";
+import { getPlacementPositionLabel } from "./placement-position-label";
+import { TimelinePlacementView } from "./timeline-placement-view";
 
 interface TrackInfo {
   _id: Id<"tracks">;
@@ -47,6 +49,18 @@ export function TimelinePlacer({
 
   const [selectedIndex, setSelectedIndex] = useState<number>(existingPreviewIndex ?? 0);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [previousPreviewIndex, setPreviousPreviewIndex] = useState(existingPreviewIndex);
+
+  // The server echoes back every preview mutation through placementPreview.
+  // Adopt external changes synchronously during render (no effect, no flash):
+  // local clicks already match the echo, so this only fires when the server
+  // state diverges from local selection (e.g. a clamped or reset preview).
+  if (existingPreviewIndex !== previousPreviewIndex) {
+    setPreviousPreviewIndex(existingPreviewIndex);
+    if (existingPreviewIndex !== null) {
+      setSelectedIndex(existingPreviewIndex);
+    }
+  }
 
   const setPlacementPreview = useSessionMutation(api.rounds.setPlacementPreview);
   const submitPlacement = useSessionMutation(api.rounds.submitPlacement);
@@ -54,80 +68,73 @@ export function TimelinePlacer({
   const sortedTimeline = sortTimelineByYear(player.timeline);
   const maxPosition = sortedTimeline.length;
 
-  const moveSelection = useCallback(
-    (direction: "up" | "down") => {
-      setSelectedIndex((prev) => {
-        if (direction === "up") {
-          return Math.max(0, prev - 1);
-        }
-        return Math.min(maxPosition, prev + 1);
-      });
-    },
-    [maxPosition],
-  );
+  const moveSelection = (direction: "up" | "down"): void => {
+    setSelectedIndex((prev) => {
+      if (direction === "up") {
+        return Math.max(0, prev - 1);
+      }
+      return Math.min(maxPosition, prev + 1);
+    });
+  };
 
-  const handleSlotClick = useCallback((index: number) => {
+  const handleSlotClick = (index: number): void => {
     setSelectedIndex(index);
-  }, []);
+  };
 
-  const handleSubmit = useCallback(async () => {
-    setIsSubmitting(true);
-    try {
-      await submitPlacement({
-        lobbyId,
-      });
-    } catch (error) {
-      console.error("Failed to submit placement:", error);
-    } finally {
-      setIsSubmitting(false);
+  const handleSubmit = async (): Promise<void> => {
+    await runWithLoading(
+      setIsSubmitting,
+      () => submitPlacement({ lobbyId }),
+      (error: unknown) => {
+        console.error("Failed to submit placement:", error);
+      },
+    );
+  };
+
+  const handleKeyDown = (event: KeyboardEvent): void => {
+    if (event.key === "ArrowUp") {
+      event.preventDefault();
+      moveSelection("up");
+      return;
     }
-  }, [lobbyId, submitPlacement]);
 
-  const handleSubmitRef = useRef(handleSubmit);
-  handleSubmitRef.current = handleSubmit;
-
-  useEffect(() => {
-    if (existingPreviewIndex !== null) {
-      setSelectedIndex(existingPreviewIndex);
+    if (event.key === "ArrowDown") {
+      event.preventDefault();
+      moveSelection("down");
+      return;
     }
-  }, [existingPreviewIndex]);
 
-  const handleKeyDown = useCallback(
-    (event: KeyboardEvent) => {
-      if (event.key === "ArrowUp") {
-        event.preventDefault();
-        moveSelection("up");
-        return;
-      }
+    if (event.key === "Enter") {
+      event.preventDefault();
+      void handleSubmit();
+    }
+  };
 
-      if (event.key === "ArrowDown") {
-        event.preventDefault();
-        moveSelection("down");
-        return;
-      }
+  // Keep the window listener subscribed once; the latest handler is picked up
+  // through a ref that is refreshed from an effect (never during render).
+  const keydownRef = useRef(handleKeyDown);
 
-      if (event.key === "Enter") {
-        event.preventDefault();
-        handleSubmitRef.current();
-      }
-    },
-    [moveSelection],
-  );
+  // Deliberately runs after every render: the listener below subscribes once
+  // and must always observe the freshest handler.
+  useEffect(() => {
+    keydownRef.current = handleKeyDown;
+  });
 
   useEffect(() => {
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [handleKeyDown]);
-
-  useEffect(() => {
-    const updatePreview = async () => {
-      await setPlacementPreview({
-        lobbyId,
-        proposedIndex: selectedIndex,
-      });
+    const listener = (event: KeyboardEvent): void => {
+      keydownRef.current(event);
     };
 
-    updatePreview().catch((error) => {
+    window.addEventListener("keydown", listener);
+    return () => window.removeEventListener("keydown", listener);
+  }, []);
+
+  useEffect(() => {
+    const updatePreview = async (): Promise<void> => {
+      await setPlacementPreview({ lobbyId, proposedIndex: selectedIndex });
+    };
+
+    updatePreview().catch((error: unknown) => {
       console.error("Failed to update placement preview:", error);
     });
   }, [lobbyId, selectedIndex, setPlacementPreview]);

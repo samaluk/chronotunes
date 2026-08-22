@@ -2,7 +2,7 @@
 
 import { AlertTriangle, Loader2 } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import ReactPlayer from "react-player";
 import type { Config } from "react-player/types";
 import { useIsMounted, useLocalStorage } from "usehooks-ts";
@@ -21,44 +21,43 @@ const MOBILE_BREAKPOINT = 768;
 
 type PlayerStatus = "loading" | "playing" | "error";
 
+// Built in two steps so the numeric YouTube params keep their literal types
+// (0 | 1 etc.) instead of widening to number.
+const playerConfigSource = {
+  file: { attributes: { disablepictureinpicture: "true" } },
+  youtube: {
+    autoplay: 1,
+    controls: 0,
+    disablekb: 1,
+    fs: 0,
+    modestbranding: 1,
+    playsinline: 1,
+    rel: 0,
+  },
+} as const;
+
+const PLAYER_CONFIG: Config = playerConfigSource;
+
 export function YouTubePlayer({ youtubeVideoId, className }: YouTubePlayerProps): React.ReactNode {
   const isMounted = useIsMounted();
   const tPlayer = useTranslations("player");
   const mounted = isMounted();
-  const [status, setStatus] = useState<PlayerStatus>("loading");
+  const [playbackStatus, setPlaybackStatus] = useState<PlayerStatus>("loading");
   const [volume, _setVolume] = useLocalStorage(VOLUME_STORAGE_KEY, 80);
   const [isMuted, _setIsMuted] = useLocalStorage(MUTED_STORAGE_KEY, false);
   const [isMobile, setIsMobile] = useState(false);
   const [hasUserInitiated, setHasUserInitiated] = useState(false);
 
-  const playerConfig: Config = useMemo(
-    () => ({
-      file: { attributes: { disablepictureinpicture: "true" } },
-      youtube: {
-        autoplay: 1,
-        controls: 0,
-        disablekb: 1,
-        fs: 0,
-        modestbranding: 1,
-        playsinline: 1,
-        rel: 0,
-      },
-    }),
-    [],
-  );
+  // A missing video id is an error; otherwise the player events drive status.
+  // When a different track arrives, restart from "loading" synchronously
+  // during render instead of in an effect.
+  const [previousVideoId, setPreviousVideoId] = useState(youtubeVideoId);
+  if (youtubeVideoId !== previousVideoId) {
+    setPreviousVideoId(youtubeVideoId);
+    setPlaybackStatus("loading");
+  }
 
-  useEffect(() => {
-    if (!mounted) {
-      return;
-    }
-
-    if (!youtubeVideoId) {
-      setStatus("error");
-      return;
-    }
-
-    setStatus("loading");
-  }, [mounted, youtubeVideoId]);
+  const status: PlayerStatus = youtubeVideoId ? playbackStatus : "error";
 
   useEffect(() => {
     if (!mounted) {
@@ -79,11 +78,15 @@ export function YouTubePlayer({ youtubeVideoId, className }: YouTubePlayerProps)
     return () => mediaQuery.removeEventListener("change", updateMobileState);
   }, [mounted]);
 
-  const handleEnableAudio = useCallback(() => {
+  const handleEnableAudio = (): void => {
     setHasUserInitiated(true);
-  }, []);
+  };
 
-  const statusInfo = useMemo(() => {
+  const statusInfo = ((): {
+    indicator: React.ReactNode;
+    label: string;
+    tone: string;
+  } => {
     if (isMobile && !hasUserInitiated) {
       return {
         indicator: <span className="h-2 w-2 animate-pulse rounded-full bg-amber-500" />,
@@ -105,7 +108,7 @@ export function YouTubePlayer({ youtubeVideoId, className }: YouTubePlayerProps)
       label: tPlayer("loadingAudio"),
       tone: "text-muted-foreground",
     };
-  }, [hasUserInitiated, isMobile, status, tPlayer]);
+  })();
 
   if (status === "error" || !youtubeVideoId) {
     return (
@@ -136,15 +139,17 @@ export function YouTubePlayer({ youtubeVideoId, className }: YouTubePlayerProps)
         data-testid="hidden-youtube-player"
       >
         <ReactPlayer
-          config={playerConfig}
+          config={PLAYER_CONFIG}
           controls={false}
           height="1px"
           key={youtubeVideoId}
           muted={isEffectivelyMuted}
-          onError={() => setStatus("error")}
-          onPlay={() => setStatus("playing")}
-          onReady={() => setStatus((previous) => (previous === "playing" ? previous : "loading"))}
-          onStart={() => setStatus("playing")}
+          onError={() => setPlaybackStatus("error")}
+          onPlay={() => setPlaybackStatus("playing")}
+          onReady={() =>
+            setPlaybackStatus((previous) => (previous === "playing" ? previous : "loading"))
+          }
+          onStart={() => setPlaybackStatus("playing")}
           playing={isMobile ? hasUserInitiated : true}
           src={`https://www.youtube.com/watch?v=${youtubeVideoId}`}
           volume={isEffectivelyMuted ? 0 : volume / 100}

@@ -1,7 +1,7 @@
 "use client";
 
 import { useConvex } from "convex/react";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 export type ConvexConnectionStatus =
   | "connecting"
@@ -20,18 +20,21 @@ interface UseConvexStatusReturn {
 
 export function useConvexStatus(): UseConvexStatusReturn {
   const client = useConvex();
-  const [status, setStatus] = useState<ConvexConnectionStatus>("connecting");
+  // Derived from `client` at init so a missing client never needs a
+  // synchronous setState inside an effect.
+  const [status, setStatus] = useState<ConvexConnectionStatus>(() =>
+    client ? "connecting" : "disconnected",
+  );
   const [error, setError] = useState<Error | null>(null);
   const [_retryCount, setRetryCount] = useState(0);
 
-  const retry = useCallback(() => {
+  const retry = (): void => {
     setStatus("connecting");
-    setRetryCount((prev) => prev + 1);
-  }, []);
+    setRetryCount((previous) => previous + 1);
+  };
 
   useEffect(() => {
     if (!client) {
-      setStatus("disconnected");
       return;
     }
 
@@ -58,7 +61,7 @@ export function useConvexStatus(): UseConvexStatusReturn {
     const handleOnline = (): void => {
       if (mounted) {
         setStatus("connecting");
-        retry();
+        setRetryCount((previous) => previous + 1);
       }
     };
 
@@ -76,7 +79,7 @@ export function useConvexStatus(): UseConvexStatusReturn {
       window.removeEventListener("online", handleOnline);
       window.removeEventListener("offline", handleOffline);
     };
-  }, [client, retry]);
+  }, [client]);
 
   useEffect(() => {
     if (status === "connecting" && client) {
