@@ -2,7 +2,7 @@ import { render, screen } from "@testing-library/react";
 import type { GenericId } from "convex/values";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 
-import { GameContext } from "./game-provider";
+import { GameContext } from "./game-context";
 import { MyTimeline } from "./my-timeline";
 
 const CARD_REGEX = /card/i;

@@ -2,22 +2,14 @@
 
 import { useQuery } from "convex/react";
 import { Music } from "lucide-react";
-import { useMemo } from "react";
 import { useIsMounted } from "usehooks-ts";
 
 import { api } from "@/convex/_generated/api";
-import type { Id } from "@/convex/_generated/dataModel";
-import { sortTimelineByYear } from "@/lib/timeline";
+import { buildTrackMap, sortTimelineByYear } from "@/lib/timeline";
 
-import { useGame } from "./game-provider";
+import type { TimelineEntry } from "./betting-types";
+import { useGame } from "./game-context";
 import { TimelineCard } from "./timeline-card";
-
-interface TimelineEntry {
-  earnedAtRoundNumber: number;
-  earnedBy: "placement" | "bet" | "initial";
-  trackId: Id<"tracks">;
-  year: number;
-}
 
 const getEarnedByLabel = (earnedBy: TimelineEntry["earnedBy"]): string => {
   switch (earnedBy) {
@@ -48,16 +40,7 @@ export function MyTimeline(): React.ReactNode {
     isMounted() && trackIds.length > 0 ? { trackIds } : "skip",
   );
 
-  const trackMap = useMemo(() => {
-    if (!(tracks && Array.isArray(tracks))) {
-      return new Map();
-    }
-    return new Map(
-      tracks
-        .filter((track): track is NonNullable<typeof track> => track != null)
-        .map((track) => [track._id, track]),
-    );
-  }, [tracks]);
+  const trackMap = buildTrackMap(tracks);
 
   if (!isMounted()) {
     return (
