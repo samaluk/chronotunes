@@ -13,6 +13,21 @@ local fallow_ci = Step {
   stomp = true
 }
 
+// Pre-commit: scan only the files actually being committed. `--staged` exits 0
+// when nothing is staged, and `--blocking warning` fails on any newly
+// introduced warning or error.
+local react_doctor_staged = Step {
+  check = "pnpm exec react-doctor --staged --blocking warning --no-score"
+  stomp = true
+}
+
+// Pre-push: fail if the branch introduces any warning or error relative to
+// master (the PR merge-base), so pushed branches are always review-clean.
+local react_doctor_changed = Step {
+  check = "pnpm exec react-doctor --scope changed --base master --blocking warning --no-score"
+  stomp = true
+}
+
 local fast_steps = new Mapping<String, Step> {
   ["oxfmt"] = (Builtins.oxfmt) {
     prefix = "pnpm exec --"
@@ -23,10 +38,12 @@ local fast_steps = new Mapping<String, Step> {
     fix = "oxlint --fix {{files}}"
   }
   ["fallow-audit"] = fallow_audit
+  ["react-doctor"] = react_doctor_staged
 }
 
 local push_steps = new Mapping<String, Step> {
   ["fallow-ci"] = fallow_ci
+  ["react-doctor"] = react_doctor_changed
 }
 
 hooks {
