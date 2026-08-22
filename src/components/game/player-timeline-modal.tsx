@@ -3,13 +3,12 @@
 import { useQuery } from "convex/react";
 import { Music } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useMemo } from "react";
 import { useIsMounted } from "usehooks-ts";
 
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { api } from "@/convex/_generated/api";
 import type { Doc } from "@/convex/_generated/dataModel";
-import { sortTimelineByYear } from "@/lib/timeline";
+import { buildTrackMap, sortTimelineByYear } from "@/lib/timeline";
 
 import { TimelineCard } from "./timeline-card";
 
@@ -33,19 +32,7 @@ export function PlayerTimelineModal({
     isMounted() && trackIds.length > 0 ? { trackIds } : "skip",
   );
 
-  const trackMap = useMemo(() => {
-    if (!(tracks && Array.isArray(tracks))) {
-      return new Map();
-    }
-    return new Map(
-      tracks
-        .filter((track): track is NonNullable<typeof track> => track != null)
-        .map((track) => [
-          track._id,
-          { artist: track.artist, title: track.title, year: track.year },
-        ]),
-    );
-  }, [tracks]);
+  const trackMap = buildTrackMap(tracks);
   const sortedTimeline = sortTimelineByYear(player.timeline);
 
   return (
@@ -55,14 +42,15 @@ export function PlayerTimelineModal({
           <DialogTitle className="flex items-center gap-2">
             <span>{t("title", { name: player.displayName })}</span>
             {player.isHost && (
-              <span className="rounded bg-blue-100 px-2 py-0.5 text-[10px] text-blue-700 dark:bg-blue-900/30 dark:text-blue-400">
+              <span className="rounded bg-blue-100 px-2 py-0.5 text-2xs text-blue-700 dark:bg-blue-900/30 dark:text-blue-400">
                 {t("hostBadge")}
               </span>
             )}
           </DialogTitle>
         </DialogHeader>
 
-        <div className="max-h-[60vh] space-y-4 overflow-y-auto">
+        {/* Viewport-relative cap so long card lists scroll inside short screens. */}
+        <div className="dialog-body-scroll space-y-4 overflow-y-auto">
           <div className="flex items-center justify-between text-muted-foreground text-sm">
             <span>{t("cardsCount", { count: player.timelineSize })}</span>
           </div>
