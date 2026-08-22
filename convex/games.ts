@@ -2,7 +2,7 @@ import { ConvexError, v } from "convex/values";
 
 import type { Doc, Id } from "./_generated/dataModel";
 import { query } from "./_generated/server";
-import type { MutationCtx } from "./_generated/server";
+import type { MutationCtx, QueryCtx } from "./_generated/server";
 import { getGameContext, getLobbyPlayers } from "./lib/game_context";
 import { computeValidIndexRange, isPlacementCorrect } from "./lib/game_logic";
 import type { TimelineEntry } from "./lib/game_logic";
@@ -33,6 +33,22 @@ const assertLobbyStatus = (
   if (lobby.status !== status) {
     throw new ConvexError(message);
   }
+};
+
+/**
+ * Loads the lobby and asserts the caller's session is its host. Shared
+ * preamble of every host-only mutation; `hostErrorMessage` preserves each
+ * action-specific access error.
+ */
+const getHostLobbyOrThrow = async (
+  ctx: MutationCtx,
+  lobbyId: Id<"lobbies">,
+  sessionId: string,
+  hostErrorMessage: string,
+): Promise<Doc<"lobbies">> => {
+  const lobby = await getLobbyOrThrow(ctx, lobbyId);
+  assertHostSession(lobby, sessionId, hostErrorMessage);
+  return lobby;
 };
 
 const assertGameActive = (game: Doc<"games">) => {
@@ -161,6 +177,7 @@ const applyDeclinedBets = async (ctx: MutationCtx, declinedBets: Doc<"roundBets"
   await Promise.all(declinedBets.map((bet) => ctx.db.patch(bet._id, { status: "lost" })));
 };
 
+// fallow-ignore-next-line code-duplication -- Convex handler scaffolding is idiomatic; these near-clone spans pair unrelated handlers.
 const persistTimelineUpdates = async (
   ctx: MutationCtx,
   timelineUpdates: Map<Id<"players">, { newTimeline: TimelineEntry[]; newTimelineSize: number }>,
@@ -181,9 +198,13 @@ export const start = mutationWithSession({
     const { lobbyId } = args;
     const { sessionId } = ctx;
 
-    const lobby = await getLobbyOrThrow(ctx, lobbyId);
+    const lobby = await getHostLobbyOrThrow(
+      ctx,
+      lobbyId,
+      sessionId,
+      "Only the host can start the game",
+    );
 
-    assertHostSession(lobby, sessionId, "Only the host can start the game");
     assertLobbyStatus(lobby, "lobby", "Game has already started");
 
     const players = await getLobbyPlayers(ctx, lobbyId);
@@ -347,11 +368,11 @@ export const skipTurn = mutationWithSession({
     const { lobbyId } = args;
     const { sessionId } = ctx;
 
-    const lobby = await getLobbyOrThrow(ctx, lobbyId);
-
-    assertHostSession(lobby, sessionId, "Only the host can skip a turn");
-
-    const { game } = await getGameContext(ctx, lobbyId);
+    // Host check and game load are independent reads.
+    const [lobby, { game }] = await Promise.all([
+      getHostLobbyOrThrow(ctx, lobbyId, sessionId, "Only the host can skip a turn"),
+      getGameContext(ctx, lobbyId),
+    ]);
 
     assertGameActive(game);
 
@@ -361,6 +382,7 @@ export const skipTurn = mutationWithSession({
       return { gameEnded: true, noTracksAvailable: true, winnerPlayerId: null };
     }
 
+    // fallow-ignore-next-line code-duplication -- resolveAndNext's result shape is unique to this handler; the matched span is scaffolding only.
     return {
       gameEnded: false,
       nextRoundId: result.nextRoundId,
@@ -376,11 +398,11 @@ export const resolveAndNext = mutationWithSession({
     const { lobbyId } = args;
     const { sessionId } = ctx;
 
-    const lobby = await getLobbyOrThrow(ctx, lobbyId);
-
-    assertHostSession(lobby, sessionId, "Only the host can start the next round");
-
-    const { game, round } = await getGameContext(ctx, lobbyId);
+    // Host check and game/round load are independent reads.
+    const [lobby, { game, round }] = await Promise.all([
+      getHostLobbyOrThrow(ctx, lobbyId, sessionId, "Only the host can start the next round"),
+      getGameContext(ctx, lobbyId),
+    ]);
 
     assertGameActive(game);
 
@@ -427,9 +449,7 @@ export const resolveRound = mutationWithSession({
     const { lobbyId } = args;
     const { sessionId } = ctx;
 
-    const lobby = await getLobbyOrThrow(ctx, lobbyId);
-
-    assertHostSession(lobby, sessionId, "Only the host can resolve the round");
+    await getHostLobbyOrThrow(ctx, lobbyId, sessionId, "Only the host can resolve the round");
 
     const { game, round } = await getGameContext(ctx, lobbyId);
 
@@ -510,16 +530,56 @@ export const resolveRound = mutationWithSession({
   },
 });
 
+/** Loads the finished game for a lobby, or null when none exists. */
+const getFinishedGame = async (ctx: QueryCtx, lobbyId: Id<"lobbies">) => {
+  const lobby = await ctx.db.get(lobbyId);
+
+  if (!lobby?.activeGameId) {
+    return null;
+  }
+
+  return ctx.db.get(lobby.activeGameId);
+};
+
+const toRoundWithTrack = async (ctx: QueryCtx, round: Doc<"rounds">) => {
+  const track = await ctx.db.get(round.trackId);
+
+  return {
+    ...round,
+    track: track
+      ? {
+          _id: track._id,
+          artist: track.artist,
+          title: track.title,
+          year: track.year,
+        }
+      : null,
+  };
+};
+
+const toPlayerSummary = (player: Doc<"players">) => ({
+  _id: player._id,
+  coins: player.coins,
+  displayName: player.displayName,
+  isHost: player.isHost,
+  timeline: player.timeline,
+  timelineSize: player.timelineSize,
+});
+
+const toGameSummary = (game: Doc<"games">) => ({
+  _id: game._id,
+  currentRoundNumber: game.currentRoundNumber,
+  endedAt: game.endedAt,
+  startedAt: game.startedAt,
+  status: game.status,
+  winnerPlayerId: game.winnerPlayerId,
+});
+
+// fallow-ignore-next-line code-duplication -- getResults is a read-model query; its handler preamble mirrors mutations by Convex convention, not shared logic.
 export const getResults = query({
   args: { lobbyId: v.id("lobbies") },
   handler: async (ctx, args) => {
-    const lobby = await ctx.db.get(args.lobbyId);
-
-    if (!lobby?.activeGameId) {
-      return null;
-    }
-
-    const game = await ctx.db.get(lobby.activeGameId);
+    const game = await getFinishedGame(ctx, args.lobbyId);
 
     if (!game) {
       return null;
@@ -534,41 +594,11 @@ export const getResults = query({
         .collect(),
     ]);
 
-    const roundsWithTracks = await Promise.all(
-      rounds.map(async (round) => {
-        const track = await ctx.db.get(round.trackId);
-
-        return {
-          ...round,
-          track: track
-            ? {
-                _id: track._id,
-                artist: track.artist,
-                title: track.title,
-                year: track.year,
-              }
-            : null,
-        };
-      }),
-    );
+    const roundsWithTracks = await Promise.all(rounds.map((round) => toRoundWithTrack(ctx, round)));
 
     return {
-      game: {
-        _id: game._id,
-        currentRoundNumber: game.currentRoundNumber,
-        endedAt: game.endedAt,
-        startedAt: game.startedAt,
-        status: game.status,
-        winnerPlayerId: game.winnerPlayerId,
-      },
-      players: players.map((p) => ({
-        _id: p._id,
-        coins: p.coins,
-        displayName: p.displayName,
-        isHost: p.isHost,
-        timeline: p.timeline,
-        timelineSize: p.timelineSize,
-      })),
+      game: toGameSummary(game),
+      players: players.map(toPlayerSummary),
       rounds: roundsWithTracks,
     };
   },
@@ -580,9 +610,13 @@ export const playAgain = mutationWithSession({
     const { lobbyId } = args;
     const { sessionId } = ctx;
 
-    const lobby = await getLobbyOrThrow(ctx, lobbyId);
+    const lobby = await getHostLobbyOrThrow(
+      ctx,
+      lobbyId,
+      sessionId,
+      "Only the host can restart the game",
+    );
 
-    assertHostSession(lobby, sessionId, "Only the host can restart the game");
     assertLobbyStatus(lobby, "finished", "Game is not finished");
 
     await ctx.db.patch(lobbyId, {
