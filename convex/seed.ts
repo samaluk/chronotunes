@@ -307,30 +307,32 @@ export const seed = mutation({
       status: "lobby",
     });
 
-    const hostPlayerId = await ctx.db.insert("players", {
-      coins: 3,
-      createdAt: Date.now(),
-      displayName: "Host Player",
-      isHost: true,
-      lobbyId,
-      sessionId: "host-session",
-      timeline: [],
-      timelineSize: 0,
-    });
-
-    const trackIds = await Promise.all(
-      TEST_TRACKS.map((track) =>
-        ctx.db.insert("tracks", {
-          artist: track.artist,
-          createdAt: Date.now(),
-          externalIds: { youtubeVideoId: track.videoId },
-          links: {},
-          source: "seed",
-          title: track.title,
-          year: track.year,
-        }),
+    // Host player and test tracks are independent inserts.
+    const [hostPlayerId, trackIds] = await Promise.all([
+      ctx.db.insert("players", {
+        coins: 3,
+        createdAt: Date.now(),
+        displayName: "Host Player",
+        isHost: true,
+        lobbyId,
+        sessionId: "host-session",
+        timeline: [],
+        timelineSize: 0,
+      }),
+      Promise.all(
+        TEST_TRACKS.map((track) =>
+          ctx.db.insert("tracks", {
+            artist: track.artist,
+            createdAt: Date.now(),
+            externalIds: { youtubeVideoId: track.videoId },
+            links: {},
+            source: "seed",
+            title: track.title,
+            year: track.year,
+          }),
+        ),
       ),
-    );
+    ]);
 
     return {
       hostPlayerId,

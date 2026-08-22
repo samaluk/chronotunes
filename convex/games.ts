@@ -116,21 +116,24 @@ const applyLockedBets = async (
 ) => {
   const awardedPlayerIds: Id<"players">[] = [];
   const coinDeltas: { playerId: Id<"players">; delta: number }[] = [];
+  const betStatuses: { betId: Id<"roundBets">; status: "lost" | "won" }[] = [];
 
-  /* oxlint-disable eslint/no-await-in-loop -- bet outcomes mutate shared timeline state */
+  /* Synchronous pass: resolve outcomes and splice shared timeline state in
+     bet order. Each patch below touches a different document, so the writes
+     run in parallel afterwards. */
   for (const bet of lockedBets) {
     const bettorWasCorrect = isPlacementCorrect(bet.proposedIndex, validRange);
 
     if (turnPlayerWasCorrect || !bettorWasCorrect) {
       coinDeltas.push({ delta: 0, playerId: bet.playerId });
-      await ctx.db.patch(bet._id, { status: "lost" });
+      betStatuses.push({ betId: bet._id, status: "lost" });
       continue;
     }
 
     const bettorUpdate = timelineUpdates.get(bet.playerId);
     if (!bettorUpdate) {
       coinDeltas.push({ delta: 0, playerId: bet.playerId });
-      await ctx.db.patch(bet._id, { status: "lost" });
+      betStatuses.push({ betId: bet._id, status: "lost" });
       continue;
     }
 
@@ -144,9 +147,12 @@ const applyLockedBets = async (
     bettorUpdate.newTimelineSize += 1;
     awardedPlayerIds.push(bet.playerId);
     coinDeltas.push({ delta: 0, playerId: bet.playerId });
-    await ctx.db.patch(bet._id, { status: "won" });
+    betStatuses.push({ betId: bet._id, status: "won" });
   }
-  /* oxlint-enable eslint/no-await-in-loop */
+
+  await Promise.all(
+    betStatuses.map((betStatus) => ctx.db.patch(betStatus.betId, { status: betStatus.status })),
+  );
 
   return { awardedPlayerIds, coinDeltas };
 };
@@ -192,24 +198,26 @@ export const start = mutationWithSession({
 
     const turnOrder = shuffleArray(players.map((p) => p._id));
 
-    const gameId = await ctx.db.insert("games", {
-      currentRoundNumber: 1,
-      lobbyId,
-      startedAt: Date.now(),
-      status: "active",
-      turnOrder,
-      turnPlayerId: turnOrder[0],
-    });
-
-    const tracks = await ctx.db
-      .query("tracks")
-      .filter((q) =>
-        q.and(
-          q.gte(q.field("year"), lobby.settings.minYear),
-          q.lte(q.field("year"), lobby.settings.maxYear),
-        ),
-      )
-      .collect();
+    // The game record and the track pool are independent reads/writes.
+    const [gameId, tracks] = await Promise.all([
+      ctx.db.insert("games", {
+        currentRoundNumber: 1,
+        lobbyId,
+        startedAt: Date.now(),
+        status: "active",
+        turnOrder,
+        turnPlayerId: turnOrder[0],
+      }),
+      ctx.db
+        .query("tracks")
+        .filter((q) =>
+          q.and(
+            q.gte(q.field("year"), lobby.settings.minYear),
+            q.lte(q.field("year"), lobby.settings.maxYear),
+          ),
+        )
+        .collect(),
+    ]);
 
     if (tracks.length < players.length) {
       throw new ConvexError(
@@ -220,7 +228,15 @@ export const start = mutationWithSession({
     const usedTrackIds = new Set<Id<"tracks">>();
     const playerInitialTracks = new Map<Id<"players">, { trackId: Id<"tracks">; year: number }>();
 
-    /* oxlint-disable eslint/no-await-in-loop -- each player must claim a unique track */
+    /* Synchronous pass: each player claims a unique track in order. The
+       patches below touch different player documents, so the writes run in
+       parallel afterwards. */
+    const initialTimelines: {
+      playerId: Id<"players">;
+      timeline: TimelineEntry[];
+      timelineSize: number;
+    }[] = [];
+
     for (const player of players) {
       const availableTracks = tracks.filter((t) => !usedTrackIds.has(t._id));
 
@@ -238,7 +254,8 @@ export const start = mutationWithSession({
         year: selectedTrack.year,
       });
 
-      await ctx.db.patch(player._id, {
+      initialTimelines.push({
+        playerId: player._id,
         timeline: [
           {
             earnedAtRoundNumber: 0,
@@ -250,7 +267,15 @@ export const start = mutationWithSession({
         timelineSize: 1,
       });
     }
-    /* oxlint-enable eslint/no-await-in-loop */
+
+    await Promise.all(
+      initialTimelines.map((initialTimeline) =>
+        ctx.db.patch(initialTimeline.playerId, {
+          timeline: initialTimeline.timeline,
+          timelineSize: initialTimeline.timelineSize,
+        }),
+      ),
+    );
 
     let startingPlayerId: Id<"players"> | null = null;
     let oldestYear = Number.POSITIVE_INFINITY;
@@ -500,12 +525,14 @@ export const getResults = query({
       return null;
     }
 
-    const players = await getLobbyPlayers(ctx, args.lobbyId);
-
-    const rounds = await ctx.db
-      .query("rounds")
-      .withIndex("by_game", (q) => q.eq("gameId", game._id))
-      .collect();
+    // Player list and round history are independent reads.
+    const [players, rounds] = await Promise.all([
+      getLobbyPlayers(ctx, args.lobbyId),
+      ctx.db
+        .query("rounds")
+        .withIndex("by_game", (q) => q.eq("gameId", game._id))
+        .collect(),
+    ]);
 
     const roundsWithTracks = await Promise.all(
       rounds.map(async (round) => {
