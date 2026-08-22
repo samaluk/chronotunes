@@ -2,7 +2,6 @@
 
 import { useSessionId, useSessionQuery } from "convex-helpers/react/sessions";
 import { useQuery } from "convex/react";
-import { useCallback, useMemo } from "react";
 import { useIsMounted } from "usehooks-ts";
 
 import { ErrorBoundary } from "@/components/ui/error-boundary";
@@ -11,7 +10,8 @@ import type { Doc, Id } from "@/convex/_generated/dataModel";
 
 import { BettingPhaseContent } from "./betting-phase-content";
 import { GameHeader } from "./game-header";
-import { GameProvider, useGame } from "./game-provider";
+import { GameProvider } from "./game-provider";
+import { useGame } from "./game-context";
 import { GameResults } from "./game-results";
 import { PlacingPhaseContent } from "./placing-phase-content";
 import { PlayerTimelineModal } from "./player-timeline-modal";
@@ -77,7 +77,7 @@ function ActiveGameView(): React.ReactNode {
       <ErrorBoundary>
         <div className="w-full">
           <div className="overflow-hidden rounded-xl border bg-card">
-            <div className="fade-in animate-in p-6 transition-all duration-300">
+            <div className="fade-in animate-in p-6">
               <PhaseContent />
             </div>
           </div>
@@ -93,12 +93,9 @@ function GamePlayersBar(): React.ReactNode {
   const { setSelectedPlayerForTimeline } = actions;
   const { sessionId, lobbyId } = meta;
 
-  const handlePlayerClick = useCallback(
-    (player: Doc<"players">) => {
-      setSelectedPlayerForTimeline(player);
-    },
-    [setSelectedPlayerForTimeline],
-  );
+  const handlePlayerClick = (player: Doc<"players">): void => {
+    setSelectedPlayerForTimeline(player);
+  };
 
   return (
     <PlayersBar
@@ -149,12 +146,9 @@ export function GameView({ lobbyId, code }: GameViewProps): React.ReactNode {
 
   const turnPlayer = players?.find((p) => p._id === currentRound?.turnPlayerId);
 
-  const turnPlayerTrackIds = useMemo((): Id<"tracks">[] => {
-    if (!turnPlayer?.timeline) {
-      return [];
-    }
-    return turnPlayer.timeline.map((t) => t.trackId);
-  }, [turnPlayer]);
+  const turnPlayerTrackIds: Id<"tracks">[] = turnPlayer?.timeline
+    ? turnPlayer.timeline.map((t) => t.trackId)
+    : [];
 
   const revealedTracks = useQuery(
     api.tracks.getPublicByIds,
@@ -176,7 +170,7 @@ export function GameView({ lobbyId, code }: GameViewProps): React.ReactNode {
 
   if (!(lobby && currentRound)) {
     return (
-      <div className="flex min-h-[400px] items-center justify-center">
+      <div className="flex min-h-100 items-center justify-center">
         <div className="text-center">
           <p className="text-muted-foreground">No active game found</p>
         </div>
@@ -186,7 +180,7 @@ export function GameView({ lobbyId, code }: GameViewProps): React.ReactNode {
 
   if (!game) {
     return (
-      <div className="flex min-h-[400px] items-center justify-center">
+      <div className="flex min-h-100 items-center justify-center">
         <div className="text-center">
           <p className="text-muted-foreground">No active game found</p>
         </div>

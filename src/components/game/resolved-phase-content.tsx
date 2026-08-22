@@ -2,22 +2,20 @@
 
 import { Music } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 
-import { useGame } from "./game-provider";
+import { useGame } from "./game-context";
 import { RoundResults } from "./round-results";
 
 export function ResolvedPhaseContent(): React.ReactNode {
   const tResults = useTranslations("results");
-  const [showResultsModal, setShowResultsModal] = useState(false);
+  // This component mounts when the round resolves, so the results modal starts
+  // open; the player can dismiss it for the rest of the phase.
+  const [showResultsModal, setShowResultsModal] = useState(true);
   const { state } = useGame();
   const { lobby, players, currentRound, track, turnPlayer } = state;
-
-  useEffect(() => {
-    setShowResultsModal(true);
-  }, []);
 
   if (!(lobby && track && currentRound?.resolution && players && turnPlayer)) {
     return (

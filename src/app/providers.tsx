@@ -23,6 +23,11 @@ export function Providers({
 }): ReactNode {
   return (
     <ConvexProvider client={convex}>
+      {/* convex-helpers' SessionProvider API only accepts a storage hook as a
+          value (UseStorage<T>), which the React Compiler flags as a hook
+          referenced outside a call position. Runtime behavior is correct:
+          SessionProvider itself calls it unconditionally at its top level. */}
+      {/* react-doctor-disable-next-line react-hooks-js/hooks */}
       <SessionProvider ssrFriendly storageKey="chronotunes-session-id" useStorage={useLocalStorage}>
         <ThemeProvider
           attribute="class"

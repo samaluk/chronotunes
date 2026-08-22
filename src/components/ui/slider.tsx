@@ -1,7 +1,6 @@
 "use client";
 
 import { Slider as SliderPrimitive } from "@base-ui/react/slider";
-import { useMemo } from "react";
 
 import { cn } from "@/lib/utils";
 
@@ -13,7 +12,7 @@ function Slider({
   max = 100,
   ...props
 }: SliderPrimitive.Root.Props) {
-  const _values = useMemo(() => {
+  const values: unknown[] = (() => {
     if (Array.isArray(value)) {
       // oxlint-disable-next-line typescript/no-unsafe-return
       return value;
@@ -23,7 +22,7 @@ function Slider({
       return defaultValue;
     }
     return [min, max];
-  }, [value, defaultValue, min, max]);
+  })();
 
   return (
     <SliderPrimitive.Root
@@ -51,7 +50,7 @@ function Slider({
             data-slot="slider-range"
           />
         </SliderPrimitive.Track>
-        {Array.from({ length: _values.length }, (_, index) => (
+        {Array.from({ length: values.length }, (_, index) => (
           <SliderPrimitive.Thumb
             className="block size-4 shrink-0 select-none rounded-full border border-primary bg-white shadow-sm ring-ring/50 transition-[color,box-shadow] hover:ring-4 focus-visible:outline-hidden focus-visible:ring-4 disabled:pointer-events-none disabled:opacity-50"
             data-slot="slider-thumb"

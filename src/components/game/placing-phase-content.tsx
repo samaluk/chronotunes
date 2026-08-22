@@ -3,7 +3,7 @@
 import { Music } from "lucide-react";
 import { useTranslations } from "next-intl";
 
-import { useGame } from "./game-provider";
+import { useGame } from "./game-context";
 import { TimelinePlacer } from "./timeline-placer";
 import { TurnPlayerTimeline } from "./turn-player-timeline";
 

@@ -4,7 +4,7 @@ import { Music } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import { BettingPanel } from "./betting-panel";
-import { useGame } from "./game-provider";
+import { useGame } from "./game-context";
 
 export function BettingPhaseContent(): React.ReactNode {
   const tBetting = useTranslations("betting");

@@ -7,7 +7,8 @@
   ],
   "ignorePatterns": [
     "scripts/**",
-    "oxfmt.config.ts"
+    "oxfmt.config.ts",
+    "doctor.config.ts"
   ],
   "ignoreExports": [
     {
@@ -21,7 +22,8 @@
     "scrape-yt",
     "scrape-youtube",
     "@edge-runtime/vm",
-    "tailwindcss"
+    "tailwindcss",
+    "react-doctor"
   ],
   "typeAware": {
     "enabled": true,

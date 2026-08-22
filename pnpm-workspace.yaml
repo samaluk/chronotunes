@@ -1,7 +1,19 @@
 packages:
   - .
+# Supply-chain hardening (react-doctor/require-pnpm-hardening): only install
+# versions published at least a day ago, fail resolution when nothing satisfies
+# that gate, and refuse versions whose trust evidence regressed vs earlier
+# releases.
+minimumReleaseAge: 1440
 minimumReleaseAgeStrict: true
+trustPolicy: no-downgrade
+# Trust-downgrade checks only matter for freshly published versions; older
+# releases (semver@6.3.1, ua-parser-js@1.0.41) predate provenance publishing
+# and would otherwise be false-flagged as takeovers.
+trustPolicyIgnoreAfter: 43200
 minimumReleaseAgeExclude:
+  # eslint@10.9.0 entered the lockfile minutes after publication.
+  - eslint@10.9.0
   - fallow@3.17.0
   - "@fallow-cli/darwin-arm64@3.17.0"
   - "@fallow-cli/darwin-x64@3.17.0"

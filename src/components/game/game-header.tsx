@@ -2,12 +2,11 @@
 
 import { Check, X } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { memo } from "react";
 
 import { VolumeSlider } from "@/components/player/volume-slider";
 import { cn } from "@/lib/utils";
 
-import { useGame } from "./game-provider";
+import { useGame } from "./game-context";
 import { GameTimer } from "./game-timer";
 
 const phaseStyles = {
@@ -16,7 +15,7 @@ const phaseStyles = {
   resolved: "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400",
 };
 
-export const GameHeader = memo((): React.ReactNode => {
+export const GameHeader = (): React.ReactNode => {
   const t = useTranslations("game");
   const tCommon = useTranslations("common");
   const tPhase = useTranslations("phase");
@@ -98,4 +97,4 @@ export const GameHeader = memo((): React.ReactNode => {
       </div>
     </div>
   );
-});
+};

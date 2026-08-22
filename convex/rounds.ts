@@ -111,11 +111,11 @@ export const submitPlacement = mutationWithSession({
       throw new ConvexError("Placement has already been submitted");
     }
 
-    const player = await getPlayerBySession(ctx, lobbyId, sessionId);
-
     if (round.phase !== "placing") {
       throw new ConvexError("Can only submit placement during placing phase");
     }
+
+    const player = await getPlayerBySession(ctx, lobbyId, sessionId);
 
     if (round.turnPlayerId !== player._id) {
       throw new ConvexError("Only the turn player can submit placement");
@@ -133,12 +133,14 @@ export const submitPlacement = mutationWithSession({
       },
     });
 
-    const players = await getLobbyPlayers(ctx, lobbyId);
-
-    const allBets = await ctx.db
-      .query("roundBets")
-      .withIndex("by_round", (q) => q.eq("roundId", round._id))
-      .collect();
+    // Player list and existing bets are independent reads.
+    const [players, allBets] = await Promise.all([
+      getLobbyPlayers(ctx, lobbyId),
+      ctx.db
+        .query("roundBets")
+        .withIndex("by_round", (q) => q.eq("roundId", round._id))
+        .collect(),
+    ]);
 
     const playersWithBets = new Set(allBets.map((bet) => bet.playerId));
 

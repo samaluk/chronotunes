@@ -2,7 +2,7 @@ import { cleanup, render, screen } from "@testing-library/react";
 import type { GenericId } from "convex/values";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { GameContext } from "./game-provider";
+import { GameContext } from "./game-context";
 import { RoundResults } from "./round-results";
 
 // oxlint-disable-next-line typescript/consistent-type-assertions, typescript/no-unsafe-type-assertion

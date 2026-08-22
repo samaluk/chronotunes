@@ -5,7 +5,6 @@ import { useQuery } from "convex/react";
 import { Copy, LogOut, Music, Users } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 import { GameView } from "@/components/game/game-view";
@@ -14,7 +13,7 @@ import { SettingsPanel } from "@/components/lobby/settings-panel";
 import { StartGameButton } from "@/components/lobby/start-game-button";
 import { ErrorBoundary } from "@/components/ui/error-boundary";
 import { LocaleSwitcher } from "@/components/ui/locale-switcher";
-import { SkeletonLobbyCode, SkeletonPage, SkeletonPlayerList } from "@/components/ui/skeletons";
+import { SkeletonLobbyCode, SkeletonPlayerList } from "@/components/ui/skeletons";
 import { api } from "@/convex/_generated/api";
 
 interface LobbyPageContentProps {
@@ -27,32 +26,17 @@ export function LobbyPageContent({ code }: LobbyPageContentProps): React.ReactNo
 
   const router = useRouter();
   const [sessionId] = useSessionId();
-  const [mounted, setMounted] = useState(false);
 
-  const lobby = useQuery(api.lobbies.get, mounted && code ? { code } : "skip");
-  const players = useQuery(
-    api.players.list,
-    mounted && lobby?._id ? { lobbyId: lobby._id } : "skip",
-  );
+  const lobby = useQuery(api.lobbies.get, code ? { code } : "skip");
+  const players = useQuery(api.players.list, lobby?._id ? { lobbyId: lobby._id } : "skip");
   const me = useQuery(
     api.players.getMe,
-    mounted && lobby?._id && sessionId ? { lobbyId: lobby._id, sessionId } : "skip",
+    lobby?._id && sessionId ? { lobbyId: lobby._id, sessionId } : "skip",
   );
   const leaveLobby = useSessionMutation(api.lobbies.leave);
 
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  useEffect(() => {
-    if (mounted && lobby === null && code) {
-      toast.error(t("lobbyNotFound"));
-      router.push("/");
-    }
-  }, [mounted, lobby, code, router, t]);
-
   const handleCopyCode = (): void => {
-    navigator.clipboard.writeText(code);
+    void navigator.clipboard.writeText(code);
     toast.success(tCommon("copied"), { description: t("copiedToClipboard") });
   };
 
@@ -69,10 +53,6 @@ export function LobbyPageContent({ code }: LobbyPageContentProps): React.ReactNo
       toast.error(message);
     }
   };
-
-  if (!mounted) {
-    return <SkeletonPage />;
-  }
 
   if (!code) {
     return (
@@ -160,8 +140,9 @@ export function LobbyPageContent({ code }: LobbyPageContentProps): React.ReactNo
               </div>
               <LocaleSwitcher />
               <button
+                aria-label={t("leave")}
                 className="inline-flex h-9 items-center justify-center rounded-md border border-input bg-background px-3 font-medium text-destructive transition-colors hover:bg-accent hover:text-destructive"
-                onClick={handleLeaveLobby}
+                onClick={() => void handleLeaveLobby()}
                 type="button"
               >
                 <LogOut className="h-4 w-4" />

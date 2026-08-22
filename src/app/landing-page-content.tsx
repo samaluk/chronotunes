@@ -4,7 +4,7 @@ import { useSessionId } from "convex-helpers/react/sessions";
 import { useMutation } from "convex/react";
 import { Music } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useEffect, useState } from "react";
+import { useState, useSyncExternalStore } from "react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -14,6 +14,7 @@ import { Label } from "@/components/ui/label";
 import { LocaleSwitcher } from "@/components/ui/locale-switcher";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { api } from "@/convex/_generated/api";
+import { runSafely } from "@/lib/run-safely";
 
 const DISPLAY_NAME_KEY = "chronotunes-display-name";
 const LOBBY_CODE_LENGTH = 6;
@@ -23,16 +24,36 @@ function validateLobbyCode(code: string): boolean {
   return cleaned.length === LOBBY_CODE_LENGTH;
 }
 
-function getDisplayName(): string {
-  if (typeof window === "undefined") {
-    return "";
-  }
-  return localStorage.getItem(DISPLAY_NAME_KEY) || "";
+/* localStorage-backed external store so the saved display name can be read
+   during render without an effect-driven state update. The cached snapshot
+   keeps getSnapshot referentially stable across calls. */
+let displayNameCache: string | null = null;
+const displayNameSubscribers = new Set<() => void>();
+
+function subscribeToDisplayName(onChange: () => void): () => void {
+  displayNameSubscribers.add(onChange);
+  return () => {
+    displayNameSubscribers.delete(onChange);
+  };
 }
+
+function getDisplayName(): string {
+  if (displayNameCache === null) {
+    displayNameCache =
+      typeof window === "undefined" ? "" : (localStorage.getItem(DISPLAY_NAME_KEY) ?? "");
+  }
+  return displayNameCache;
+}
+
+const getEmptyDisplayName = (): string => "";
 
 function saveDisplayName(name: string): void {
   if (typeof window !== "undefined") {
+    displayNameCache = name.trim();
     localStorage.setItem(DISPLAY_NAME_KEY, name.trim());
+    for (const notify of displayNameSubscribers) {
+      notify();
+    }
   }
 }
 
@@ -44,18 +65,23 @@ export function LandingPageContent() {
   const createLobby = useMutation(api.lobbies.create);
   const joinLobby = useMutation(api.lobbies.join);
 
-  const [displayName, setDisplayNameState] = useState("");
+  // Saved value from storage plus a local draft while the user is typing.
+  const storedDisplayName = useSyncExternalStore(
+    subscribeToDisplayName,
+    getDisplayName,
+    getEmptyDisplayName,
+  );
+  const [draftDisplayName, setDraftDisplayName] = useState<string | null>(null);
+  const displayName = draftDisplayName ?? storedDisplayName;
+
+  const setDisplayNameState = (name: string): void => {
+    setDraftDisplayName(name);
+  };
+
   const [joinCode, setJoinCode] = useState("");
   const [isJoining, setIsJoining] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
   const [showJoinForm, setShowJoinForm] = useState(false);
-
-  useEffect(() => {
-    const savedName = getDisplayName();
-    if (savedName) {
-      setDisplayNameState(savedName);
-    }
-  }, []);
 
   const handleCreateGame = async (): Promise<void> => {
     const name = displayName.trim();
@@ -74,19 +100,21 @@ export function LandingPageContent() {
     }
 
     setIsCreating(true);
-    try {
-      saveDisplayName(name);
-      const result = await createLobby({ displayName: name, sessionId });
-      toast.success(t("gameCreated"), {
-        description: t("shareCode", { code: result.code }),
-      });
-      window.location.href = `/lobby/${result.code}`;
-    } catch (error) {
-      const message = error instanceof Error ? error.message : t("failedToCreate");
-      toast.error(message);
-    } finally {
-      setIsCreating(false);
-    }
+    await runSafely(
+      async () => {
+        saveDisplayName(name);
+        const result = await createLobby({ displayName: name, sessionId });
+        toast.success(t("gameCreated"), {
+          description: t("shareCode", { code: result.code }),
+        });
+        window.location.href = `/lobby/${result.code}`;
+      },
+      (error: unknown) => {
+        const message = error instanceof Error ? error.message : t("failedToCreate");
+        toast.error(message);
+      },
+    );
+    setIsCreating(false);
   };
 
   const handleJoinGame = async (): Promise<void> => {
@@ -112,22 +140,24 @@ export function LandingPageContent() {
     }
 
     setIsJoining(true);
-    try {
-      saveDisplayName(name);
-      await joinLobby({ code: cleanedCode, displayName: name, sessionId });
-      toast.success(t("joinedGame"));
-      window.location.href = `/lobby/${cleanedCode}`;
-    } catch (error) {
-      const message = error instanceof Error ? error.message : t("failedToJoin");
-      toast.error(message);
-    } finally {
-      setIsJoining(false);
-    }
+    await runSafely(
+      async () => {
+        saveDisplayName(name);
+        await joinLobby({ code: cleanedCode, displayName: name, sessionId });
+        toast.success(t("joinedGame"));
+        window.location.href = `/lobby/${cleanedCode}`;
+      },
+      (error: unknown) => {
+        const message = error instanceof Error ? error.message : t("failedToJoin");
+        toast.error(message);
+      },
+    );
+    setIsJoining(false);
   };
 
   return (
     <div className="relative min-h-screen bg-background font-sans">
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_var(--tw-gradient-stops))] from-primary/10 via-background to-background" />
+      <div className="bg-hero-glow pointer-events-none absolute inset-0 from-primary/10 via-background to-background" />
       <div className="relative mx-auto flex min-h-screen w-full max-w-4xl flex-col px-6 py-10 sm:px-12 sm:py-12 lg:py-14">
         <header className="flex w-full items-center justify-between">
           <div className="flex items-center gap-2">
