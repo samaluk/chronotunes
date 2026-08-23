@@ -1,0 +1,50 @@
+# Fallow — independent zero-debt quality gate.
+#
+# Runs the FULL repository scan (dead-code + duplication + health, every
+# finding blocking) on pull requests and pushes to master. There is no
+# inherited debt and no new-only attribution anymore: exit code 1 means a
+# real regression.
+#
+# This is intentionally a dedicated job, NOT folded into ci-reusable.yml,
+# mirroring the React Doctor gate. The coverage coupling is preserved:
+# `pnpm test:coverage` produces the fresh Istanbul report that fallow:full's
+# health probe consumes for accurate CRAP scoring.
+#
+# To make this an enforced merge gate, add the "Fallow" check run as a
+# required status check under Settings → Branches → Branch protection rules.
+
+name: Fallow
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+  push:
+    branches:
+      - master
+
+permissions:
+  contents: read
+
+concurrency:
+  group: fallow-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  fallow:
+    runs-on: ${{ github.event.pull_request.head.repo.fork && 'ubuntu-latest' || (vars.USE_SELF_HOSTED_RUNNERS == 'true' && fromJSON('["self-hosted","macOS","ARM64"]') || 'ubuntu-latest') }}
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+          clean: ${{ vars.USE_SELF_HOSTED_RUNNERS != 'true' }}
+
+      - uses: ./.github/actions/setup-toolchain
+
+      - name: Unit tests (with coverage)
+        run: pnpm test:coverage
+
+      - name: Fallow (full zero-debt scan)
+        run: pnpm fallow:ci

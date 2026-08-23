@@ -6,7 +6,7 @@
 # error) fails the check; `blocking: error` alone would let warnings slip through.
 #
 # This is intentionally a dedicated job, NOT folded into the reusable CI
-# (ci-reusable.yml), which still owns Oxlint/Oxfmt, typecheck, tests, Fallow, and
+# (ci-reusable.yml), which still owns Oxlint/Oxfmt, typecheck, tests, and
 # build. React Doctor fills the one gap that toolchain does not cover:
 # framework-specific React correctness (state/effects, performance,
 # accessibility, security). The official `millionco/react-doctor@v2` composite
