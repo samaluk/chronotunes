@@ -12,11 +12,11 @@
 #   - a failed scan is never cached (actions/cache only saves when the job
 #     succeeds), so a broken version re-scans on the next trigger.
 #
-# Unlike the PR gate (react-doctor.yml), this workflow needs node_modules for
-# the version probe: it reads the installed react-doctor package.json straight
-# from the repo root with fs.readFileSync (the app lives at the repository
-# root; plain require() would fail because react-doctor's `exports` map does
-# not expose './package.json').
+# The version probe greps pnpm-lock.yaml at the repo root for the exact
+# resolved react-doctor version (survives Renovate manifest ranges; fails
+# loudly if the dep leaves the lockfile). Like the PR gate, this workflow has
+# no dependency-install step and no Node setup — the pinned action installs
+# its own toolchain.
 #
 # Post-merge runs have no PR to annotate: comments and review comments are
 # explicitly off, and the kept-on commit status is the trend marker on the
@@ -58,17 +58,14 @@ jobs:
           persist-credentials: false
           clean: ${{ vars.USE_SELF_HOSTED_RUNNERS != 'true' }}
 
-      # The version probe needs node_modules, unlike the PR gate's composite
-      # action (which installs its own Node and manages its caches internally).
-      - uses: ./.github/actions/setup-toolchain
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Resolve installed react-doctor version
+      # The probe needs nothing but the lockfile — the pinned action installs
+      # its own toolchain, so there is no dependency-install step here.
+      - name: Resolve pinned react-doctor version
         id: rdver
         run: |
-          echo "version=$(node -p "JSON.parse(require('node:fs').readFileSync('node_modules/react-doctor/package.json','utf8')).version")" >> "$GITHUB_OUTPUT"
+          v="$(sed -n 's/^ *react-doctor@\([0-9][0-9.]*\):.*/\1/p' pnpm-lock.yaml | head -1)"
+          if [ -z "$v" ]; then echo "::error::react-doctor version not found in pnpm-lock.yaml"; exit 1; fi
+          echo "version=$v" >> "$GITHUB_OUTPUT"
 
       - name: Check whether this version was already scanned
         id: seen
