@@ -358,7 +358,15 @@ function WaitingForHost(): React.ReactNode {
   );
 }
 
-export function RoundResults(): React.ReactNode {
+// Safe to format in the user's locale: the results tree renders exclusively
+// from client-side Convex query results, so it is never server-rendered.
+const formatTime = (timestamp: number): string => {
+  // react-doctor-disable-next-line react-doctor/no-locale-format-in-render
+  return new Date(timestamp).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+};
+
+/** Owns the resolved-round queries and host detection for the results view. */
+function useResolvedRound() {
   const t = useTranslations("results");
   const { state, meta } = useGame();
   const [isResolving, setIsResolving] = useState(false);
@@ -368,7 +376,6 @@ export function RoundResults(): React.ReactNode {
   const { lobbyId } = meta;
 
   const resolution = currentRound?.resolution;
-
   const resolveAndNext = useSessionMutation(api.games.resolveAndNext);
   const roundBets = useQuery(api.bets.listForRound, lobbyId ? { lobbyId } : "skip");
 
@@ -393,13 +400,6 @@ export function RoundResults(): React.ReactNode {
     ? roundBets.filter((bet) => !bet.declinedToBet)
     : [];
 
-  // Safe to format in the user's locale: this tree renders exclusively from
-  // client-side Convex query results, so it is never server-rendered.
-  const formatTime = (timestamp: number): string => {
-    // react-doctor-disable-next-line react-doctor/no-locale-format-in-render
-    return new Date(timestamp).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-  };
-
   const isTurnPlayerCorrect = resolution?.turnPlayerWasCorrect ?? false;
   const correctnessStyles = getCorrectnessStyles(showCorrectness, isTurnPlayerCorrect);
   const placementResultText = getPlacementResultText({
@@ -408,31 +408,68 @@ export function RoundResults(): React.ReactNode {
     t,
   });
 
-  if (!(resolution && track && turnPlayer)) {
+  return {
+    bettingBets,
+    correctnessStyles,
+    formatTime,
+    handleNextRound,
+    isHost,
+    isResolving,
+    meId: me?._id,
+    placementResultText,
+    playersById,
+    ready: Boolean(resolution && track && turnPlayer),
+    resolution,
+    showCorrectness,
+    track,
+    turnPlayer,
+  };
+}
+
+export function RoundResults(): React.ReactNode {
+  const t = useTranslations("results");
+  const data = useResolvedRound();
+  const {
+    bettingBets,
+    correctnessStyles,
+    formatTime,
+    handleNextRound,
+    isHost,
+    isResolving,
+    meId,
+    placementResultText,
+    playersById,
+    ready,
+    resolution,
+    showCorrectness,
+    track,
+    turnPlayer,
+  } = data;
+
+  if (!ready) {
+    return <RoundRevealPlaceholder t={t} />;
+  }
+
+  if (!resolution || !track || !turnPlayer) {
     return <RoundRevealPlaceholder t={t} />;
   }
 
   return (
     <div className="space-y-6">
       <SongReveal correctnessStyles={correctnessStyles} placementResultText={placementResultText} />
-
       {showCorrectness && <SongCard t={t} track={track} />}
-
       {showCorrectness && (
         <CardAwards
-          meId={me?._id}
+          meId={meId}
           playersById={playersById}
           resolution={resolution}
           turnPlayerId={turnPlayer._id}
         />
       )}
-
       {bettingBets.length > 0 && (
-        <BettingResults bets={bettingBets} meId={me?._id} playersById={playersById} />
+        <BettingResults bets={bettingBets} meId={meId} playersById={playersById} />
       )}
-
       <ResolvedAtFooter formattedTime={formatTime(resolution.resolvedAt)} />
-
       {isHost && (
         <HostNextRoundButton
           isResolving={isResolving}
@@ -441,7 +478,6 @@ export function RoundResults(): React.ReactNode {
           }}
         />
       )}
-
       {!isHost && <WaitingForHost />}
     </div>
   );

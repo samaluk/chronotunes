@@ -2,46 +2,57 @@
 
 import { Music } from "lucide-react";
 import { useTranslations } from "next-intl";
+import type { ReactNode } from "react";
 
 import { useGame } from "./game-context";
+import type { GameContextValue } from "./game-context";
 import { TimelinePlacer } from "./timeline-placer";
 import { TurnPlayerTimeline } from "./turn-player-timeline";
 
-export function PlacingPhaseContent(): React.ReactNode {
-  const tPlacing = useTranslations("placing");
-  const { state } = useGame();
-  const { isMyTurn, lobby, me, players, currentRound, track, turnPlayer } = state;
+/** When it is my turn, render the placement interface; otherwise nothing. */
+function MyTurnPlacer({ state }: { state: GameContextValue["state"] }): ReactNode | null {
+  const { isMyTurn, lobby, me, track, revealedTracks } = state;
 
-  const existingPreviewIndex = currentRound?.placementPreview?.proposedIndex ?? null;
+  if (!(isMyTurn && lobby && me && track)) {
+    return null;
+  }
+
+  return (
+    <TimelinePlacer
+      currentTrack={track}
+      existingPreviewIndex={state.currentRound?.placementPreview?.proposedIndex ?? null}
+      lobbyId={lobby._id}
+      player={me}
+      revealedTracks={revealedTracks}
+    />
+  );
+}
+
+/** While another player places their song, spectate their timeline. */
+function TurnPlayerSpectator({ state }: { state: GameContextValue["state"] }): ReactNode | null {
+  const { lobby, players, currentRound, track, turnPlayer, revealedTracks } = state;
   const turnPlayerId = currentRound?.turnPlayerId ?? null;
-  const turnPlayerTimeline = turnPlayer?.timeline ?? [];
-  const turnPlayerTimelineSize = turnPlayer?.timelineSize ?? 0;
 
-  if (isMyTurn && lobby && me && track) {
-    return (
-      <TimelinePlacer
-        currentTrack={track}
-        existingPreviewIndex={existingPreviewIndex}
-        lobbyId={lobby._id}
-        player={me}
-        revealedTracks={state.revealedTracks}
-      />
-    );
+  if (!(lobby && track && players && turnPlayerId)) {
+    return null;
   }
 
-  if (lobby && track && players && turnPlayerId) {
-    const turnPlayerData = players.find((p) => p._id === turnPlayerId);
-    const turnPlayerName = turnPlayerData?.displayName ?? "Player";
-    return (
-      <TurnPlayerTimeline
-        existingPreviewIndex={existingPreviewIndex}
-        revealedTracks={state.revealedTracks}
-        timeline={turnPlayerTimeline}
-        timelineSize={turnPlayerTimelineSize}
-        turnPlayerName={turnPlayerName}
-      />
-    );
-  }
+  const turnPlayerData = players.find((p) => p._id === turnPlayerId);
+  const turnPlayerName = turnPlayerData?.displayName ?? "Player";
+
+  return (
+    <TurnPlayerTimeline
+      existingPreviewIndex={currentRound?.placementPreview?.proposedIndex ?? null}
+      revealedTracks={revealedTracks}
+      timeline={turnPlayer?.timeline ?? []}
+      timelineSize={turnPlayer?.timelineSize ?? 0}
+      turnPlayerName={turnPlayerName}
+    />
+  );
+}
+
+function WaitingToPlace({ isMyTurn }: { isMyTurn: boolean }): ReactNode {
+  const tPlacing = useTranslations("placing");
 
   return (
     <div className="flex flex-col items-center justify-center space-y-4 py-12">
@@ -57,5 +68,18 @@ export function PlacingPhaseContent(): React.ReactNode {
         </p>
       </div>
     </div>
+  );
+}
+
+export function PlacingPhaseContent(): React.ReactNode {
+  const { state } = useGame();
+  const { isMyTurn } = state;
+
+  return (
+    <>
+      <MyTurnPlacer state={state} />
+      <TurnPlayerSpectator state={state} />
+      <WaitingToPlace isMyTurn={isMyTurn} />
+    </>
   );
 }
