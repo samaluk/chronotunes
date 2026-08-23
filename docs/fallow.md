@@ -31,23 +31,24 @@ There are no committed Fallow baselines, regression snapshots, freshness checks,
 ## Commands
 
 ```bash
+# Canonical gate surface
+pnpm fallow              # Bare CLI passthrough
+pnpm fallow:staged       # Pre-commit: audit scoped to the staged diff (gate all)
+pnpm fallow:full         # Zero-debt full scan: dead-code + dupes + health, all failing on issues
+pnpm fallow:ci           # Alias of fallow:full used by CI
+
+# Inspection utilities
 pnpm fallow:config       # Show the resolved repository configuration
 pnpm fallow:recommend    # Review configuration recommendations
 pnpm fallow:status       # Verify the type-aware companion and protocol
-
-pnpm fallow:audit        # Fast changed-code new-only gate (pre-commit)
-pnpm fallow:ci           # Coverage-aware changed-code new-only gate (pre-push/CI)
-
-pnpm fallow:dead-code    # Full-repository dead-code inspection (advisory today)
-pnpm fallow:dupes        # Semantic + near-duplicate inspection (advisory today)
-pnpm fallow:health       # Complexity, CRAP, maintainability, and coverage-aware health
+pnpm fallow:audit        # Legacy branch-wide new-only audit (pre-canonical hooks)
 pnpm fallow:security     # Unverified security candidates for human review
 pnpm fallow:suppressions # Suppression and stale-suppression inventory
 ```
 
-The full-repository commands intentionally do not use `--fail-on-issues` during adoption. Exit code 1 means findings were found and is expected while inherited debt is being retired; exit code 2 means the command itself failed. Use `--format json --quiet --explain` when scripting or investigating a finding.
+`fallow:full` composes the three zero-debt probes from the exit criteria in issue #313; each fails on any finding. The duplication probe enforces the configured percentage ceiling (`duplicates.threshold`), so the current boilerplate stock passes while any net increase fails.
 
-`fallow:ci` is the migration gate used by CI and the pre-push hook. It runs after `pnpm test:coverage`, consumes `coverage/coverage-final.json`, and checks only changed findings. `fallow:audit` omits coverage so pre-commit stays fast.
+`fallow:ci` consumes fresh Istanbul coverage produced by `pnpm test:coverage` in the same step chain — keep that ordering wherever these run.
 
 ## Type-aware analysis and dynamic surfaces
 
