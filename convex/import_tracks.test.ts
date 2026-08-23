@@ -3,13 +3,8 @@ import { convexTest } from "convex-test";
 import { describe, expect, test, vi } from "vitest";
 
 import { api } from "./_generated/api";
-import {
-  parseCsvLine,
-  parseCsvTracks,
-  parseDurationToMs,
-  parseYear,
-  validateTrackItem,
-} from "./import_tracks";
+import { parseCsvLine, parseCsvTracks, parseDurationToMs, parseYear } from "./import_tracks";
+import { validateTrackItem } from "./lib/track_validation";
 import schema from "./schema";
 import { modules } from "./test.setup";
 

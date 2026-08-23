@@ -1,10 +1,9 @@
 import { ConvexError, v } from "convex/values";
 
+import { validateTrackItem } from "./lib/track_validation";
+
 import { api } from "./_generated/api";
 import { mutation } from "./_generated/server";
-
-const MIN_YEAR = 1900;
-const MAX_YEAR = 2030;
 
 export interface CsvTrackImportItem {
   artist: string;
@@ -111,32 +110,6 @@ export function parseYear(dateStrRaw: string | undefined): number {
   const dateStr = normalizeText(dateStrRaw) ?? dateStrRaw;
   const year = Number.parseInt(dateStr.split("-")[0], 10);
   return Number.isNaN(year) ? 2000 : year;
-}
-
-export function validateTrackItem(item: CsvTrackImportItem): void {
-  if (!item.title || item.title.trim().length === 0) {
-    throw new ConvexError("Track title is required");
-  }
-
-  if (!item.artist || item.artist.trim().length === 0) {
-    throw new ConvexError("Track artist is required");
-  }
-
-  if (item.year < MIN_YEAR || item.year > MAX_YEAR) {
-    throw new ConvexError(`Track year must be between ${MIN_YEAR} and ${MAX_YEAR}`);
-  }
-
-  if (item.youtubeVideoId !== undefined && item.youtubeVideoId.trim().length === 0) {
-    throw new ConvexError("YouTube video ID must be a non-empty string if provided");
-  }
-
-  if (item.mbid !== undefined && item.mbid.trim().length === 0) {
-    throw new ConvexError("MusicBrainz ID must be a non-empty string if provided");
-  }
-
-  if (item.durationMs !== undefined && item.durationMs < 0) {
-    throw new ConvexError("Duration must be a non-negative number if provided");
-  }
 }
 
 export const importTracksFromCsv = mutation({
