@@ -72,7 +72,7 @@
     "@types/react-dom": "19.2.4",
     "@vitest/coverage-v8": "4.1.11",
     "@vitest/ui": "4.1.11",
-    "convex-test": "0.0.55",
+    "convex-test": "0.0.56",
     "fallow": "3.17.0",
     "jsdom": "30.0.1",
     "oxfmt": "0.64.0",
