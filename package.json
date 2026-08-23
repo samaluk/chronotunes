@@ -30,7 +30,11 @@
     "fallow:suppressions": "fallow suppressions",
     "fallow:ci": "fallow audit --gate new-only --type-aware --coverage coverage/coverage-final.json --coverage-root \"$PWD\"",
     "fallow:fix:preview": "fallow fix --type-aware --dry-run",
-    "fallow:fix": "fallow fix --type-aware"
+    "fallow:fix": "fallow fix --type-aware",
+    "react-doctor": "react-doctor --verbose",
+    "react-doctor:staged": "react-doctor --staged --yes --no-score --blocking warning",
+    "react-doctor:changed": "react-doctor --scope changed --base origin/master --yes --no-score --blocking warning",
+    "react-doctor:full": "react-doctor --scope full --yes --no-score --blocking warning"
   },
   "dependencies": {
     "@base-ui/react": "1.7.0",
