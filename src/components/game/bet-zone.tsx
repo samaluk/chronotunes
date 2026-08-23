@@ -5,12 +5,12 @@ import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
 /** What fills the slot: an open drop target, the turn player's locked slot, or a filled position. */
-type BetZoneAppearance = "filled" | "open" | "turn-player";
+export type BetZoneAppearance = "filled" | "open" | "turn-player";
 
 /** Whether the slot is pressed/selected, still selectable, or blocked for this player. */
-type BetZoneInteraction = "available" | "blocked" | "selected";
+export type BetZoneInteraction = "available" | "blocked" | "selected";
 
-interface BetZoneProps {
+export interface BetZoneProps {
   appearance: BetZoneAppearance;
   coins: ReactNode;
   index: number;

@@ -16,7 +16,7 @@ import { LocaleSwitcher } from "@/components/ui/locale-switcher";
 import { SkeletonLobbyCode, SkeletonPlayerList } from "@/components/ui/skeletons";
 import { api } from "@/convex/_generated/api";
 
-interface LobbyPageContentProps {
+export interface LobbyPageContentProps {
   code: string;
 }
 

@@ -1,13 +1,13 @@
 import type { Id } from "../_generated/dataModel";
 import type { QueryCtx } from "../_generated/server";
 
-interface TrackSelectionOptions {
+export interface TrackSelectionOptions {
   gameId: Id<"games">;
   maxYear: number;
   minYear: number;
 }
 
-interface SelectedTrack {
+export interface SelectedTrack {
   artist: string;
   title: string;
   trackId: Id<"tracks">;

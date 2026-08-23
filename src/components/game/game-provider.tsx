@@ -7,7 +7,7 @@ import type { RevealedTrack } from "./betting-types";
 import type { CurrentRound, GameActions, GameMeta, GameState } from "./game-context";
 import { deriveRoundState, GameContext } from "./game-context";
 
-interface GameProviderProps {
+export interface GameProviderProps {
   children: React.ReactNode;
   code: string;
   currentRound: CurrentRound | null;

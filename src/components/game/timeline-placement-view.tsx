@@ -4,28 +4,14 @@ import { useTranslations } from "next-intl";
 import type { ReactNode } from "react";
 
 import type { Id } from "@/convex/_generated/dataModel";
+import type { RevealedTrack, TimelineEntry } from "./betting-types";
 import { getRevealedTrackMap, sortTimelineByYear } from "@/lib/timeline";
 
 import { getPlacementPositionLabel } from "./placement-position-label";
 import { PlacementSlot } from "./placement-slot";
 import { TimelineCard } from "./timeline-card";
 
-interface TimelineEntry {
-  earnedAtRoundNumber: number;
-  earnedBy: "placement" | "bet" | "initial";
-  trackId: Id<"tracks">;
-  year: number;
-}
-
-interface RevealedTrack {
-  artist: string;
-  title: string;
-  trackId: Id<"tracks">;
-  year: number;
-  youtubeVideoId?: string;
-}
-
-interface TimelinePlacementViewProps {
+export interface TimelinePlacementViewProps {
   badgeLabel?: string;
   isDisabled?: boolean;
   onSlotClick?: (index: number) => void;

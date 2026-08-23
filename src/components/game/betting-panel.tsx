@@ -28,7 +28,7 @@ import { ResolveRoundPanel } from "./resolve-round-panel";
 import { TimelineCard } from "./timeline-card";
 import { useBettingActions } from "./use-betting-actions";
 
-interface BettingPanelProps {
+export interface BettingPanelProps {
   lobbyId: Id<"lobbies">;
   me: Player | null;
   players?: Player[];

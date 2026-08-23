@@ -4,7 +4,7 @@ import type { Locale } from "next-intl";
 import type { ReactNode } from "react";
 import { createContext, useContext } from "react";
 
-type LocaleAction = (locale: Locale) => Promise<void>;
+export type LocaleAction = (locale: Locale) => Promise<void>;
 
 const LocaleActionContext = createContext<LocaleAction | null>(null);
 

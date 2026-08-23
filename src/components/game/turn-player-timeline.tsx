@@ -2,26 +2,11 @@
 
 import { useTranslations } from "next-intl";
 
-import type { Id } from "@/convex/_generated/dataModel";
+import type { RevealedTrack, TimelineEntry } from "./betting-types";
 
 import { TimelinePlacementView } from "./timeline-placement-view";
 
-interface TimelineEntry {
-  earnedAtRoundNumber: number;
-  earnedBy: "placement" | "bet" | "initial";
-  trackId: Id<"tracks">;
-  year: number;
-}
-
-interface RevealedTrack {
-  artist: string;
-  title: string;
-  trackId: Id<"tracks">;
-  year: number;
-  youtubeVideoId?: string;
-}
-
-interface TurnPlayerTimelineProps {
+export interface TurnPlayerTimelineProps {
   existingPreviewIndex: number | null;
   revealedTracks: RevealedTrack[];
   timeline: TimelineEntry[];

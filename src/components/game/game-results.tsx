@@ -12,7 +12,7 @@ import type { Id } from "@/convex/_generated/dataModel";
 import { runTrackedMutation } from "@/lib/run-safely";
 import { cn } from "@/lib/utils";
 
-interface GameResultsProps {
+export interface GameResultsProps {
   code: string;
   lobbyId: Id<"lobbies">;
 }
@@ -96,6 +96,16 @@ function WinnerCard({
   );
 }
 
+function standingRowClassName(index: number, isMe: boolean): string {
+  return cn(
+    "flex items-center justify-between rounded-lg border p-4 transition-all",
+    index === 0
+      ? "border-amber-200 bg-gradient-to-r from-amber-50 to-yellow-50 dark:border-amber-800 dark:from-amber-950/20 dark:to-yellow-950/20"
+      : "bg-muted/30",
+    isMe && "ring-2 ring-primary/20",
+  );
+}
+
 function StandingRow({
   index,
   meId,
@@ -108,16 +118,7 @@ function StandingRow({
   const isMe = player._id === meId;
 
   return (
-    <div
-      className={cn(
-        "flex items-center justify-between rounded-lg border p-4 transition-all",
-        index === 0
-          ? "border-amber-200 bg-gradient-to-r from-amber-50 to-yellow-50 dark:border-amber-800 dark:from-amber-950/20 dark:to-yellow-950/20"
-          : "bg-muted/30",
-        isMe && "ring-2 ring-primary/20",
-      )}
-      key={player._id}
-    >
+    <div className={standingRowClassName(index, isMe)} key={player._id}>
       <div className="flex items-center gap-4">
         <div
           className={cn(

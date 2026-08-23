@@ -12,7 +12,7 @@ import { buildTrackMap, sortTimelineByYear } from "@/lib/timeline";
 
 import { TimelineCard } from "./timeline-card";
 
-interface PlayerTimelineModalProps {
+export interface PlayerTimelineModalProps {
   onOpenChange: (open: boolean) => void;
   open: boolean;
   player: Doc<"players">;

@@ -1,15 +1,9 @@
 import type { Doc, Id } from "../_generated/dataModel";
 import type { MutationCtx } from "../_generated/server";
+import type { SelectedTrack } from "./track_selection";
 import { selectTrackForRound } from "./track_selection";
 
-interface SelectedTrack {
-  artist: string;
-  title: string;
-  trackId: Id<"tracks">;
-  year: number;
-}
-
-interface NextRoundResult {
+export interface NextRoundResult {
   nextRoundId: Id<"rounds">;
   nextTurnPlayerId: Id<"players">;
   selectedTrack: SelectedTrack;

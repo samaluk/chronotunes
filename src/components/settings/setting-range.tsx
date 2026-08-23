@@ -4,8 +4,9 @@ import { useTranslations } from "next-intl";
 
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
+import type { LobbySettings } from "@/components/settings/lobby-settings";
 
-interface SettingRangeProps {
+export interface SettingRangeProps {
   label: string;
   maxRange: number;
   maxValue: number;
@@ -15,18 +16,6 @@ interface SettingRangeProps {
   onMaxCommit: <K extends keyof LobbySettings>(key: K, value: LobbySettings[K]) => void;
   onMinChange: <K extends keyof LobbySettings>(key: K, value: LobbySettings[K]) => void;
   onMinCommit: <K extends keyof LobbySettings>(key: K, value: LobbySettings[K]) => void;
-}
-
-interface LobbySettings {
-  allowBetRetraction: boolean;
-  allowGuessTitleArtist: boolean;
-  bettingWindowSeconds: number;
-  maxYear: number;
-  minYear: number;
-  showLiveBets: boolean;
-  startingCoins: number;
-  targetTimelineSize: number;
-  turnSeconds: number;
 }
 
 export function SettingRange({

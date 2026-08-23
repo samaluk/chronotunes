@@ -10,7 +10,7 @@ import { cn } from "@/lib/utils";
 const VOLUME_STORAGE_KEY = "chronotunes-volume";
 const MUTED_STORAGE_KEY = "chronotunes-muted";
 
-interface VolumeSliderProps {
+export interface VolumeSliderProps {
   className?: string;
 }
 

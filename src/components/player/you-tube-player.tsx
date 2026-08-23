@@ -10,7 +10,7 @@ import { useIsMounted, useLocalStorage } from "usehooks-ts";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
-interface YouTubePlayerProps {
+export interface YouTubePlayerProps {
   className?: string;
   youtubeVideoId: string;
 }
