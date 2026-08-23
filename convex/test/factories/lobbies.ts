@@ -1,33 +1,8 @@
 import type { Id } from "../../_generated/dataModel";
 import type { MutationCtx, QueryCtx } from "../../_generated/server";
+import { generateLobbyCode } from "../../lib/lobby_settings";
+import { requireFirstTrackId, resolveLobbySettings, type LobbySettings } from "./shared";
 import type { FactoryResult, LobbyOverrides, PlayerOverrides, TestContext } from "./types";
-
-const LOBBY_CODE_CHARS = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-const LOBBY_CODE_LENGTH = 6;
-
-const DEFAULT_SETTINGS = {
-  allowBetRetraction: true,
-  allowGuessTitleArtist: true,
-  bettingWindowSeconds: 15,
-  maxYear: 2025,
-  minYear: 1950,
-  showLiveBets: true,
-  startingCoins: 3,
-  targetTimelineSize: 10,
-  turnSeconds: 30,
-} as const;
-
-interface LobbySettings {
-  allowBetRetraction: boolean;
-  allowGuessTitleArtist: boolean;
-  bettingWindowSeconds: number;
-  maxYear: number;
-  minYear: number;
-  showLiveBets: boolean;
-  startingCoins: number;
-  targetTimelineSize: number;
-  turnSeconds: number;
-}
 
 const resolvePlayerOverrides = (
   override: PlayerOverrides | undefined,
@@ -51,21 +26,6 @@ const resolvePlayerOverrides = (
   };
 };
 
-function generateLobbyCode(): string {
-  let code = "";
-  const randomValues = new Uint8Array(LOBBY_CODE_LENGTH);
-  crypto.getRandomValues(randomValues);
-  for (let i = 0; i < LOBBY_CODE_LENGTH; i++) {
-    const rawIndex = randomValues[i];
-    if (rawIndex === undefined) {
-      throw new Error("Failed to generate random values");
-    }
-    const index = rawIndex % LOBBY_CODE_CHARS.length;
-    code += LOBBY_CODE_CHARS[index];
-  }
-  return code;
-}
-
 export async function create(
   t: TestContext,
   sessionId: string,
@@ -75,21 +35,7 @@ export async function create(
   const code = overrides.code ?? generateLobbyCode();
   const hostSessionId = sessionId;
   const status: "lobby" | "in_game" | "finished" = overrides.status ?? "lobby";
-  const settings = {
-    allowBetRetraction:
-      overrides.settings?.allowBetRetraction ?? DEFAULT_SETTINGS.allowBetRetraction,
-    allowGuessTitleArtist:
-      overrides.settings?.allowGuessTitleArtist ?? DEFAULT_SETTINGS.allowGuessTitleArtist,
-    bettingWindowSeconds:
-      overrides.settings?.bettingWindowSeconds ?? DEFAULT_SETTINGS.bettingWindowSeconds,
-    maxYear: overrides.settings?.maxYear ?? DEFAULT_SETTINGS.maxYear,
-    minYear: overrides.settings?.minYear ?? DEFAULT_SETTINGS.minYear,
-    showLiveBets: overrides.settings?.showLiveBets ?? DEFAULT_SETTINGS.showLiveBets,
-    startingCoins: overrides.settings?.startingCoins ?? DEFAULT_SETTINGS.startingCoins,
-    targetTimelineSize:
-      overrides.settings?.targetTimelineSize ?? DEFAULT_SETTINGS.targetTimelineSize,
-    turnSeconds: overrides.settings?.turnSeconds ?? DEFAULT_SETTINGS.turnSeconds,
-  };
+  const settings = resolveLobbySettings(overrides.settings);
 
   let lobbyId: Id<"lobbies"> | null = null;
   let hostPlayerId: Id<"players"> | null = null;
@@ -139,19 +85,7 @@ export async function createWithPlayers(
   const hostName = options.hostDisplayName ?? "Host";
   const code = generateLobbyCode();
   const status: "lobby" | "in_game" | "finished" = "lobby";
-  const settings = {
-    allowBetRetraction: options.settings?.allowBetRetraction ?? DEFAULT_SETTINGS.allowBetRetraction,
-    allowGuessTitleArtist:
-      options.settings?.allowGuessTitleArtist ?? DEFAULT_SETTINGS.allowGuessTitleArtist,
-    bettingWindowSeconds:
-      options.settings?.bettingWindowSeconds ?? DEFAULT_SETTINGS.bettingWindowSeconds,
-    maxYear: options.settings?.maxYear ?? DEFAULT_SETTINGS.maxYear,
-    minYear: options.settings?.minYear ?? DEFAULT_SETTINGS.minYear,
-    showLiveBets: options.settings?.showLiveBets ?? DEFAULT_SETTINGS.showLiveBets,
-    startingCoins: options.settings?.startingCoins ?? DEFAULT_SETTINGS.startingCoins,
-    targetTimelineSize: options.settings?.targetTimelineSize ?? DEFAULT_SETTINGS.targetTimelineSize,
-    turnSeconds: options.settings?.turnSeconds ?? DEFAULT_SETTINGS.turnSeconds,
-  };
+  const settings = resolveLobbySettings(options.settings);
 
   let lobbyId: Id<"lobbies"> | null = null;
   const playerIds: Id<"players">[] = [];
@@ -251,19 +185,14 @@ export async function createWithGame(
       status: "in_game",
     });
 
-    const track = await ctx.db.query("tracks").first();
-    if (!track) {
-      throw new Error(
-        "No tracks available. Please seed tracks first using factories.tracks.createMany()",
-      );
-    }
+    const trackId = await requireFirstTrackId(ctx);
 
     roundId = await ctx.db.insert("rounds", {
       gameId,
       phase: "placing",
       roundNumber: 1,
       startedAt: Date.now(),
-      trackId: track._id,
+      trackId,
       turnPlayerId,
     });
 
@@ -321,4 +250,4 @@ export async function findById(
   return result;
 }
 
-export { DEFAULT_SETTINGS };
+export { DEFAULT_SETTINGS } from "./shared";
