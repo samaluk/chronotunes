@@ -6,7 +6,7 @@ import { mutation } from "./_generated/server";
 const MIN_YEAR = 1900;
 const MAX_YEAR = 2030;
 
-interface CsvTrackImportItem {
+export interface CsvTrackImportItem {
   artist: string;
   durationMs?: number;
   mbid?: string;
@@ -30,66 +30,67 @@ const buildLinks = (track: CsvTrackImportItem) =>
       }
     : {};
 
-const parseCsvTracks = (csvContent: string) => {
-  const lines = csvContent.trim().split("\n");
-  const tracks: CsvTrackImportItem[] = [];
-
-  for (let i = 1; i < lines.length; i++) {
-    const line = lines[i]?.trim();
-    if (!line) {
-      continue;
-    }
-
-    const parts = line.split("|");
-    if (parts.length < 12) {
-      continue;
-    }
-
-    const titleRaw = parts[1];
-    const artistRaw = parts[2];
-    const yearRaw = parts[11];
-    const durationRaw = parts[7];
-    const spotifyTrackIdRaw = parts[19];
-    const mbidRaw = parts[20];
-
-    if (!(titleRaw && artistRaw)) {
-      continue;
-    }
-
-    const title = normalizeText(titleRaw);
-    const artist = normalizeText(artistRaw);
-    const year = parseYear(normalizeText(yearRaw));
-    const durationMs = parseDurationToMs(normalizeText(durationRaw));
-    const spotifyTrackId = normalizeText(spotifyTrackIdRaw);
-    const mbid = normalizeText(mbidRaw);
-
-    if (!(title && artist)) {
-      continue;
-    }
-
-    const trackItem: CsvTrackImportItem = {
-      artist,
-      title,
-      year,
-    };
-
-    if (spotifyTrackId) {
-      trackItem.spotifyTrackId = spotifyTrackId;
-    }
-    if (durationMs !== undefined) {
-      trackItem.durationMs = durationMs;
-    }
-    if (mbid) {
-      trackItem.mbid = mbid;
-    }
-
-    tracks.push(trackItem);
-  }
-
-  return tracks;
+export const parseCsvTracks = (csvContent: string) => {
+  const [, ...dataLines] = csvContent.trim().split("\n");
+  return dataLines.flatMap((line) => {
+    const item = parseCsvLine(line ?? "");
+    return item ? [item] : [];
+  });
 };
 
-function parseDurationToMs(durationRaw: string | undefined): number | undefined {
+export function parseCsvLine(line: string): CsvTrackImportItem | null {
+  const trimmed = line.trim();
+  if (!trimmed) {
+    return null;
+  }
+
+  const parts = trimmed.split("|");
+  if (parts.length < 12) {
+    return null;
+  }
+
+  const titleRaw = parts[1];
+  const artistRaw = parts[2];
+  const yearRaw = parts[11];
+  const durationRaw = parts[7];
+  const spotifyTrackIdRaw = parts[19];
+  const mbidRaw = parts[20];
+
+  if (!(titleRaw && artistRaw)) {
+    return null;
+  }
+
+  const title = normalizeText(titleRaw);
+  const artist = normalizeText(artistRaw);
+  const year = parseYear(normalizeText(yearRaw));
+  const durationMs = parseDurationToMs(normalizeText(durationRaw));
+  const spotifyTrackId = normalizeText(spotifyTrackIdRaw);
+  const mbid = normalizeText(mbidRaw);
+
+  if (!(title && artist)) {
+    return null;
+  }
+
+  const trackItem: CsvTrackImportItem = {
+    artist,
+    title,
+    year,
+  };
+
+  if (spotifyTrackId) {
+    trackItem.spotifyTrackId = spotifyTrackId;
+  }
+  if (durationMs !== undefined) {
+    trackItem.durationMs = durationMs;
+  }
+  if (mbid) {
+    trackItem.mbid = mbid;
+  }
+
+  return trackItem;
+}
+
+export function parseDurationToMs(durationRaw: string | undefined): number | undefined {
   if (!durationRaw) {
     return;
   }
@@ -103,7 +104,7 @@ function parseDurationToMs(durationRaw: string | undefined): number | undefined 
   return;
 }
 
-function parseYear(dateStrRaw: string | undefined): number {
+export function parseYear(dateStrRaw: string | undefined): number {
   if (!dateStrRaw || dateStrRaw === "0000-00-00") {
     return 2000;
   }
@@ -112,7 +113,7 @@ function parseYear(dateStrRaw: string | undefined): number {
   return Number.isNaN(year) ? 2000 : year;
 }
 
-function validateTrackItem(item: CsvTrackImportItem): void {
+export function validateTrackItem(item: CsvTrackImportItem): void {
   if (!item.title || item.title.trim().length === 0) {
     throw new ConvexError("Track title is required");
   }
