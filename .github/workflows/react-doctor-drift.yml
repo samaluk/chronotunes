@@ -17,6 +17,10 @@
 # from the repo root with fs.readFileSync (the app lives at the repository
 # root; plain require() would fail because react-doctor's `exports` map does
 # not expose './package.json').
+#
+# Post-merge runs have no PR to annotate: comments and review comments are
+# explicitly off, and the kept-on commit status is the trend marker on the
+# default branch.
 
 name: React Doctor (drift scan)
 
@@ -41,6 +45,11 @@ jobs:
     # USE_SELF_HOSTED_RUNNERS repo variable — same fork/self-hosted policy as the
     # other workflow jobs; forks always fall back to GitHub-hosted runners.
     runs-on: ${{ github.event.pull_request.head.repo.fork && 'ubuntu-latest' || (vars.USE_SELF_HOSTED_RUNNERS == 'true' && fromJSON('["self-hosted","macOS","ARM64"]') || 'ubuntu-latest') }}
+    # contents stays read-only; statuses: write lets the scan publish its
+    # commit status (the trend marker on the default branch).
+    permissions:
+      contents: read
+      statuses: write
     timeout-minutes: 20
     steps:
       - name: Checkout
@@ -57,7 +66,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Resolve installed react-doctor version
-        id: ver
+        id: rdver
         run: |
           echo "version=$(node -p "JSON.parse(require('node:fs').readFileSync('node_modules/react-doctor/package.json','utf8')).version")" >> "$GITHUB_OUTPUT"
 
@@ -66,15 +75,23 @@ jobs:
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: .rd-drift
-          key: rd-drift-${{ steps.ver.outputs.version }}
+          key: rd-drift-${{ steps.rdver.outputs.version }}
 
       - name: Mark this version as scanned
         if: steps.seen.outputs.cache-hit != 'true'
-        run: mkdir -p .rd-drift && date > ".rd-drift/${{ steps.ver.outputs.version }}"
+        run: mkdir -p .rd-drift && date > ".rd-drift/${{ steps.rdver.outputs.version }}"
 
       - name: React Doctor (full drift scan)
         if: steps.seen.outputs.cache-hit != 'true'
         uses: millionco/react-doctor@01820bb4fd4d0a4aebcd8df2b2a143a098649cb2 # v2.2.8
         with:
+          # Scan with the exact CLI version the repo pins (same as the local
+          # hooks and the PR gate), not the action's bundled latest.
+          version: ${{ steps.rdver.outputs.version }}
           scope: full
           blocking: warning
+          # The commit status is the trend marker on the default branch.
+          commit-status: true
+          # Post-merge runs have no PR to annotate — keep that explicit.
+          comment: false
+          review-comments: false

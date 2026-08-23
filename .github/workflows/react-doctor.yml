@@ -63,8 +63,23 @@ jobs:
           persist-credentials: false
           clean: ${{ vars.USE_SELF_HOSTED_RUNNERS != 'true' }}
 
+      # Pin the scan to the exact react-doctor CLI version the repo depends on,
+      # so CI scans with the same CLI the local hk gates run — without an
+      # explicit `version:` the action installs its own react-doctor@latest.
+      # Parsed from package.json with plain shell: this workflow deliberately
+      # has no Node setup, and require("react-doctor/package.json") would fail
+      # anyway because the package's `exports` map does not expose
+      # './package.json'. The dependency is an exact pin, so this equals the
+      # lockfile resolution; Renovate bumps flow through automatically.
+      - name: Resolve pinned react-doctor version
+        id: rdver
+        run: |
+          echo "version=$(sed -n 's/^ *"react-doctor": *"\([0-9][^"]*\)".*/\1/p' package.json)" >> "$GITHUB_OUTPUT"
+
       - uses: millionco/react-doctor@01820bb4fd4d0a4aebcd8df2b2a143a098649cb2 # v2.2.8
         with:
+          # Same CLI version the local hooks and the drift scan resolve to.
+          version: ${{ steps.rdver.outputs.version }}
           # Changed-code scope: report only issues the PR introduces vs its base,
           # so historical debt does not suddenly block all pull requests.
           scope: changed
