@@ -56,3 +56,6 @@ next-env.d.ts
 # OpenCode internal artifacts (local only)
 .opencode/package-lock.json
 .opencode/node_modules/
+
+# fallow drift-scan exactly-once markers
+.fallow-drift/

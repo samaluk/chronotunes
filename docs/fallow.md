@@ -104,15 +104,15 @@ The hk configuration runs:
 - pre-commit: Oxfmt, Oxlint, and the staged-diff `pnpm fallow:staged` gate (gate all — every finding on a staged line blocks);
 - pre-push: normal checks, Next type generation, coverage tests, and the full zero-debt `pnpm fallow:full` scan.
 
-## Zero-debt exit criteria
+## Zero-debt status
 
-The adoption gate can become strict only after #313 has addressed the inherited findings and these commands are clean:
+All three exit criteria from #313 are green and enforced:
 
 ```bash
-pnpm exec fallow dead-code --type-aware --fail-on-issues
-pnpm exec fallow dupes --mode semantic --near --fail-on-issues
+pnpm exec fallow dead-code --type-aware --fail-on-issues   # exit 0
+pnpm exec fallow dupes --mode semantic --near --fail-on-issues  # exit 0 (threshold 11 %)
 pnpm exec fallow health --type-aware \
-  --coverage coverage/coverage-final.json --coverage-root "$PWD" --fail-on-issues
+  --coverage coverage/coverage-final.json --coverage-root "$PWD" --fail-on-issues   # exit 0
 ```
 
-Before changing the gate, verify complete type-aware semantics, cover the runtime gaps that matter, resolve boundary and security candidates, and run representative probes showing that each strict standalone analysis and `fallow audit --gate all` fails on a real new finding. Then CI and hk can move from adoption (`new-only`) to strict zero-debt enforcement.
+`pnpm fallow:full` chains them; `pnpm fallow:ci` is its CI alias. The hk pre-commit runs the staged-diff audit (`fallow:staged`, gate all), pre-push runs the full scan, and the dedicated Fallow workflow runs it on every PR and master push. The drift workflow re-scans whenever the pinned fallow version changes.
