@@ -39,18 +39,18 @@ function isHostTransferPending(lobby: Doc<"lobbies">, now: number): boolean {
   return Boolean(lobby.hostTransferDeadline && lobby.hostTransferDeadline > now);
 }
 
-async function transitionActiveGameStatus(
+async function settleGameStatus(
   ctx: MutationCtx,
   lobby: Doc<"lobbies">,
-  fromStatus: Doc<"games">["status"],
-  toStatus: Doc<"games">["status"],
+  expectedStatus: "active" | "paused",
+  nextStatus: "active" | "paused",
 ): Promise<void> {
   if (!(lobby.status === "in_game" && lobby.activeGameId)) {
     return;
   }
   const game = await ctx.db.get(lobby.activeGameId);
-  if (game?.status === fromStatus) {
-    await ctx.db.patch(game._id, { status: toStatus });
+  if (game?.status === expectedStatus) {
+    await ctx.db.patch(game._id, { status: nextStatus });
   }
 }
 
@@ -78,7 +78,7 @@ export const checkHostDisconnect = internalMutation({
         }
 
         await ctx.db.patch(lobby._id, { hostTransferDeadline: now + HOST_TRANSFER_DEADLINE_MS });
-        await transitionActiveGameStatus(ctx, lobby, "active", "paused");
+        await settleGameStatus(ctx, lobby, "active", "paused");
       }),
     );
   },
@@ -137,7 +137,7 @@ export const checkHostTransfer = internalMutation({
           hostTransferDeadline: undefined,
         });
 
-        await transitionActiveGameStatus(ctx, lobby, "paused", "active");
+        await settleGameStatus(ctx, lobby, "paused", "active");
       }),
     );
   },
