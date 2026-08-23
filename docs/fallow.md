@@ -66,7 +66,7 @@ The static locale catalog in `src/i18n/messages.ts` replaces a template-literal 
 The configuration enables:
 
 - `private-type-leaks`, stale suppressions, and missing suppression reasons as errors.
-- Semantic duplication plus near-duplicate detection with `minLines: 8`, `minTokens: 60`, `minOccurrences: 2`, and import wiring ignored.
+- Semantic duplication plus near-duplicate detection with `minLines: 8`, `minTokens: 60`, `minOccurrences: 2`, and import wiring ignored. A `threshold` of 11 % makes `dupes --fail-on-issues` a real gate: the current stock (shadcn-style boilerplate and CSS utility patterns) is the ceiling, and any net increase fails CI.
 - Health thresholds of cyclomatic 20, cognitive 15, CRAP 30, and unit size 60.
 - Istanbul coverage from `coverage/coverage-final.json` for CRAP and coverage-gap analysis.
 - Six explicit zones: generated Convex API, Convex backend, app routes, components, shared library, and i18n. The rules prevent i18n from importing application code and keep backend/framework direction explicit. Boundary inspection currently reports zero violations.
