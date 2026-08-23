@@ -1,0 +1,80 @@
+# React Doctor — drift scan.
+#
+# Full-repository scan that runs when the installed react-doctor VERSION
+# changes, not on a cron: the workflow triggers on pushes to master that touch
+# any package.json / pnpm-lock.yaml, resolves the exact installed react-doctor
+# version, and uses it as the actions/cache key.
+#
+# Exactly-once semantics fall out of the version-keyed cache:
+#   - a version never scanned before -> cache miss -> the full scan runs;
+#   - dependency bumps that don't touch react-doctor keep the same key -> the
+#     run is a cheap no-op;
+#   - a failed scan is never cached (actions/cache only saves when the job
+#     succeeds), so a broken version re-scans on the next trigger.
+#
+# Unlike the PR gate (react-doctor.yml), this workflow needs node_modules for
+# the version probe: it reads the installed react-doctor package.json straight
+# from the repo root with fs.readFileSync (the app lives at the repository
+# root; plain require() would fail because react-doctor's `exports` map does
+# not expose './package.json').
+
+name: React Doctor (drift scan)
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - "**/package.json"
+      - "**/pnpm-lock.yaml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: react-doctor-drift-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  drift-scan:
+    # USE_SELF_HOSTED_RUNNERS repo variable — same fork/self-hosted policy as the
+    # other workflow jobs; forks always fall back to GitHub-hosted runners.
+    runs-on: ${{ github.event.pull_request.head.repo.fork && 'ubuntu-latest' || (vars.USE_SELF_HOSTED_RUNNERS == 'true' && fromJSON('["self-hosted","macOS","ARM64"]') || 'ubuntu-latest') }}
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          clean: ${{ vars.USE_SELF_HOSTED_RUNNERS != 'true' }}
+
+      # The version probe needs node_modules, unlike the PR gate's composite
+      # action (which installs its own Node and manages its caches internally).
+      - uses: ./.github/actions/setup-toolchain
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Resolve installed react-doctor version
+        id: ver
+        run: |
+          echo "version=$(node -p "JSON.parse(require('node:fs').readFileSync('node_modules/react-doctor/package.json','utf8')).version")" >> "$GITHUB_OUTPUT"
+
+      - name: Check whether this version was already scanned
+        id: seen
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: .rd-drift
+          key: rd-drift-${{ steps.ver.outputs.version }}
+
+      - name: Mark this version as scanned
+        if: steps.seen.outputs.cache-hit != 'true'
+        run: mkdir -p .rd-drift && date > ".rd-drift/${{ steps.ver.outputs.version }}"
+
+      - name: React Doctor (full drift scan)
+        if: steps.seen.outputs.cache-hit != 'true'
+        uses: millionco/react-doctor@01820bb4fd4d0a4aebcd8df2b2a143a098649cb2 # v2.2.8
+        with:
+          scope: full
+          blocking: warning

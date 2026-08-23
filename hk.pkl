@@ -17,14 +17,16 @@ local fallow_ci = Step {
 // when nothing is staged, and `--blocking warning` fails on any newly
 // introduced warning or error.
 local react_doctor_staged = Step {
-  check = "pnpm exec react-doctor --staged --blocking warning --no-score"
+  check = "pnpm react-doctor:staged"
   stomp = true
 }
 
 // Pre-push: fail if the branch introduces any warning or error relative to
-// master (the PR merge-base), so pushed branches are always review-clean.
+// origin/master (the PR merge-base), so pushed branches are always
+// review-clean. Depends on the `fetch` step so the base ref is fresh.
 local react_doctor_changed = Step {
-  check = "pnpm exec react-doctor --scope changed --base master --blocking warning --no-score"
+  check = "pnpm react-doctor:changed"
+  depends = List("fetch")
   stomp = true
 }
 
@@ -42,6 +44,9 @@ local fast_steps = new Mapping<String, Step> {
 }
 
 local push_steps = new Mapping<String, Step> {
+  ["fetch"] {
+    check = "git fetch origin master || true"
+  }
   ["fallow-ci"] = fallow_ci
   ["react-doctor"] = react_doctor_changed
 }

@@ -33,9 +33,6 @@ on:
 
 permissions:
   contents: read
-  pull-requests: write
-  issues: write
-  statuses: write
 
 # Cancels any in-flight scan for the same PR (or branch, on push) the moment a
 # new commit arrives, so reviewers only ever see the latest run.
@@ -45,6 +42,13 @@ concurrency:
 
 jobs:
   react-doctor:
+    # Elevated scopes are scoped to this job only (the workflow-level default
+    # stays read-only): PR comments/reviews and commit statuses.
+    permissions:
+      contents: read
+      pull-requests: write
+      issues: write
+      statuses: write
     # USE_SELF_HOSTED_RUNNERS repo variable — same fork/self-hosted policy as the
     # other workflow jobs; fork PRs always fall back to GitHub-hosted runners.
     runs-on: ${{ github.event.pull_request.head.repo.fork && 'ubuntu-latest' || (vars.USE_SELF_HOSTED_RUNNERS == 'true' && fromJSON('["self-hosted","macOS","ARM64"]') || 'ubuntu-latest') }}
@@ -56,6 +60,7 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
+          persist-credentials: false
           clean: ${{ vars.USE_SELF_HOSTED_RUNNERS != 'true' }}
 
       - uses: millionco/react-doctor@01820bb4fd4d0a4aebcd8df2b2a143a098649cb2 # v2.2.8
