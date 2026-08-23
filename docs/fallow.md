@@ -101,8 +101,8 @@ The pull-request workflow has one native `fallow-rs/fallow` analysis. It uses `c
 
 The hk configuration runs:
 
-- pre-commit: Oxfmt, Oxlint, and the fast `pnpm fallow:audit` gate;
-- pre-push: normal checks, Next type generation, coverage tests, and `pnpm fallow:ci`.
+- pre-commit: Oxfmt, Oxlint, and the staged-diff `pnpm fallow:staged` gate (gate all — every finding on a staged line blocks);
+- pre-push: normal checks, Next type generation, coverage tests, and the full zero-debt `pnpm fallow:full` scan.
 
 ## Zero-debt exit criteria
 
