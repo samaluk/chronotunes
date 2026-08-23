@@ -3,13 +3,17 @@ import "package://github.com/jdx/hk/releases/download/v1.55.0/hk@1.55.0#/Builtin
 
 fail_fast = false
 
-local fallow_audit = Step {
-  check = "pnpm fallow:audit"
+// Pre-commit: fallow audit scoped to the staged diff; every finding on a
+// staged line blocks, because there is no inherited debt anymore.
+local fallow_staged = Step {
+  check = "pnpm fallow:staged"
   stomp = true
 }
 
-local fallow_ci = Step {
-  check = "pnpm check && pnpm next:typegen && pnpm test:coverage && pnpm fallow:ci"
+// Pre-push: full zero-debt scan (dead-code + dupes + health) after normal
+// checks and fresh coverage; every finding blocks.
+local fallow_full = Step {
+  check = "pnpm check && pnpm next:typegen && pnpm test:coverage && pnpm fallow:full"
   stomp = true
 }
 
@@ -39,7 +43,7 @@ local fast_steps = new Mapping<String, Step> {
     check = "oxlint {{files}}"
     fix = "oxlint --fix {{files}}"
   }
-  ["fallow-audit"] = fallow_audit
+  ["fallow-audit"] = fallow_staged
   ["react-doctor"] = react_doctor_staged
 }
 
@@ -47,7 +51,7 @@ local push_steps = new Mapping<String, Step> {
   ["fetch"] {
     check = "git fetch origin master || true"
   }
-  ["fallow-ci"] = fallow_ci
+  ["fallow-ci"] = fallow_full
   ["react-doctor"] = react_doctor_changed
 }
 
