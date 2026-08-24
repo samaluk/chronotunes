@@ -19,8 +19,10 @@ const mockLobbyId = "lobby123" as GenericId<"lobbies">;
  * Convex anyApi references are opaque proxies without useful types, so every
  * lookup goes through one documented escape hatch instead of scattering casts.
  */
-// oxlint-disable-next-line typescript/consistent-type-assertions, typescript/no-unsafe-type-assertion
-const nameOf = (fn: unknown): string => getFunctionName(fn as Parameters<typeof getFunctionName>[0]);
+/* oxlint-disable typescript/consistent-type-assertions, typescript/no-unsafe-type-assertion -- single documented escape hatch for opaque anyApi proxies */
+const nameOf = (fn: unknown): string =>
+  getFunctionName(fn as Parameters<typeof getFunctionName>[0]);
+/* oxlint-enable typescript/consistent-type-assertions, typescript/no-unsafe-type-assertion */
 
 /** Query results keyed by Convex function name ("module/function"). */
 const queryResults = new Map<string, unknown>();
