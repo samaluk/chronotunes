@@ -4,7 +4,7 @@ import type { ReactNode } from "react";
 
 import { cn } from "@/lib/utils";
 
-interface PlacementSlotProps {
+export interface PlacementSlotProps {
   badgeLabel?: string;
   index: number;
   isActive: boolean;

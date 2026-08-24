@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 
-interface TimelineCardProps {
+export interface TimelineCardProps {
   artist?: string;
   className?: string;
   icon?: "music" | "target" | "trophy";
@@ -16,6 +16,12 @@ interface TimelineCardProps {
   title?: string;
   year?: number;
 }
+
+const ICON_COLORS = {
+  amber: "bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400",
+  muted: "bg-muted text-muted-foreground",
+  primary: "bg-primary/20 text-primary",
+};
 
 export function TimelineCard({
   icon = "music",
@@ -27,12 +33,6 @@ export function TimelineCard({
   isLoading = false,
   className,
 }: TimelineCardProps): React.ReactNode {
-  const iconColors = {
-    amber: "bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400",
-    muted: "bg-muted text-muted-foreground",
-    primary: "bg-primary/20 text-primary",
-  };
-
   const IconComponent = {
     music: Music,
     target: Target,
@@ -57,7 +57,7 @@ export function TimelineCard({
       <div
         className={cn(
           "flex h-10 w-10 shrink-0 items-center justify-center rounded-full",
-          iconColors[iconColor ?? "primary"],
+          ICON_COLORS[iconColor ?? "primary"],
         )}
       >
         <IconComponent className="h-5 w-5" />

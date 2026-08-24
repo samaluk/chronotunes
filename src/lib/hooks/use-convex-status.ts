@@ -10,7 +10,7 @@ export type ConvexConnectionStatus =
   | "reconnecting"
   | "error";
 
-interface UseConvexStatusReturn {
+export interface UseConvexStatusReturn {
   error: Error | null;
   isConnected: boolean;
   isReconnecting: boolean;

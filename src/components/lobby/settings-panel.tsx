@@ -10,37 +10,22 @@ import { toast } from "sonner";
 import { SettingRange } from "@/components/settings/setting-range";
 import { SettingSlider } from "@/components/settings/setting-slider";
 import { ToggleSetting } from "@/components/settings/toggle-setting";
+import type { LobbySettings } from "@/components/settings/lobby-settings";
 import { Button } from "@/components/ui/button";
 import { api } from "@/convex/_generated/api";
 import { runSafely } from "@/lib/run-safely";
 
-interface SettingsPanelProps {
+export interface SettingsPanelProps {
   code: string;
-  currentSettings: {
-    targetTimelineSize: number;
-    startingCoins: number;
-    turnSeconds: number;
-    bettingWindowSeconds: number;
-    allowGuessTitleArtist: boolean;
-    showLiveBets: boolean;
-    allowBetRetraction: boolean;
-    minYear: number;
-    maxYear: number;
-  };
+  currentSettings: LobbySettings;
   isHost: boolean;
 }
 
-interface LobbySettings {
-  allowBetRetraction: boolean;
-  allowGuessTitleArtist: boolean;
-  bettingWindowSeconds: number;
-  maxYear: number;
-  minYear: number;
-  showLiveBets: boolean;
-  startingCoins: number;
-  targetTimelineSize: number;
-  turnSeconds: number;
-}
+const BOOLEAN_SETTING_KEYS = [
+  "allowGuessTitleArtist",
+  "showLiveBets",
+  "allowBetRetraction",
+] as const;
 
 /** Read-only settings summary shown to non-host players. */
 function ReadOnlySettings({
@@ -74,8 +59,6 @@ function ReadOnlySettings({
     },
   ];
 
-  const booleanKeys = ["allowGuessTitleArtist", "showLiveBets", "allowBetRetraction"] as const;
-
   return (
     <div className="space-y-3">
       <h3 className="flex items-center gap-2 font-semibold text-lg">
@@ -89,7 +72,7 @@ function ReadOnlySettings({
             <span className="font-medium">{row.value}</span>
           </div>
         ))}
-        {booleanKeys.map((key) => (
+        {BOOLEAN_SETTING_KEYS.map((key) => (
           <div className="flex justify-between" key={key}>
             <span className="text-muted-foreground">{t(key)}</span>
             <span className="font-medium">{settings[key] ? <Check /> : <X />}</span>

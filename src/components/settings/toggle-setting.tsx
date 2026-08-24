@@ -3,7 +3,7 @@
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 
-interface ToggleSettingProps {
+export interface ToggleSettingProps {
   description: string;
   enabled: boolean;
   label: string;

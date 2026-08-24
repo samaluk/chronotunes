@@ -9,7 +9,7 @@ import { SkeletonPlayerList } from "@/components/ui/skeletons";
 import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
 
-interface PlayerListProps {
+export interface PlayerListProps {
   lobbyId: Id<"lobbies">;
 }
 

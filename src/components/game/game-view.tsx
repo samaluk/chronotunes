@@ -125,7 +125,7 @@ function GameContent(): React.ReactNode {
   );
 }
 
-interface GameViewProps {
+export interface GameViewProps {
   code: string;
   lobbyId: Id<"lobbies">;
 }

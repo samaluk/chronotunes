@@ -75,6 +75,7 @@ The configuration enables:
 The remaining exclusions are narrow and intentional:
 
 - `scripts/**` and `oxfmt.config.ts` are tooling surfaces, not application entry points.
+- `convex/_generated/**` is machine-written by `convex codegen` and regenerated wholesale; inline annotations there would not survive regeneration, so the generated bindings are excluded from analysis entirely.
 - `src/components/ui/*.tsx` exports are the generated-style shadcn component surface and are consumed by convention.
 - `scrape-yt` and `scrape-youtube` are script-only entrypoint dependencies; `@edge-runtime/vm` is a provider/runtime dependency; `tailwindcss` is consumed by the build pipeline.
 

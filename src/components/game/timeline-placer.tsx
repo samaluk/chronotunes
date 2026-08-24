@@ -12,25 +12,10 @@ import { runWithLoading } from "@/lib/run-safely";
 import { sortTimelineByYear } from "@/lib/timeline";
 
 import { getPlacementPositionLabel } from "./placement-position-label";
+import type { RevealedTrack, TrackInfo } from "./betting-types";
 import { TimelinePlacementView } from "./timeline-placement-view";
 
-interface TrackInfo {
-  _id: Id<"tracks">;
-  artist?: string;
-  title?: string;
-  year?: number;
-  youtubeVideoId?: string;
-}
-
-interface RevealedTrack {
-  artist: string;
-  title: string;
-  trackId: Id<"tracks">;
-  year: number;
-  youtubeVideoId?: string;
-}
-
-interface TimelinePlacerProps {
+export interface TimelinePlacerProps {
   currentTrack: TrackInfo | null;
   existingPreviewIndex: number | null;
   lobbyId: Id<"lobbies">;

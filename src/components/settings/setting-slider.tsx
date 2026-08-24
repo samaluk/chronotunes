@@ -4,8 +4,9 @@ import { useTranslations } from "next-intl";
 
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
+import type { LobbySettings } from "@/components/settings/lobby-settings";
 
-interface SettingSliderProps {
+export interface SettingSliderProps {
   label: string;
   max: number;
   min: number;
@@ -14,18 +15,6 @@ interface SettingSliderProps {
   step: number;
   unit: string;
   value: number;
-}
-
-interface LobbySettings {
-  allowBetRetraction: boolean;
-  allowGuessTitleArtist: boolean;
-  bettingWindowSeconds: number;
-  maxYear: number;
-  minYear: number;
-  showLiveBets: boolean;
-  startingCoins: number;
-  targetTimelineSize: number;
-  turnSeconds: number;
 }
 
 const getUnitLabel = (

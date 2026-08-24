@@ -7,6 +7,7 @@
   ],
   "ignorePatterns": [
     "scripts/**",
+    "convex/_generated/**",
     "oxfmt.config.ts",
     "doctor.config.ts"
   ],
@@ -61,12 +62,6 @@
   "boundaries": {
     "zones": [
       {
-        "name": "convex-api",
-        "patterns": [
-          "convex/_generated/**"
-        ]
-      },
-      {
         "name": "backend",
         "patterns": [
           "convex/**"
@@ -100,32 +95,27 @@
     "rules": [
       {
         "from": "backend",
-        "allow": [
-          "convex-api"
-        ]
+        "allow": []
       },
       {
         "from": "app",
         "allow": [
           "components",
           "lib",
-          "i18n",
-          "convex-api"
+          "i18n"
         ]
       },
       {
         "from": "components",
         "allow": [
           "lib",
-          "i18n",
-          "convex-api"
+          "i18n"
         ]
       },
       {
         "from": "lib",
         "allow": [
-          "i18n",
-          "convex-api"
+          "i18n"
         ]
       },
       {

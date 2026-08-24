@@ -6,7 +6,7 @@ import { useConvexStatus } from "@/lib/hooks/use-convex-status";
 import type { ConvexConnectionStatus } from "@/lib/hooks/use-convex-status";
 import { cn } from "@/lib/utils";
 
-interface NetworkStatusProps {
+export interface NetworkStatusProps {
   className?: string;
   showLabel?: boolean;
 }
