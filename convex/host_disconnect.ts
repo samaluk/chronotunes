@@ -39,23 +39,18 @@ function isHostTransferPending(lobby: Doc<"lobbies">, now: number): boolean {
   return Boolean(lobby.hostTransferDeadline && lobby.hostTransferDeadline > now);
 }
 
-async function pauseActiveGameIfNeeded(ctx: MutationCtx, lobby: Doc<"lobbies">): Promise<void> {
+async function transitionActiveGameStatus(
+  ctx: MutationCtx,
+  lobby: Doc<"lobbies">,
+  fromStatus: Doc<"games">["status"],
+  toStatus: Doc<"games">["status"],
+): Promise<void> {
   if (!(lobby.status === "in_game" && lobby.activeGameId)) {
     return;
   }
   const game = await ctx.db.get(lobby.activeGameId);
-  if (game?.status === "active") {
-    await ctx.db.patch(game._id, { status: "paused" });
-  }
-}
-
-async function resumePausedGameIfNeeded(ctx: MutationCtx, lobby: Doc<"lobbies">): Promise<void> {
-  if (!(lobby.status === "in_game" && lobby.activeGameId)) {
-    return;
-  }
-  const game = await ctx.db.get(lobby.activeGameId);
-  if (game?.status === "paused") {
-    await ctx.db.patch(game._id, { status: "active" });
+  if (game?.status === fromStatus) {
+    await ctx.db.patch(game._id, { status: toStatus });
   }
 }
 
@@ -83,7 +78,7 @@ export const checkHostDisconnect = internalMutation({
         }
 
         await ctx.db.patch(lobby._id, { hostTransferDeadline: now + HOST_TRANSFER_DEADLINE_MS });
-        await pauseActiveGameIfNeeded(ctx, lobby);
+        await transitionActiveGameStatus(ctx, lobby, "active", "paused");
       }),
     );
   },
@@ -142,7 +137,7 @@ export const checkHostTransfer = internalMutation({
           hostTransferDeadline: undefined,
         });
 
-        await resumePausedGameIfNeeded(ctx, lobby);
+        await transitionActiveGameStatus(ctx, lobby, "paused", "active");
       }),
     );
   },
