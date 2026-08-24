@@ -125,7 +125,7 @@ async function searchTrack(title, artist) {
 
     return best.video.id;
   } catch (error) {
-    console.log(`Error: ${error}`);
+    console.log(`Error: ${error instanceof Error ? error.message : String(error)}`);
     return null;
   }
 }

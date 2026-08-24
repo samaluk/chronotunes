@@ -11,8 +11,8 @@ import type { Doc, Id } from "@/convex/_generated/dataModel";
 import { runWithLoading } from "@/lib/run-safely";
 import { sortTimelineByYear } from "@/lib/timeline";
 
-import { getPlacementPositionLabel } from "./placement-position-label";
 import type { RevealedTrack, TrackInfo } from "./betting-types";
+import { getPlacementPositionLabel } from "./placement-position-label";
 import { TimelinePlacementView } from "./timeline-placement-view";
 
 export interface TimelinePlacerProps {
@@ -23,17 +23,13 @@ export interface TimelinePlacerProps {
   revealedTracks: RevealedTrack[];
 }
 
-export function TimelinePlacer({
-  lobbyId,
-  player,
-  currentTrack,
-  existingPreviewIndex,
-  revealedTracks,
-}: TimelinePlacerProps): React.ReactNode {
-  const t = useTranslations("placing");
-
+/** Owns selection state that defers to server-echoed previews when they change. */
+function usePlacementSelection(existingPreviewIndex: number | null): {
+  moveSelection: (direction: "up" | "down", maxPosition: number) => void;
+  selectIndex: (index: number) => void;
+  selectedIndex: number;
+} {
   const [selectedIndex, setSelectedIndex] = useState<number>(existingPreviewIndex ?? 0);
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [previousPreviewIndex, setPreviousPreviewIndex] = useState(existingPreviewIndex);
 
   // The server echoes back every preview mutation through placementPreview.
@@ -47,13 +43,11 @@ export function TimelinePlacer({
     }
   }
 
-  const setPlacementPreview = useSessionMutation(api.rounds.setPlacementPreview);
-  const submitPlacement = useSessionMutation(api.rounds.submitPlacement);
+  const selectIndex = (index: number): void => {
+    setSelectedIndex(index);
+  };
 
-  const sortedTimeline = sortTimelineByYear(player.timeline);
-  const maxPosition = sortedTimeline.length;
-
-  const moveSelection = (direction: "up" | "down"): void => {
+  const moveSelection = (direction: "up" | "down", maxPosition: number): void => {
     setSelectedIndex((prev) => {
       if (direction === "up") {
         return Math.max(0, prev - 1);
@@ -62,8 +56,29 @@ export function TimelinePlacer({
     });
   };
 
+  return { moveSelection, selectIndex, selectedIndex };
+}
+
+export function TimelinePlacer({
+  lobbyId,
+  player,
+  currentTrack,
+  existingPreviewIndex,
+  revealedTracks,
+}: TimelinePlacerProps): React.ReactNode {
+  const t = useTranslations("placing");
+
+  const placement = usePlacementSelection(existingPreviewIndex);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const setPlacementPreview = useSessionMutation(api.rounds.setPlacementPreview);
+  const submitPlacement = useSessionMutation(api.rounds.submitPlacement);
+
+  const sortedTimeline = sortTimelineByYear(player.timeline);
+  const maxPosition = sortedTimeline.length;
+
   const handleSlotClick = (index: number): void => {
-    setSelectedIndex(index);
+    placement.selectIndex(index);
   };
 
   const handleSubmit = async (): Promise<void> => {
@@ -74,6 +89,10 @@ export function TimelinePlacer({
         console.error("Failed to submit placement:", error);
       },
     );
+  };
+
+  const moveSelection = (direction: "up" | "down"): void => {
+    placement.moveSelection(direction, maxPosition);
   };
 
   const handleKeyDown = (event: KeyboardEvent): void => {
@@ -116,13 +135,13 @@ export function TimelinePlacer({
 
   useEffect(() => {
     const updatePreview = async (): Promise<void> => {
-      await setPlacementPreview({ lobbyId, proposedIndex: selectedIndex });
+      await setPlacementPreview({ lobbyId, proposedIndex: placement.selectedIndex });
     };
 
     updatePreview().catch((error: unknown) => {
       console.error("Failed to update placement preview:", error);
     });
-  }, [lobbyId, selectedIndex, setPlacementPreview]);
+  }, [lobbyId, placement.selectedIndex, setPlacementPreview]);
 
   if (!currentTrack) {
     return (
@@ -147,12 +166,14 @@ export function TimelinePlacer({
         isDisabled={isSubmitting}
         onSlotClick={handleSlotClick}
         revealedTracks={revealedTracks}
-        selectedIndex={selectedIndex}
+        selectedIndex={placement.selectedIndex}
         timeline={player.timeline}
       />
 
       <div className="flex items-center justify-between border-t pt-4">
-        <p className="font-medium text-foreground text-sm">{getPositionLabel(selectedIndex)}</p>
+        <p className="font-medium text-foreground text-sm">
+          {getPositionLabel(placement.selectedIndex)}
+        </p>
         <div className="text-right">
           <p className="hidden text-muted-foreground text-xs sm:block">{t("useArrowsToMove")}</p>
           <p className="hidden text-muted-foreground text-xs sm:block">

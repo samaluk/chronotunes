@@ -119,7 +119,7 @@ async function searchTrack(title: string, artist: string, retryCount = 0): Promi
 
     const best = scored[0];
     console.log(
-      `Found: "${best.video.title}" (score: ${best.score}, channel: ${best.video.channel})`,
+      `Found: "${best.video.title}" (score: ${best.score}, channel: ${best.video.channel?.name ?? "unknown"})`,
     );
 
     return best.video.id;
@@ -130,7 +130,7 @@ async function searchTrack(title: string, artist: string, retryCount = 0): Promi
       await new Promise((resolve) => setTimeout(resolve, 3000));
       return searchTrack(title, artist, retryCount + 1);
     }
-    console.log(`Error: ${error}`);
+    console.log(`Error: ${error instanceof Error ? error.message : String(error)}`);
     return null;
   }
 }

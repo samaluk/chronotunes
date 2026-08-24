@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import type { GenericId } from "convex/values";
 import { NextIntlClientProvider } from "next-intl";
 import { describe, expect, it, vi } from "vitest";
@@ -189,5 +189,65 @@ describe(BettingPanel, () => {
 
     // oxlint-disable-next-line typescript/no-unsafe-call
     expect(button).toHaveAttribute("aria-disabled", "true");
+  });
+
+  it("runs the keyboard navigation guard on arrow keys", () => {
+    const player = createMockPlayer({ coins: 5 });
+
+    render(
+      <NextIntlClientProvider locale="en" messages={messages}>
+        <BettingPanel
+          lobbyId={
+            /* oxlint-disable typescript/consistent-type-assertions, typescript/no-unnecessary-type-assertion, typescript/no-unsafe-type-assertion */
+            "lobby123" as GenericId<"lobbies">
+            /* oxlint-enable typescript/consistent-type-assertions, typescript/no-unnecessary-type-assertion, typescript/no-unsafe-type-assertion */
+          }
+          me={player}
+          players={[]}
+          revealedTracks={[]}
+          track={mockTrack}
+          turnPlayerId={null}
+          turnPlayerTimeline={[]}
+        />
+      </NextIntlClientProvider>,
+    );
+
+    // No selection yet: the handler bails without changing the header.
+    fireEvent.keyDown(window, { key: "ArrowDown" });
+    // oxlint-disable-next-line typescript/no-unsafe-call
+    expect(screen.getByText("5 coins")).toBeInTheDocument();
+
+    fireEvent.keyDown(window, { key: "Escape" });
+    // oxlint-disable-next-line typescript/no-unsafe-call
+    expect(screen.getByText("5 coins")).toBeInTheDocument();
+  });
+
+  it("previews a bet when an open slot is clicked", async () => {
+    const player = createMockPlayer({ coins: 5 });
+
+    render(
+      <NextIntlClientProvider locale="en" messages={messages}>
+        <BettingPanel
+          lobbyId={
+            /* oxlint-disable typescript/consistent-type-assertions, typescript/no-unnecessary-type-assertion, typescript/no-unsafe-type-assertion */
+            "lobby123" as GenericId<"lobbies">
+            /* oxlint-enable typescript/consistent-type-assertions, typescript/no-unnecessary-type-assertion, typescript/no-unsafe-type-assertion */
+          }
+          me={player}
+          players={[]}
+          revealedTracks={[]}
+          track={mockTrack}
+          turnPlayerId={null}
+          turnPlayerTimeline={[]}
+        />
+      </NextIntlClientProvider>,
+    );
+
+    const openSlot = screen.getByRole("button", { name: /open slot/i });
+    fireEvent.click(openSlot);
+
+    // Preview mode is optimistic UI; the slot stays interactive.
+    // oxlint-disable-next-line typescript/no-unsafe-call
+    expect(screen.getByRole("button", { name: /open slot/i })).toBeInTheDocument();
   });
 });

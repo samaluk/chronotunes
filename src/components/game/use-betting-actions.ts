@@ -10,7 +10,7 @@ import { runTrackedMutation, runWithLoading } from "@/lib/run-safely";
 
 import type { RoundBet, SlotBetInfo } from "./betting-types";
 
-const nextIndexForDirection = (
+export const nextIndexForDirection = (
   slotCount: number,
   turnPlayerSlotIndex: number | null,
   currentIndex: number,

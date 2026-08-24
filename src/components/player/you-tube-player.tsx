@@ -38,26 +38,69 @@ const playerConfigSource = {
 
 const PLAYER_CONFIG: Config = playerConfigSource;
 
-export function YouTubePlayer({ youtubeVideoId, className }: YouTubePlayerProps): React.ReactNode {
-  const isMounted = useIsMounted();
-  const tPlayer = useTranslations("player");
-  const mounted = isMounted();
+/** Restarts playback status whenever a different video id arrives. */
+function usePlaybackStatusRestart(youtubeVideoId: string | null): {
+  setPlaybackStatus: (status: PlayerStatus | ((previous: PlayerStatus) => PlayerStatus)) => void;
+  status: PlayerStatus;
+} {
   const [playbackStatus, setPlaybackStatus] = useState<PlayerStatus>("loading");
-  const [volume, _setVolume] = useLocalStorage(VOLUME_STORAGE_KEY, 80);
-  const [isMuted, _setIsMuted] = useLocalStorage(MUTED_STORAGE_KEY, false);
-  const [isMobile, setIsMobile] = useState(false);
-  const [hasUserInitiated, setHasUserInitiated] = useState(false);
+  const [previousVideoId, setPreviousVideoId] = useState(youtubeVideoId);
 
   // A missing video id is an error; otherwise the player events drive status.
   // When a different track arrives, restart from "loading" synchronously
   // during render instead of in an effect.
-  const [previousVideoId, setPreviousVideoId] = useState(youtubeVideoId);
   if (youtubeVideoId !== previousVideoId) {
     setPreviousVideoId(youtubeVideoId);
     setPlaybackStatus("loading");
   }
 
-  const status: PlayerStatus = youtubeVideoId ? playbackStatus : "error";
+  return { setPlaybackStatus, status: youtubeVideoId ? playbackStatus : "error" };
+}
+
+interface StatusInfo {
+  indicator: React.ReactNode;
+  label: string;
+  tone: string;
+}
+
+const getStatusInfo = (
+  tPlayer: ReturnType<typeof useTranslations>,
+  state: { hasUserInitiated: boolean; isMobile: boolean; status: PlayerStatus },
+): StatusInfo => {
+  const { hasUserInitiated, isMobile, status } = state;
+
+  if (isMobile && !hasUserInitiated) {
+    return {
+      indicator: <span className="h-2 w-2 animate-pulse rounded-full bg-amber-500" />,
+      label: tPlayer("tapToEnableAudio"),
+      tone: "text-amber-600 dark:text-amber-400",
+    };
+  }
+
+  if (status === "playing") {
+    return {
+      indicator: <span className="h-2 w-2 animate-pulse rounded-full bg-green-500" />,
+      label: tPlayer("playingAudio"),
+      tone: "text-green-600 dark:text-green-400",
+    };
+  }
+
+  return {
+    indicator: <Loader2 className="h-3 w-3 animate-spin text-muted-foreground" />,
+    label: tPlayer("loadingAudio"),
+    tone: "text-muted-foreground",
+  };
+};
+
+export function YouTubePlayer({ youtubeVideoId, className }: YouTubePlayerProps): React.ReactNode {
+  const isMounted = useIsMounted();
+  const tPlayer = useTranslations("player");
+  const mounted = isMounted();
+  const [volume, _setVolume] = useLocalStorage(VOLUME_STORAGE_KEY, 80);
+  const [isMuted, _setIsMuted] = useLocalStorage(MUTED_STORAGE_KEY, false);
+  const [isMobile, setIsMobile] = useState(false);
+  const [hasUserInitiated, setHasUserInitiated] = useState(false);
+  const { setPlaybackStatus, status } = usePlaybackStatusRestart(youtubeVideoId);
 
   useEffect(() => {
     if (!mounted) {
@@ -82,33 +125,7 @@ export function YouTubePlayer({ youtubeVideoId, className }: YouTubePlayerProps)
     setHasUserInitiated(true);
   };
 
-  const statusInfo = ((): {
-    indicator: React.ReactNode;
-    label: string;
-    tone: string;
-  } => {
-    if (isMobile && !hasUserInitiated) {
-      return {
-        indicator: <span className="h-2 w-2 animate-pulse rounded-full bg-amber-500" />,
-        label: tPlayer("tapToEnableAudio"),
-        tone: "text-amber-600 dark:text-amber-400",
-      };
-    }
-
-    if (status === "playing") {
-      return {
-        indicator: <span className="h-2 w-2 animate-pulse rounded-full bg-green-500" />,
-        label: tPlayer("playingAudio"),
-        tone: "text-green-600 dark:text-green-400",
-      };
-    }
-
-    return {
-      indicator: <Loader2 className="h-3 w-3 animate-spin text-muted-foreground" />,
-      label: tPlayer("loadingAudio"),
-      tone: "text-muted-foreground",
-    };
-  })();
+  const statusInfo = getStatusInfo(tPlayer, { hasUserInitiated, isMobile, status });
 
   if (status === "error" || !youtubeVideoId) {
     return (
