@@ -1,8 +1,6 @@
-# Fallow adoption gate
+# Fallow zero-debt gate
 
-ChronoTunes uses the canonical Fallow 3.17.0 ADOPTION architecture. The repository is protected from newly introduced findings while the inherited backlog remains visible and non-blocking. This is intentionally not a zero-debt gate yet.
-
-The zero-debt work is tracked in [#313](https://github.com/samaluk/chronotunes/issues/313), with the target architecture based on [samaluk/fintual-api#405](https://github.com/samaluk/fintual-api/pull/405).
+ChronoTunes enforces the canonical Fallow 3.17.0 ZERO-DEBT architecture. Every gate — pre-commit, pre-push, pull-request CI, and master pushes — fails on any finding; there is no baseline, attribution, or freshness machinery. The migration from the adoption-era `new-only` gate was tracked in [#313](https://github.com/samaluk/chronotunes/issues/313), with the target architecture based on [samaluk/fintual-api#405](https://github.com/samaluk/fintual-api/pull/405).
 
 ## Version and execution model
 
@@ -13,20 +11,20 @@ The zero-debt work is tracked in [#313](https://github.com/samaluk/chronotunes/i
 - The repo-local MCP entry in `.opencode/opencode.json` runs `pnpm exec fallow-mcp`.
 - The vendored `.agents/skills/fallow` directory is the skill shipped with Fallow 3.17.0.
 
-## Adoption semantics
+## Gate semantics
 
 `.fallowrc.json` sets:
 
 ```json
 {
   "typeAware": { "enabled": true, "require": "complete" },
-  "audit": { "gate": "new-only", "typeAware": true }
+  "audit": { "gate": "all", "typeAware": true }
 }
 ```
 
-`new-only` compares the pull request with its merge-base. Findings already present in the base remain in the report, but do not fail the gate. A changed file that introduces a new unused export, boundary violation, clone, or other supported finding does fail the gate.
+`gate: all` is the config default: bare `fallow audit`, the staged-diff pre-commit gate, and CI all fail on every finding — new or inherited. There is nothing left to attribute.
 
-There are no committed Fallow baselines, regression snapshots, freshness checks, custom JSON parsers, SARIF uploads, or duplicate analysis wrappers. When the backlog is clean, the follow-up in #313 will switch the standalone analyses and `audit` to strict zero-debt behavior.
+There are no committed Fallow baselines, regression snapshots, freshness checks, custom JSON parsers, SARIF uploads, or duplicate analysis wrappers. The one scheduled re-scan is the drift workflow described under [CI and hooks](#ci-and-hooks); it exists to catch tool-version regressions, not to track debt.
 
 ## Commands
 
@@ -41,7 +39,6 @@ pnpm fallow:ci           # Alias of fallow:full used by CI
 pnpm fallow:config       # Show the resolved repository configuration
 pnpm fallow:recommend    # Review configuration recommendations
 pnpm fallow:status       # Verify the type-aware companion and protocol
-pnpm fallow:audit        # Legacy branch-wide new-only audit (pre-canonical hooks)
 pnpm fallow:security     # Unverified security candidates for human review
 pnpm fallow:suppressions # Suppression and stale-suppression inventory
 ```
@@ -70,7 +67,7 @@ The configuration enables:
 - Semantic duplication plus near-duplicate detection with `minLines: 8`, `minTokens: 60`, `minOccurrences: 2`, and import wiring ignored. A `threshold` of 11 % makes `dupes --fail-on-issues` a real gate: the current stock (shadcn-style boilerplate and CSS utility patterns) is the ceiling, and any net increase fails CI.
 - Health thresholds of cyclomatic 20, cognitive 15, CRAP 30, and unit size 60.
 - Istanbul coverage from `coverage/coverage-final.json` for CRAP and coverage-gap analysis.
-- Six explicit zones: generated Convex API, Convex backend, app routes, components, shared library, and i18n. The rules prevent i18n from importing application code and keep backend/framework direction explicit. Boundary inspection currently reports zero violations.
+- Five explicit zones: Convex backend, app routes, components, shared library, and i18n. The generated Convex API is excluded from analysis entirely (see below), so it is no longer a zone. The rules prevent i18n from importing application code and keep backend/framework direction explicit. Boundary inspection reports zero violations.
 - Boundary coverage for every matched file. Only the named tool/config files are allowed to remain unmatched because they are not runtime modules.
 
 The remaining exclusions are narrow and intentional:
@@ -80,24 +77,27 @@ The remaining exclusions are narrow and intentional:
 - `src/components/ui/*.tsx` exports are the generated-style shadcn component surface and are consumed by convention.
 - `scrape-yt` and `scrape-youtube` are script-only entrypoint dependencies; `@edge-runtime/vm` is a provider/runtime dependency; `tailwindcss` is consumed by the build pipeline.
 
-## Current inherited debt
+## Current state and dispositions
 
-The latest full-repository inspections are advisory and are recorded in #313:
+Full-repository probes on the stack tip (Fallow 3.17.0, 302 tests):
 
-- Dead code: 88 findings — 48 unused files, 1 unused export, 2 unused types, and 37 private-type leaks.
-- Duplication: 28 semantic/near clone groups, 69 instances, and 8.84% duplicated lines.
-- Health: 1,412 functions analyzed, 63 above configured thresholds, with a current score around 63/100 (grade C) when Istanbul coverage is loaded.
-- Latest Vitest coverage: 20 files and 224 tests passed; 64.64% statements, 55.50% branches, 58.46% functions, and 65.02% lines.
-- Coverage gaps: Istanbul matched 389 of 1,412 functions; 46 of 100 runtime files are covered, leaving 54 files and 145 exports without runtime coverage evidence.
-- Boundaries: six zones, zero current violations.
-- Suppressions: zero current suppressions and zero stale suppressions.
-- Security: two unverified medium open-redirect candidates in `src/app/landing-page-content.tsx`; Fallow reports candidates for review and does not establish exploitability.
+- Dead code: **0 findings** (`dead-code --type-aware --fail-on-issues` exits 0). The adoption-era backlog — 48 unused files, 1 unused export, 2 unused types, 37 private-type leaks, 3 unused dependencies — is fully retired.
+- Duplication: **8.8 % duplicated lines** (1,012 lines, 15 files), under the configured 11 % ceiling; `dupes --mode semantic --near --fail-on-issues` exits 0.
+- Health: score **75/100 (grade B)**, `health --type-aware --coverage … --fail-on-issues` exits 0 with no function above thresholds.
+- Boundaries: five zones, zero violations.
+- Suppressions: zero suppressions, zero stale suppressions.
+- Vitest: 37 files, 302 tests; Istanbul matches 616 of 1,430 functions.
 
-These numbers are triage inputs, not a reason to weaken the adoption gate or add broad ignores.
+Dispositions for the advisory surfaces named in #313's exit criterion 5:
+
+- Security candidates: the two open-redirect candidates in `src/app/landing-page-content.tsx` were **resolved** — post-create/join navigation validates the server/lobby code against the lobby-code shape and navigates via `router.push` instead of assigning `window.location.href`. `fallow security` now reports zero items.
+- Coverage gaps: the CRAP gate forces coverage wherever untested complexity breaches the health thresholds (the game hot paths decomposed in this stack all carry render suites); remaining uncovered files are UI shells, generated bindings, and config entry points where behavior is pinned by type-aware analysis. Coverage-gap findings stay `off` in rules because the CRAP gate is the enforcement surface.
+- Duplication ceiling vs zero: the 11 % threshold is a deliberate ratchet, not full elimination. The residual stock is shadcn-style boilerplate and CSS utility patterns whose extraction would hurt readability; any net increase fails CI.
+- Drift workflow: a version-keyed cache re-scan when the pinned fallow version changes. This is intentional freshness machinery — the only scheduled scan in the repo — and it exists to catch tool regressions, not to carry debt.
 
 ## CI and hooks
 
-The pull-request workflow has one native `fallow-rs/fallow` analysis. It uses `command: audit`, `gate: new-only`, `type-aware: true`, the Istanbul report, semantic and near-duplicate inputs, and the native sticky compact comment, Check Run, inline comments, and review guidance. It does not upload SARIF and does not grant `security-events` or identity-token permissions.
+Pull-request and master-push runs use the dedicated `.github/workflows/fallow.yml`: `test:coverage` followed by `fallow:ci` (≡ `fallow:full`), every finding blocking, SHA-pinned actions, least-privilege permissions, cancel-in-progress concurrency. It replaces both the adoption-era native-action PR job and the reusable-CI Fallow step. `.github/workflows/fallow-drift.yml` re-scans on dependency-file pushes when the lockfile-installed fallow version was not seen before.
 
 The hk configuration runs:
 
@@ -106,7 +106,7 @@ The hk configuration runs:
 
 ## Zero-debt status
 
-All three exit criteria from #313 are green and enforced:
+All exit criteria from #313 are green and enforced:
 
 ```bash
 pnpm exec fallow dead-code --type-aware --fail-on-issues   # exit 0
@@ -115,4 +115,13 @@ pnpm exec fallow health --type-aware \
   --coverage coverage/coverage-final.json --coverage-root "$PWD" --fail-on-issues   # exit 0
 ```
 
-`pnpm fallow:full` chains them; `pnpm fallow:ci` is its CI alias. The hk pre-commit runs the staged-diff audit (`fallow:staged`, gate all), pre-push runs the full scan, and the dedicated Fallow workflow runs it on every PR and master push. The drift workflow re-scans whenever the pinned fallow version changes.
+Representative failure probes (exit criterion 6), run before flipping hooks/CI to strict gates:
+
+| Probe                                                                    | Injected finding             | Result                          |
+| ------------------------------------------------------------------------ | ---------------------------- | ------------------------------- |
+| `fallow dead-code --type-aware --fail-on-issues`                         | one unused exported function | exit 1                          |
+| `git diff --cached \| fallow audit --diff-stdin --gate all --type-aware` | same finding, staged         | exit 1 (`✗ dead code: 1 issue`) |
+
+During the migration, the standalone probes were also observed failing on the real inherited debt as each category was driven to zero (dead-code 91 → 0, health hotspots 42 → 0, duplication 102 → below-threshold clone groups); per-PR evidence is in the #342–#348 PR descriptions.
+
+`pnpm fallow:full` chains the three strict analyses; `pnpm fallow:ci` is its CI alias. The hk pre-commit runs the staged-diff audit (`fallow:staged`, gate all), pre-push runs the full scan, and the dedicated Fallow workflow runs it on every PR and master push. The drift workflow re-scans whenever the pinned fallow version changes.
