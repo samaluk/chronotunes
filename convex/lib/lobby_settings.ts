@@ -25,12 +25,8 @@ export const DEFAULT_SETTINGS: Readonly<LobbySettings> = {
   turnSeconds: 30,
 };
 
-export type LobbySettingsOverrides = {
-  [K in keyof LobbySettings]?: LobbySettings[K];
-};
-
 /** Applies per-lobby overrides on top of the default settings. */
-export function resolveLobbySettings(overrides?: LobbySettingsOverrides): LobbySettings {
+export function resolveLobbySettings(overrides?: Partial<LobbySettings>): LobbySettings {
   return {
     allowBetRetraction: overrides?.allowBetRetraction ?? DEFAULT_SETTINGS.allowBetRetraction,
     allowGuessTitleArtist:
