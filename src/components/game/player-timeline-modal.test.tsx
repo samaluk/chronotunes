@@ -1,4 +1,4 @@
-import { cleanup, render, screen } from "@testing-library/react";
+import { cleanup, render } from "@testing-library/react";
 import type { GenericId } from "convex/values";
 import { afterEach, describe, expect, it, vi } from "vitest";
 

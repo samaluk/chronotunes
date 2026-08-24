@@ -1,5 +1,4 @@
 import { cleanup, render, screen } from "@testing-library/react";
-import type { GenericId } from "convex/values";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { SettingsPanel } from "./settings-panel";
