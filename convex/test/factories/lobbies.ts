@@ -1,7 +1,11 @@
 import type { Id } from "../../_generated/dataModel";
 import type { MutationCtx, QueryCtx } from "../../_generated/server";
-import { generateLobbyCode } from "../../lib/lobby_settings";
-import { requireFirstTrackId, resolveLobbySettings, type LobbySettings } from "./shared";
+import {
+  generateLobbyCode,
+  resolveLobbySettings,
+  type LobbySettings,
+} from "../../lib/lobby_settings";
+import { requireFirstTrackId } from "./shared";
 import type { FactoryResult, LobbyOverrides, PlayerOverrides, TestContext } from "./types";
 
 const resolvePlayerOverrides = (
@@ -249,5 +253,3 @@ export async function findById(
 
   return result;
 }
-
-export { DEFAULT_SETTINGS } from "./shared";

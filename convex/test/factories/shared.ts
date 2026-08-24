@@ -3,16 +3,8 @@ import type { Infer } from "convex/values";
 import type { Id } from "../../_generated/dataModel";
 import type { QueryCtx } from "../../_generated/server";
 import type schema from "../../schema";
-import {
-  DEFAULT_SETTINGS,
-  resolveLobbySettings,
-  type LobbySettings,
-} from "../../lib/lobby_settings";
 
 export type Round = Infer<typeof schema.tables.rounds.validator>;
-
-export { DEFAULT_SETTINGS, resolveLobbySettings };
-export type { LobbySettings };
 
 /** Returns the first seeded track, throwing when the test forgot to seed any. */
 export async function requireFirstTrackId(ctx: QueryCtx): Promise<Id<"tracks">> {
