@@ -84,7 +84,7 @@ The remaining exclusions are narrow and intentional:
 The latest full-repository inspections are advisory and are recorded in #313:
 
 - Dead code: 88 findings — 48 unused files, 1 unused export, 2 unused types, and 37 private-type leaks.
-- Duplication: 102 semantic/near clone groups, 263 instances, and 25.15% duplicated lines.
+- Duplication: 28 semantic/near clone groups, 69 instances, and 8.84% duplicated lines.
 - Health: 1,412 functions analyzed, 63 above configured thresholds, with a current score around 63/100 (grade C) when Istanbul coverage is loaded.
 - Latest Vitest coverage: 20 files and 224 tests passed; 64.64% statements, 55.50% branches, 58.46% functions, and 65.02% lines.
 - Coverage gaps: Istanbul matched 389 of 1,412 functions; 46 of 100 runtime files are covered, leaving 54 files and 145 exports without runtime coverage evidence.
