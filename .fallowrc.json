@@ -57,7 +57,7 @@
     "coverage": "coverage/coverage-final.json"
   },
   "audit": {
-    "gate": "new-only",
+    "gate": "all",
     "typeAware": true
   },
   "boundaries": {
