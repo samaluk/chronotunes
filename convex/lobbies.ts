@@ -4,22 +4,8 @@ import { ConvexError, v } from "convex/values";
 import type { Doc } from "./_generated/dataModel";
 import { query } from "./_generated/server";
 import type { MutationCtx } from "./_generated/server";
+import { DEFAULT_SETTINGS, generateLobbyCode } from "./lib/lobby_settings";
 import { mutationWithSession } from "./lib/sessions";
-
-const LOBBY_CODE_CHARS = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-const LOBBY_CODE_LENGTH = 6;
-
-const DEFAULT_SETTINGS = {
-  allowBetRetraction: true,
-  allowGuessTitleArtist: true,
-  bettingWindowSeconds: 15,
-  maxYear: 2025,
-  minYear: 1950,
-  showLiveBets: true,
-  startingCoins: 3,
-  targetTimelineSize: 10,
-  turnSeconds: 30,
-} as const;
 
 const normalizeLobbyCode = (code: string) => code.trim().toUpperCase();
 
@@ -47,21 +33,6 @@ const assertHost = (lobby: Doc<"lobbies">, sessionId: string, message: string) =
     throw new ConvexError(message);
   }
 };
-
-function generateLobbyCode(): string {
-  let code = "";
-  const randomValues = new Uint8Array(LOBBY_CODE_LENGTH);
-  crypto.getRandomValues(randomValues);
-  for (let i = 0; i < LOBBY_CODE_LENGTH; i++) {
-    const rawIndex = randomValues[i];
-    if (rawIndex === undefined) {
-      throw new Error("Failed to generate random values");
-    }
-    const index = rawIndex % LOBBY_CODE_CHARS.length;
-    code += LOBBY_CODE_CHARS[index];
-  }
-  return code;
-}
 
 export const create = mutationWithSession({
   args: {

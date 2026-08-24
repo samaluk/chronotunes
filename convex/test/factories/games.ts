@@ -3,27 +3,22 @@ import type { Infer } from "convex/values";
 import type { Id } from "../../_generated/dataModel";
 import type { MutationCtx, QueryCtx } from "../../_generated/server";
 import type schema from "../../schema";
+import {
+  create as createRound,
+  createInPhase as createRoundInPhase,
+  type Round,
+  type RoundOverrides,
+} from "./rounds";
 import type { TestContext } from "./types";
 
 export type Game = Infer<typeof schema.tables.games.validator>;
-export type Round = Infer<typeof schema.tables.rounds.validator>;
+export type { Round, RoundOverrides };
 
 export interface GameOverrides {
   currentRoundNumber?: number;
   status?: Game["status"];
   turnOrder?: Game["turnOrder"];
   turnPlayerId?: Game["turnPlayerId"];
-}
-
-export interface RoundOverrides {
-  guess?: Round["guess"];
-  phase?: Round["phase"];
-  placement?: Round["placement"];
-  placementPreview?: Round["placementPreview"];
-  resolution?: Round["resolution"];
-  roundNumber?: number;
-  trackId?: Round["trackId"];
-  turnPlayerId?: Round["turnPlayerId"];
 }
 
 export async function create(
@@ -72,73 +67,18 @@ export async function createWithRound(
   roundId: Id<"rounds">;
   turnPlayerId: Id<"players">;
 }> {
-  // oxlint-disable-next-line typescript/no-non-null-assertion, typescript/no-unnecessary-type-assertion
-  const turnPlayerId = options.gameOverrides?.turnPlayerId ?? turnOrder[0]!;
-  let trackId: Id<"tracks"> | undefined;
-
-  await t.run(async (ctx: QueryCtx) => {
-    const track = await ctx.db.query("tracks").first();
-    trackId = track?._id;
-  });
-
-  if (!trackId) {
-    throw new Error("No tracks available. Please seed tracks first.");
-  }
-
-  const gameData: Game = {
-    currentRoundNumber: options.gameOverrides?.currentRoundNumber ?? 1,
-    lobbyId,
-    startedAt: Date.now(),
-    status: options.gameOverrides?.status ?? "active",
-    turnOrder,
-    turnPlayerId,
-  };
-
-  const roundData = {
-    // oxlint-disable-next-line typescript/consistent-type-assertions, typescript/no-unsafe-type-assertion
-    gameId: "" as Id<"games">,
-    phase: options.roundOverrides?.phase ?? "placing",
-    roundNumber: options.roundOverrides?.roundNumber ?? 1,
-    startedAt: Date.now(),
-    trackId,
-    turnPlayerId,
-    ...(options.roundOverrides?.placementPreview !== undefined && {
-      placementPreview: options.roundOverrides.placementPreview,
-    }),
-    ...(options.roundOverrides?.placement !== undefined && {
-      placement: options.roundOverrides.placement,
-    }),
-    ...(options.roundOverrides?.guess !== undefined && {
-      guess: options.roundOverrides.guess,
-    }),
-    ...(options.roundOverrides?.resolution !== undefined && {
-      resolution: options.roundOverrides.resolution,
-    }),
-  };
-
-  let gameId: Id<"games"> | null = null;
-  let roundId: Id<"rounds"> | null = null;
+  const game = await create(t, lobbyId, turnOrder, options.gameOverrides);
+  const round = await createRound(t, game.id, options.roundOverrides);
 
   await t.run(async (ctx: MutationCtx) => {
-    gameId = await ctx.db.insert("games", gameData);
-    await ctx.db.patch(lobbyId, { activeGameId: gameId, status: "in_game" });
-
-    // oxlint-disable-next-line typescript/no-non-null-assertion
-    roundData.gameId = gameId!;
-    roundId = await ctx.db.insert("rounds", roundData);
-    // oxlint-disable-next-line typescript/no-non-null-assertion, typescript/no-unnecessary-type-assertion
-    await ctx.db.patch(gameId!, { currentRoundId: roundId });
+    await ctx.db.patch(game.id, { currentRoundId: round.id });
   });
 
-  if (!(gameId && roundId)) {
-    throw new Error("Failed to create game or round");
-  }
-
   return {
-    id: gameId,
-    record: gameData,
-    roundId,
-    turnPlayerId,
+    id: game.id,
+    record: game.record,
+    roundId: round.id,
+    turnPlayerId: round.record.turnPlayerId,
   };
 }
 
@@ -175,80 +115,16 @@ export async function createInPhase(
     throw new Error("No players found in lobby");
   }
 
-  // oxlint-disable-next-line typescript/no-non-null-assertion, typescript/no-unnecessary-type-assertion
-  const turnPlayerId = playerIds[0]!;
-  let trackId: Id<"tracks"> | undefined;
-
-  await t.run(async (ctx: QueryCtx) => {
-    const track = await ctx.db.query("tracks").first();
-    trackId = track?._id;
+  const game = await create(t, lobbyId, playerIds, {
+    currentRoundNumber: options.roundNumber,
   });
-
-  if (!trackId) {
-    throw new Error("No tracks available. Please seed tracks first.");
-  }
-
-  const gameData: Game = {
-    currentRoundNumber: options.roundNumber ?? 1,
-    lobbyId,
-    startedAt: Date.now(),
-    status: "active",
-    turnOrder: playerIds,
-    turnPlayerId,
-  };
-
-  const roundData: Round = {
-    // oxlint-disable-next-line typescript/consistent-type-assertions, typescript/no-unsafe-type-assertion
-    gameId: "" as Id<"games">,
-    phase,
-    roundNumber: options.roundNumber ?? 1,
-    startedAt: Date.now(),
-    trackId,
-    turnPlayerId,
-  };
-
-  if (phase === "betting" || phase === "resolved") {
-    roundData.placement = {
-      proposedIndex: options.placementIndex ?? 0,
-      submittedAt: Date.now(),
-    };
-  }
-
-  if (phase === "resolved") {
-    roundData.resolution = options.resolution ?? {
-      awardedPlayerIds: [],
-      coinDeltas: [],
-      resolvedAt: Date.now(),
-      turnPlayerWasCorrect: true,
-      validIndexMax: 1,
-      validIndexMin: 0,
-    };
-  }
-
-  let gameId: Id<"games"> | null = null;
-  let roundId: Id<"rounds"> | null = null;
+  const round = await createRoundInPhase(t, game.id, phase, options);
 
   await t.run(async (ctx: MutationCtx) => {
-    gameId = await ctx.db.insert("games", gameData);
-    await ctx.db.patch(lobbyId, { activeGameId: gameId, status: "in_game" });
-
-    // oxlint-disable-next-line typescript/no-non-null-assertion
-    roundData.gameId = gameId!;
-    roundId = await ctx.db.insert("rounds", roundData);
-    // oxlint-disable-next-line typescript/no-non-null-assertion, typescript/no-unnecessary-type-assertion
-    await ctx.db.patch(gameId!, { currentRoundId: roundId });
+    await ctx.db.patch(game.id, { currentRoundId: round.id });
   });
 
-  if (!(gameId && roundId)) {
-    throw new Error("Failed to create game or round");
-  }
-
-  return {
-    id: gameId,
-    playerIds,
-    record: gameData,
-    roundId,
-  };
+  return { id: game.id, playerIds, record: game.record, roundId: round.id };
 }
 
 export async function findCurrent(
