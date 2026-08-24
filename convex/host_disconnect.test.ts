@@ -55,6 +55,81 @@ describe("checkHostDisconnect", () => {
     });
     expect(lobby?.hostSessionId).toBe("host-session-future");
   });
+
+  test("pauses active game when host has no qualifying presence", async () => {
+    const t = convexTest(schema, modules);
+    presenceTest.register(t);
+
+    const { code } = await t.mutation(api.lobbies.create, {
+      displayName: "HostDisconnect",
+      sessionId: asSessionId("host-session-disconnect"),
+    });
+
+    await t.mutation(api.lobbies.join, {
+      code,
+      displayName: "Player1",
+      sessionId: asSessionId("player1-disconnect"),
+    });
+
+    await t.run(async (ctx) => {
+      const lobby = await ctx.db.query("lobbies").first();
+      if (lobby) {
+        const players = await ctx.db.query("players").collect();
+        const firstPlayer = players[0];
+        if (firstPlayer) {
+          const gameId = await ctx.db.insert("games", {
+            currentRoundNumber: 1,
+            lobbyId: lobby._id,
+            startedAt: Date.now(),
+            status: "active",
+            turnOrder: [firstPlayer._id],
+            turnPlayerId: firstPlayer._id,
+          });
+          await ctx.db.patch(lobby._id, {
+            activeGameId: gameId,
+            status: "in_game",
+          });
+        }
+      }
+    });
+
+    await t.mutation(internal.host_disconnect.checkHostDisconnect, {});
+
+    const state = await t.run(async (ctx) => {
+      const lobbies = await ctx.db.query("lobbies").collect();
+      const games = await ctx.db.query("games").collect();
+      return { game: games[0], lobby: lobbies[0] };
+    });
+    expect(state.lobby?.hostTransferDeadline).toBeDefined();
+    expect(state.game?.status).toBe("paused");
+  });
+
+  test("keeps active game untouched when host heartbeat qualifies", async () => {
+    const t = convexTest(schema, modules);
+    presenceTest.register(t);
+
+    const { code } = await t.mutation(api.lobbies.create, {
+      displayName: "HostStay",
+      sessionId: asSessionId("host-session-stay"),
+    });
+
+    const lobbyInfo = await t.query(api.lobbies.get, { code });
+
+    await t.mutation(api.presence.sendHeartbeat, {
+      // oxlint-disable-next-line typescript/no-non-null-assertion
+      roomId: lobbyInfo!._id,
+      sessionId: "host-session-stay",
+      userId: "host-session-stay",
+    });
+
+    await t.mutation(internal.host_disconnect.checkHostDisconnect, {});
+
+    const lobby = await t.run(async (ctx) => {
+      const lobbies = await ctx.db.query("lobbies").collect();
+      return lobbies[0];
+    });
+    expect(lobby?.hostTransferDeadline).toBeUndefined();
+  });
 });
 
 describe("checkHostTransfer with presence", () => {

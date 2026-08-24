@@ -1,12 +1,58 @@
 import { Presence } from "@convex-dev/presence";
 
 import { components } from "./_generated/api";
+import type { Doc } from "./_generated/dataModel";
+import type { MutationCtx } from "./_generated/server";
 import { internalMutation } from "./_generated/server";
 
 const presenceComponent = new Presence(components.presence);
 
 const HEARTBEAT_TIMEOUT_MS = 10_000;
 const HOST_TRANSFER_DEADLINE_MS = 30_000;
+
+interface PresenceEntry {
+  lastDisconnected?: number;
+  online?: boolean;
+}
+
+/**
+ * Shared presence heuristic of both mutations, extracted verbatim: an entry
+ * qualifies when it is marked online, carries a `lastDisconnected` timestamp,
+ * and that timestamp predates the cutoff. A lobby/host/player with no
+ * qualifying entry takes the "no live presence" path. The published presence
+ * type omits `lastDisconnected`, so it is read structurally here. The exact
+ * branches are pinned by host_disconnect.test.ts.
+ */
+export function hasQualifyingPresence(entries: readonly unknown[], cutoffTime: number): boolean {
+  return entries.some((rawEntry) => {
+    // oxlint-disable-next-line typescript/consistent-type-assertions, typescript/no-unsafe-type-assertion -- presence entries carry lastDisconnected at runtime
+    const entry = rawEntry as PresenceEntry;
+    return (
+      entry.online === true &&
+      entry.lastDisconnected !== undefined &&
+      entry.lastDisconnected < cutoffTime
+    );
+  });
+}
+
+function isHostTransferPending(lobby: Doc<"lobbies">, now: number): boolean {
+  return Boolean(lobby.hostTransferDeadline && lobby.hostTransferDeadline > now);
+}
+
+async function transitionActiveGameStatus(
+  ctx: MutationCtx,
+  lobby: Doc<"lobbies">,
+  fromStatus: Doc<"games">["status"],
+  toStatus: Doc<"games">["status"],
+): Promise<void> {
+  if (!(lobby.status === "in_game" && lobby.activeGameId)) {
+    return;
+  }
+  const game = await ctx.db.get(lobby.activeGameId);
+  if (game?.status === fromStatus) {
+    await ctx.db.patch(game._id, { status: toStatus });
+  }
+}
 
 export const checkHostDisconnect = internalMutation({
   args: {},
@@ -21,33 +67,18 @@ export const checkHostDisconnect = internalMutation({
 
     await Promise.all(
       lobbies.map(async (lobby) => {
-        if (lobby.hostTransferDeadline && lobby.hostTransferDeadline > now) {
+        if (isHostTransferPending(lobby, now)) {
           return;
         }
 
         const hostPresence = await presenceComponent.listUser(ctx, lobby.hostSessionId, false);
 
-        const isHostOnline = hostPresence.some(
-          (presence) =>
-            presence.online &&
-            // oxlint-disable-next-line typescript/consistent-type-assertions
-            (presence as { lastDisconnected?: number }).lastDisconnected !== undefined &&
-            // oxlint-disable-next-line typescript/consistent-type-assertions, typescript/no-non-null-assertion
-            (presence as { lastDisconnected?: number }).lastDisconnected! < cutoffTime,
-        );
-
-        if (!isHostOnline) {
-          const hostTransferDeadline = now + HOST_TRANSFER_DEADLINE_MS;
-
-          await ctx.db.patch(lobby._id, { hostTransferDeadline });
-
-          if (lobby.status === "in_game" && lobby.activeGameId) {
-            const game = await ctx.db.get(lobby.activeGameId);
-            if (game && game.status === "active") {
-              await ctx.db.patch(game._id, { status: "paused" });
-            }
-          }
+        if (hasQualifyingPresence(hostPresence, cutoffTime)) {
+          return;
         }
+
+        await ctx.db.patch(lobby._id, { hostTransferDeadline: now + HOST_TRANSFER_DEADLINE_MS });
+        await transitionActiveGameStatus(ctx, lobby, "active", "paused");
       }),
     );
   },
@@ -81,16 +112,7 @@ export const checkHostTransfer = internalMutation({
           await Promise.all(
             players.map(async (player) => {
               const presence = await presenceComponent.listUser(ctx, player.sessionId, false);
-              const isOnline = presence.some(
-                (entry) =>
-                  entry.online &&
-                  // oxlint-disable-next-line typescript/consistent-type-assertions
-                  (entry as { lastDisconnected?: number }).lastDisconnected !== undefined &&
-                  // oxlint-disable-next-line typescript/consistent-type-assertions, typescript/no-non-null-assertion
-                  (entry as { lastDisconnected?: number }).lastDisconnected! < cutoffTime,
-              );
-
-              return isOnline ? player : null;
+              return hasQualifyingPresence(presence, cutoffTime) ? player : null;
             }),
           )
         ).filter((player) => player !== null);
@@ -115,12 +137,7 @@ export const checkHostTransfer = internalMutation({
           hostTransferDeadline: undefined,
         });
 
-        if (lobby.status === "in_game" && lobby.activeGameId) {
-          const game = await ctx.db.get(lobby.activeGameId);
-          if (game && game.status === "paused") {
-            await ctx.db.patch(game._id, { status: "active" });
-          }
-        }
+        await transitionActiveGameStatus(ctx, lobby, "paused", "active");
       }),
     );
   },

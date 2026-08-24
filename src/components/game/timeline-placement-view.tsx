@@ -3,7 +3,6 @@
 import { useTranslations } from "next-intl";
 import type { ReactNode } from "react";
 
-import type { Id } from "@/convex/_generated/dataModel";
 import type { RevealedTrack, TimelineEntry } from "./betting-types";
 import { getRevealedTrackMap, sortTimelineByYear } from "@/lib/timeline";
 
