@@ -6,8 +6,7 @@ ChronoTunes enforces the canonical Fallow 3.17.0 ZERO-DEBT architecture. Every g
 
 - The `fallow` dev dependency, type-aware companion, and MCP server are pinned to `3.17.0`.
 - pnpm's strict one-day minimum release-age policy remains enabled; it has exact `3.17.0` exceptions only for Fallow and the eight Fallow platform packages plus the type-aware companion required by the lockfile.
-- The pull-request action uses `fallow-rs/fallow@ecf5a314fd3e10974acb4f5a7f867c433030522d` (`v3.17.0`).
-- Local and CI commands run through pnpm, so the repository lockfile controls the executable version.
+- No workflow uses the native `fallow-rs/fallow` GitHub action anymore; the dedicated pull-request workflow runs `pnpm fallow:ci`, and all other invocations go through pnpm too, so the repository lockfile controls the executable version.
 - The repo-local MCP entry in `.opencode/opencode.json` runs `pnpm exec fallow-mcp`.
 - The vendored `.agents/skills/fallow` directory is the skill shipped with Fallow 3.17.0.
 
@@ -39,6 +38,9 @@ pnpm fallow:ci           # Alias of fallow:full used by CI
 pnpm fallow:config       # Show the resolved repository configuration
 pnpm fallow:recommend    # Review configuration recommendations
 pnpm fallow:status       # Verify the type-aware companion and protocol
+pnpm fallow:dead-code    # Dead-code probe alone (no --fail-on-issues)
+pnpm fallow:dupes        # Duplication probe alone (no --fail-on-issues)
+pnpm fallow:health       # Health probe alone (no --fail-on-issues)
 pnpm fallow:security     # Unverified security candidates for human review
 pnpm fallow:suppressions # Suppression and stale-suppression inventory
 ```
