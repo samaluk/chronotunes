@@ -14,7 +14,6 @@ export interface CreateManyOptions {
   startIndex?: number;
 }
 
-export type GamePhase = "placing" | "betting" | "resolved";
 export type GameStatus = "active" | "paused" | "finished";
 export type LobbyStatus = "lobby" | "in_game" | "finished";
 export type BetStatus = "pending" | "won" | "lost";
@@ -57,39 +56,6 @@ export interface GameOverrides {
   currentRoundNumber?: number;
   status?: GameStatus;
   turnOrder?: Id<"players">[];
-  turnPlayerId?: Id<"players">;
-}
-
-export interface RoundOverrides {
-  guess?: {
-    guessedTitle?: string;
-    guessedArtist?: string;
-    isCorrect: boolean;
-    awardedCoin: boolean;
-    submittedAt: number;
-  };
-  phase?: GamePhase;
-  placement?: {
-    proposedIndex: number;
-    submittedAt: number;
-  };
-  placementPreview?: {
-    proposedIndex: number;
-    updatedAt: number;
-  };
-  resolution?: {
-    validIndexMin: number;
-    validIndexMax: number;
-    turnPlayerWasCorrect: boolean;
-    awardedPlayerIds: Id<"players">[];
-    coinDeltas: {
-      playerId: Id<"players">;
-      delta: number;
-    }[];
-    resolvedAt: number;
-  };
-  roundNumber?: number;
-  trackId?: Id<"tracks">;
   turnPlayerId?: Id<"players">;
 }
 
