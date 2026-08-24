@@ -66,7 +66,7 @@ The static locale catalog in `src/i18n/messages.ts` replaces a template-literal 
 The configuration enables:
 
 - `private-type-leaks`, stale suppressions, and missing suppression reasons as errors.
-- Semantic duplication plus near-duplicate detection with `minLines: 8`, `minTokens: 60`, `minOccurrences: 2`, and import wiring ignored.
+- Semantic duplication plus near-duplicate detection with `minLines: 8`, `minTokens: 60`, `minOccurrences: 2`, and import wiring ignored. A `threshold` of 11 % makes `dupes --fail-on-issues` a real gate: the current stock (shadcn-style boilerplate and CSS utility patterns) is the ceiling, and any net increase fails CI.
 - Health thresholds of cyclomatic 20, cognitive 15, CRAP 30, and unit size 60.
 - Istanbul coverage from `coverage/coverage-final.json` for CRAP and coverage-gap analysis.
 - Six explicit zones: generated Convex API, Convex backend, app routes, components, shared library, and i18n. The rules prevent i18n from importing application code and keep backend/framework direction explicit. Boundary inspection currently reports zero violations.
@@ -84,7 +84,7 @@ The remaining exclusions are narrow and intentional:
 The latest full-repository inspections are advisory and are recorded in #313:
 
 - Dead code: 88 findings — 48 unused files, 1 unused export, 2 unused types, and 37 private-type leaks.
-- Duplication: 102 semantic/near clone groups, 263 instances, and 25.15% duplicated lines.
+- Duplication: 28 semantic/near clone groups, 69 instances, and 8.84% duplicated lines.
 - Health: 1,412 functions analyzed, 63 above configured thresholds, with a current score around 63/100 (grade C) when Istanbul coverage is loaded.
 - Latest Vitest coverage: 20 files and 224 tests passed; 64.64% statements, 55.50% branches, 58.46% functions, and 65.02% lines.
 - Coverage gaps: Istanbul matched 389 of 1,412 functions; 46 of 100 runtime files are covered, leaving 54 files and 145 exports without runtime coverage evidence.
