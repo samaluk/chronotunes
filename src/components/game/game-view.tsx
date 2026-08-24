@@ -13,6 +13,7 @@ import { GameHeader } from "./game-header";
 import { GameProvider } from "./game-provider";
 import { useGame } from "./game-context";
 import { GameResults } from "./game-results";
+import { MissingGameNotice } from "./missing-game-notice";
 import { PlacingPhaseContent } from "./placing-phase-content";
 import { PlayerTimelineModal } from "./player-timeline-modal";
 import { PlayersBar } from "./players-bar";
@@ -154,31 +155,38 @@ function useGameQueries(code: string, lobbyId: Id<"lobbies">, mounted: boolean) 
   return { currentRound, game, lobby, me, players, revealedTracks };
 }
 
-type ViewPhase = "loading" | "missing" | "ready";
+type GameQueries = ReturnType<typeof useGameQueries>;
 
-const resolveViewPhase = (
-  mounted: boolean,
-  lobby: unknown,
-  players: unknown,
-  game: unknown,
-  currentRound: unknown,
-): ViewPhase => {
+type GameViewData = Pick<GameQueries, "currentRound" | "game" | "lobby" | "players">;
+
+type ViewPhase =
+  | { phase: "loading" }
+  | { phase: "missing" }
+  | {
+      currentRound: NonNullable<GameQueries["currentRound"]>;
+      game: NonNullable<GameQueries["game"]>;
+      lobby: NonNullable<GameQueries["lobby"]>;
+      phase: "ready";
+      players: Exclude<GameQueries["players"], undefined>;
+    };
+
+const resolveViewPhase = (mounted: boolean, data: GameViewData): ViewPhase => {
   if (!mounted) {
-    return "loading";
+    return { phase: "loading" };
   }
+  const { lobby, players, game, currentRound } = data;
   const isPending =
     lobby === undefined ||
     players === undefined ||
     game === undefined ||
     currentRound === undefined;
   if (isPending) {
-    return "loading";
+    return { phase: "loading" };
   }
-  const isMissing = !(lobby && currentRound && game);
-  if (isMissing) {
-    return "missing";
+  if (!(lobby && currentRound && game)) {
+    return { phase: "missing" };
   }
-  return "ready";
+  return { currentRound, game, lobby, phase: "ready", players };
 };
 
 function useGameViewModel(code: string, lobbyId: Id<"lobbies">, mounted: boolean) {
@@ -187,40 +195,25 @@ function useGameViewModel(code: string, lobbyId: Id<"lobbies">, mounted: boolean
   const queries = useGameQueries(code, lobbyId, mounted);
   const { currentRound, game, lobby, me, players, revealedTracks } = queries;
 
-  const phase = resolveViewPhase(mounted, lobby, players, game, currentRound);
-  if (phase !== "ready") {
-    return { ...queries, phase } as const;
-  }
+  const view = resolveViewPhase(mounted, { currentRound, game, lobby, players });
 
-  // Type narrowing the phase probe cannot express for the compiler.
-  if (
-    lobby === undefined ||
-    players === undefined ||
-    game === undefined ||
-    currentRound === undefined
-  ) {
+  if (view.phase === "loading") {
     return { ...queries, phase: "loading" } as const;
+  }
+  if (view.phase === "missing") {
+    return { ...queries, phase: "missing" } as const;
   }
 
   return {
-    currentRound,
-    game,
-    lobby,
+    currentRound: view.currentRound,
+    game: view.game,
+    lobby: view.lobby,
     me: me ?? null,
     phase: "ready",
-    players,
+    players: view.players,
     revealedTracks: revealedTracks ?? [],
     sessionId: sessionId ?? null,
-  };
-}
-function MissingGameNotice(): React.ReactNode {
-  return (
-    <div className="flex min-h-100 items-center justify-center">
-      <div className="text-center">
-        <p className="text-muted-foreground">No active game found</p>
-      </div>
-    </div>
-  );
+  } as const;
 }
 
 export function GameView({ lobbyId, code }: GameViewProps): React.ReactNode {

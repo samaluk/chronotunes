@@ -1,15 +1,10 @@
 "use client";
 
 import { useQuery } from "convex/react";
-import { Loader2 } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import type { ReactNode } from "react";
 import { toast } from "sonner";
 
-import { BettingActions, type BettingActionsProps } from "./betting-actions";
-import { BettingHeader } from "./betting-header";
-import { BettingStatusArea } from "./betting-status-area";
-import { BettingTimeline } from "./betting-timeline";
 import type {
   Player,
   RevealedTrack,
@@ -24,9 +19,14 @@ import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
 import { getRevealedTrackMap, sortTimelineByYear } from "@/lib/timeline";
 
-import { ResolveRoundPanel } from "./resolve-round-panel";
+import { BettingPanelBody } from "./betting-panel-body";
+import type { BettingPanelModel } from "./betting-panel-model";
 import { TimelineCard } from "./timeline-card";
 import { useBettingActions } from "./use-betting-actions";
+import { useForbiddenSlotShake } from "./use-forbidden-slot-shake";
+import { useGlobalKeydown } from "./use-global-keydown";
+import { useOptimisticSelection } from "./use-optimistic-selection";
+import { usePreviewDiscarded } from "./use-preview-discarded";
 
 export interface BettingPanelProps {
   lobbyId: Id<"lobbies">;
@@ -40,8 +40,6 @@ export interface BettingPanelProps {
 }
 
 const EMPTY_ROUND_BETS: RoundBet[] = [];
-const FORBIDDEN_SLOT_SHAKE_MS = 500;
-const PREVIEW_DISCARDED_NOTICE_MS = 2500;
 
 const buildSlotBets = (safeBets: RoundBet[]) => {
   const map = new Map<number, SlotBetInfo[]>();
@@ -189,81 +187,6 @@ const getActivityLabel = (
   return null;
 };
 
-/** Adopts server-side selection changes synchronously during render. */
-function useOptimisticSelection(serverSelection: number | null): {
-  optimisticIndex: number | null;
-  setOptimisticIndex: (index: number | null) => void;
-} {
-  const [optimisticIndex, setOptimisticIndex] = useState<number | null>(null);
-  const [lastServerSelection, setLastServerSelection] = useState(serverSelection);
-  if (serverSelection !== lastServerSelection) {
-    setLastServerSelection(serverSelection);
-    setOptimisticIndex(null);
-  }
-  return { optimisticIndex, setOptimisticIndex };
-}
-
-/** Shows a transient notice when another player locks the slot we previewed. */
-function usePreviewDiscarded(otherLockedSelection: boolean): boolean {
-  const [showPreviewDiscarded, setShowPreviewDiscarded] = useState(false);
-  const [wasOtherLocked, setWasOtherLocked] = useState(false);
-
-  if (otherLockedSelection !== wasOtherLocked) {
-    setWasOtherLocked(otherLockedSelection);
-    setShowPreviewDiscarded(otherLockedSelection);
-  }
-
-  useEffect(() => {
-    if (!showPreviewDiscarded) {
-      return;
-    }
-    const timeoutId = setTimeout(() => {
-      setShowPreviewDiscarded(false);
-    }, PREVIEW_DISCARDED_NOTICE_MS);
-    return () => clearTimeout(timeoutId);
-  }, [showPreviewDiscarded]);
-
-  return showPreviewDiscarded;
-}
-
-/** Shakes a forbidden slot for a fixed window after it is clicked. */
-function useForbiddenSlotShake(): {
-  shakeSlotIndex: number | null;
-  triggerForbiddenSlot: (index: number) => void;
-} {
-  const [shakeSlotIndex, setShakeSlotIndex] = useState<number | null>(null);
-
-  useEffect(() => {
-    if (shakeSlotIndex === null) {
-      return;
-    }
-    const timeoutId = window.setTimeout(() => {
-      setShakeSlotIndex(null);
-    }, FORBIDDEN_SLOT_SHAKE_MS);
-    return () => window.clearTimeout(timeoutId);
-  }, [shakeSlotIndex]);
-
-  return { shakeSlotIndex, triggerForbiddenSlot: setShakeSlotIndex };
-}
-
-/** Subscribes once; the latest handler is picked up through a refreshed ref. */
-function useGlobalKeydown(handler: (event: KeyboardEvent) => Promise<void>): void {
-  const keydownRef = useRef(handler);
-
-  useEffect(() => {
-    keydownRef.current = handler;
-  }, [handler]);
-
-  useEffect(() => {
-    const listener = (event: KeyboardEvent): void => {
-      void keydownRef.current(event);
-    };
-
-    globalThis.addEventListener("keydown", listener);
-    return () => globalThis.removeEventListener("keydown", listener);
-  }, []);
-}
-
 interface BetFlags {
   hasDeclinedBet: boolean;
   hasLockedBet: boolean;
@@ -344,125 +267,6 @@ const deriveSelectionConstraints = (
   };
 };
 
-function BettingActionsSection({
-  visible,
-  isBusy,
-  ...actionsProps
-}: BettingActionsProps & { visible: boolean }): ReactNode {
-  if (!visible) {
-    return null;
-  }
-  return <BettingActions isBusy={isBusy} {...actionsProps} />;
-}
-
-function ActivityIndicator({ label }: { label: string | null }): ReactNode {
-  if (!label) {
-    return null;
-  }
-  return (
-    <div className="flex items-center justify-center gap-2 rounded-lg bg-muted/50 p-2">
-      <Loader2 className="h-4 w-4 animate-spin" />
-      <span className="text-muted-foreground text-sm">{label}</span>
-    </div>
-  );
-}
-
-interface BettingPanelCallbacks {
-  getSlotState: (slot: SlotInfo) => SlotState;
-  onCancel: () => void;
-  onConfirm: () => void;
-  onDecline: () => void;
-  onResolveRound: () => void;
-  onSlotClick: (index: number) => void;
-  renderTimelineEntry: (entry: TimelineEntry) => ReactNode;
-}
-
-interface BettingPanelModel {
-  callbacks: BettingPanelCallbacks;
-  activityLabel: string | null;
-  canResolveRound: boolean;
-  coins: number;
-  hasDeclinedBet: boolean;
-  hasLockedBet: boolean;
-  isBusyActionsVisible: boolean;
-  isDeclining: boolean;
-  isLockingIn: boolean;
-  isPreviewing: boolean;
-  isResolving: boolean;
-  isTurnPlayer: boolean;
-  me: Player | null;
-  permissionsCanBet: boolean;
-  permissionsCanDecline: boolean;
-  selectedIndex: number | null;
-  shakeSlotIndex: number | null;
-  showPreviewDiscarded: boolean;
-  slots: SlotInfo[];
-  sortedTimeline: TimelineEntry[];
-  t: ReturnType<typeof useTranslations>;
-  tCommon: ReturnType<typeof useTranslations>;
-  tTimer: ReturnType<typeof useTranslations>;
-}
-
-function BettingPanelBody({ m }: { m: BettingPanelModel }): ReactNode {
-  const { callbacks } = m;
-  return (
-    <div className="w-full space-y-4">
-      <BettingHeader
-        betCoinsLabel={m.t("betCoins", { count: m.coins })}
-        description={m.t("placeBetDescription")}
-        title={m.t("placeYourBet")}
-      />
-
-      <BettingTimeline
-        canBet={m.permissionsCanBet}
-        getSlotState={callbacks.getSlotState}
-        hasDeclinedBet={m.hasDeclinedBet}
-        hasLockedBet={m.hasLockedBet}
-        me={m.me}
-        onSlotClick={callbacks.onSlotClick}
-        renderTimelineEntry={callbacks.renderTimelineEntry}
-        selectedIndex={m.selectedIndex}
-        shakeSlotIndex={m.shakeSlotIndex}
-        slots={m.slots}
-        sortedTimeline={m.sortedTimeline}
-        tCommon={m.tCommon}
-      />
-
-      <BettingActionsSection
-        isBusy={m.isLockingIn || m.isPreviewing}
-        onCancel={callbacks.onCancel}
-        onConfirm={callbacks.onConfirm}
-        t={m.t}
-        tCommon={m.tCommon}
-        visible={m.isBusyActionsVisible}
-      />
-
-      <BettingStatusArea
-        status={{
-          canBet: m.permissionsCanBet,
-          canDecline: m.permissionsCanDecline,
-          coins: m.coins,
-          hasDeclinedBet: m.hasDeclinedBet,
-          hasLockedBet: m.hasLockedBet,
-          isDeclining: m.isDeclining,
-          isTurnPlayer: m.isTurnPlayer,
-          onDecline: callbacks.onDecline,
-          showPreviewDiscarded: m.showPreviewDiscarded,
-        }}
-      />
-
-      <ResolveRoundPanel
-        canResolveRound={m.canResolveRound}
-        isResolving={m.isResolving}
-        onResolveRound={callbacks.onResolveRound}
-        tTimer={m.tTimer}
-      />
-
-      <ActivityIndicator label={m.activityLabel} />
-    </div>
-  );
-}
-
 /**
  * Owns every derivation, mutation hook, keyboard subscription, and feedback
  * effect for the panel; the render component only branches on `track`.
@@ -477,7 +281,6 @@ function useBettingPanelModel(
   turnPlayerPlacementIndex: number | null | undefined,
   turnPlayerTimeline: TimelineEntry[],
 ): {
-  handleKeyDown: (event: KeyboardEvent) => Promise<void>;
   model: BettingPanelModel;
   showTrackLoading: boolean;
 } {
@@ -593,7 +396,7 @@ function useBettingPanelModel(
     coins: me?.coins ?? 0,
     hasDeclinedBet: flags.hasDeclinedBet,
     hasLockedBet: flags.hasLockedBet,
-    isBusyActionsVisible:
+    actionsVisible:
       constraints.selectedIndex !== null && !flags.hasLockedBet && !flags.hasDeclinedBet,
     isDeclining: actions.isDeclining,
     isLockingIn: actions.isLockingIn,
@@ -601,8 +404,8 @@ function useBettingPanelModel(
     isResolving: actions.isResolving,
     isTurnPlayer: turnContext.isTurnPlayer,
     me,
-    permissionsCanBet: permissions.canBet,
-    permissionsCanDecline: permissions.canDecline,
+    canBet: permissions.canBet,
+    canDecline: permissions.canDecline,
     selectedIndex: constraints.selectedIndex,
     shakeSlotIndex,
     showPreviewDiscarded,
@@ -613,7 +416,7 @@ function useBettingPanelModel(
     tTimer,
   };
 
-  return { handleKeyDown: actions.handleKeyDown, model, showTrackLoading: !track };
+  return { model, showTrackLoading: !track };
 }
 
 export function BettingPanel({
@@ -626,7 +429,7 @@ export function BettingPanel({
   turnPlayerPlacementIndex,
   turnPlayerTimeline,
 }: Readonly<BettingPanelProps>): React.ReactNode {
-  const { handleKeyDown, model, showTrackLoading } = useBettingPanelModel(
+  const { model, showTrackLoading } = useBettingPanelModel(
     lobbyId,
     me,
     players,
@@ -636,8 +439,6 @@ export function BettingPanel({
     turnPlayerPlacementIndex,
     turnPlayerTimeline,
   );
-
-  useGlobalKeydown(handleKeyDown);
 
   if (showTrackLoading) {
     return (
