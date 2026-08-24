@@ -18,22 +18,21 @@ just fix                    # Same as pnpm fix
 pnpm exec oxlint --print-config   # Print resolved Oxlint configuration
 ```
 
-## Fallow adoption gate
+## Fallow zero-debt gate
 
 ```bash
-pnpm fallow:config        # Resolved configuration
-pnpm fallow:recommend     # Configuration recommendations
-pnpm fallow:status         # Type-aware companion status
-pnpm fallow:audit          # Fast changed-code new-only gate
-pnpm fallow:ci             # Coverage-aware changed-code new-only gate
-pnpm fallow:dead-code      # Full-repository advisory inspection
-pnpm fallow:dupes          # Semantic + near-duplicate inspection
-pnpm fallow:health         # Complexity and coverage-aware health
-pnpm fallow:security       # Security candidates for human review
-pnpm fallow:suppressions   # Suppression inventory
+pnpm fallow              # Bare CLI passthrough
+pnpm fallow:staged       # Pre-commit: staged-diff audit, gate all
+pnpm fallow:full         # Zero-debt full scan: dead-code + dupes + health, all failing on issues
+pnpm fallow:ci           # Alias of fallow:full used by CI
+pnpm fallow:config       # Resolved configuration
+pnpm fallow:recommend    # Configuration recommendations
+pnpm fallow:status       # Type-aware companion status
+pnpm fallow:security     # Security candidates for human review
+pnpm fallow:suppressions # Suppression inventory
 ```
 
-See [docs/fallow.md](../fallow.md) for adoption semantics, CI reporting, configuration, and the zero-debt exit criteria. There are no baseline or regression scripts; existing findings are visible but only newly introduced findings block.
+See [docs/fallow.md](../fallow.md) for gate semantics, dispositions, CI workflows, and configuration. Every gate fails on any finding; there are no baselines or regression scripts.
 
 ## Type generation
 
