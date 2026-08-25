@@ -115,6 +115,28 @@ describe("checkHostDisconnect", () => {
 
     const lobbyInfo = await t.query(api.lobbies.get, { code });
 
+    // Seed an active game so "untouched" is literally pinned: a qualifying
+    // heartbeat must leave both the transfer deadline and the game alone.
+    await t.run(async (ctx) => {
+      const players = await ctx.db.query("players").collect();
+      const firstPlayer = players[0];
+      const lobby = await ctx.db.query("lobbies").first();
+      if (lobby && firstPlayer) {
+        const gameId = await ctx.db.insert("games", {
+          currentRoundNumber: 1,
+          lobbyId: lobby._id,
+          startedAt: Date.now(),
+          status: "active",
+          turnOrder: [firstPlayer._id],
+          turnPlayerId: firstPlayer._id,
+        });
+        await ctx.db.patch(lobby._id, {
+          activeGameId: gameId,
+          status: "in_game",
+        });
+      }
+    });
+
     await t.mutation(api.presence.sendHeartbeat, {
       // oxlint-disable-next-line typescript/no-non-null-assertion
       roomId: lobbyInfo!._id,
@@ -124,11 +146,13 @@ describe("checkHostDisconnect", () => {
 
     await t.mutation(internal.host_disconnect.checkHostDisconnect, {});
 
-    const lobby = await t.run(async (ctx) => {
+    const state = await t.run(async (ctx) => {
       const lobbies = await ctx.db.query("lobbies").collect();
-      return lobbies[0];
+      const games = await ctx.db.query("games").collect();
+      return { game: games[0], lobby: lobbies[0] };
     });
-    expect(lobby?.hostTransferDeadline).toBeUndefined();
+    expect(state.lobby?.hostTransferDeadline).toBeUndefined();
+    expect(state.game?.status).toBe("active");
   });
 });
 

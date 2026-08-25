@@ -64,6 +64,12 @@ describe(parseYear, () => {
 });
 
 describe(parseDurationToMs, () => {
+  // Legacy CSV semantics, preserved deliberately: colon formats yield TOTAL
+  // SECONDS ("3:45" -> 225), and the result lands in the schema's durationMs
+  // field even though structured imports store true milliseconds there.
+  // Raw millisecond strings ("183000") are rejected by this parser.
+  // Tracked for a real fix in #354 — do not treat the seconds unit as intended
+  // semantics for durationMs.
   test("returns undefined for missing duration", () => {
     expect(parseDurationToMs(undefined)).toBeUndefined();
   });

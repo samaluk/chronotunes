@@ -18,12 +18,12 @@ just fix                    # Same as pnpm fix
 pnpm exec oxlint --print-config   # Print resolved Oxlint configuration
 ```
 
-## Fallow adoption gate
+## Fallow zero-debt gate
 
 ```bash
 # Canonical gate surface
 pnpm fallow              # Bare CLI passthrough
-pnpm fallow:staged       # Pre-commit: audit scoped to the staged diff (gate all)
+pnpm fallow:staged       # Pre-commit: staged-diff audit, gate all
 pnpm fallow:full         # Zero-debt full scan: dead-code + dupes + health, all failing on issues
 pnpm fallow:ci           # Alias of fallow:full used by CI
 
@@ -31,7 +31,6 @@ pnpm fallow:ci           # Alias of fallow:full used by CI
 pnpm fallow:config        # Show the resolved repository configuration
 pnpm fallow:recommend     # Review configuration recommendations
 pnpm fallow:status        # Verify the type-aware companion and protocol
-pnpm fallow:audit         # Legacy branch-wide new-only audit (pre-canonical hooks)
 pnpm fallow:dead-code     # Full-repository dead-code probe
 pnpm fallow:dupes         # Semantic + near-duplicate probe
 pnpm fallow:health        # Complexity and coverage-aware health probe
@@ -39,7 +38,7 @@ pnpm fallow:security      # Unverified security candidates for human review
 pnpm fallow:suppressions  # Suppression and stale-suppression inventory
 ```
 
-See [docs/fallow.md](../fallow.md) for gate semantics, configuration, and the zero-debt exit criteria. `fallow:ci` fails on any finding anywhere in the repository; run `pnpm test:coverage` beforehand so its health leg consumes fresh Istanbul output.
+See [docs/fallow.md](../fallow.md) for gate semantics, dispositions, CI workflows, and configuration. Every gate fails on any finding; there are no baselines or regression scripts. Run `pnpm test:coverage` before `fallow:ci` so its health leg consumes fresh Istanbul output.
 
 ## Type generation
 
