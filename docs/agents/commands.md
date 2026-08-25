@@ -21,19 +21,25 @@ pnpm exec oxlint --print-config   # Print resolved Oxlint configuration
 ## Fallow adoption gate
 
 ```bash
-pnpm fallow:config        # Resolved configuration
-pnpm fallow:recommend     # Configuration recommendations
-pnpm fallow:status         # Type-aware companion status
-pnpm fallow:audit          # Fast changed-code new-only gate
-pnpm fallow:ci             # Coverage-aware changed-code new-only gate
-pnpm fallow:dead-code      # Full-repository advisory inspection
-pnpm fallow:dupes          # Semantic + near-duplicate inspection
-pnpm fallow:health         # Complexity and coverage-aware health
-pnpm fallow:security       # Security candidates for human review
-pnpm fallow:suppressions   # Suppression inventory
+# Canonical gate surface
+pnpm fallow              # Bare CLI passthrough
+pnpm fallow:staged       # Pre-commit: audit scoped to the staged diff (gate all)
+pnpm fallow:full         # Zero-debt full scan: dead-code + dupes + health, all failing on issues
+pnpm fallow:ci           # Alias of fallow:full used by CI
+
+# Inspection utilities (run without --fail-on-issues; gating flows through fallow:full)
+pnpm fallow:config        # Show the resolved repository configuration
+pnpm fallow:recommend     # Review configuration recommendations
+pnpm fallow:status        # Verify the type-aware companion and protocol
+pnpm fallow:audit         # Legacy branch-wide new-only audit (pre-canonical hooks)
+pnpm fallow:dead-code     # Full-repository dead-code probe
+pnpm fallow:dupes         # Semantic + near-duplicate probe
+pnpm fallow:health        # Complexity and coverage-aware health probe
+pnpm fallow:security      # Unverified security candidates for human review
+pnpm fallow:suppressions  # Suppression and stale-suppression inventory
 ```
 
-See [docs/fallow.md](../fallow.md) for adoption semantics, CI reporting, configuration, and the zero-debt exit criteria. There are no baseline or regression scripts; existing findings are visible but only newly introduced findings block.
+See [docs/fallow.md](../fallow.md) for gate semantics, configuration, and the zero-debt exit criteria. `fallow:ci` fails on any finding anywhere in the repository; run `pnpm test:coverage` beforehand so its health leg consumes fresh Istanbul output.
 
 ## Type generation
 
