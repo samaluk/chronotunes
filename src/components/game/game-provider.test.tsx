@@ -1,8 +1,7 @@
-import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { cleanup, fireEvent, render, renderHook, screen } from "@testing-library/react";
 import type { GenericId } from "convex/values";
 import { afterEach, describe, expect, it } from "vitest";
 
-import type { GameContextValue } from "./game-context";
 import { deriveRoundState, useGame } from "./game-context";
 import { GameProvider } from "./game-provider";
 
@@ -169,40 +168,35 @@ describe("GameProvider", () => {
   });
 
   it("reads live-bet and timing settings from the lobby", () => {
-    let observed: GameContextValue | undefined;
+    const { result } = renderHook(() => useGame(), {
+      wrapper: ({ children }) => (
+        <GameProvider
+          code="ABC123"
+          currentRound={null}
+          game={null}
+          lobby={{
+            _creationTime: now,
+            // oxlint-disable-next-line typescript/consistent-type-assertions, typescript/no-unsafe-type-assertion
+            _id: lobbyId,
+            activeGameId: undefined,
+            code: "ABC123",
+            hostSessionId: "session-a",
+            settings: { bettingWindowSeconds: 30, showLiveBets: true, turnSeconds: 60 },
+            status: "lobby",
+          }}
+          lobbyId={lobbyId}
+          me={null}
+          players={[]}
+          revealedTracks={[]}
+          sessionId={null}
+        >
+          {children}
+        </GameProvider>
+      ),
+    });
 
-    function Consumer(): React.ReactNode {
-      observed = useGame();
-      return null;
-    }
-
-    render(
-      <GameProvider
-        code="ABC123"
-        currentRound={null}
-        game={null}
-        lobby={{
-          _creationTime: now,
-          // oxlint-disable-next-line typescript/consistent-type-assertions, typescript/no-unsafe-type-assertion
-          _id: lobbyId,
-          activeGameId: undefined,
-          code: "ABC123",
-          hostSessionId: "session-a",
-          settings: { bettingWindowSeconds: 30, showLiveBets: true, turnSeconds: 60 },
-          status: "lobby",
-        }}
-        lobbyId={lobbyId}
-        me={null}
-        players={[]}
-        revealedTracks={[]}
-        sessionId={null}
-      >
-        <Consumer />
-      </GameProvider>,
-    );
-
-    expect(observed?.state.showLiveBets).toBe(true);
-    expect(observed?.state.bettingWindowSeconds).toBe(30);
-    expect(observed?.state.turnSeconds).toBe(60);
+    expect(result.current.state.showLiveBets).toBe(true);
+    expect(result.current.state.bettingWindowSeconds).toBe(30);
+    expect(result.current.state.turnSeconds).toBe(60);
   });
 });
