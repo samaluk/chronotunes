@@ -26,7 +26,7 @@
     "fallow:recommend": "fallow recommend",
     "fallow:status": "fallow type-aware status",
     "fallow:dead-code": "fallow dead-code --type-aware --fail-on-issues",
-    "fallow:dupes": "fallow dupes --mode semantic --near --fail-on-issues",
+    "fallow:dupes": "fallow dupes --mode semantic --near --threshold 5e-324 --fail-on-issues",
     "fallow:health": "fallow health --type-aware --coverage coverage/coverage-final.json --coverage-root \"$PWD\" --fail-on-issues",
     "fallow:security": "fallow security",
     "fallow:suppressions": "fallow suppressions",
