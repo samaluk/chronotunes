@@ -45,8 +45,6 @@ export function useLobbyRoom(code: string) {
   return {
     handleCopyCode,
     handleLeaveLobby,
-    isLoading: lobby === undefined || players === undefined,
-    isMissing: lobby === null,
     lobby,
     me,
     players,

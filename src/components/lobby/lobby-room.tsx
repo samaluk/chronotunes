@@ -8,19 +8,17 @@ import { GameView } from "@/components/game/game-view";
 import { PlayerList } from "@/components/lobby/player-list";
 import { SettingsPanel } from "@/components/lobby/settings-panel";
 import { StartGameButton } from "@/components/lobby/start-game-button";
+import type { LobbySettings } from "@/components/settings/lobby-settings";
 import { ErrorBoundary } from "@/components/ui/error-boundary";
 import type { Doc } from "@/convex/_generated/dataModel";
-
-export type LobbyDoc = Doc<"lobbies">;
-export type LobbySettingsRecord = LobbyDoc["settings"];
 
 export interface LobbyRoomProps {
   code: string;
   isInGame: boolean;
   isHost: boolean;
-  lobbyId: LobbyDoc["_id"];
+  lobbyId: Doc<"lobbies">["_id"];
   playerCount: number;
-  settings: LobbySettingsRecord;
+  settings: LobbySettings;
 }
 
 export function LobbyRoom({
