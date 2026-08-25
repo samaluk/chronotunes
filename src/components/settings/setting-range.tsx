@@ -18,6 +18,18 @@ export interface SettingRangeProps {
   onMinCommit: <K extends keyof LobbySettings>(key: K, value: LobbySettings[K]) => void;
 }
 
+function getSortedRangeValues(value: unknown): [number, number] {
+  const values = Array.isArray(value) ? value : [value, value];
+  const numericValues = values.filter((item): item is number => typeof item === "number");
+  const [first, second] = numericValues.toSorted((a, b) => a - b);
+
+  if (first === undefined || second === undefined) {
+    throw new TypeError("Slider value must contain two numbers");
+  }
+
+  return [first, second];
+}
+
 export function SettingRange({
   label,
   minValue,
@@ -50,22 +62,14 @@ export function SettingRange({
           max={maxRange}
           min={minRange}
           onValueChange={(val) => {
-            const values = Array.isArray(val) ? val : [val, val];
-            // oxlint-disable-next-line typescript/no-unsafe-assignment
-            const sortedValues = [...values].toSorted((a, b) => a - b);
-            // oxlint-disable-next-line typescript/no-unsafe-argument
-            onMinChange("minYear", sortedValues[0]);
-            // oxlint-disable-next-line typescript/no-unsafe-argument
-            onMaxChange("maxYear", sortedValues[1]);
+            const [min, max] = getSortedRangeValues(val);
+            onMinChange("minYear", min);
+            onMaxChange("maxYear", max);
           }}
           onValueCommitted={(val) => {
-            const values = Array.isArray(val) ? val : [val, val];
-            // oxlint-disable-next-line typescript/no-unsafe-assignment
-            const sortedValues = [...values].toSorted((a, b) => a - b);
-            // oxlint-disable-next-line typescript/no-unsafe-argument
-            onMinCommit("minYear", sortedValues[0]);
-            // oxlint-disable-next-line typescript/no-unsafe-argument
-            onMaxCommit("maxYear", sortedValues[1]);
+            const [min, max] = getSortedRangeValues(val);
+            onMinCommit("minYear", min);
+            onMaxCommit("maxYear", max);
           }}
           step={1}
           value={[minValue, maxValue]}
