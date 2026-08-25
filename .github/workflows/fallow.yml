@@ -11,7 +11,8 @@
 # health probe consumes for accurate CRAP scoring.
 #
 # To make this an enforced merge gate, add the "Fallow" check run as a
-# required status check under Settings → Branches → Branch protection rules.
+# required status check on the master branch ruleset
+# (Settings → Rules → Rulesets → master → Require status checks).
 
 name: Fallow
 
@@ -31,6 +32,9 @@ concurrency:
 
 jobs:
   fallow:
+    # Named so the check run is "Fallow", matching the required-status
+    # instructions in the header comment above.
+    name: Fallow
     runs-on: ${{ github.event.pull_request.head.repo.fork && 'ubuntu-latest' || (vars.USE_SELF_HOSTED_RUNNERS == 'true' && fromJSON('["self-hosted","macOS","ARM64"]') || 'ubuntu-latest') }}
     timeout-minutes: 20
     steps:
