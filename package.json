@@ -21,13 +21,13 @@
     "fallow": "fallow",
     "fallow:staged": "git diff --cached | fallow audit --diff-stdin --gate all --type-aware",
     "fallow:audit": "fallow audit --gate all --type-aware --coverage coverage/coverage-final.json --coverage-root \"$PWD\" --dupes-mode semantic --dupes-near --dupes-ignore-imports",
-    "fallow:full": "fallow dead-code --type-aware --fail-on-issues && fallow dupes --mode semantic --near --fail-on-issues && fallow health --type-aware --coverage coverage/coverage-final.json --coverage-root \"$PWD\" --fail-on-issues",
+    "fallow:full": "pnpm fallow:audit && pnpm fallow:dead-code && pnpm fallow:dupes && pnpm fallow:health",
     "fallow:config": "fallow config",
     "fallow:recommend": "fallow recommend",
     "fallow:status": "fallow type-aware status",
-    "fallow:dead-code": "fallow dead-code --type-aware",
-    "fallow:dupes": "fallow dupes --mode semantic --near",
-    "fallow:health": "fallow health --type-aware --coverage coverage/coverage-final.json --coverage-root \"$PWD\"",
+    "fallow:dead-code": "fallow dead-code --type-aware --fail-on-issues",
+    "fallow:dupes": "fallow dupes --mode semantic --near --fail-on-issues",
+    "fallow:health": "fallow health --type-aware --coverage coverage/coverage-final.json --coverage-root \"$PWD\" --fail-on-issues",
     "fallow:security": "fallow security",
     "fallow:suppressions": "fallow suppressions",
     "fallow:fix:preview": "fallow fix --type-aware --dry-run",
@@ -36,7 +36,7 @@
     "react-doctor:staged": "react-doctor --staged --yes --no-score --blocking warning",
     "react-doctor:changed": "react-doctor --scope changed --base origin/master --yes --no-score --blocking warning",
     "react-doctor:full": "react-doctor --scope full --yes --no-score --blocking warning",
-    "fallow:ci": "pnpm run fallow:full"
+    "fallow:ci": "pnpm fallow:full"
   },
   "dependencies": {
     "@base-ui/react": "1.7.0",
