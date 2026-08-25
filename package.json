@@ -75,7 +75,7 @@
     "fallow": "3.17.0",
     "jsdom": "30.0.1",
     "oxfmt": "0.64.0",
-    "oxlint": "1.79.0",
+    "oxlint": "1.80.0",
     "oxlint-tsgolint": "7.0.2001",
     "react-doctor": "0.9.12",
     "scrape-youtube": "2.4.0",
