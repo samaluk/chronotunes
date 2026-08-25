@@ -1,17 +1,18 @@
 # Fallow — independent zero-debt quality gate and native PR feedback.
 #
-# Runs the FULL repository scan (dead-code + duplication + health, every
-# finding blocking) on pull requests and pushes to master. There is no
-# inherited debt and no new-only attribution anymore: exit code 1 means a
-# real regression.
+# Runs the FULL repository gate (changed-code audit + project-wide dead-code,
+# duplication, and health, every finding blocking) on pull requests and pushes
+# to master. There is no inherited debt and no new-only attribution anymore:
+# exit code 1 means a real regression.
 #
-# The official Action is presentation-only for pull requests. It uses the same
-# pinned CLI and fresh coverage report as the authoritative standalone gate.
+# The official Action is presentation-only for pull requests. Its audit uses
+# the same gate-all policy, pinned CLI, and fresh coverage report as the
+# authoritative standalone gate.
 #
 # This is intentionally a dedicated job, NOT folded into ci-reusable.yml,
 # mirroring the React Doctor gate. The coverage coupling is preserved:
 # `pnpm test:coverage` produces the fresh Istanbul report that fallow:full's
-# health probe consumes for accurate CRAP scoring.
+# audit and health probes consume for accurate CRAP scoring.
 #
 # To make this an enforced merge gate, add the "Fallow" check run as a
 # required status check on the master branch ruleset
