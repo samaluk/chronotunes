@@ -18,21 +18,14 @@ export interface SettingRangeProps {
   onMinCommit: <K extends keyof LobbySettings>(key: K, value: LobbySettings[K]) => void;
 }
 
-function getSortedRangeValues(value: unknown): [number, number] {
-  const values = Array.isArray(value) ? value : [value, value];
-  const numericValues = values.filter(
-    (item): item is number => typeof item === "number" && Number.isFinite(item),
-  );
+function getSortedRangeValues(value: number | readonly number[]): [number, number] {
+  const values: readonly number[] = typeof value === "number" ? [value, value] : value;
 
-  if (numericValues.length !== 2 || numericValues.length !== values.length) {
+  if (values.length !== 2 || values.some((item) => !Number.isFinite(item))) {
     throw new TypeError("Slider value must contain exactly two finite numbers");
   }
 
-  const [first, second] = numericValues.toSorted((a, b) => a - b);
-
-  if (first === undefined || second === undefined) {
-    throw new TypeError("Slider value must contain two numbers");
-  }
+  const [first = Number.NaN, second = Number.NaN] = values.toSorted((a, b) => a - b);
 
   return [first, second];
 }
