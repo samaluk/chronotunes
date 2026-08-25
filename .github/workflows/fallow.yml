@@ -1,9 +1,12 @@
-# Fallow — independent zero-debt quality gate.
+# Fallow — independent zero-debt quality gate and native PR feedback.
 #
 # Runs the FULL repository scan (dead-code + duplication + health, every
 # finding blocking) on pull requests and pushes to master. There is no
 # inherited debt and no new-only attribution anymore: exit code 1 means a
 # real regression.
+#
+# The official Action is presentation-only for pull requests. It uses the same
+# pinned CLI and fresh coverage report as the authoritative standalone gate.
 #
 # This is intentionally a dedicated job, NOT folded into ci-reusable.yml,
 # mirroring the React Doctor gate. The coverage coupling is preserved:
@@ -36,6 +39,10 @@ jobs:
     # instructions in the header comment above.
     name: Fallow
     runs-on: ${{ github.event.pull_request.head.repo.fork && 'ubuntu-latest' || (vars.USE_SELF_HOSTED_RUNNERS == 'true' && fromJSON('["self-hosted","macOS","ARM64"]') || 'ubuntu-latest') }}
+    permissions:
+      contents: read
+      pull-requests: write
+      checks: write
     timeout-minutes: 20
     steps:
       - name: Checkout
@@ -49,6 +56,24 @@ jobs:
 
       - name: Unit tests (with coverage)
         run: pnpm test:coverage
+
+      - name: Fallow (native PR feedback)
+        if: github.event_name == 'pull_request'
+        continue-on-error: true
+        uses: fallow-rs/fallow@ecf5a314fd3e10974acb4f5a7f867c433030522d # v3.17.0
+        with:
+          version: 3.17.0
+          only: dead-code,dupes,health
+          type-aware: true
+          type-aware-require: complete
+          coverage: coverage/coverage-final.json
+          coverage-root: ${{ github.workspace }}
+          comment: true
+          comment-layout: compact
+          review-comments: true
+          review-guidance: true
+          branded-token: false
+          fail-on-issues: true
 
       - name: Fallow (full zero-debt scan)
         run: pnpm fallow:ci

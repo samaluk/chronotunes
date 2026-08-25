@@ -6,7 +6,7 @@ ChronoTunes enforces the canonical Fallow 3.17.0 ZERO-DEBT architecture. Every g
 
 - The `fallow` dev dependency, type-aware companion, and MCP server are pinned to `3.17.0`.
 - pnpm's strict one-day minimum release-age policy remains enabled; it has exact `3.17.0` exceptions only for Fallow and the eight Fallow platform packages plus the type-aware companion required by the lockfile.
-- No workflow uses the native `fallow-rs/fallow` GitHub action anymore; the dedicated pull-request workflow runs `pnpm fallow:ci`, and all other invocations go through pnpm too, so the repository lockfile controls the executable version.
+- The dedicated Fallow workflow keeps the lockfile-controlled CLI gate authoritative and uses the official `fallow-rs/fallow` Action at the matching immutable `v3.17.0` commit for pull-request summary, Check Run, and inline review feedback. The Action receives the same fresh coverage report and exact CLI version.
 - The repo-local MCP entry in `.opencode/opencode.json` runs `pnpm exec fallow-mcp`.
 - The vendored `.agents/skills/fallow` directory is the skill shipped with Fallow 3.17.0.
 
@@ -45,7 +45,7 @@ pnpm fallow:security     # Unverified security candidates for human review
 pnpm fallow:suppressions # Suppression and stale-suppression inventory
 ```
 
-`fallow:full` composes the three zero-debt probes from the exit criteria in issue #313; each fails on any finding. The duplication probe enforces the configured percentage ceiling (`duplicates.threshold`), so the current boilerplate stock passes while any net increase fails.
+`fallow:full` composes the three zero-debt probes from the exit criteria in issue #313; each fails on any finding. Duplication has no percentage headroom: every semantic or near clone must be refactored or represented by a reviewed fingerprint and occurrence count in `duplicates.ignoredClones`.
 
 `fallow:ci` consumes fresh Istanbul coverage produced by `pnpm test:coverage` in the same step chain — keep that ordering wherever these run.
 
@@ -66,7 +66,7 @@ The static locale catalog in `src/i18n/messages.ts` replaces a template-literal 
 The configuration enables:
 
 - `private-type-leaks`, stale suppressions, and missing suppression reasons as errors.
-- Semantic duplication plus near-duplicate detection with `minLines: 8`, `minTokens: 60`, `minOccurrences: 2`, and import wiring ignored. A `threshold` of 11 % makes `dupes --fail-on-issues` a real gate: the current stock (shadcn-style boilerplate and CSS utility patterns) is the ceiling, and any net increase fails CI.
+- Semantic duplication plus near-duplicate detection with `minLines: 8`, `minTokens: 60`, `minOccurrences: 2`, import wiring ignored, and no percentage threshold. The reviewed `ignoredClones` list is keyed by fingerprint and current occurrence count, so content or count changes report again.
 - Health thresholds of cyclomatic 20, cognitive 15, CRAP 30, and unit size 60.
 - Istanbul coverage from `coverage/coverage-final.json` for CRAP and coverage-gap analysis.
 - Five explicit zones: Convex backend, app routes, components, shared library, and i18n. The generated Convex API is excluded from analysis entirely (see below), so it is no longer a zone. The rules prevent i18n from importing application code and keep backend/framework direction explicit. Boundary inspection reports zero violations.
@@ -84,22 +84,56 @@ The remaining exclusions are narrow and intentional:
 Full-repository probes on the stack tip (Fallow 3.17.0, 302 tests):
 
 - Dead code: **0 findings** (`dead-code --type-aware --fail-on-issues` exits 0). The adoption-era backlog — 48 unused files, 1 unused export, 2 unused types, 37 private-type leaks, 3 unused dependencies — is fully retired.
-- Duplication: **8.8 % duplicated lines** (1,012 lines, 15 files), under the configured 11 % ceiling; `dupes --mode semantic --near --fail-on-issues` exits 0.
-- Health: score **75/100 (grade B)**, `health --type-aware --coverage … --fail-on-issues` exits 0 with no function above thresholds.
+- Duplication: **0 unreviewed clone groups**; `dupes --mode semantic --near --fail-on-issues` exits 0 with only individually reviewed fingerprint/count exceptions.
+- Health: score **79/100 (grade B)**, `health --type-aware --coverage … --fail-on-issues` exits 0 with no function above thresholds.
 - Boundaries: five zones, zero violations.
 - Suppressions: zero suppressions, zero stale suppressions.
-- Vitest: 37 files, 302 tests; Istanbul matches 616 of 1,430 functions.
+- Vitest: 37 files, 302 tests; Istanbul matches 617 of 1,434 functions.
 
 Dispositions for the advisory surfaces named in #313's exit criterion 5:
 
 - Security candidates: the two open-redirect candidates in `src/app/landing-page-content.tsx` were **resolved** — post-create/join navigation validates the server/lobby code against the lobby-code shape and navigates via `router.push` instead of assigning `window.location.href`. `fallow security` now reports zero items.
 - Coverage gaps: the CRAP gate forces coverage wherever untested complexity breaches the health thresholds (the game hot paths decomposed in this stack all carry render suites); remaining uncovered files are UI shells, generated bindings, and config entry points where behavior is pinned by type-aware analysis. Coverage-gap findings stay `off` in rules because the CRAP gate is the enforcement surface.
-- Duplication ceiling vs zero: the 11 % threshold is a deliberate ratchet, not full elimination. The residual stock is shadcn-style boilerplate and CSS utility patterns whose extraction would hurt readability; any net increase fails CI.
+- Duplication dispositions: pair-level semantic+near detection found 28 groups. One genuine repeated range-normalization block was refactored; the remaining 27 stable groups are individually fingerprinted below because extraction would reduce clarity or discard intentional fixture/design-token structure. A changed clone body or occurrence count is intentionally unreviewed and blocks until reclassified.
 - Drift workflow: a version-keyed cache re-scan when the pinned fallow version changes. This is intentional freshness machinery — the only scheduled scan in the repo — and it exists to catch tool regressions, not to carry debt.
+
+### Reviewed clone groups
+
+The list below is the complete pair-level result from Fallow 3.17.0 with semantic and near detection enabled. The count suffix is part of each reviewed key; adding an instance or changing the normalized content creates a new finding.
+
+| Fingerprint               | Count | Review reason                                                               |
+| ------------------------- | ----: | --------------------------------------------------------------------------- |
+| `dup:c77b3abb6f87acd9-14` |     7 | Seed track records intentionally repeat one stable fixture shape.           |
+| `dup:c77b3abb6f87acd9-16` |     2 | Seed track records intentionally repeat one stable fixture shape.           |
+| `dup:80dd416f`            |     4 | Light and dark theme tokens intentionally share CSS declaration structure.  |
+| `dup:bd1723a3`            |     5 | Light and dark theme tokens intentionally share CSS declaration structure.  |
+| `dup:e03487a3`            |     2 | Light and dark theme tokens intentionally share CSS declaration structure.  |
+| `dup:c77b3abb6f87acd9-8`  |     2 | Typed test factories intentionally mirror collection result adapters.       |
+| `dup:c75cbecd`            |     2 | Typed test factories intentionally mirror collection result adapters.       |
+| `dup:496d9440`            |     2 | Typed test factories intentionally mirror single-record query adapters.     |
+| `dup:c77b3abb6f87acd9-11` |     3 | Typed test factories intentionally mirror single-record lookup adapters.    |
+| `dup:c77b3abb6f87acd9-2`  |     2 | Typed test factories intentionally mirror single-record lookup adapters.    |
+| `dup:c77b3abb6f87acd9-3`  |     2 | Typed test factories intentionally mirror lobby setup and lookup data.      |
+| `dup:4b86aae9`            |     2 | Typed test factories intentionally mirror single-record lookup adapters.    |
+| `dup:c77b3abb6f87acd9-15` |     2 | Typed test factories intentionally mirror single-record query adapters.     |
+| `dup:9ced35c1`            |     2 | Typed test factories intentionally mirror single-record query adapters.     |
+| `dup:c77b3abb6f87acd9-18` |     2 | Typed test factories intentionally mirror single-record query adapters.     |
+| `dup:68751c8d`            |     3 | Skeleton components intentionally repeat loading-state composition.         |
+| `dup:00e1ba20`            |     2 | Skeleton components intentionally repeat loading-state composition.         |
+| `dup:c77b3abb6f87acd9-7`  |     2 | Skeleton components intentionally repeat loading-state composition.         |
+| `dup:c77b3abb6f87acd9-6`  |     2 | Generated-style card primitives intentionally repeat slot wrappers.         |
+| `dup:c77b3abb6f87acd9-4`  |     2 | Generated-style card primitives intentionally repeat slot wrappers.         |
+| `dup:c77b3abb6f87acd9-13` |     2 | Generated-style UI primitives intentionally repeat forwarding wrappers.     |
+| `dup:c77b3abb6f87acd9-10` |     2 | Generated-style UI primitives intentionally repeat forwarding wrappers.     |
+| `dup:c77b3abb6f87acd9-5`  |     2 | Betting mutations intentionally repeat distinct validated database writes.  |
+| `dup:c77b3abb6f87acd9-1`  |     3 | Betting and round mutations intentionally repeat distinct lifecycle checks. |
+| `dup:c77b3abb6f87acd9-9`  |     2 | Round mutations intentionally repeat distinct phase validations.            |
+| `dup:c77b3abb6f87acd9-17` |     2 | Round and bet handlers intentionally combine distinct game reads.           |
+| `dup:c77b3abb6f87acd9-12` |     2 | Lobby and schema declarations intentionally mirror record fields.           |
 
 ## CI and hooks
 
-Pull-request and master-push runs use the dedicated `.github/workflows/fallow.yml`: `test:coverage` followed by `fallow:ci` (≡ `fallow:full`), every finding blocking, SHA-pinned actions, least-privilege permissions, cancel-in-progress concurrency. It replaces both the adoption-era native-action PR job and the reusable-CI Fallow step. `.github/workflows/fallow-drift.yml` re-scans on dependency-file pushes when the lockfile-installed fallow version was not seen before.
+Pull-request and master-push runs use the dedicated `.github/workflows/fallow.yml`: `test:coverage` followed by the official SHA-pinned Action on pull requests and `fallow:ci` (≡ `fallow:full`) on every event, every finding blocking, least-privilege permissions, and cancel-in-progress concurrency. The Action is presentation feedback; the standalone CLI composition remains the authoritative full-repository gate. `.github/workflows/fallow-drift.yml` re-scans on dependency-file pushes when the lockfile-installed fallow version was not seen before.
 
 The hk configuration runs:
 
@@ -112,7 +146,7 @@ All exit criteria from #313 are green and enforced:
 
 ```bash
 pnpm exec fallow dead-code --type-aware --fail-on-issues   # exit 0
-pnpm exec fallow dupes --mode semantic --near --fail-on-issues  # exit 0 (threshold 11 %)
+pnpm exec fallow dupes --mode semantic --near --fail-on-issues  # exit 0 (0 unreviewed groups)
 pnpm exec fallow health --type-aware \
   --coverage coverage/coverage-final.json --coverage-root "$PWD" --fail-on-issues   # exit 0
 ```
@@ -124,6 +158,6 @@ Representative failure probes (exit criterion 6), run before flipping hooks/CI t
 | `fallow dead-code --type-aware --fail-on-issues`                         | one unused exported function | exit 1                          |
 | `git diff --cached \| fallow audit --diff-stdin --gate all --type-aware` | same finding, staged         | exit 1 (`✗ dead code: 1 issue`) |
 
-During the migration, the standalone probes were also observed failing on the real inherited debt as each category was driven to zero (dead-code 91 → 0, health hotspots 42 → 0, duplication 102 → below-threshold clone groups); per-PR evidence is in the #342–#348 PR descriptions.
+During the migration, the standalone probes were also observed failing on the real inherited debt as each category was driven to zero (dead-code 91 → 0, health hotspots 42 → 0, duplication 102 → 0 unreviewed groups); per-PR evidence is in the #342–#348 PR descriptions.
 
 `pnpm fallow:full` chains the three strict analyses; `pnpm fallow:ci` is its CI alias. The hk pre-commit runs the staged-diff audit (`fallow:staged`, gate all), pre-push runs the full scan, and the dedicated Fallow workflow runs it on every PR and master push. The drift workflow re-scans whenever the pinned fallow version changes.
