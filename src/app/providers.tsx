@@ -28,6 +28,7 @@ export function Providers({
           referenced outside a call position. Runtime behavior is correct:
           SessionProvider itself calls it unconditionally at its top level. */}
       {/* react-doctor-disable-next-line react-hooks-js/hooks */}
+      {/* oxlint-disable-next-line react/hooks -- SessionProvider requires a storage hook value */}
       <SessionProvider ssrFriendly storageKey="chronotunes-session-id" useStorage={useLocalStorage}>
         <ThemeProvider
           attribute="class"
