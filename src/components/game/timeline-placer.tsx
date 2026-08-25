@@ -3,7 +3,7 @@
 import { useSessionMutation } from "convex-helpers/react/sessions";
 import { Check, Loader2 } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useEffectEvent, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { api } from "@/convex/_generated/api";
@@ -114,19 +114,11 @@ export function TimelinePlacer({
     }
   };
 
-  // Keep the window listener subscribed once; the latest handler is picked up
-  // through a ref that is refreshed from an effect (never during render).
-  const keydownRef = useRef(handleKeyDown);
-
-  // Deliberately runs after every render: the listener below subscribes once
-  // and must always observe the freshest handler.
-  useEffect(() => {
-    keydownRef.current = handleKeyDown;
-  });
+  const onKeyDown = useEffectEvent(handleKeyDown);
 
   useEffect(() => {
     const listener = (event: KeyboardEvent): void => {
-      keydownRef.current(event);
+      onKeyDown(event);
     };
 
     window.addEventListener("keydown", listener);
