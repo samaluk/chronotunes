@@ -38,7 +38,7 @@ pnpm fallow:security      # Unverified security candidates for human review
 pnpm fallow:suppressions  # Suppression and stale-suppression inventory
 ```
 
-See [docs/fallow.md](../fallow.md) for gate semantics, dispositions, CI workflows, and configuration. Every gate fails on any finding; there are no baselines or regression scripts. Run `pnpm test:coverage` before `fallow:ci` so its health leg consumes fresh Istanbul output.
+See [docs/fallow.md](../fallow.md) for gate semantics, dispositions, CI workflows, and configuration. Every gate fails on any finding; there are no baselines or regression scripts. Run `pnpm test:coverage` before `fallow:ci` so its health leg consumes fresh Istanbul output. The pull-request workflow feeds that same report to the official pinned Fallow Action for native summary, Check Run, and review-comment feedback.
 
 ## Type generation
 
