@@ -63,7 +63,8 @@ jobs:
         uses: fallow-rs/fallow@ecf5a314fd3e10974acb4f5a7f867c433030522d # v3.17.0
         with:
           version: 3.17.0
-          only: dead-code,dupes,health
+          command: audit
+          gate: all
           type-aware: true
           type-aware-require: complete
           coverage: coverage/coverage-final.json
@@ -73,6 +74,7 @@ jobs:
           review-comments: true
           review-guidance: true
           branded-token: false
+          sarif: false
           fail-on-issues: true
 
       - name: Fallow (full zero-debt scan)
