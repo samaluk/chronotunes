@@ -20,6 +20,7 @@
     "fix": "oxlint --fix . && oxfmt .",
     "fallow": "fallow",
     "fallow:staged": "git diff --cached | fallow audit --diff-stdin --gate all --type-aware",
+    "fallow:audit": "fallow audit --gate all --type-aware --coverage coverage/coverage-final.json --coverage-root \"$PWD\" --dupes-mode semantic --dupes-near --dupes-ignore-imports",
     "fallow:full": "fallow dead-code --type-aware --fail-on-issues && fallow dupes --mode semantic --near --fail-on-issues && fallow health --type-aware --coverage coverage/coverage-final.json --coverage-root \"$PWD\" --fail-on-issues",
     "fallow:config": "fallow config",
     "fallow:recommend": "fallow recommend",
