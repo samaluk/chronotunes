@@ -31,23 +31,26 @@ There are no committed Fallow baselines, regression snapshots, freshness checks,
 # Canonical gate surface
 pnpm fallow              # Bare CLI passthrough
 pnpm fallow:staged       # Pre-commit: audit scoped to the staged diff (gate all)
-pnpm fallow:full         # Zero-debt full scan: dead-code + dupes + health, all failing on issues
+pnpm fallow:audit        # Covered changed-code audit (gate all)
+pnpm fallow:full         # Audit + dead-code + dupes + health, all blocking
 pnpm fallow:ci           # Alias of fallow:full used by CI
+
+# Standalone blocking analyzers
+pnpm fallow:dead-code    # Full-repository dead-code probe
+pnpm fallow:dupes        # Semantic + near-duplicate probe
+pnpm fallow:health       # Coverage-aware complexity and CRAP probe
 
 # Inspection utilities
 pnpm fallow:config       # Show the resolved repository configuration
 pnpm fallow:recommend    # Review configuration recommendations
 pnpm fallow:status       # Verify the type-aware companion and protocol
-pnpm fallow:dead-code    # Dead-code probe alone (no --fail-on-issues)
-pnpm fallow:dupes        # Duplication probe alone (no --fail-on-issues)
-pnpm fallow:health       # Health probe alone (no --fail-on-issues)
 pnpm fallow:security     # Unverified security candidates for human review
 pnpm fallow:suppressions # Suppression and stale-suppression inventory
 ```
 
-`fallow:full` composes the three zero-debt probes from the exit criteria in issue #313; each fails on any finding. Duplication has no percentage headroom: every semantic or near clone must be refactored or represented by a reviewed fingerprint and occurrence count in `duplicates.ignoredClones`.
+`fallow:full` starts with the covered changed-code audit and then runs the three project-wide analyzers. The audit uses `gate: all`, so every finding in changed files blocks; each standalone analyzer also exits nonzero for its own findings. Duplication has no measurable percentage headroom: the standalone command uses the smallest positive threshold supported by the pinned CLI so every semantic or near clone must be refactored or represented by a reviewed fingerprint and occurrence count in `duplicates.ignoredClones`.
 
-`fallow:ci` consumes fresh Istanbul coverage produced by `pnpm test:coverage` in the same step chain — keep that ordering wherever these run.
+`fallow:ci` consumes fresh Istanbul coverage produced by `pnpm test:coverage` in the same step chain for both audit and health — keep that ordering wherever these run.
 
 ## Type-aware analysis and dynamic surfaces
 
@@ -84,7 +87,7 @@ The remaining exclusions are narrow and intentional:
 Full-repository probes on the stack tip (Fallow 3.17.0, 302 tests):
 
 - Dead code: **0 findings** (`dead-code --type-aware --fail-on-issues` exits 0). The adoption-era backlog — 48 unused files, 1 unused export, 2 unused types, 37 private-type leaks, 3 unused dependencies — is fully retired.
-- Duplication: **0 unreviewed clone groups**; `dupes --mode semantic --near --fail-on-issues` exits 0 with only individually reviewed fingerprint/count exceptions.
+- Duplication: **0 unreviewed clone groups**; `dupes --mode semantic --near --threshold 5e-324 --fail-on-issues` exits 0 with only individually reviewed fingerprint/count exceptions.
 - Health: score **79/100 (grade B)**, `health --type-aware --coverage … --fail-on-issues` exits 0 with no function above thresholds.
 - Boundaries: five zones, zero violations.
 - Suppressions: zero suppressions, zero stale suppressions.
@@ -133,7 +136,7 @@ The list below is the complete pair-level result from Fallow 3.17.0 with semanti
 
 ## CI and hooks
 
-Pull-request and master-push runs use the dedicated `.github/workflows/fallow.yml`: `test:coverage` followed by the official SHA-pinned Action on pull requests and `fallow:ci` (≡ `fallow:full`) on every event, every finding blocking, least-privilege permissions, and cancel-in-progress concurrency. The Action is presentation feedback; the standalone CLI composition remains the authoritative full-repository gate. `.github/workflows/fallow-drift.yml` re-scans on dependency-file pushes when the lockfile-installed fallow version was not seen before.
+Pull-request and master-push runs use the dedicated `.github/workflows/fallow.yml`: `test:coverage` followed by the official SHA-pinned Action's `audit --gate all` feedback on pull requests and `fallow:ci` (≡ `fallow:full`) on every event, every finding blocking, least-privilege permissions, and cancel-in-progress concurrency. The Action is presentation feedback; the standalone CLI composition remains the authoritative full-repository gate. `.github/workflows/fallow-drift.yml` re-scans with the same `fallow:full` command on dependency-file pushes when the lockfile-installed Fallow version was not seen before.
 
 The hk configuration runs:
 
@@ -145,19 +148,25 @@ The hk configuration runs:
 All exit criteria from #313 are green and enforced:
 
 ```bash
+pnpm fallow:audit   # exit 0 (audit --gate all with fresh coverage)
 pnpm exec fallow dead-code --type-aware --fail-on-issues   # exit 0
-pnpm exec fallow dupes --mode semantic --near --fail-on-issues  # exit 0 (0 unreviewed groups)
+pnpm exec fallow dupes --mode semantic --near --threshold 5e-324 --fail-on-issues  # exit 0 (0 unreviewed groups)
 pnpm exec fallow health --type-aware \
   --coverage coverage/coverage-final.json --coverage-root "$PWD" --fail-on-issues   # exit 0
 ```
 
 Representative failure probes (exit criterion 6), run before flipping hooks/CI to strict gates:
 
-| Probe                                                                    | Injected finding             | Result                          |
-| ------------------------------------------------------------------------ | ---------------------------- | ------------------------------- |
-| `fallow dead-code --type-aware --fail-on-issues`                         | one unused exported function | exit 1                          |
-| `git diff --cached \| fallow audit --diff-stdin --gate all --type-aware` | same finding, staged         | exit 1 (`✗ dead code: 1 issue`) |
+| Probe                       | Injected finding                    | Result |
+| --------------------------- | ----------------------------------- | ------ |
+| `pnpm fallow:audit`         | unused file/export                  | exit 1 |
+| `pnpm fallow:dead-code`     | unused file/export                  | exit 1 |
+| `pnpm fallow:audit`         | forbidden i18n → component import   | exit 1 |
+| `pnpm fallow:dupes`         | new semantic clone                  | exit 1 |
+| `pnpm fallow:health`        | uncovered cyclomatic/CRAP violation | exit 1 |
+| covered type-aware commands | broken configured test project      | exit 1 |
+| `pnpm fallow:full`          | each applicable finding above       | exit 1 |
 
 During the migration, the standalone probes were also observed failing on the real inherited debt as each category was driven to zero (dead-code 91 → 0, health hotspots 42 → 0, duplication 102 → 0 unreviewed groups); per-PR evidence is in the #342–#348 PR descriptions.
 
-`pnpm fallow:full` chains the three strict analyses; `pnpm fallow:ci` is its CI alias. The hk pre-commit runs the staged-diff audit (`fallow:staged`, gate all), pre-push runs the full scan, and the dedicated Fallow workflow runs it on every PR and master push. The drift workflow re-scans whenever the pinned fallow version changes.
+`pnpm fallow:full` chains the strict changed-code audit, dead-code, duplication, and health analyses; `pnpm fallow:ci` is its CI alias. The hk pre-commit runs the staged-diff audit (`fallow:staged`, gate all), pre-push runs the covered full scan, and the dedicated Fallow workflow runs it on every PR and master push. The native PR feedback is audit-based with `gate: all`, and the drift workflow runs the same `fallow:full` whenever the pinned Fallow version changes.

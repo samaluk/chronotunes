@@ -17,8 +17,8 @@
 # with ::error:: if the dep leaves the lockfile).
 #
 # Unlike the react-doctor drift scan, this workflow needs the repo toolchain:
-# the health probe consumes a fresh Istanbul coverage report, so the scan step
-# installs dependencies and runs the test suite before fallow:full.
+# the audit and health probes consume a fresh Istanbul coverage report, so the
+# scan step installs dependencies and runs the test suite before fallow:full.
 
 name: Fallow (drift scan)
 

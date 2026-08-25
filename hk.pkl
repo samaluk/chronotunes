@@ -10,8 +10,8 @@ local fallow_staged = Step {
   stomp = true
 }
 
-// Pre-push: full zero-debt scan (dead-code + dupes + health) after normal
-// checks and fresh coverage; every finding blocks.
+// Pre-push: full zero-debt scan (audit + dead-code + dupes + health) after
+// normal checks and fresh coverage; every finding blocks.
 local fallow_full = Step {
   check = "pnpm check && pnpm next:typegen && pnpm test:coverage && pnpm fallow:full"
   stomp = true

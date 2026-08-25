@@ -24,21 +24,24 @@ pnpm exec oxlint --print-config   # Print resolved Oxlint configuration
 # Canonical gate surface
 pnpm fallow              # Bare CLI passthrough
 pnpm fallow:staged       # Pre-commit: staged-diff audit, gate all
-pnpm fallow:full         # Zero-debt full scan: dead-code + dupes + health, all failing on issues
+pnpm fallow:audit        # Covered changed-code audit, gate all
+pnpm fallow:full         # Audit + dead-code + dupes + health, all blocking
 pnpm fallow:ci           # Alias of fallow:full used by CI
 
-# Inspection utilities (run without --fail-on-issues; gating flows through fallow:full)
-pnpm fallow:config        # Show the resolved repository configuration
-pnpm fallow:recommend     # Review configuration recommendations
-pnpm fallow:status        # Verify the type-aware companion and protocol
+# Standalone blocking analyzers
 pnpm fallow:dead-code     # Full-repository dead-code probe
 pnpm fallow:dupes         # Semantic + near-duplicate probe
 pnpm fallow:health        # Complexity and coverage-aware health probe
+
+# Inspection utilities
+pnpm fallow:config        # Show the resolved repository configuration
+pnpm fallow:recommend     # Review configuration recommendations
+pnpm fallow:status        # Verify the type-aware companion and protocol
 pnpm fallow:security      # Unverified security candidates for human review
 pnpm fallow:suppressions  # Suppression and stale-suppression inventory
 ```
 
-See [docs/fallow.md](../fallow.md) for gate semantics, dispositions, CI workflows, and configuration. Every gate fails on any finding; there are no baselines or regression scripts. Run `pnpm test:coverage` before `fallow:ci` so its health leg consumes fresh Istanbul output. The pull-request workflow feeds that same report to the official pinned Fallow Action for native summary, Check Run, and review-comment feedback.
+See [docs/fallow.md](../fallow.md) for gate semantics, dispositions, CI workflows, and configuration. Every gate fails on any finding; there are no baselines or regression scripts. Run `pnpm test:coverage` before `fallow:ci` so its audit and health legs consume fresh Istanbul output. The pull-request workflow feeds that same report to the official pinned Fallow Action's `audit --gate all` run for native summary, Check Run, and review-comment feedback.
 
 ## Type generation
 
