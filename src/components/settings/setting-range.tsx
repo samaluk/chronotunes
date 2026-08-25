@@ -20,7 +20,14 @@ export interface SettingRangeProps {
 
 function getSortedRangeValues(value: unknown): [number, number] {
   const values = Array.isArray(value) ? value : [value, value];
-  const numericValues = values.filter((item): item is number => typeof item === "number");
+  const numericValues = values.filter(
+    (item): item is number => typeof item === "number" && Number.isFinite(item),
+  );
+
+  if (numericValues.length !== 2 || numericValues.length !== values.length) {
+    throw new TypeError("Slider value must contain exactly two finite numbers");
+  }
+
   const [first, second] = numericValues.toSorted((a, b) => a - b);
 
   if (first === undefined || second === undefined) {
