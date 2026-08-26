@@ -30,6 +30,8 @@ vi.mock(import("react"), () => ({
   useCallback: vi.fn((fn) => fn),
   // oxlint-disable-next-line typescript/no-unsafe-call, typescript/no-unsafe-return
   useEffect: vi.fn((fn) => fn()),
+  // oxlint-disable-next-line typescript/no-unsafe-return
+  useEffectEvent: vi.fn((fn) => fn),
   // oxlint-disable-next-line typescript/no-unsafe-call, typescript/no-unsafe-return
   useMemo: vi.fn((fn) => fn()),
   // oxlint-disable-next-line typescript/no-unsafe-assignment

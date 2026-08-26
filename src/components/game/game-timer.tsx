@@ -1,7 +1,7 @@
 "use client";
 
 import { AlertTriangle, Timer } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useSyncExternalStore } from "react";
 
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
@@ -15,6 +15,13 @@ export interface GameTimerProps {
   variant?: "betting" | "turn";
 }
 
+const TIMER_TICK_MS = 100;
+
+const subscribeToTimerTicks = (onStoreChange: () => void): (() => void) => {
+  const interval = setInterval(onStoreChange, TIMER_TICK_MS);
+  return () => clearInterval(interval);
+};
+
 export const GameTimer = ({
   startedAt,
   totalSeconds,
@@ -23,26 +30,12 @@ export const GameTimer = ({
   variant = "betting",
   className,
 }: GameTimerProps): React.ReactNode => {
-  const [timeRemaining, setTimeRemaining] = useState<number | null>(null);
+  const getTimeRemaining = (): number => {
+    const elapsed = (Date.now() - startedAt) / 1000;
+    return totalSeconds - elapsed;
+  };
 
-  useEffect(() => {
-    const calculateTimeRemaining = (): number => {
-      const elapsed = (Date.now() - startedAt) / 1000;
-      const remaining = totalSeconds - elapsed;
-      return remaining;
-    };
-
-    // The clock must be read after mount: Date.now() on the server would
-    // hydrate a stale remaining time, and the interval refresh keeps it live.
-    // react-doctor-disable-next-line react-hooks-js/set-state-in-effect
-    setTimeRemaining(calculateTimeRemaining());
-
-    const interval = setInterval(() => {
-      setTimeRemaining(calculateTimeRemaining());
-    }, 100);
-
-    return () => clearInterval(interval);
-  }, [startedAt, totalSeconds]);
+  const timeRemaining = useSyncExternalStore(subscribeToTimerTicks, getTimeRemaining, () => null);
 
   const formatTime = (seconds: number): string => {
     const absSeconds = Math.abs(seconds);
