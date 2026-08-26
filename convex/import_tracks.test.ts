@@ -64,22 +64,20 @@ describe(parseYear, () => {
 });
 
 describe(parseDurationToMs, () => {
-  // Legacy CSV semantics, preserved deliberately: colon formats yield TOTAL
-  // SECONDS ("3:45" -> 225), and the result lands in the schema's durationMs
-  // field even though structured imports store true milliseconds there.
-  // Raw millisecond strings ("183000") are rejected by this parser.
-  // Tracked for a real fix in #354 — do not treat the seconds unit as intended
-  // semantics for durationMs.
   test("returns undefined for missing duration", () => {
     expect(parseDurationToMs(undefined)).toBeUndefined();
   });
 
-  test("parses minutes:seconds", () => {
-    expect(parseDurationToMs("3:45")).toBe(225);
+  test("parses minutes:seconds to milliseconds", () => {
+    expect(parseDurationToMs("3:45")).toBe(225_000);
   });
 
-  test("parses hours:minutes:seconds", () => {
-    expect(parseDurationToMs("1:02:03")).toBe(3723);
+  test("parses hours:minutes:seconds to milliseconds", () => {
+    expect(parseDurationToMs("1:02:03")).toBe(3_723_000);
+  });
+
+  test("parses raw millisecond strings", () => {
+    expect(parseDurationToMs("183000")).toBe(183_000);
   });
 
   test("rejects malformed durations", () => {
@@ -94,9 +92,15 @@ describe(parseCsvLine, () => {
     const item = parseCsvLine(csvRow());
     expect(item).toMatchObject({
       artist: "John Lennon",
+      durationMs: 183_000,
       title: "Imagine",
       year: 1971,
     });
+  });
+
+  test("parses colon duration in the duration column", () => {
+    const item = parseCsvLine(csvRow({ 7: "3:45" }));
+    expect(item?.durationMs).toBe(225_000);
   });
 
   test("returns null for blank and short rows", () => {
