@@ -1,7 +1,7 @@
 "use client";
 
 import { AlertTriangle, Timer } from "lucide-react";
-import { useCallback, useSyncExternalStore } from "react";
+import { useSyncExternalStore } from "react";
 
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
@@ -17,6 +17,11 @@ export interface GameTimerProps {
 
 const TIMER_TICK_MS = 100;
 
+const subscribeToTimerTicks = (onStoreChange: () => void): (() => void) => {
+  const interval = setInterval(onStoreChange, TIMER_TICK_MS);
+  return () => clearInterval(interval);
+};
+
 export const GameTimer = ({
   startedAt,
   totalSeconds,
@@ -25,17 +30,12 @@ export const GameTimer = ({
   variant = "betting",
   className,
 }: GameTimerProps): React.ReactNode => {
-  const getTimeRemaining = useCallback((): number => {
+  const getTimeRemaining = (): number => {
     const elapsed = (Date.now() - startedAt) / 1000;
     return totalSeconds - elapsed;
-  }, [startedAt, totalSeconds]);
+  };
 
-  const subscribe = useCallback((onStoreChange: () => void) => {
-    const interval = setInterval(onStoreChange, TIMER_TICK_MS);
-    return () => clearInterval(interval);
-  }, []);
-
-  const timeRemaining = useSyncExternalStore(subscribe, getTimeRemaining, () => null);
+  const timeRemaining = useSyncExternalStore(subscribeToTimerTicks, getTimeRemaining, () => null);
 
   const formatTime = (seconds: number): string => {
     const absSeconds = Math.abs(seconds);
