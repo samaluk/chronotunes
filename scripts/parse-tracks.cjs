@@ -1,20 +1,28 @@
 #!/usr/bin/env node
 "use strict";
+/* oxlint-disable typescript/no-unsafe-assignment, typescript/no-unsafe-call, typescript/no-unsafe-member-access, typescript/no-unsafe-argument, typescript/no-unsafe-return */
 const fs = require("node:fs");
 const path = require("node:path");
 
 function parseDurationToMs(duration) {
-  // oxlint-disable-next-line typescript/no-unsafe-assignment, typescript/no-unsafe-call, typescript/no-unsafe-member-access
-  const parts = duration.split(":").map(Number);
-  // oxlint-disable-next-line typescript/no-unsafe-call, typescript/no-unsafe-member-access
-  if (parts.length === 2 && !parts.includes(Number.NaN)) {
-    // oxlint-disable-next-line typescript/no-unsafe-member-access, typescript/no-unsafe-return
-    return parts[0] * 60 + parts[1];
+  if (!duration) {
+    return;
   }
-  // oxlint-disable-next-line typescript/no-unsafe-call, typescript/no-unsafe-member-access
+
+  if (!duration.includes(":")) {
+    const milliseconds = Number.parseInt(duration, 10);
+    if (!Number.isNaN(milliseconds) && milliseconds >= 0) {
+      return milliseconds;
+    }
+    return;
+  }
+
+  const parts = duration.split(":").map(Number);
+  if (parts.length === 2 && !parts.includes(Number.NaN)) {
+    return (parts[0] * 60 + parts[1]) * 1000;
+  }
   if (parts.length === 3 && !parts.includes(Number.NaN)) {
-    // oxlint-disable-next-line typescript/no-unsafe-member-access, typescript/no-unsafe-return
-    return parts[0] * 60 * 60 + parts[1] * 60 + parts[2];
+    return (parts[0] * 60 * 60 + parts[1] * 60 + parts[2]) * 1000;
   }
   return;
 }

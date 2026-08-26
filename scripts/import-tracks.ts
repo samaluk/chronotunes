@@ -12,12 +12,24 @@ interface TrackData {
 }
 
 function parseDurationToMs(duration: string): number | undefined {
+  if (!duration) {
+    return;
+  }
+
+  if (!duration.includes(":")) {
+    const milliseconds = Number.parseInt(duration, 10);
+    if (!Number.isNaN(milliseconds) && milliseconds >= 0) {
+      return milliseconds;
+    }
+    return;
+  }
+
   const parts = duration.split(":").map(Number);
   if (parts.length === 2 && !parts.includes(Number.NaN)) {
-    return parts[0] * 60 + parts[1];
+    return (parts[0] * 60 + parts[1]) * 1000;
   }
   if (parts.length === 3 && !parts.includes(Number.NaN)) {
-    return parts[0] * 60 * 60 + parts[1] * 60 + parts[2];
+    return (parts[0] * 60 * 60 + parts[1] * 60 + parts[2]) * 1000;
   }
   return;
 }
