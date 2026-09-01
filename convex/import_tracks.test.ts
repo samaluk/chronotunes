@@ -2,7 +2,7 @@ import { ConvexError } from "convex/values";
 import { convexTest } from "convex-test";
 import { describe, expect, test, vi } from "vitest";
 
-import { api } from "./_generated/api";
+import { internal } from "./_generated/api";
 import { parseCsvLine, parseCsvTracks, parseDurationToMs, parseYear } from "./import_tracks";
 import { validateTrackItem } from "./lib/track_validation";
 import schema from "./schema";
@@ -177,7 +177,7 @@ describe("importTracksFromCsv", () => {
     const t = convexTest(schema, modules);
     vi.spyOn(console, "error").mockImplementation(() => {});
 
-    const result = await t.mutation(api.import_tracks.importTracksFromCsv, {
+    const result = await t.mutation(internal.import_tracks.importTracksFromCsv, {
       tracks: [
         { artist: "Artist", title: "Good", year: 1990 },
         { artist: "", title: "Bad", year: 1990 },
@@ -190,11 +190,11 @@ describe("importTracksFromCsv", () => {
 
   test("clears existing tracks when requested", async () => {
     const t = convexTest(schema, modules);
-    await t.mutation(api.import_tracks.importTracksFromCsv, {
+    await t.mutation(internal.import_tracks.importTracksFromCsv, {
       tracks: [{ artist: "First", title: "First", year: 1990 }],
     });
 
-    const result = await t.mutation(api.import_tracks.importTracksFromCsv, {
+    const result = await t.mutation(internal.import_tracks.importTracksFromCsv, {
       clearExisting: true,
       tracks: [{ artist: "Second", title: "Second", year: 1991 }],
     });
@@ -206,8 +206,8 @@ describe("importTracksFromCsv", () => {
   test("rejects an empty batch", async () => {
     const t = convexTest(schema, modules);
 
-    await expect(t.mutation(api.import_tracks.importTracksFromCsv, { tracks: [] })).rejects.toThrow(
-      "At least one track must be provided",
-    );
+    await expect(
+      t.mutation(internal.import_tracks.importTracksFromCsv, { tracks: [] }),
+    ).rejects.toThrow("At least one track must be provided");
   });
 });

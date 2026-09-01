@@ -1,6 +1,6 @@
 # ChronoTunes Implementation Plan
 
-Browser-based multiplayer music timeline game. Hitster clone with YouTube audio.
+Browser-based multiplayer music timeline game with YouTube audio.
 
 ## Stack
 

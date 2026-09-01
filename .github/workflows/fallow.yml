@@ -35,7 +35,7 @@ jobs:
     # Named so the check run is "Fallow", matching the required-status
     # instructions in the header comment above.
     name: Fallow
-    runs-on: ${{ github.event.pull_request.head.repo.fork && 'ubuntu-latest' || (vars.USE_SELF_HOSTED_RUNNERS == 'true' && fromJSON('["self-hosted","macOS","ARM64"]') || 'ubuntu-latest') }}
+    runs-on: ubuntu-latest
     permissions:
       contents: read
       pull-requests: write
@@ -47,7 +47,6 @@ jobs:
         with:
           fetch-depth: 0
           persist-credentials: false
-          clean: ${{ vars.USE_SELF_HOSTED_RUNNERS != 'true' }}
 
       - uses: ./.github/actions/setup-toolchain
 

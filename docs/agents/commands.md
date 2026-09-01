@@ -87,12 +87,7 @@ pnpm convex:typegen
 pnpm test
 ```
 
-## CI / self-hosted runners
+## CI runners
 
-Each workflow job declares its own `runs-on` under **.github/workflows/**, gated on the `USE_SELF_HOSTED_RUNNERS` repository variable (**Settings → Actions → Variables**):
-
-| Variable                  | Value                             |
-| ------------------------- | --------------------------------- |
-| `USE_SELF_HOSTED_RUNNERS` | `true` to use self-hosted runners |
-
-When enabled, the general trusted route is `[self-hosted, macOS, ARM64]`; fork PRs always fall back to GitHub-hosted `ubuntu-latest`. Pullfrog is the exception: its separately configured `PULLFROG_RUNNER_LABELS` may target a Linux/Docker runner. When disabled (or the variable is unset), every normal hosted fallback uses `ubuntu-latest`.
+All jobs under **.github/workflows/** run on GitHub-hosted `ubuntu-latest` runners.
+No repository runner variables are required.

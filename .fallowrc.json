@@ -20,8 +20,6 @@
     }
   ],
   "ignoreDependencies": [
-    "scrape-yt",
-    "scrape-youtube",
     "@edge-runtime/vm",
     "tailwindcss",
     "react-doctor"
@@ -48,8 +46,6 @@
     "minOccurrences": 2,
     "ignoreImports": true,
     "ignoredClones": [
-      "dup:c77b3abb6f87acd9-14:7",
-      "dup:c77b3abb6f87acd9-16:2",
       "dup:80dd416f:4",
       "dup:bd1723a3:5",
       "dup:c77b3abb6f87acd9-8:2",
@@ -64,7 +60,7 @@
       "dup:c77b3abb6f87acd9-2:2",
       "dup:c77b3abb6f87acd9-3:2",
       "dup:4b86aae9:2",
-      "dup:c77b3abb6f87acd9-15:2",
+      "dup:c77b3abb6f87acd9-14:2",
       "dup:c77b3abb6f87acd9-13:2",
       "dup:9ced35c1:2",
       "dup:c77b3abb6f87acd9-4:2",
@@ -73,8 +69,8 @@
       "dup:c77b3abb6f87acd9-9:2",
       "dup:c77b3abb6f87acd9-10:2",
       "dup:c77b3abb6f87acd9-7:2",
-      "dup:c77b3abb6f87acd9-17:2",
-      "dup:c77b3abb6f87acd9-18:2"
+      "dup:c77b3abb6f87acd9-15:2",
+      "dup:c77b3abb6f87acd9-16:2"
     ]
   },
   "health": {
