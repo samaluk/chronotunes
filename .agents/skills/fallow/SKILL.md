@@ -44,8 +44,7 @@ cargo install fallow-cli   # build from source
 
 This repository pins `fallow@3.20.0` and uses the canonical zero-debt Fallow
 architecture. The blocking CI gate is the full `pnpm fallow:ci` composition;
-pull-request validation is the primary boundary, while the default branch uses
-manual, version-aware drift scans.
+pull-request validation is the primary boundary.
 
 Use the project scripts for the common views:
 

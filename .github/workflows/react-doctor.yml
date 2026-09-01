@@ -60,44 +60,11 @@ jobs:
           persist-credentials: false
           clean: ${{ vars.USE_SELF_HOSTED_RUNNERS != 'true' }}
 
-      # Pin the scan to the exact react-doctor CLI version the repo depends on,
-      # so CI scans with the same CLI the local hk gates run — without an
-      # explicit `version:` the action installs its own react-doctor@latest.
-      # Resolved from pnpm-lock.yaml at the repo root: needs no dependency
-      # install, survives Renovate writing a range into package.json, and
-      # fails loudly if react-doctor ever disappears from the lockfile. The
-      # anchor excludes same-suffix keys like oxlint-plugin-react-doctor@.
-      - name: Resolve pinned react-doctor version
-        id: rdver
-        env:
-          BASE_SHA: ${{ github.event.pull_request.base.sha }}
-          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
-        run: |
-          head_version="$(git show "$HEAD_SHA:pnpm-lock.yaml" 2>/dev/null | sed -n 's/^ *react-doctor@\([0-9][0-9.]*\):.*/\1/p' | head -1 || true)"
-          base_version="$(git show "$BASE_SHA:pnpm-lock.yaml" 2>/dev/null | sed -n 's/^ *react-doctor@\([0-9][0-9.]*\):.*/\1/p' | head -1 || true)"
-          if [ -z "$head_version" ]; then
-            echo "::error::react-doctor version not found in the PR lockfile"
-            exit 1
-          fi
-          if [ -z "$base_version" ]; then
-            echo "::notice::No base react-doctor version found; using a full scan."
-            scope=full
-          elif [ "$base_version" != "$head_version" ]; then
-            echo "::notice::React Doctor changed from $base_version to $head_version; using a full scan."
-            scope=full
-          else
-            scope=changed
-          fi
-          echo "version=$head_version" >> "$GITHUB_OUTPUT"
-          echo "scope=$scope" >> "$GITHUB_OUTPUT"
-
       - uses: millionco/react-doctor@01820bb4fd4d0a4aebcd8df2b2a143a098649cb2 # v2.2.8
         with:
-          # Same CLI version the local hooks and the drift scan resolve to.
-          version: ${{ steps.rdver.outputs.version }}
-          # Changed-code scope is the default; the resolver selects full scope
-          # when this PR changes the React Doctor version or its rule pack.
-          scope: ${{ steps.rdver.outputs.scope }}
+          # Report only issues introduced by this pull request, so existing
+          # repository debt does not block unrelated changes.
+          scope: changed
           # Newly introduced warnings (and errors) fail the check.
           blocking: warning
           # v2 PR feedback: sticky summary comment + inline review comments +
