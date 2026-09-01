@@ -10,13 +10,10 @@ permissions:
 
 jobs:
   actionlint:
-    # USE_SELF_HOSTED_RUNNERS repo variable (Settings → Actions → Variables)
-    runs-on: ${{ github.event.pull_request.head.repo.fork && 'ubuntu-latest' || (vars.USE_SELF_HOSTED_RUNNERS == 'true' && fromJSON('["self-hosted","macOS","ARM64"]') || 'ubuntu-latest') }}
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          clean: ${{ vars.USE_SELF_HOSTED_RUNNERS != 'true' }}
 
       # https://github.com/rhysd/actionlint/blob/main/docs/usage.md#use-actionlint-on-github-actions
       - name: Download actionlint

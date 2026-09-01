@@ -80,7 +80,7 @@ The remaining exclusions are narrow and intentional:
 - `scripts/**` and `oxfmt.config.ts` are tooling surfaces, not application entry points.
 - `convex/_generated/**` is machine-written by `convex codegen` and regenerated wholesale; inline annotations there would not survive regeneration, so the generated bindings are excluded from analysis entirely.
 - `src/components/ui/*.tsx` exports are the generated-style shadcn component surface and are consumed by convention.
-- `scrape-yt` and `scrape-youtube` are script-only entrypoint dependencies; `@edge-runtime/vm` is a provider/runtime dependency; `tailwindcss` is consumed by the build pipeline.
+- `@edge-runtime/vm` is a provider/runtime dependency; `tailwindcss` is consumed by the build pipeline.
 
 ## Current state and dispositions
 
@@ -97,7 +97,7 @@ Dispositions for the advisory surfaces named in #313's exit criterion 5:
 
 - Security candidates: the two open-redirect candidates in `src/app/landing-page-content.tsx` were **resolved** — post-create/join navigation validates the server/lobby code against the lobby-code shape and navigates via `router.push` instead of assigning `window.location.href`. `fallow security` now reports zero items.
 - Coverage gaps: the CRAP gate forces coverage wherever untested complexity breaches the health thresholds (the game hot paths decomposed in this stack all carry render suites); remaining uncovered files are UI shells, generated bindings, and config entry points where behavior is pinned by type-aware analysis. Coverage-gap findings stay `off` in rules because the CRAP gate is the enforcement surface.
-- Duplication dispositions: pair-level semantic+near detection found 28 groups. One genuine repeated range-normalization block was refactored; the remaining 27 stable groups are individually fingerprinted below because extraction would reduce clarity or discard intentional fixture/design-token structure. A changed clone body or occurrence count is intentionally unreviewed and blocks until reclassified.
+- Duplication dispositions: one genuine repeated range-normalization block was refactored; the remaining 25 stable groups are individually fingerprinted below because extraction would reduce clarity or discard intentional fixture/design-token structure. A changed clone body or occurrence count is intentionally unreviewed and blocks until reclassified.
 
 ### Reviewed clone groups
 
@@ -105,8 +105,6 @@ The list below is the complete pair-level result from Fallow 3.20.0 with semanti
 
 | Fingerprint               | Count | Review reason                                                               |
 | ------------------------- | ----: | --------------------------------------------------------------------------- |
-| `dup:c77b3abb6f87acd9-14` |     7 | Seed track records intentionally repeat one stable fixture shape.           |
-| `dup:c77b3abb6f87acd9-16` |     2 | Seed track records intentionally repeat one stable fixture shape.           |
 | `dup:80dd416f`            |     4 | Light and dark theme tokens intentionally share CSS declaration structure.  |
 | `dup:bd1723a3`            |     5 | Light and dark theme tokens intentionally share CSS declaration structure.  |
 | `dup:e03487a3`            |     2 | Light and dark theme tokens intentionally share CSS declaration structure.  |
@@ -117,9 +115,9 @@ The list below is the complete pair-level result from Fallow 3.20.0 with semanti
 | `dup:c77b3abb6f87acd9-2`  |     2 | Typed test factories intentionally mirror single-record lookup adapters.    |
 | `dup:c77b3abb6f87acd9-3`  |     2 | Typed test factories intentionally mirror lobby setup and lookup data.      |
 | `dup:4b86aae9`            |     2 | Typed test factories intentionally mirror single-record lookup adapters.    |
-| `dup:c77b3abb6f87acd9-15` |     2 | Typed test factories intentionally mirror single-record query adapters.     |
+| `dup:c77b3abb6f87acd9-14` |     2 | Typed test factories intentionally mirror single-record query adapters.     |
 | `dup:9ced35c1`            |     2 | Typed test factories intentionally mirror single-record query adapters.     |
-| `dup:c77b3abb6f87acd9-18` |     2 | Typed test factories intentionally mirror single-record query adapters.     |
+| `dup:c77b3abb6f87acd9-16` |     2 | Typed test factories intentionally mirror single-record lookup adapters.    |
 | `dup:68751c8d`            |     3 | Skeleton components intentionally repeat loading-state composition.         |
 | `dup:00e1ba20`            |     2 | Skeleton components intentionally repeat loading-state composition.         |
 | `dup:c77b3abb6f87acd9-7`  |     2 | Skeleton components intentionally repeat loading-state composition.         |
@@ -130,7 +128,7 @@ The list below is the complete pair-level result from Fallow 3.20.0 with semanti
 | `dup:c77b3abb6f87acd9-5`  |     2 | Betting mutations intentionally repeat distinct validated database writes.  |
 | `dup:c77b3abb6f87acd9-1`  |     3 | Betting and round mutations intentionally repeat distinct lifecycle checks. |
 | `dup:c77b3abb6f87acd9-9`  |     2 | Round mutations intentionally repeat distinct phase validations.            |
-| `dup:c77b3abb6f87acd9-17` |     2 | Round and bet handlers intentionally combine distinct game reads.           |
+| `dup:c77b3abb6f87acd9-15` |     2 | Round and bet handlers intentionally combine distinct game reads.           |
 | `dup:c77b3abb6f87acd9-12` |     2 | Lobby and schema declarations intentionally mirror record fields.           |
 
 ## CI and hooks

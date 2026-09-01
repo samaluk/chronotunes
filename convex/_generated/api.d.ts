@@ -13,6 +13,7 @@ import type * as cron from "../cron.js";
 import type * as games from "../games.js";
 import type * as host_disconnect from "../host_disconnect.js";
 import type * as import_tracks from "../import_tracks.js";
+import type * as lib_demo_catalog from "../lib/demo_catalog.js";
 import type * as lib_game_context from "../lib/game_context.js";
 import type * as lib_game_logic from "../lib/game_logic.js";
 import type * as lib_lobby_settings from "../lib/lobby_settings.js";
@@ -48,6 +49,7 @@ declare const fullApi: ApiFromModules<{
   games: typeof games;
   host_disconnect: typeof host_disconnect;
   import_tracks: typeof import_tracks;
+  "lib/demo_catalog": typeof lib_demo_catalog;
   "lib/game_context": typeof lib_game_context;
   "lib/game_logic": typeof lib_game_logic;
   "lib/lobby_settings": typeof lib_lobby_settings;

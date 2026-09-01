@@ -2,8 +2,8 @@ import { ConvexError, v } from "convex/values";
 
 import { validateTrackItem } from "./lib/track_validation";
 
-import { api } from "./_generated/api";
-import { mutation } from "./_generated/server";
+import { internal } from "./_generated/api";
+import { internalMutation } from "./_generated/server";
 
 export interface CsvTrackImportItem {
   artist: string;
@@ -121,7 +121,7 @@ export function parseYear(dateStrRaw: string | undefined): number {
   return Number.isNaN(year) ? 2000 : year;
 }
 
-export const importTracksFromCsv = mutation({
+export const importTracksFromCsv = internalMutation({
   args: {
     clearExisting: v.optional(v.boolean()),
     tracks: v.array(
@@ -200,7 +200,7 @@ export const importTracksFromCsv = mutation({
   },
 });
 
-export const parseAndImportCsv = mutation({
+export const parseAndImportCsv = internalMutation({
   args: {
     clearExisting: v.optional(v.boolean()),
     csvContent: v.string(),
@@ -224,7 +224,7 @@ export const parseAndImportCsv = mutation({
       throw new ConvexError("No valid tracks found in CSV");
     }
 
-    return await ctx.runMutation(api.import_tracks.importTracksFromCsv, {
+    return await ctx.runMutation(internal.import_tracks.importTracksFromCsv, {
       clearExisting,
       tracks,
     });
