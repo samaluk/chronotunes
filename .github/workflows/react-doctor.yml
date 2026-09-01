@@ -27,15 +27,12 @@ name: React Doctor
 on:
   pull_request:
     types: [opened, synchronize, reopened, ready_for_review]
-  push:
-    branches:
-      - master
 
 permissions:
   contents: read
 
-# Cancels any in-flight scan for the same PR (or branch, on push) the moment a
-# new commit arrives, so reviewers only ever see the latest run.
+# Cancels any in-flight scan for the same PR the moment a new commit arrives,
+# so reviewers only ever see the latest run.
 concurrency:
   group: react-doctor-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
@@ -64,25 +61,24 @@ jobs:
           clean: ${{ vars.USE_SELF_HOSTED_RUNNERS != 'true' }}
 
       # Pin the scan to the exact react-doctor CLI version the repo depends on,
-      # so CI scans with the same CLI the local hk gates run — without an
-      # explicit `version:` the action installs its own react-doctor@latest.
-      # Resolved from pnpm-lock.yaml at the repo root: needs no dependency
-      # install, survives Renovate writing a range into package.json, and
-      # fails loudly if react-doctor ever disappears from the lockfile. The
-      # anchor excludes same-suffix keys like oxlint-plugin-react-doctor@.
+      # so CI scans with the same CLI the local hooks run. Resolve it from the
+      # lockfile without installing the workspace dependencies.
       - name: Resolve pinned react-doctor version
         id: rdver
+        shell: bash
         run: |
           v="$(sed -n 's/^ *react-doctor@\([0-9][0-9.]*\):.*/\1/p' pnpm-lock.yaml | head -1)"
-          if [ -z "$v" ]; then echo "::error::react-doctor version not found in pnpm-lock.yaml"; exit 1; fi
+          if [ -z "$v" ]; then
+            echo "::error::react-doctor version not found in pnpm-lock.yaml"
+            exit 1
+          fi
           echo "version=$v" >> "$GITHUB_OUTPUT"
 
       - uses: millionco/react-doctor@01820bb4fd4d0a4aebcd8df2b2a143a098649cb2 # v2.2.8
         with:
-          # Same CLI version the local hooks and the drift scan resolve to.
           version: ${{ steps.rdver.outputs.version }}
-          # Changed-code scope: report only issues the PR introduces vs its base,
-          # so historical debt does not suddenly block all pull requests.
+          # Report only issues introduced by this pull request, so existing
+          # repository debt does not block unrelated changes.
           scope: changed
           # Newly introduced warnings (and errors) fail the check.
           blocking: warning

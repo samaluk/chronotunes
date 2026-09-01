@@ -1,14 +1,14 @@
 # Fallow zero-debt gate
 
-ChronoTunes enforces the canonical Fallow 3.17.0 ZERO-DEBT architecture. Every gate — pre-commit, pre-push, pull-request CI, and master pushes — fails on any finding; there is no baseline, attribution, or freshness machinery. The migration from the adoption-era `new-only` gate was tracked in [#313](https://github.com/samaluk/chronotunes/issues/313), with the target architecture based on [samaluk/fintual-api#405](https://github.com/samaluk/fintual-api/pull/405).
+ChronoTunes enforces the canonical Fallow 3.20.0 ZERO-DEBT architecture. Every gate — pre-commit, pre-push, and pull-request CI — fails on any finding; there is no baseline or attribution machinery. The migration from the adoption-era `new-only` gate was tracked in [#313](https://github.com/samaluk/chronotunes/issues/313), with the target architecture based on [samaluk/fintual-api#405](https://github.com/samaluk/fintual-api/pull/405). Generic validation is PR-first; default-branch workflows are reserved for genuinely post-merge behavior.
 
 ## Version and execution model
 
-- The `fallow` dev dependency, type-aware companion, and MCP server are pinned to `3.17.0`.
-- pnpm's strict one-day minimum release-age policy remains enabled; it has exact `3.17.0` exceptions only for Fallow and the eight Fallow platform packages plus the type-aware companion required by the lockfile.
-- The dedicated Fallow workflow keeps the lockfile-controlled CLI gate authoritative and uses the official `fallow-rs/fallow` Action at the matching immutable `v3.17.0` commit for pull-request summary, Check Run, and inline review feedback. The Action receives the same fresh coverage report and exact CLI version.
+- The `fallow` dev dependency, type-aware companion, and MCP server are pinned to `3.20.0`.
+- pnpm's strict one-day minimum release-age policy remains enabled; it has exact `3.20.0` exceptions only for Fallow and the eight Fallow platform packages plus the type-aware companion required by the lockfile.
+- The reusable CI workflow keeps the lockfile-controlled CLI gate authoritative and uploads one fresh coverage report. During the staged required-check migration, the legacy dedicated Fallow workflow still provides the required `Fallow` status; afterward, optional `ci / Fallow feedback` will consume that artifact on `ubuntu-latest` for the official Action's pull-request summary, Check Run, and inline review feedback.
 - The repo-local MCP entry in `.opencode/opencode.json` runs `pnpm exec fallow-mcp`.
-- The vendored `.agents/skills/fallow` directory is the skill shipped with Fallow 3.17.0.
+- The vendored `.agents/skills/fallow` directory is the skill shipped with Fallow 3.20.0.
 
 ## Gate semantics
 
@@ -23,7 +23,7 @@ ChronoTunes enforces the canonical Fallow 3.17.0 ZERO-DEBT architecture. Every g
 
 `gate: all` is the config default: bare `fallow audit`, the staged-diff pre-commit gate, and CI all fail on every finding — new or inherited. There is nothing left to attribute.
 
-There are no committed Fallow baselines, regression snapshots, freshness checks, custom JSON parsers, SARIF uploads, or duplicate analysis wrappers. The one scheduled re-scan is the drift workflow described under [CI and hooks](#ci-and-hooks); it exists to catch tool-version regressions, not to track debt.
+There are no committed Fallow baselines, regression snapshots, freshness checks, custom JSON parsers, SARIF uploads, or duplicate analysis wrappers.
 
 ## Commands
 
@@ -84,7 +84,7 @@ The remaining exclusions are narrow and intentional:
 
 ## Current state and dispositions
 
-Full-repository probes on the stack tip (Fallow 3.17.0, 302 tests):
+Full-repository probes on the stack tip (Fallow 3.20.0, 302 tests):
 
 - Dead code: **0 findings** (`dead-code --type-aware --fail-on-issues` exits 0). The adoption-era backlog — 48 unused files, 1 unused export, 2 unused types, 37 private-type leaks, 3 unused dependencies — is fully retired.
 - Duplication: **0 unreviewed clone groups**; `dupes --mode semantic --near --threshold 5e-324 --fail-on-issues` exits 0 with only individually reviewed fingerprint/count exceptions.
@@ -98,11 +98,10 @@ Dispositions for the advisory surfaces named in #313's exit criterion 5:
 - Security candidates: the two open-redirect candidates in `src/app/landing-page-content.tsx` were **resolved** — post-create/join navigation validates the server/lobby code against the lobby-code shape and navigates via `router.push` instead of assigning `window.location.href`. `fallow security` now reports zero items.
 - Coverage gaps: the CRAP gate forces coverage wherever untested complexity breaches the health thresholds (the game hot paths decomposed in this stack all carry render suites); remaining uncovered files are UI shells, generated bindings, and config entry points where behavior is pinned by type-aware analysis. Coverage-gap findings stay `off` in rules because the CRAP gate is the enforcement surface.
 - Duplication dispositions: pair-level semantic+near detection found 28 groups. One genuine repeated range-normalization block was refactored; the remaining 27 stable groups are individually fingerprinted below because extraction would reduce clarity or discard intentional fixture/design-token structure. A changed clone body or occurrence count is intentionally unreviewed and blocks until reclassified.
-- Drift workflow: a version-keyed cache re-scan when the pinned fallow version changes. This is intentional freshness machinery — the only scheduled scan in the repo — and it exists to catch tool regressions, not to carry debt.
 
 ### Reviewed clone groups
 
-The list below is the complete pair-level result from Fallow 3.17.0 with semantic and near detection enabled. The count suffix is part of each reviewed key; adding an instance or changing the normalized content creates a new finding.
+The list below is the complete pair-level result from Fallow 3.20.0 with semantic and near detection enabled. The count suffix is part of each reviewed key; adding an instance or changing the normalized content creates a new finding.
 
 | Fingerprint               | Count | Review reason                                                               |
 | ------------------------- | ----: | --------------------------------------------------------------------------- |
@@ -136,7 +135,7 @@ The list below is the complete pair-level result from Fallow 3.17.0 with semanti
 
 ## CI and hooks
 
-Pull-request and master-push runs use the dedicated `.github/workflows/fallow.yml`: `test:coverage` followed by the official SHA-pinned Action's `audit --gate all` feedback on pull requests and `fallow:ci` (≡ `fallow:full`) on every event, every finding blocking, least-privilege permissions, and cancel-in-progress concurrency. The Action is presentation feedback; the standalone CLI composition remains the authoritative full-repository gate. `.github/workflows/fallow-drift.yml` re-scans with the same `fallow:full` command on dependency-file pushes when the lockfile-installed Fallow version was not seen before.
+Pull requests use the reusable `.github/workflows/ci-reusable.yml`: `test:coverage`, one coverage artifact upload, the preserved Frog validation, and `fallow:ci` (≡ `fallow:full`) in the authoritative `ci / ci` job. During the required-check transition, `.github/workflows/fallow.yml` remains PR-only so the legacy `Fallow` status continues to be emitted; it is removed only after the ruleset no longer requires it. The optional `ci / Fallow feedback` job runs the official SHA-pinned Action on `ubuntu-latest`, consuming the artifact without blocking merges.
 
 The hk configuration runs:
 
@@ -169,4 +168,4 @@ Representative failure probes (exit criterion 6), run before flipping hooks/CI t
 
 During the migration, the standalone probes were also observed failing on the real inherited debt as each category was driven to zero (dead-code 91 → 0, health hotspots 42 → 0, duplication 102 → 0 unreviewed groups); per-PR evidence is in the #342–#348 PR descriptions.
 
-`pnpm fallow:full` chains the strict changed-code audit, dead-code, duplication, and health analyses; `pnpm fallow:ci` is its CI alias. The hk pre-commit runs the staged-diff audit (`fallow:staged`, gate all), pre-push runs the covered full scan, and the dedicated Fallow workflow runs it on every PR and master push. The native PR feedback is audit-based with `gate: all`, and the drift workflow runs the same `fallow:full` whenever the pinned Fallow version changes.
+`pnpm fallow:full` chains the strict changed-code audit, dead-code, duplication, and health analyses; `pnpm fallow:ci` is its CI alias. The hk pre-commit runs the staged-diff audit (`fallow:staged`, gate all), pre-push runs the covered full scan, and reusable CI runs it once per PR. The native PR feedback is audit-based with `gate: all`.

@@ -42,16 +42,15 @@ cargo install fallow-cli   # build from source
 
 ## ChronoTunes project notes
 
-This repository pins `fallow@3.17.0` and is in the adoption phase of the
-canonical Fallow architecture. The blocking migration gate is the native
-changed-code audit `fallow audit --gate new-only`; existing full-repository
-debt remains visible but does not block this phase.
+This repository pins `fallow@3.20.0` and uses the canonical zero-debt Fallow
+architecture. The blocking CI gate is the full `pnpm fallow:ci` composition;
+pull-request validation is the primary boundary.
 
 Use the project scripts for the common views:
 
-- `pnpm fallow:audit` — blocking new-only changed-code gate
+- `pnpm fallow:audit` — blocking changed-code gate
 - `pnpm fallow:dead-code`, `pnpm fallow:dupes`, and `pnpm fallow:health` —
-  full-repository debt inspection (advisory during migration)
+  full-repository blocking analyzers used by `pnpm fallow:full`
 - `pnpm fallow:status` — version-matched type-aware companion status
 
 The repository-local MCP server is `pnpm exec fallow-mcp`, registered in

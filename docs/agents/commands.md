@@ -95,4 +95,4 @@ Each workflow job declares its own `runs-on` under **.github/workflows/**, gated
 | ------------------------- | --------------------------------- |
 | `USE_SELF_HOSTED_RUNNERS` | `true` to use self-hosted runners |
 
-When enabled, jobs route to the `[self-hosted, docker]` container runners (node24 toolchain); fork PRs always fall back to GitHub-hosted `ubuntu-latest`. When disabled (or the variable is unset), jobs use GitHub-hosted runners — `ubuntu-slim` for light jobs (`actionlint`, `friction-log`), `ubuntu-latest` for CI/build/agent jobs (`ci-reusable`, `pullfrog`).
+When enabled, the general trusted route is `[self-hosted, macOS, ARM64]`; fork PRs always fall back to GitHub-hosted `ubuntu-latest`. Pullfrog is the exception: its separately configured `PULLFROG_RUNNER_LABELS` may target a Linux/Docker runner. When disabled (or the variable is unset), every normal hosted fallback uses `ubuntu-latest`.
