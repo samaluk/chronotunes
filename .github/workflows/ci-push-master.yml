@@ -5,6 +5,10 @@ on:
 
 permissions:
   contents: read
+  # The called workflow declares these permissions for its PR-only feedback job.
+  # GitHub validates caller permissions before evaluating that job's condition.
+  checks: write
+  pull-requests: write
 
 concurrency:
   group: ci-manual-${{ github.workflow }}-${{ github.ref }}
