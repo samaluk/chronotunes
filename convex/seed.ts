@@ -1,5 +1,5 @@
 import { internalMutation } from "./_generated/server";
-import { DEMO_CATALOG } from "./lib/demo-catalog";
+import { DEMO_CATALOG } from "./lib/demo_catalog";
 
 export const seed = internalMutation({
   args: {},
