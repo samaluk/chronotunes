@@ -1,7 +1,7 @@
 import { expect, test } from "vitest";
 
 import { DEFAULT_SETTINGS } from "./lobby_settings";
-import { DEMO_CATALOG } from "./demo-catalog";
+import { DEMO_CATALOG } from "./demo_catalog";
 import { validateTrackItem } from "./track_validation";
 
 const MINIMUM_DEMO_PLAYERS = 2;
