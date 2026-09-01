@@ -3,6 +3,11 @@ name: CI (pull request)
 on:
   pull_request:
 
+permissions:
+  contents: read
+  pull-requests: write
+  checks: write
+
 concurrency:
   group: ci-pr-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
@@ -10,4 +15,3 @@ concurrency:
 jobs:
   ci:
     uses: ./.github/workflows/ci-reusable.yml
-    secrets: inherit

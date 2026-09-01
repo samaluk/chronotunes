@@ -1,16 +1,15 @@
-name: CI (push master)
+name: CI (manual)
 
 on:
-  push:
-    branches:
-      - master
-      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
 
 concurrency:
-  group: ci-push-${{ github.workflow }}-${{ github.ref }}
+  group: ci-manual-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
   ci:
     uses: ./.github/workflows/ci-reusable.yml
-    secrets: inherit

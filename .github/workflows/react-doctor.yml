@@ -27,15 +27,12 @@ name: React Doctor
 on:
   pull_request:
     types: [opened, synchronize, reopened, ready_for_review]
-  push:
-    branches:
-      - master
 
 permissions:
   contents: read
 
-# Cancels any in-flight scan for the same PR (or branch, on push) the moment a
-# new commit arrives, so reviewers only ever see the latest run.
+# Cancels any in-flight scan for the same PR the moment a new commit arrives,
+# so reviewers only ever see the latest run.
 concurrency:
   group: react-doctor-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
@@ -72,18 +69,35 @@ jobs:
       # anchor excludes same-suffix keys like oxlint-plugin-react-doctor@.
       - name: Resolve pinned react-doctor version
         id: rdver
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
         run: |
-          v="$(sed -n 's/^ *react-doctor@\([0-9][0-9.]*\):.*/\1/p' pnpm-lock.yaml | head -1)"
-          if [ -z "$v" ]; then echo "::error::react-doctor version not found in pnpm-lock.yaml"; exit 1; fi
-          echo "version=$v" >> "$GITHUB_OUTPUT"
+          head_version="$(git show "$HEAD_SHA:pnpm-lock.yaml" 2>/dev/null | sed -n 's/^ *react-doctor@\([0-9][0-9.]*\):.*/\1/p' | head -1 || true)"
+          base_version="$(git show "$BASE_SHA:pnpm-lock.yaml" 2>/dev/null | sed -n 's/^ *react-doctor@\([0-9][0-9.]*\):.*/\1/p' | head -1 || true)"
+          if [ -z "$head_version" ]; then
+            echo "::error::react-doctor version not found in the PR lockfile"
+            exit 1
+          fi
+          if [ -z "$base_version" ]; then
+            echo "::notice::No base react-doctor version found; using a full scan."
+            scope=full
+          elif [ "$base_version" != "$head_version" ]; then
+            echo "::notice::React Doctor changed from $base_version to $head_version; using a full scan."
+            scope=full
+          else
+            scope=changed
+          fi
+          echo "version=$head_version" >> "$GITHUB_OUTPUT"
+          echo "scope=$scope" >> "$GITHUB_OUTPUT"
 
       - uses: millionco/react-doctor@01820bb4fd4d0a4aebcd8df2b2a143a098649cb2 # v2.2.8
         with:
           # Same CLI version the local hooks and the drift scan resolve to.
           version: ${{ steps.rdver.outputs.version }}
-          # Changed-code scope: report only issues the PR introduces vs its base,
-          # so historical debt does not suddenly block all pull requests.
-          scope: changed
+          # Changed-code scope is the default; the resolver selects full scope
+          # when this PR changes the React Doctor version or its rule pack.
+          scope: ${{ steps.rdver.outputs.scope }}
           # Newly introduced warnings (and errors) fail the check.
           blocking: warning
           # v2 PR feedback: sticky summary comment + inline review comments +

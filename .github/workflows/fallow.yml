@@ -1,9 +1,9 @@
 # Fallow — independent zero-debt quality gate and native PR feedback.
 #
 # Runs the FULL repository gate (changed-code audit + project-wide dead-code,
-# duplication, and health, every finding blocking) on pull requests and pushes
-# to master. There is no inherited debt and no new-only attribution anymore:
-# exit code 1 means a real regression.
+# duplication, and health, every finding blocking) on pull requests during the
+# staged required-check migration. There is no inherited debt and no new-only
+# attribution anymore: exit code 1 means a real regression.
 #
 # The official Action is presentation-only for pull requests. Its audit uses
 # the same gate-all policy, pinned CLI, and fresh coverage report as the
@@ -14,18 +14,14 @@
 # `pnpm test:coverage` produces the fresh Istanbul report that fallow:full's
 # audit and health probes consume for accurate CRAP scoring.
 #
-# To make this an enforced merge gate, add the "Fallow" check run as a
-# required status check on the master branch ruleset
-# (Settings → Rules → Rulesets → master → Require status checks).
+# The required "Fallow" status remains temporarily while the ruleset migration
+# is staged. Remove this workflow only after the ruleset no longer requires it.
 
 name: Fallow
 
 on:
   pull_request:
     types: [opened, synchronize, reopened, ready_for_review]
-  push:
-    branches:
-      - master
 
 permissions:
   contents: read

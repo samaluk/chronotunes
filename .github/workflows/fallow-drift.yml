@@ -1,16 +1,15 @@
 # Fallow — drift scan.
 #
-# Full-repository zero-debt scan that runs when the installed fallow VERSION
-# changes, not on a cron: the workflow triggers on pushes to master that touch
-# any package.json / pnpm-lock.yaml, resolves the exact installed fallow
-# version from pnpm-lock.yaml, and uses it as the actions/cache key.
+# Full-repository zero-debt scan that runs manually when the installed fallow
+# VERSION needs verification. It must be dispatched from the default `master`
+# branch, resolves the exact installed fallow version from pnpm-lock.yaml, and
+# uses it as the actions/cache key.
 #
 # Exactly-once semantics fall out of the version-keyed cache:
 #   - a version never scanned before -> cache miss -> the full scan runs;
-#   - dependency bumps that don't touch fallow keep the same key -> the run is
-#     a cheap no-op;
+#   - a version already scanned on the same runner platform is a cheap no-op;
 #   - a failed scan is never cached (actions/cache only saves when the job
-#     succeeds), so a broken version re-scans on the next trigger.
+#     succeeds), so a broken version re-scans on the next manual dispatch.
 #
 # The version probe greps pnpm-lock.yaml at the repo root for the exact
 # resolved fallow version (survives Renovate manifest ranges; fails loudly
@@ -23,12 +22,6 @@
 name: Fallow (drift scan)
 
 on:
-  push:
-    branches:
-      - master
-    paths:
-      - "**/package.json"
-      - "**/pnpm-lock.yaml"
   workflow_dispatch:
 
 permissions:
@@ -47,6 +40,14 @@ jobs:
       contents: read
     timeout-minutes: 20
     steps:
+      - name: Require the default branch
+        if: github.ref_name != github.event.repository.default_branch
+        env:
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+        run: |
+          echo "::error::Fallow drift scans must be dispatched from the default '$DEFAULT_BRANCH' branch."
+          exit 1
+
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -67,7 +68,7 @@ jobs:
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: .fallow-drift
-          key: fallow-drift-${{ steps.fver.outputs.version }}
+          key: fallow-drift-${{ runner.os }}-${{ runner.arch }}-${{ steps.fver.outputs.version }}
 
       - name: Mark this version as scanned
         if: steps.seen.outputs.cache-hit != 'true'

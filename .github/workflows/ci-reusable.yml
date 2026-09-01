@@ -10,6 +10,8 @@ jobs:
   ci:
     # USE_SELF_HOSTED_RUNNERS repo variable (Settings → Actions → Variables)
     runs-on: ${{ github.event.pull_request.head.repo.fork && 'ubuntu-latest' || (vars.USE_SELF_HOSTED_RUNNERS == 'true' && fromJSON('["self-hosted","macOS","ARM64"]') || 'ubuntu-latest') }}
+    permissions:
+      contents: read
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -25,11 +27,21 @@ jobs:
       - name: Typecheck
         run: pnpm next:typegen
 
-      - name: Unit tests
-        run: pnpm test:once
+      - name: Unit tests (with coverage)
+        run: pnpm test:coverage
+
+      - name: Upload coverage
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: coverage
+          path: coverage/coverage-final.json
+          if-no-files-found: error
 
       - name: Validate Frog friction log
         run: pnpx --yes frog@1.0.15 list
+
+      - name: Fallow (full zero-debt gate)
+        run: pnpm fallow:ci
 
       - name: Cache Next.js
         if: runner.environment != 'self-hosted'
@@ -40,3 +52,57 @@ jobs:
 
       - name: Build
         run: pnpm build
+
+  fallow-feedback:
+    name: Fallow feedback
+    needs: ci
+    if: ${{ always() && github.event_name == 'pull_request' && needs.ci.result != 'cancelled' }}
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    permissions:
+      contents: read
+      pull-requests: write
+      checks: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Download coverage
+        id: coverage-artifact
+        continue-on-error: true
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          name: coverage
+
+      - name: Check coverage availability
+        id: coverage
+        shell: bash
+        run: |
+          if [[ -f coverage/coverage-final.json ]]; then
+            echo "available=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "available=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::Coverage artifact is unavailable; skipping optional Fallow feedback."
+          fi
+
+      - name: Fallow (native PR feedback)
+        if: steps.coverage.outputs.available == 'true'
+        continue-on-error: true
+        uses: fallow-rs/fallow@85d490ce31ada36388dd59f7860716b261b48694 # v3.20.0
+        with:
+          command: audit
+          gate: all
+          type-aware: true
+          type-aware-require: complete
+          coverage: coverage/coverage-final.json
+          coverage-root: ${{ github.workspace }}
+          comment: true
+          comment-layout: compact
+          review-comments: true
+          review-guidance: true
+          branded-token: false
+          sarif: false
+          fail-on-issues: true
