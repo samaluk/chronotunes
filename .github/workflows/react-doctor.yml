@@ -60,8 +60,23 @@ jobs:
           persist-credentials: false
           clean: ${{ vars.USE_SELF_HOSTED_RUNNERS != 'true' }}
 
+      # Pin the scan to the exact react-doctor CLI version the repo depends on,
+      # so CI scans with the same CLI the local hooks run. Resolve it from the
+      # lockfile without installing the workspace dependencies.
+      - name: Resolve pinned react-doctor version
+        id: rdver
+        shell: bash
+        run: |
+          v="$(sed -n 's/^ *react-doctor@\([0-9][0-9.]*\):.*/\1/p' pnpm-lock.yaml | head -1)"
+          if [ -z "$v" ]; then
+            echo "::error::react-doctor version not found in pnpm-lock.yaml"
+            exit 1
+          fi
+          echo "version=$v" >> "$GITHUB_OUTPUT"
+
       - uses: millionco/react-doctor@01820bb4fd4d0a4aebcd8df2b2a143a098649cb2 # v2.2.8
         with:
+          version: ${{ steps.rdver.outputs.version }}
           # Report only issues introduced by this pull request, so existing
           # repository debt does not block unrelated changes.
           scope: changed
