@@ -6,7 +6,7 @@ ChronoTunes enforces the canonical Fallow 3.20.0 ZERO-DEBT architecture. Every g
 
 - The `fallow` dev dependency, type-aware companion, and MCP server are pinned to `3.20.0`.
 - pnpm's strict one-day minimum release-age policy remains enabled; it has exact `3.20.0` exceptions only for Fallow and the eight Fallow platform packages plus the type-aware companion required by the lockfile.
-- The reusable CI workflow keeps the lockfile-controlled CLI gate authoritative and uploads one fresh coverage report. During the staged required-check migration, the legacy dedicated Fallow workflow still provides the required `Fallow` status; afterward, optional `ci / Fallow feedback` will consume that artifact on `ubuntu-latest` for the official Action's pull-request summary, Check Run, and inline review feedback.
+- The reusable CI workflow keeps the lockfile-controlled CLI gate authoritative and uploads one fresh coverage report. Optional `ci / Fallow feedback` consumes that artifact on `ubuntu-latest` for the official Action's pull-request summary, Check Run, and inline review feedback.
 - The repo-local MCP entry in `.opencode/opencode.json` runs `pnpm exec fallow-mcp`.
 - The vendored `.agents/skills/fallow` directory is the skill shipped with Fallow 3.20.0.
 
@@ -133,7 +133,7 @@ The list below is the complete pair-level result from Fallow 3.20.0 with semanti
 
 ## CI and hooks
 
-Pull requests use the reusable `.github/workflows/ci-reusable.yml`: `test:coverage`, one coverage artifact upload, the preserved Frog validation, and `fallow:ci` (≡ `fallow:full`) in the authoritative `ci / ci` job. During the required-check transition, `.github/workflows/fallow.yml` remains PR-only so the legacy `Fallow` status continues to be emitted; it is removed only after the ruleset no longer requires it. The optional `ci / Fallow feedback` job runs the official SHA-pinned Action on `ubuntu-latest`, consuming the artifact without blocking merges.
+Pull requests use the reusable `.github/workflows/ci-reusable.yml`: `test:coverage`, one coverage artifact upload, the preserved Frog validation, and `fallow:ci` (≡ `fallow:full`) in the authoritative `ci / ci` job. The optional `ci / Fallow feedback` job runs the official SHA-pinned Action on `ubuntu-latest`, consuming the artifact without blocking merges.
 
 The hk configuration runs:
 
