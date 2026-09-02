@@ -2,47 +2,19 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
     "config:recommended",
+    ":disableRateLimiting",
     ":pinAllExceptPeerDependencies",
     "helpers:pinGitHubActionDigests"
   ],
   "labels": ["dependencies"],
   "minimumReleaseAge": "3 days",
-  "prConcurrentLimit": 5,
-  "schedule": ["before 5am on monday"],
-  "vulnerabilityAlerts": {
-    "enabled": true,
-    "minimumReleaseAge": null,
-    "schedule": ["at any time"]
-  },
   "packageRules": [
-    {
-      "description": "Group compatible GitHub Actions updates",
-      "matchManagers": ["github-actions"],
-      "matchUpdateTypes": ["digest", "minor", "patch"],
-      "groupName": "GitHub Actions"
-    },
-    {
-      "description": "Group Oxc lint and format tooling",
-      "matchDepTypes": ["devDependencies"],
-      "matchPackageNames": ["oxfmt", "oxlint", "oxlint-tsgolint"],
-      "matchUpdateTypes": ["minor", "patch"],
-      "groupName": "Oxc tooling",
-      "groupSlug": "oxc-tooling"
-    },
-    {
-      "description": "Group Vitest and coverage tooling",
-      "matchDepTypes": ["devDependencies"],
-      "matchPackageNames": ["vitest", "@vitest/coverage-v8", "@vitest/ui"],
-      "matchUpdateTypes": ["minor", "patch"],
-      "groupName": "Vitest tooling",
-      "groupSlug": "vitest-tooling"
-    },
     {
       "description": "Keep the Fallow package and GitHub Action together",
       "matchPackageNames": ["fallow", "fallow-rs/fallow"],
-      "matchUpdateTypes": ["digest", "minor", "patch"],
       "groupName": "Fallow",
-      "groupSlug": "fallow"
+      "groupSlug": "fallow",
+      "groupSingleUpdates": true
     },
     {
       "description": "Keep Pullfrog on major-version tags",
