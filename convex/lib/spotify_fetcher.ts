@@ -285,7 +285,7 @@ export async function fetchPlaylistFromEmbed(
   }
 
   const html = await response.text();
-  const match = html.match(/id="__NEXT_DATA__"[^>]*>([^<]+)<\/script>/);
+  const match = html.match(/id="__NEXT_DATA__"[^>]*>([\s\S]+?)<\/script>/);
   if (!match || !match[1]) {
     throw new Error(
       "Could not extract playlist data from Spotify embed. The playlist may be private or Spotify's page structure may have changed.",

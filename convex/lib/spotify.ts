@@ -180,9 +180,10 @@ function checkItemTrackType(
       reason: "missing_track_data",
     };
   }
-  if (item.track.type && item.track.type !== "track") {
+  const trackType = item.track.type;
+  if (trackType && trackType !== "track") {
     return {
-      details: `Non-track item of type "${item.track.type}"`,
+      details: `Non-track item of type "${trackType}"`,
       index,
       reason: "missing_track_data",
       title: item.track.name ?? undefined,

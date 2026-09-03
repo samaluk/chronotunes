@@ -149,6 +149,37 @@ describe(fetchPlaylistFromEmbed, () => {
     expect(result.items[0]?.track?.id).toBe("sp-embed-1");
     expect(result.source).toBe("embed");
   });
+
+  test("extracts playlist data from multiline formatted embed HTML", async () => {
+    const nextData = {
+      props: {
+        pageProps: {
+          state: {
+            data: {
+              entity: {
+                name: "Multiline Embed",
+                trackList: [
+                  {
+                    id: "sp-embed-multi",
+                    title: "Multiline Title",
+                    uri: "spotify:track:sp-embed-multi",
+                  },
+                ],
+              },
+            },
+          },
+        },
+      },
+    };
+
+    const html = `<html>\n  <body>\n    <script id="__NEXT_DATA__" type="application/json">\n      ${JSON.stringify(nextData, null, 2)}\n    </script>\n  </body>\n</html>`;
+
+    const mockFetch: typeof fetch = vi.fn(async () => new Response(html, { status: 200 }));
+    const result = await fetchPlaylistFromEmbed("multi-id", { fetchFn: mockFetch });
+    expect(result.playlistName).toBe("Multiline Embed");
+    expect(result.items).toHaveLength(1);
+    expect(result.items[0]?.track?.name).toBe("Multiline Title");
+  });
 });
 
 describe(fetchSpotifyPlaylist, () => {
