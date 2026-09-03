@@ -159,14 +159,37 @@ describe("createYouTubeApiPlaybackResolver", () => {
   });
 
   test("throws on failed HTTP response", async () => {
+    const mockFetch: typeof fetch = vi.fn(async () => new Response("Forbidden", { status: 403 }));
+
+    const resolver = createYouTubeApiPlaybackResolver("valid-api-key", mockFetch);
+
+    await expect(
+      resolver({ artist: "Queen", title: "Bohemian Rhapsody", year: 1975 }),
+    ).rejects.toThrow("YouTube API request failed (403): Forbidden");
+  });
+
+  test("throws clear error on 429 rate limit response", async () => {
+    const mockFetch: typeof fetch = vi.fn(async () => new Response("Rate limit", { status: 429 }));
+
+    const resolver = createYouTubeApiPlaybackResolver("valid-api-key", mockFetch);
+
+    await expect(
+      resolver({ artist: "Queen", title: "Bohemian Rhapsody", year: 1975 }),
+    ).rejects.toThrow("YouTube API rate limit exceeded (HTTP 429)");
+  });
+
+  test("throws clear error on quota exhaustion", async () => {
     const mockFetch: typeof fetch = vi.fn(
-      async () => new Response("Quota exceeded", { status: 403 }),
+      async () =>
+        new Response(JSON.stringify({ error: { errors: [{ reason: "quotaExceeded" }] } }), {
+          status: 403,
+        }),
     );
 
     const resolver = createYouTubeApiPlaybackResolver("valid-api-key", mockFetch);
 
     await expect(
       resolver({ artist: "Queen", title: "Bohemian Rhapsody", year: 1975 }),
-    ).rejects.toThrow("YouTube API request failed (403): Quota exceeded");
+    ).rejects.toThrow("YouTube API daily quota exceeded");
   });
 });

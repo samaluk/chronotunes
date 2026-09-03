@@ -125,6 +125,10 @@ export function createMockPlaybackResolver(
   };
 }
 
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
 /**
  * Creates an official YouTube Data API v3 resolver using an operator's API key.
  */
@@ -151,28 +155,27 @@ export function createYouTubeApiPlaybackResolver(
     );
 
     if (!response.ok) {
+      if (response.status === 429) {
+        throw new Error("YouTube API rate limit exceeded (HTTP 429). Please wait before retrying.");
+      }
       const errorText = await response.text();
+      if (response.status === 403 && errorText.includes("quotaExceeded")) {
+        throw new Error(
+          "YouTube API daily quota exceeded. Quota resets daily at midnight Pacific Time.",
+        );
+      }
       throw new Error(`YouTube API request failed (${response.status}): ${errorText}`);
     }
 
     const rawData: unknown = await response.json();
-    if (
-      rawData &&
-      typeof rawData === "object" &&
-      "items" in rawData &&
-      Array.isArray(rawData.items)
-    ) {
-      const firstItem: unknown = rawData.items[0];
+    if (isRecord(rawData) && Array.isArray(rawData["items"])) {
+      const firstItem: unknown = rawData["items"][0];
       if (
-        firstItem &&
-        typeof firstItem === "object" &&
-        "id" in firstItem &&
-        firstItem.id &&
-        typeof firstItem.id === "object" &&
-        "videoId" in firstItem.id &&
-        typeof firstItem.id.videoId === "string"
+        isRecord(firstItem) &&
+        isRecord(firstItem["id"]) &&
+        typeof firstItem["id"]["videoId"] === "string"
       ) {
-        return firstItem.id.videoId;
+        return firstItem["id"]["videoId"];
       }
     }
 
