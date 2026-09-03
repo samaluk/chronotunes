@@ -68,10 +68,10 @@ export default defineConfig({
     "vitest/prefer-called-once": "error",
     "vitest/prefer-strict-equal": "error",
     "vitest/prefer-strict-boolean-matchers": "error",
+    "vitest/require-to-throw-message": "error",
     // Temporarily disabled while fixing offenders in subsequent commits
     "vitest/valid-title": "off",
     "vitest/require-mock-type-parameters": "off",
     "vitest/no-conditional-expect": "off",
-    "vitest/require-to-throw-message": "off",
   },
 });
