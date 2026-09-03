@@ -52,7 +52,7 @@ export default defineConfig({
     "vitest/no-disabled-tests": "error",
     "vitest/no-standalone-expect": "error",
     "vitest/valid-describe-callback": "error",
-    "vitest/valid-expect": "error",
+    "vitest/valid-expect": ["error", { alwaysAwait: true }],
     "vitest/valid-expect-in-promise": "error",
     "vitest/no-identical-title": "error",
     "vitest/no-test-prefixes": "error",
@@ -71,7 +71,34 @@ export default defineConfig({
     "vitest/require-to-throw-message": "error",
     "vitest/no-conditional-expect": "error",
     "vitest/valid-title": "error",
-    // Temporarily disabled while fixing offenders in subsequent commits
+    // Configurable Vitest rules aligned with project standards
+    "vitest/consistent-vitest-vi": ["error", { fn: "vi" }],
+    "vitest/consistent-test-filename": ["error", { pattern: ".*\\.test\\.[tj]sx?$" }],
+    "vitest/max-nested-describe": ["error", { max: 2 }],
+    "vitest/expect-expect": [
+      "error",
+      { assertFunctionNames: ["expect", "assert", "expectTypeOf", "assertType"] },
+    ],
+    "vitest/prefer-lowercase-title": ["error", { ignore: ["describe"] }],
+    "vitest/prefer-import-in-mock": ["error", { fixable: false }],
+    "vitest/consistent-each-for": "error",
+    // Evaluated configurable Vitest rules deliberately disabled per docs/agents/testing.md
+    // Rejects workflow testing ("fewer, longer tests") in favor of artificial 1-assertion fragmentation
+    "vitest/max-expects": "off",
+    // ChronoTunes prefers flat suites with top-level test(...) over mandatory describe blocks
+    "vitest/require-top-level-describe": "off",
+    // afterEach is necessary for cleanup; factory helpers preferred over beforeEach for setup
+    "vitest/no-hooks": "off",
+    // Mixed usage (test for top-level/Convex, it inside describe) currently permitted
+    "vitest/consistent-test-it": "off",
+    // Niche/specialized rules kept off
+    "vitest/prefer-expect-assertions": "off",
+    "vitest/no-large-snapshots": "off",
+    "vitest/prefer-snapshot-hint": "off",
+    "vitest/no-restricted-matchers": "off",
+    "vitest/no-restricted-vi-methods": "off",
+    "vitest/require-hook": "off",
+    // Temporarily disabled while fixing offenders in subsequent commit
     "vitest/require-mock-type-parameters": "off",
   },
 });
