@@ -4,7 +4,7 @@ import { defineConfig } from "oxlint";
 // type-aware linting via oxlint-tsgolint, strict TypeScript escape-hatch rules,
 // and React Compiler-derived rules from the react plugin.
 export default defineConfig({
-  plugins: ["unicorn", "typescript", "oxc", "react"],
+  plugins: ["unicorn", "typescript", "oxc", "react", "vitest"],
   options: {
     typeAware: true,
   },
@@ -46,5 +46,29 @@ export default defineConfig({
     "react/exhaustive-effect-dependencies": "error",
     "react/hooks": "error",
     "react/memo-dependencies": "error",
+    // Vitest correctness & hygiene (0 existing violations)
+    "vitest/no-conditional-tests": "error",
+    "vitest/no-focused-tests": "error",
+    "vitest/no-disabled-tests": "error",
+    "vitest/no-standalone-expect": "error",
+    "vitest/valid-describe-callback": "error",
+    "vitest/valid-expect": "error",
+    "vitest/valid-expect-in-promise": "error",
+    "vitest/no-identical-title": "error",
+    "vitest/no-test-prefixes": "error",
+    "vitest/no-test-return-statement": "error",
+    "vitest/no-import-node-test": "error",
+    "vitest/no-commented-out-tests": "error",
+    "vitest/require-awaited-expect-poll": "error",
+    "vitest/hoisted-apis-on-top": "error",
+    "vitest/prefer-to-have-length": "error",
+    "vitest/prefer-to-contain": "error",
+    "vitest/prefer-to-be": "error",
+    "vitest/prefer-comparison-matcher": "error",
+    // Temporarily disabled while fixing offenders in subsequent commits
+    "vitest/valid-title": "off",
+    "vitest/require-mock-type-parameters": "off",
+    "vitest/no-conditional-expect": "off",
+    "vitest/require-to-throw-message": "off",
   },
 });
