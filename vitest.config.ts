@@ -43,6 +43,15 @@ export default defineConfig({
           server: { deps: { inline: ["convex-test"] } },
         },
       },
+      // Project for Node.js script tests
+      {
+        extends: true,
+        test: {
+          environment: "node",
+          include: ["scripts/**/*.test.ts"],
+          name: "scripts",
+        },
+      },
     ],
   },
 });

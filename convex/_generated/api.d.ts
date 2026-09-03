@@ -9,6 +9,7 @@
  */
 
 import type * as bets from "../bets.js";
+import type * as catalog_admin from "../catalog_admin.js";
 import type * as cron from "../cron.js";
 import type * as games from "../games.js";
 import type * as host_disconnect from "../host_disconnect.js";
@@ -17,8 +18,11 @@ import type * as lib_demo_catalog from "../lib/demo_catalog.js";
 import type * as lib_game_context from "../lib/game_context.js";
 import type * as lib_game_logic from "../lib/game_logic.js";
 import type * as lib_lobby_settings from "../lib/lobby_settings.js";
+import type * as lib_playback_resolver from "../lib/playback_resolver.js";
 import type * as lib_round_management from "../lib/round_management.js";
 import type * as lib_sessions from "../lib/sessions.js";
+import type * as lib_spotify from "../lib/spotify.js";
+import type * as lib_spotify_fetcher from "../lib/spotify_fetcher.js";
 import type * as lib_track_selection from "../lib/track_selection.js";
 import type * as lib_track_validation from "../lib/track_validation.js";
 import type * as lobbies from "../lobbies.js";
@@ -45,6 +49,7 @@ import type {
 
 declare const fullApi: ApiFromModules<{
   bets: typeof bets;
+  catalog_admin: typeof catalog_admin;
   cron: typeof cron;
   games: typeof games;
   host_disconnect: typeof host_disconnect;
@@ -53,8 +58,11 @@ declare const fullApi: ApiFromModules<{
   "lib/game_context": typeof lib_game_context;
   "lib/game_logic": typeof lib_game_logic;
   "lib/lobby_settings": typeof lib_lobby_settings;
+  "lib/playback_resolver": typeof lib_playback_resolver;
   "lib/round_management": typeof lib_round_management;
   "lib/sessions": typeof lib_sessions;
+  "lib/spotify": typeof lib_spotify;
+  "lib/spotify_fetcher": typeof lib_spotify_fetcher;
   "lib/track_selection": typeof lib_track_selection;
   "lib/track_validation": typeof lib_track_validation;
   lobbies: typeof lobbies;

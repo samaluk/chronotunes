@@ -1,6 +1,6 @@
 import { ConvexError, v } from "convex/values";
 
-import { validateTrackItem } from "./lib/track_validation";
+import { baseTrackImportFields, validateTrackItem } from "./lib/track_validation";
 
 import { mutation, query } from "./_generated/server";
 
@@ -137,14 +137,7 @@ export const getPublic = query({
   },
 });
 
-const trackImportItem = v.object({
-  artist: v.string(),
-  durationMs: v.optional(v.number()),
-  mbid: v.optional(v.string()),
-  title: v.string(),
-  year: v.number(),
-  youtubeVideoId: v.optional(v.string()),
-});
+const trackImportItem = v.object(baseTrackImportFields);
 
 export const importTracks = mutation({
   args: { tracks: v.array(trackImportItem) },
