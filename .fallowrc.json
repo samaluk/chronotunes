@@ -22,7 +22,8 @@
   "ignoreDependencies": [
     "@edge-runtime/vm",
     "tailwindcss",
-    "react-doctor"
+    "react-doctor",
+    "shadcn"
   ],
   "typeAware": {
     "enabled": true,

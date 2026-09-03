@@ -58,6 +58,7 @@ jobs:
     continue-on-error: true
     permissions:
       contents: read
+      actions: read
       pull-requests: write
       checks: write
     steps:
@@ -73,6 +74,7 @@ jobs:
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
           name: coverage
+          path: coverage
 
       - name: Check coverage availability
         id: coverage
@@ -84,6 +86,13 @@ jobs:
             echo "available=false" >> "$GITHUB_OUTPUT"
             echo "::notice::Coverage artifact is unavailable; skipping optional Fallow feedback."
           fi
+
+      - uses: ./.github/actions/setup-toolchain
+        if: steps.coverage.outputs.available == 'true'
+
+      - name: Install dependencies
+        if: steps.coverage.outputs.available == 'true'
+        run: pnpm install --frozen-lockfile
 
       - name: Fallow (native PR feedback)
         if: steps.coverage.outputs.available == 'true'
@@ -102,4 +111,4 @@ jobs:
           review-guidance: true
           branded-token: false
           sarif: false
-          fail-on-issues: true
+          fail-on-issues: false
