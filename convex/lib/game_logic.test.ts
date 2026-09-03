@@ -136,47 +136,47 @@ describe(isPlacementCorrect, () => {
   test("proposed index within valid range returns true", () => {
     const timeline = createTimeline([1985, 1990, 1995]);
     const validRange = computeValidIndexRange(timeline, 1992);
-    expect(isPlacementCorrect(2, validRange)).toBeTruthy();
-    expect(isPlacementCorrect(3, validRange)).toBeFalsy();
+    expect(isPlacementCorrect(2, validRange)).toBe(true);
+    expect(isPlacementCorrect(3, validRange)).toBe(false);
   });
 
   test("proposed index at min boundary returns true", () => {
     const timeline = createTimeline([1985, 1990, 1995]);
     const validRange = computeValidIndexRange(timeline, 1992);
-    expect(isPlacementCorrect(2, validRange)).toBeTruthy();
+    expect(isPlacementCorrect(2, validRange)).toBe(true);
   });
 
   test("proposed index at max boundary returns true", () => {
     const timeline = createTimeline([1985, 1990, 1995]);
     const validRange = computeValidIndexRange(timeline, 1988);
-    expect(isPlacementCorrect(1, validRange)).toBeTruthy();
+    expect(isPlacementCorrect(1, validRange)).toBe(true);
   });
 
   test("proposed index below valid range returns false", () => {
     const timeline = createTimeline([1985, 1990, 1995]);
     const validRange = computeValidIndexRange(timeline, 1992);
-    expect(isPlacementCorrect(1, validRange)).toBeFalsy();
+    expect(isPlacementCorrect(1, validRange)).toBe(false);
   });
 
   test("proposed index above valid range returns false", () => {
     const timeline = createTimeline([1985, 1990, 1995]);
     const validRange = computeValidIndexRange(timeline, 1992);
-    expect(isPlacementCorrect(3, validRange)).toBeFalsy();
+    expect(isPlacementCorrect(3, validRange)).toBe(false);
   });
 
   test("same-year songs - multiple valid indices", () => {
     const timeline = createTimeline([1990, 1990, 1995]);
     const validRange = computeValidIndexRange(timeline, 1990);
-    expect(isPlacementCorrect(0, validRange)).toBeTruthy();
-    expect(isPlacementCorrect(1, validRange)).toBeTruthy();
-    expect(isPlacementCorrect(2, validRange)).toBeTruthy();
-    expect(isPlacementCorrect(3, validRange)).toBeFalsy();
+    expect(isPlacementCorrect(0, validRange)).toBe(true);
+    expect(isPlacementCorrect(1, validRange)).toBe(true);
+    expect(isPlacementCorrect(2, validRange)).toBe(true);
+    expect(isPlacementCorrect(3, validRange)).toBe(false);
   });
 
   test("empty timeline - only index 0 is valid", () => {
     const timeline: TimelineEntry[] = [];
     const validRange = computeValidIndexRange(timeline, 1990);
-    expect(isPlacementCorrect(0, validRange)).toBeTruthy();
-    expect(isPlacementCorrect(1, validRange)).toBeFalsy();
+    expect(isPlacementCorrect(0, validRange)).toBe(true);
+    expect(isPlacementCorrect(1, validRange)).toBe(false);
   });
 });

@@ -55,7 +55,7 @@ describe("lobbies", () => {
     });
 
     expect(players).toHaveLength(1);
-    expect(players[0]?.isHost).toBeTruthy();
+    expect(players[0]?.isHost).toBe(true);
     expect(players[0]?.displayName).toBe("HostPlayer");
   });
 
@@ -349,7 +349,7 @@ describe("lobbies", () => {
     });
 
     const remainingPlayer = players.find((p) => p.sessionId === "transfer-player");
-    expect(remainingPlayer?.isHost).toBeTruthy();
+    expect(remainingPlayer?.isHost).toBe(true);
   });
 
   test("leave lobby deletes lobby when last player leaves", async () => {
@@ -418,7 +418,7 @@ describe("lobbies", () => {
     });
 
     expect(players).toHaveLength(1);
-    expect(players[0]?.isHost).toBeTruthy();
+    expect(players[0]?.isHost).toBe(true);
   });
 
   test("get lobby returns lobby by code", async () => {
@@ -834,7 +834,7 @@ describe("lobbies", () => {
     });
 
     const lobby = await t.query(api.lobbies.get, { code });
-    expect(lobby?.settings.allowGuessTitleArtist).toBeTruthy();
-    expect(lobby?.settings.showLiveBets).toBeFalsy();
+    expect(lobby?.settings.allowGuessTitleArtist).toBe(true);
+    expect(lobby?.settings.showLiveBets).toBe(false);
   });
 });

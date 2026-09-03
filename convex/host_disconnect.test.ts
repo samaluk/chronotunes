@@ -398,6 +398,6 @@ describe("checkHostTransfer with presence", () => {
 
     const originalHost = players.find((p) => p.sessionId === "original-host-session");
     expect(originalHost).toBeDefined();
-    expect(originalHost?.isHost).toBeFalsy();
+    expect(originalHost?.isHost).toBe(false);
   });
 });

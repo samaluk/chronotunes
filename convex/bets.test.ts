@@ -174,14 +174,14 @@ test("preview creates unlocked bet for non-turn player", async () => {
         .first();
       if (bet) {
         betCreated = true;
-        expect(bet.lockedIn).toBeFalsy();
+        expect(bet.lockedIn).toBe(false);
         expect(bet.proposedIndex).toBe(1);
         expect(bet.status).toBe("pending");
       }
     }
   });
 
-  expect(betCreated).toBeTruthy();
+  expect(betCreated).toBe(true);
 });
 
 test("preview deducts 1 coin from player", async () => {
@@ -843,7 +843,7 @@ test("lockIn sets lockedIn to true", async () => {
     }
   });
 
-  expect(betLockedIn).toBeTruthy();
+  expect(betLockedIn).toBe(true);
 });
 
 test("lockIn fails when no bet exists", async () => {
@@ -1146,7 +1146,7 @@ test("cancel deletes bet and refunds coin", async () => {
     }
   });
 
-  expect(betExists).toBeFalsy();
+  expect(betExists).toBe(false);
 
   let playerAfterCoins: number | null = null;
   await t.run(async (ctx) => {
@@ -1558,8 +1558,8 @@ test("listForRound returns all bets when showLiveBets is true", async () => {
     const bets = await t.query(api.bets.listForRound, { lobbyId: lobby!._id });
 
     expect(bets).toHaveLength(1);
-    expect(bets?.[0]?.lockedIn).toBeFalsy();
-    expect(bets?.[0]?.playerDisplayName).toBeTruthy();
+    expect(bets?.[0]?.lockedIn).toBe(false);
+    expect(bets?.[0]?.playerDisplayName).toBe(true);
   }
 });
 
@@ -1658,7 +1658,7 @@ test("listForRound returns only locked bets when showLiveBets is false", async (
     lobbyId: lobby!._id,
   });
   expect(betsBeforeLock).toHaveLength(nonTurnSessions.length);
-  expect(betsBeforeLock?.every((bet) => bet.lockedIn === false)).toBeTruthy();
+  expect(betsBeforeLock?.every((bet) => bet.lockedIn === false)).toBe(true);
 
   await Promise.all(
     nonTurnSessions.map((sessionId) =>
@@ -1676,8 +1676,8 @@ test("listForRound returns only locked bets when showLiveBets is false", async (
   });
 
   expect(betsAfterLock).toHaveLength(nonTurnSessions.length);
-  expect(betsAfterLock?.every((bet) => bet.lockedIn === true)).toBeTruthy();
-  expect(betsAfterLock?.every((bet) => bet.playerDisplayName)).toBeTruthy();
+  expect(betsAfterLock?.every((bet) => bet.lockedIn === true)).toBe(true);
+  expect(betsAfterLock?.every((bet) => bet.playerDisplayName)).toBe(true);
 });
 
 test("listForRound returns empty array when no bets exist", async () => {
