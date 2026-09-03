@@ -1,5 +1,5 @@
 import { convexTest } from "convex-test";
-import { expect, test } from "vitest";
+import { assert, expect, test } from "vitest";
 
 import { api } from "./_generated/api";
 import { asSessionId } from "./lib/sessions";
@@ -72,18 +72,23 @@ test("list returns players with correct properties", async () => {
   const host = players.find((p) => p.isHost);
   const player = players.find((p) => !p.isHost);
 
-  expect(host).toBeDefined();
-  expect(host?.sessionId).toBe("list-props-host");
-  expect(host?.displayName).toBe("ListPropsHost");
-  expect(host?.coins).toBe(0);
-  expect(host?.timeline).toStrictEqual([]);
-  expect(host?.timelineSize).toBe(0);
-  expect(host?.createdAt).toBeDefined();
+  assert(host);
+  assert(player);
 
-  expect(player).toBeDefined();
-  expect(player?.sessionId).toBe("list-props-player");
-  expect(player?.displayName).toBe("ListPropsPlayer");
-  expect(player?.isHost).toBeFalsy();
+  expect(host).toMatchObject({
+    sessionId: "list-props-host",
+    displayName: "ListPropsHost",
+    coins: 0,
+    timeline: [],
+    timelineSize: 0,
+  });
+  expect(host.createdAt).toBeTypeOf("number");
+
+  expect(player).toMatchObject({
+    sessionId: "list-props-player",
+    displayName: "ListPropsPlayer",
+    isHost: false,
+  });
 });
 
 test("getMe returns current player by sessionId", async () => {
@@ -108,10 +113,11 @@ test("getMe returns current player by sessionId", async () => {
     sessionId: asSessionId("me-player-session"),
   });
 
-  expect(me).not.toBeNull();
-  expect(me?.displayName).toBe("MePlayer");
-  expect(me?.sessionId).toBe("me-player-session");
-  expect(me?.isHost).toBeFalsy();
+  expect(me).toMatchObject({
+    displayName: "MePlayer",
+    sessionId: "me-player-session",
+    isHost: false,
+  });
 });
 
 test("getMe returns host player", async () => {
@@ -130,9 +136,10 @@ test("getMe returns host player", async () => {
     sessionId: asSessionId("me-real-host-session"),
   });
 
-  expect(me).not.toBeNull();
-  expect(me?.displayName).toBe("MeRealHost");
-  expect(me?.isHost).toBeTruthy();
+  expect(me).toMatchObject({
+    displayName: "MeRealHost",
+    isHost: true,
+  });
 });
 
 test("getMe returns null when session not in lobby", async () => {
