@@ -28,6 +28,6 @@ describe(ErrorPage, () => {
 
     fireEvent.click(screen.getByRole("button", { name: "translated:tryAgain" }));
 
-    expect(retry).toHaveBeenCalledTimes(1);
+    expect(retry).toHaveBeenCalledOnce();
   });
 });

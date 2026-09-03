@@ -65,6 +65,7 @@ export default defineConfig({
     "vitest/prefer-to-contain": "error",
     "vitest/prefer-to-be": "error",
     "vitest/prefer-comparison-matcher": "error",
+    "vitest/prefer-called-once": "error",
     // Temporarily disabled while fixing offenders in subsequent commits
     "vitest/valid-title": "off",
     "vitest/require-mock-type-parameters": "off",
