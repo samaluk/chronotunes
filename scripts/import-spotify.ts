@@ -2,59 +2,24 @@
 import { spawnSync } from "node:child_process";
 import process from "node:process";
 
+import type { SpotifyImportReport } from "../convex/catalog_admin";
+import type { PlaybackResolutionIssue } from "../convex/lib/playback_resolver";
+import type { CatalogDerivationIssue } from "../convex/lib/spotify";
+
+export type { CatalogDerivationIssue, PlaybackResolutionIssue, SpotifyImportReport };
+
 export interface CliOptions {
   apiKey?: string;
   clientId?: string;
   clientSecret?: string;
+  conflictingApiKeyFlags?: boolean;
   deployment?: string;
   dryRun: boolean;
   help: boolean;
   playlistInput?: string;
   replace: boolean;
   token?: string;
-}
-
-export interface CatalogDerivationIssue {
-  artist?: string;
-  details: string;
-  index: number;
-  reason: string;
-  spotifyTrackId?: string;
-  title?: string;
-}
-
-export interface PlaybackResolutionIssue {
-  details: string;
-  reason: string;
-  track: {
-    artist: string;
-    title: string;
-    year: number;
-  };
-}
-
-export interface SpotifyImportReport {
-  dryRun: boolean;
-  duplicateCount: number;
-  duplicates: CatalogDerivationIssue[];
-  fetchSource: "api" | "embed";
-  importedCount: number;
-  malformed: CatalogDerivationIssue[];
-  malformedCount: number;
-  playlistId: string;
-  playlistName?: string;
-  replaceResult: {
-    deletedCount: number;
-    importedCount: number;
-    trackIds: string[];
-  } | null;
-  resolvedCount: number;
-  totalExamined: number;
-  unavailable: CatalogDerivationIssue[];
-  unavailableCount: number;
-  unresolvedCount: number;
-  unresolvedTracks: PlaybackResolutionIssue[];
-  validCount: number;
+  tokenPassedViaCli?: boolean;
 }
 
 export function parseArgs(args: string[]): CliOptions {
@@ -77,17 +42,32 @@ export function parseArgs(args: string[]): CliOptions {
     } else if (arg === "--dry-run") {
       options.dryRun = true;
     } else if (arg === "--api-key" || arg === "--youtube-api-key") {
-      options.apiKey = args[++i];
+      const newKey = args[++i];
+      if (options.apiKey && newKey && options.apiKey !== newKey) {
+        options.conflictingApiKeyFlags = true;
+      }
+      options.apiKey = newKey;
     } else if (arg.startsWith("--api-key=")) {
-      options.apiKey = arg.split("=")[1];
+      const newKey = arg.split("=")[1];
+      if (options.apiKey && newKey && options.apiKey !== newKey) {
+        options.conflictingApiKeyFlags = true;
+      }
+      options.apiKey = newKey;
     } else if (arg.startsWith("--youtube-api-key=")) {
-      options.apiKey = arg.split("=")[1];
+      const newKey = arg.split("=")[1];
+      if (options.apiKey && newKey && options.apiKey !== newKey) {
+        options.conflictingApiKeyFlags = true;
+      }
+      options.apiKey = newKey;
     } else if (arg === "--token" || arg === "--spotify-token") {
       options.token = args[++i];
+      options.tokenPassedViaCli = true;
     } else if (arg.startsWith("--token=")) {
       options.token = arg.split("=")[1];
+      options.tokenPassedViaCli = true;
     } else if (arg.startsWith("--spotify-token=")) {
       options.token = arg.split("=")[1];
+      options.tokenPassedViaCli = true;
     } else if (arg === "--client-id") {
       options.clientId = args[++i];
     } else if (arg.startsWith("--client-id=")) {
@@ -123,8 +103,8 @@ Arguments:
 Options:
   --replace               Atomically replace existing tracks in the catalog
   --dry-run               Validation and resolution report only (no database write)
-  --api-key <key>         YouTube Data API v3 key (or YOUTUBE_API_KEY env)
-  --token <token>         Spotify access token (or SPOTIFY_TOKEN env)
+  --api-key <key>         YouTube Data API v3 key (prefer YOUTUBE_API_KEY env)
+  --token <token>         Spotify access token (prefer SPOTIFY_TOKEN env)
   --client-id <id>        Spotify Client ID (or SPOTIFY_CLIENT_ID env)
   --client-secret <sec>   Spotify Client Secret (or SPOTIFY_CLIENT_SECRET env)
   --deployment <target>   Convex deployment (default: "local" or CONVEX_DEPLOYMENT)
@@ -182,6 +162,12 @@ export function formatReport(report: SpotifyImportReport): string {
   lines.push(`  Duplicates skipped:        ${report.duplicateCount}`);
   lines.push(`  Malformed tracks:          ${report.malformedCount}`);
   lines.push(`  Unavailable / local:       ${report.unavailableCount}`);
+
+  if (report.validCount > 1800) {
+    lines.push(
+      `  WARNING: Valid tracks (${report.validCount}) approach the 2000-track single-batch limit.`,
+    );
+  }
 
   if (report.duplicateCount > 0) {
     lines.push("\n  Sample Duplicates:");
@@ -276,6 +262,18 @@ export function runCli(): void {
       process.exit(1);
     }
     return;
+  }
+
+  if (options.tokenPassedViaCli) {
+    console.warn(
+      "Warning: Passing tokens via CLI flags may expose them in process listings. Consider using the SPOTIFY_TOKEN environment variable instead.",
+    );
+  }
+
+  if (options.conflictingApiKeyFlags) {
+    console.warn(
+      "Warning: Conflicting YouTube API key arguments provided; the last value will be used.",
+    );
   }
 
   const spotifyClientId = options.clientId ?? process.env.SPOTIFY_CLIENT_ID;
