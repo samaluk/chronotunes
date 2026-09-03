@@ -1,7 +1,16 @@
-import { ConvexError } from "convex/values";
+import { ConvexError, v } from "convex/values";
 
 export const MIN_YEAR = 1900;
 export const MAX_YEAR = 2030;
+
+export const baseTrackImportFields = {
+  artist: v.string(),
+  durationMs: v.optional(v.number()),
+  mbid: v.optional(v.string()),
+  title: v.string(),
+  year: v.number(),
+  youtubeVideoId: v.optional(v.string()),
+};
 
 /** Structural shape accepted by {@link validateTrackItem}; both import paths conform to it. */
 export interface TrackValidationInput {

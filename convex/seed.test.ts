@@ -13,10 +13,12 @@ test("destructive catalog administration is absent from the public API", () => {
   type HasPublicCsvParser = "parseAndImportCsv" extends keyof typeof api.import_tracks
     ? true
     : false;
+  type HasPublicCatalogAdmin = "catalog_admin" extends keyof typeof api ? true : false;
 
   expectTypeOf<HasPublicSeed>().toEqualTypeOf<false>();
   expectTypeOf<HasPublicCsvImport>().toEqualTypeOf<false>();
   expectTypeOf<HasPublicCsvParser>().toEqualTypeOf<false>();
+  expectTypeOf<HasPublicCatalogAdmin>().toEqualTypeOf<false>();
 });
 
 test("seed replaces existing tracks through the internal API", async () => {

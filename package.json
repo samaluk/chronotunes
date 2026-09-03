@@ -16,6 +16,7 @@
     "next:typegen": "tsc -p tsconfig.json --noEmit",
     "convex:typegen": "convex codegen --url http://127.0.0.1:3210 2>/dev/null || true",
     "convex:dev": "convex dev --local",
+    "import:spotify": "node --experimental-strip-types scripts/import-spotify.ts",
     "check": "oxlint . && oxfmt --check .",
     "fix": "oxlint --fix . && oxfmt .",
     "fallow": "fallow",

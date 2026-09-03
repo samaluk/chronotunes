@@ -21,6 +21,10 @@ codegen:
 seed:
     just convex run seed
 
+# Import a catalog from a Spotify playlist URL or ID
+import-spotify url flags="":
+    pnpm import:spotify {{url}} {{flags}}
+
 # Open Convex dashboard for local backend
 dashboard:
     just convex dashboard
