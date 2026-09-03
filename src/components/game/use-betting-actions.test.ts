@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from "vitest";
 
 import { nextIndexForDirection } from "./use-betting-actions";
 
-describe(nextIndexForDirection, () => {
+describe("nextIndexForDirection", () => {
   it("moves down within bounds", () => {
     expect(nextIndexForDirection(5, null, 1, "down", vi.fn())).toBe(2);
   });

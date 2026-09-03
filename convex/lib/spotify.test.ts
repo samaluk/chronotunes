@@ -8,7 +8,7 @@ import {
   type RawSpotifyPlaylistItem,
 } from "./spotify";
 
-describe(parseSpotifyPlaylistId, () => {
+describe("parseSpotifyPlaylistId", () => {
   test("extracts ID from standard web URL", () => {
     expect(parseSpotifyPlaylistId("https://open.spotify.com/playlist/37i9dQZF1DXcBWIGoYBM5M")).toBe(
       "37i9dQZF1DXcBWIGoYBM5M",
@@ -80,7 +80,7 @@ describe(parseSpotifyPlaylistId, () => {
   });
 });
 
-describe(parseReleaseYear, () => {
+describe("parseReleaseYear", () => {
   test("parses full YYYY-MM-DD date", () => {
     expect(parseReleaseYear("1985-07-13")).toBe(1985);
   });
@@ -117,13 +117,13 @@ describe(parseReleaseYear, () => {
   });
 });
 
-describe(canonicalTrackKey, () => {
+describe("canonicalTrackKey", () => {
   test("normalizes casing and spaces", () => {
     expect(canonicalTrackKey("  Imagine ", " John Lennon ")).toBe("imagine::john lennon");
   });
 });
 
-describe(deriveCatalogTracks, () => {
+describe("deriveCatalogTracks", () => {
   function validItem(overrides: Partial<RawSpotifyPlaylistItem> = {}): RawSpotifyPlaylistItem {
     return {
       is_local: false,

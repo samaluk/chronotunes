@@ -6,7 +6,7 @@ import schema from "../schema";
 import { factories, tracks } from "../test/factories";
 import { modules } from "../test.setup";
 
-describe(getGameContext, () => {
+describe("getGameContext", () => {
   test("returns lobby, game, and round when all exist", async () => {
     const t = convexTest(schema, modules);
     await tracks.createMany(t, 3);
@@ -43,7 +43,7 @@ describe(getGameContext, () => {
   });
 });
 
-describe(getGameAndRound, () => {
+describe("getGameAndRound", () => {
   test("returns game and round for an in-game lobby", async () => {
     const t = convexTest(schema, modules);
     await tracks.createMany(t, 3);

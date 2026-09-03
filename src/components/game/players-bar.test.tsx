@@ -38,7 +38,7 @@ afterEach(() => {
   cleanup();
 });
 
-describe(PlayersBar, () => {
+describe("PlayersBar", () => {
   it("renders a skeleton while the roster loads", () => {
     playersQueryMock.mockReturnValue(undefined);
     const { container } = render(<PlayersBar lobbyId={mockLobbyId} />);

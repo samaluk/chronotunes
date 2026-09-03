@@ -118,7 +118,7 @@ const placeSongHeadingText = "Place the Song";
 const placeOnTimelineText = /Place on timeline/i;
 const confirmPlacementText = "Confirm Placement";
 
-describe(TimelinePlacer, () => {
+describe("TimelinePlacer", () => {
   test("renders loading state when track is null", () => {
     const mockPlayer = createMockPlayer();
 

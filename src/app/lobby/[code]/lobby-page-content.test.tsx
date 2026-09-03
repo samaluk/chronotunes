@@ -30,7 +30,7 @@ vi.mock(import("@/components/ui/locale-switcher"), () => ({
   LocaleSwitcher: () => <div data-testid="locale-switcher" />,
 }));
 
-describe(LobbyPageContent, () => {
+describe("LobbyPageContent", () => {
   afterEach(() => {
     cleanup();
     vi.clearAllMocks();

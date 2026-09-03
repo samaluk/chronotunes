@@ -35,7 +35,7 @@ afterEach(() => {
   cleanup();
 });
 
-describe(SettingsPanel, () => {
+describe("SettingsPanel", () => {
   it("shows the read-only summary to non-hosts", () => {
     render(<SettingsPanel code="ABC234" currentSettings={baseSettings} isHost={false} />);
 

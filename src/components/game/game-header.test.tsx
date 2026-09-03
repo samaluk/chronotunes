@@ -23,7 +23,7 @@ afterEach(() => {
   cleanup();
 });
 
-describe(GameHeader, () => {
+describe("GameHeader", () => {
   it("renders round header content", () => {
     render(<GameHeader />);
 

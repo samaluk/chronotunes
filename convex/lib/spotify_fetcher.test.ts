@@ -7,7 +7,7 @@ import {
   getSpotifyClientCredentialsToken,
 } from "./spotify_fetcher";
 
-describe(getSpotifyClientCredentialsToken, () => {
+describe("getSpotifyClientCredentialsToken", () => {
   test("obtains access token with valid credentials", async () => {
     const mockFetch: typeof fetch = vi.fn(
       async () =>
@@ -32,7 +32,7 @@ describe(getSpotifyClientCredentialsToken, () => {
   });
 });
 
-describe(fetchPlaylistFromWebApi, () => {
+describe("fetchPlaylistFromWebApi", () => {
   test("fetches playlist tracks and handles pagination", async () => {
     const page1 = {
       name: "Classic Hits",
@@ -108,7 +108,7 @@ describe(fetchPlaylistFromWebApi, () => {
   });
 });
 
-describe(fetchPlaylistFromEmbed, () => {
+describe("fetchPlaylistFromEmbed", () => {
   test("extracts tracks from embed page NEXT_DATA HTML", async () => {
     const nextData = {
       props: {
@@ -182,7 +182,7 @@ describe(fetchPlaylistFromEmbed, () => {
   });
 });
 
-describe(fetchSpotifyPlaylist, () => {
+describe("fetchSpotifyPlaylist", () => {
   test("uses token when provided directly", async () => {
     const mockFetch: typeof fetch = vi.fn(
       async () =>

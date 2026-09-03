@@ -41,7 +41,7 @@ afterEach(() => {
   cleanup();
 });
 
-describe(PlayerTimelineModal, () => {
+describe("PlayerTimelineModal", () => {
   it("does not render dialog content while closed", () => {
     const { container } = render(
       <PlayerTimelineModal onOpenChange={() => {}} open={false} player={player} />,

@@ -18,7 +18,7 @@ function createTimeline(years: number[]): TimelineEntry[] {
   return years.map((year, index) => createTimelineEntry(year, index));
 }
 
-describe(computeValidIndexRange, () => {
+describe("computeValidIndexRange", () => {
   test("empty timeline allows index 0", () => {
     const timeline: TimelineEntry[] = [];
     const result = computeValidIndexRange(timeline, 1990);
@@ -132,7 +132,7 @@ describe(computeValidIndexRange, () => {
   });
 });
 
-describe(isPlacementCorrect, () => {
+describe("isPlacementCorrect", () => {
   test("proposed index within valid range returns true", () => {
     const timeline = createTimeline([1985, 1990, 1995]);
     const validRange = computeValidIndexRange(timeline, 1992);

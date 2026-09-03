@@ -70,8 +70,8 @@ export default defineConfig({
     "vitest/prefer-strict-boolean-matchers": "error",
     "vitest/require-to-throw-message": "error",
     "vitest/no-conditional-expect": "error",
+    "vitest/valid-title": "error",
     // Temporarily disabled while fixing offenders in subsequent commits
-    "vitest/valid-title": "off",
     "vitest/require-mock-type-parameters": "off",
   },
 });

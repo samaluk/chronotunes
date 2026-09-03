@@ -36,7 +36,7 @@ afterEach(() => {
   vi.clearAllMocks();
 });
 
-describe(LandingPageContent, () => {
+describe("LandingPageContent", () => {
   it("renders title, tagline, and create button", () => {
     render(<LandingPageContent />);
 

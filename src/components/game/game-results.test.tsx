@@ -34,7 +34,7 @@ afterEach(() => {
   vi.restoreAllMocks();
 });
 
-describe(GameResults, () => {
+describe("GameResults", () => {
   it("shows empty state when no results found", () => {
     render(<GameResults code="ABC123" lobbyId={mockLobbyId} />);
 

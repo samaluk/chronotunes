@@ -12,7 +12,7 @@ afterEach(() => {
   vi.restoreAllMocks();
 });
 
-describe(ErrorPage, () => {
+describe("ErrorPage", () => {
   it("renders translated error UI", () => {
     render(<ErrorPage error={new Error("boom")} retry={() => {}} />);
 

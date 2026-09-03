@@ -104,7 +104,7 @@ beforeEach(() => {
   (useQuery as unknown as ReturnType<typeof vi.fn>).mockImplementation(mockUseQuery);
 });
 
-describe(MyTimeline, () => {
+describe("MyTimeline", () => {
   test("displays empty state when timeline is empty", () => {
     // oxlint-disable-next-line typescript/no-unsafe-assignment
     const mockPlayer = createMockPlayer();

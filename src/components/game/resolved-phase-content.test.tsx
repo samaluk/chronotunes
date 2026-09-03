@@ -17,7 +17,7 @@ afterEach(() => {
   cleanup();
 });
 
-describe(ResolvedPhaseContent, () => {
+describe("ResolvedPhaseContent", () => {
   it("renders resolved phase scaffolding", () => {
     const { container } = render(<ResolvedPhaseContent />);
 

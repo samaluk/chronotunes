@@ -55,7 +55,7 @@ const mockTrack = {
   year: 1990,
 };
 
-describe(BettingPanel, () => {
+describe("BettingPanel", () => {
   it("shows coin balance in header", () => {
     const player = createMockPlayer({ coins: 5 });
 

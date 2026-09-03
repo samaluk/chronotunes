@@ -100,7 +100,7 @@ afterEach(() => {
   mounted = true;
 });
 
-describe(GameView, () => {
+describe("GameView", () => {
   it("renders the loading skeleton before mount", () => {
     mounted = false;
 

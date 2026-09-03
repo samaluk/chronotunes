@@ -17,7 +17,7 @@ afterEach(() => {
   cleanup();
 });
 
-describe(BettingPhaseContent, () => {
+describe("BettingPhaseContent", () => {
   it("renders betting phase scaffolding", () => {
     const { container } = render(<BettingPhaseContent />);
 
