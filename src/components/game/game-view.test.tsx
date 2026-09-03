@@ -28,14 +28,14 @@ const nameOf = (fn: unknown): string =>
 const queryResults = new Map<string, unknown>();
 
 vi.mock(import("convex/react"), () => ({
-  useQuery: vi.fn((fn: unknown) => queryResults.get(nameOf(fn))),
+  useQuery: vi.fn<(fn: unknown) => unknown>((fn: unknown) => queryResults.get(nameOf(fn))),
 }));
 
 vi.mock(import("convex-helpers/react/sessions"), () => ({
   SessionProvider: ({ children }: { children: React.ReactNode }) => children,
   useSessionId: () => ["session-1"],
-  useSessionMutation: vi.fn(() => vi.fn()),
-  useSessionQuery: vi.fn((fn: unknown) => queryResults.get(nameOf(fn))),
+  useSessionMutation: vi.fn<() => () => void>(() => vi.fn<() => void>()),
+  useSessionQuery: vi.fn<(fn: unknown) => unknown>((fn: unknown) => queryResults.get(nameOf(fn))),
 }));
 
 /** Flipped per-test to cover the pre-mount branch. */
@@ -100,7 +100,7 @@ afterEach(() => {
   mounted = true;
 });
 
-describe(GameView, () => {
+describe("GameView", () => {
   it("renders the loading skeleton before mount", () => {
     mounted = false;
 

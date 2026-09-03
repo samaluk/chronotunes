@@ -138,7 +138,7 @@ describe("createYouTubeApiPlaybackResolver", () => {
   });
 
   test("fetches video ID using YouTube Data API", async () => {
-    const mockFetch: typeof fetch = vi.fn(
+    const mockFetch: typeof fetch = vi.fn<typeof fetch>(
       async () =>
         new Response(
           JSON.stringify({
@@ -159,7 +159,9 @@ describe("createYouTubeApiPlaybackResolver", () => {
   });
 
   test("throws on failed HTTP response", async () => {
-    const mockFetch: typeof fetch = vi.fn(async () => new Response("Forbidden", { status: 403 }));
+    const mockFetch: typeof fetch = vi.fn<typeof fetch>(
+      async () => new Response("Forbidden", { status: 403 }),
+    );
 
     const resolver = createYouTubeApiPlaybackResolver("valid-api-key", mockFetch);
 
@@ -169,7 +171,9 @@ describe("createYouTubeApiPlaybackResolver", () => {
   });
 
   test("throws clear error on 429 rate limit response", async () => {
-    const mockFetch: typeof fetch = vi.fn(async () => new Response("Rate limit", { status: 429 }));
+    const mockFetch: typeof fetch = vi.fn<typeof fetch>(
+      async () => new Response("Rate limit", { status: 429 }),
+    );
 
     const resolver = createYouTubeApiPlaybackResolver("valid-api-key", mockFetch);
 
@@ -179,7 +183,7 @@ describe("createYouTubeApiPlaybackResolver", () => {
   });
 
   test("throws clear error on quota exhaustion", async () => {
-    const mockFetch: typeof fetch = vi.fn(
+    const mockFetch: typeof fetch = vi.fn<typeof fetch>(
       async () =>
         new Response(JSON.stringify({ error: { errors: [{ reason: "quotaExceeded" }] } }), {
           status: 403,

@@ -56,7 +56,7 @@ afterEach(() => {
   cleanup();
 });
 
-describe(BettingTimeline, () => {
+describe("BettingTimeline", () => {
   it("renders every slot and timeline entry", () => {
     render(
       <BettingTimeline

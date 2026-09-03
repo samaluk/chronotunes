@@ -13,11 +13,11 @@ vi.mock(import("next-intl"), () => ({
 }));
 
 vi.mock(import("convex/react"), () => ({
-  useQuery: vi.fn(() => null),
+  useQuery: vi.fn<() => null>(() => null),
 }));
 
 vi.mock(import("convex-helpers/react/sessions"), () => ({
-  useSessionMutation: () => vi.fn(),
+  useSessionMutation: () => vi.fn<() => void>(),
   useSessionQuery: () => null,
 }));
 
@@ -41,7 +41,7 @@ afterEach(() => {
   cleanup();
 });
 
-describe(PlayerTimelineModal, () => {
+describe("PlayerTimelineModal", () => {
   it("does not render dialog content while closed", () => {
     const { container } = render(
       <PlayerTimelineModal onOpenChange={() => {}} open={false} player={player} />,

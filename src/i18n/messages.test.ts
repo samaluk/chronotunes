@@ -26,14 +26,14 @@ function keysForLocale(locale: (typeof routing.locales)[number]): string[] {
 
 describe("locale messages", () => {
   it("provides a catalog for every configured locale", () => {
-    expect(Object.keys(messagesByLocale).sort()).toEqual([...routing.locales].sort());
+    expect(Object.keys(messagesByLocale).sort()).toStrictEqual([...routing.locales].sort());
     for (const locale of routing.locales) {
       expect(messagesByLocale[locale]).toBeDefined();
     }
   });
 
   it("keeps the en and es catalogs structurally identical", () => {
-    expect(keysForLocale("en").sort()).toEqual(keysForLocale("es").sort());
+    expect(keysForLocale("en").sort()).toStrictEqual(keysForLocale("es").sort());
   });
 
   it("includes the betting year labels in every catalog", () => {

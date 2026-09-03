@@ -53,7 +53,7 @@ test("players.create creates a player with defaults", async () => {
 
   expect(result.id).toBeDefined();
   expect(result.record.displayName).toBe("Test Player");
-  expect(result.record.isHost).toBeFalsy();
+  expect(result.record.isHost).toBe(false);
   expect(result.record.coins).toBe(3);
   expect(result.record.timeline).toStrictEqual([]);
 });
@@ -69,7 +69,7 @@ test("players.createHost creates a host player", async () => {
     "Host Player",
   );
 
-  expect(result.record.isHost).toBeTruthy();
+  expect(result.record.isHost).toBe(true);
 });
 
 test("players.createMany creates multiple players", async () => {
@@ -79,9 +79,9 @@ test("players.createMany creates multiple players", async () => {
   const results = await factories.players.createMany(t, lobbyResult.id, 3);
 
   expect(results).toHaveLength(3);
-  expect(results[0]?.record.isHost).toBeTruthy();
-  expect(results[1]?.record.isHost).toBeFalsy();
-  expect(results[2]?.record.isHost).toBeFalsy();
+  expect(results[0]?.record.isHost).toBe(true);
+  expect(results[1]?.record.isHost).toBe(false);
+  expect(results[2]?.record.isHost).toBe(false);
 });
 
 test("lobbies.create creates a lobby with host player", async () => {
@@ -179,7 +179,7 @@ test("roundBets.create creates a bet with defaults", async () => {
 
   expect(result.id).toBeDefined();
   expect(result.record.proposedIndex).toBe(0);
-  expect(result.record.lockedIn).toBeFalsy();
+  expect(result.record.lockedIn).toBe(false);
   expect(result.record.status).toBe("pending");
 });
 
@@ -194,6 +194,6 @@ test("roundBets.createLocked creates a locked bet", async () => {
   // oxlint-disable-next-line typescript/no-non-null-assertion, typescript/no-unnecessary-type-assertion
   const result = await factories.roundBets.createLocked(t, game.roundId, lobby.playerIds[1]!, 2);
 
-  expect(result.record.lockedIn).toBeTruthy();
+  expect(result.record.lockedIn).toBe(true);
   expect(result.record.proposedIndex).toBe(2);
 });

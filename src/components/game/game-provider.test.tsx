@@ -71,7 +71,7 @@ describe("deriveRoundState", () => {
       me: playerA,
     });
 
-    expect(derived.turnPlayer).toEqual(playerA);
+    expect(derived.turnPlayer).toStrictEqual(playerA);
     expect(derived.isMyTurn).toBe(true);
     expect(derived.phase).toBe("placing");
   });
@@ -101,7 +101,13 @@ describe("deriveRoundState", () => {
       }),
     });
 
-    expect(derived.track).toEqual({ _id: "track9", artist: "A", title: "T", year });
+    expect(derived.track).toStrictEqual({
+      _id: "track9",
+      artist: "A",
+      title: "T",
+      year,
+      youtubeVideoId: undefined,
+    });
   });
 
   it("marks a finished game", () => {

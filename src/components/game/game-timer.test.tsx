@@ -12,7 +12,7 @@ afterEach(() => {
   cleanup();
 });
 
-describe(GameTimer, () => {
+describe("GameTimer", () => {
   it("renders timer text for an in-progress round", () => {
     const { container } = render(
       <GameTimer showProgress={false} startedAt={Date.now() - 5_000} totalSeconds={60} />,

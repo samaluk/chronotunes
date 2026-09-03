@@ -346,37 +346,31 @@ test("setPlacementPreview fails for non-turn player", async () => {
   expect(roundId).not.toBeNull();
   expect(turnPlayerId).not.toBeNull();
 
-  let playerId: Id<"players"> | null = null;
-  await t.run(async (ctx) => {
-    const player = await ctx.db
+  const nonTurnPlayer = await t.run(async (ctx) => {
+    return await ctx.db
       .query("players")
-      .filter((q) => q.eq(q.field("sessionId"), asSessionId("player-session-notturn")))
+      .filter((q) =>
+        q.and(
+          // oxlint-disable-next-line typescript/no-non-null-assertion
+          q.eq(q.field("lobbyId"), lobby!._id),
+          // oxlint-disable-next-line typescript/no-non-null-assertion
+          q.neq(q.field("_id"), turnPlayerId!),
+        ),
+      )
       .first();
-    if (player) {
-      playerId = player._id;
-    }
   });
 
-  expect(playerId).not.toBeNull();
+  expect(nonTurnPlayer).toBeDefined();
 
-  if (playerId === turnPlayerId) {
-    const result = await t.mutation(api.rounds.setPlacementPreview, {
+  await expect(
+    t.mutation(api.rounds.setPlacementPreview, {
       // oxlint-disable-next-line typescript/no-non-null-assertion
       lobbyId: lobby!._id,
       proposedIndex: 0,
-      sessionId: asSessionId("player-session-notturn"),
-    });
-    expect(result).toBeNull();
-  } else {
-    await expect(
-      t.mutation(api.rounds.setPlacementPreview, {
-        // oxlint-disable-next-line typescript/no-non-null-assertion
-        lobbyId: lobby!._id,
-        proposedIndex: 0,
-        sessionId: asSessionId("player-session-notturn"),
-      }),
-    ).rejects.toThrow("Only the turn player can preview placement");
-  }
+      // oxlint-disable-next-line typescript/no-non-null-assertion
+      sessionId: nonTurnPlayer!.sessionId,
+    }),
+  ).rejects.toThrow("Only the turn player can preview placement");
 });
 
 test("setPlacementPreview fails for negative index", async () => {

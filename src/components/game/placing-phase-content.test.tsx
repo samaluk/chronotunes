@@ -25,7 +25,7 @@ afterEach(() => {
   stateMock.mockReturnValue({ state: {} });
 });
 
-describe(PlacingPhaseContent, () => {
+describe("PlacingPhaseContent", () => {
   it("renders the waiting message when nothing is ready", () => {
     render(<PlacingPhaseContent />);
 

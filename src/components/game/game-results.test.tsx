@@ -8,24 +8,24 @@ import { GameResults } from "./game-results";
 const mockLobbyId = "lobby123" as GenericId<"lobbies">;
 
 vi.mock(import("convex/react"), () => ({
-  useMutation: vi.fn(() => vi.fn()),
-  useQuery: vi.fn(() => null),
+  useMutation: vi.fn<() => () => void>(() => vi.fn<() => void>()),
+  useQuery: vi.fn<() => null>(() => null),
 }));
 
 vi.mock(import("convex-helpers/react/sessions"), () => ({
   SessionProvider: ({ children }: { children: React.ReactNode }) => children,
-  useSessionMutation: vi.fn(() => vi.fn()),
-  useSessionQuery: vi.fn(() => null),
+  useSessionMutation: vi.fn<() => () => void>(() => vi.fn<() => void>()),
+  useSessionQuery: vi.fn<() => null>(() => null),
 }));
 
 vi.mock(import("react"), () => ({
-  useState: vi.fn((initial) => {
+  useState: vi.fn<<T>(initial: T | (() => T)) => [T, (val: unknown) => void]>((initial) => {
     if (typeof initial === "function") {
       // oxlint-disable-next-line typescript/no-unsafe-call, typescript/no-unsafe-return
-      return [initial(), vi.fn()];
+      return [initial(), vi.fn<(val: unknown) => void>()];
     }
     // oxlint-disable-next-line typescript/no-unsafe-return
-    return [initial, vi.fn()];
+    return [initial, vi.fn<(val: unknown) => void>()];
   }),
 }));
 
@@ -34,7 +34,7 @@ afterEach(() => {
   vi.restoreAllMocks();
 });
 
-describe(GameResults, () => {
+describe("GameResults", () => {
   it("shows empty state when no results found", () => {
     render(<GameResults code="ABC123" lobbyId={mockLobbyId} />);
 

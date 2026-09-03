@@ -72,7 +72,7 @@ describe("import-spotify CLI utilities", () => {
 Process completed.`;
 
     const extracted = extractJsonFromOutput(stdout);
-    expect(extracted).toEqual({
+    expect(extracted).toStrictEqual({
       dryRun: true,
       duplicates: [],
       malformed: [],

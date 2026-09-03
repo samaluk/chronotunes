@@ -41,7 +41,7 @@ function csvRow(overrides: Record<number, string> = {}): string {
   return fields.join("|");
 }
 
-describe(parseYear, () => {
+describe("parseYear", () => {
   test("parses ISO date year", () => {
     expect(parseYear("1987-05-01")).toBe(1987);
   });
@@ -63,7 +63,7 @@ describe(parseYear, () => {
   });
 });
 
-describe(parseDurationToMs, () => {
+describe("parseDurationToMs", () => {
   test("returns undefined for missing duration", () => {
     expect(parseDurationToMs(undefined)).toBeUndefined();
   });
@@ -87,7 +87,7 @@ describe(parseDurationToMs, () => {
   });
 });
 
-describe(parseCsvLine, () => {
+describe("parseCsvLine", () => {
   test("parses a full row", () => {
     const item = parseCsvLine(csvRow());
     expect(item).toMatchObject({
@@ -127,7 +127,7 @@ describe(parseCsvLine, () => {
   });
 });
 
-describe(parseCsvTracks, () => {
+describe("parseCsvTracks", () => {
   test("skips header and blank lines", () => {
     const tracks = parseCsvTracks([HEADER, csvRow(), "", csvRow({ 1: "Jealous Guy" })].join("\n"));
     expect(tracks).toHaveLength(2);
@@ -140,7 +140,7 @@ describe(parseCsvTracks, () => {
   });
 });
 
-describe(validateTrackItem, () => {
+describe("validateTrackItem", () => {
   function baseItem(): Parameters<typeof validateTrackItem>[0] {
     return { artist: "Artist", title: "Title", year: 1990 };
   }

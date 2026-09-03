@@ -46,10 +46,10 @@ const createMockTrack = (id: string, title: string, artist: string, year: number
   year,
 });
 
-const mockUseQuery = vi.fn();
+const mockUseQuery = vi.fn<() => unknown>();
 
 vi.mock(import("convex/react"), () => ({
-  useQuery: vi.fn(),
+  useQuery: vi.fn<() => unknown>(),
 }));
 
 vi.mock(import("usehooks-ts"), () => ({
@@ -57,11 +57,11 @@ vi.mock(import("usehooks-ts"), () => ({
 }));
 
 vi.mock(import("react"), async () => {
-  const actual = await vi.importActual("react");
+  const actual = await vi.importActual<typeof import("react")>("react");
   return {
     ...actual,
     // oxlint-disable-next-line typescript/no-unsafe-call, typescript/no-unsafe-return
-    useMemo: vi.fn((fn) => fn()),
+    useMemo: vi.fn<<T>(fn: () => T) => T>((fn) => fn()),
   };
 });
 
@@ -70,8 +70,8 @@ import { useQuery } from "convex/react";
 // oxlint-disable-next-line typescript/no-explicit-any
 const createGameContext = (player: any): any => ({
   actions: {
-    handleModalClose: vi.fn(),
-    setSelectedPlayerForTimeline: vi.fn(),
+    handleModalClose: vi.fn<() => void>(),
+    setSelectedPlayerForTimeline: vi.fn<(player: unknown) => void>(),
   },
   meta: {
     code: "ABC123",
@@ -104,7 +104,7 @@ beforeEach(() => {
   (useQuery as unknown as ReturnType<typeof vi.fn>).mockImplementation(mockUseQuery);
 });
 
-describe(MyTimeline, () => {
+describe("MyTimeline", () => {
   test("displays empty state when timeline is empty", () => {
     // oxlint-disable-next-line typescript/no-unsafe-assignment
     const mockPlayer = createMockPlayer();

@@ -692,7 +692,7 @@ test("resolveAndNext handles empty betting phase", async () => {
     sessionId: asSessionId("host-resolve"),
   });
 
-  expect(result.gameEnded).toBeFalsy();
+  expect(result.gameEnded).toBe(false);
   expect(result.nextRoundId).toBeDefined();
 });
 
@@ -767,9 +767,9 @@ test("resolveAndNext handles no tracks available", async () => {
     sessionId: asSessionId("host-notracks"),
   });
 
-  expect(result.gameEnded).toBeTruthy();
+  expect(result.gameEnded).toBe(true);
   expect(result.winnerPlayerId).toBeNull();
-  expect(result.noTracksAvailable).toBeTruthy();
+  expect(result.noTracksAvailable).toBe(true);
 });
 
 test("start sets all players' coins to lobby's startingCoins setting", async () => {

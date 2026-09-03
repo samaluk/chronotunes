@@ -4,14 +4,14 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { LandingPageContent } from "./landing-page-content";
 
 vi.mock(import("convex/react"), () => ({
-  useMutation: vi.fn(() => vi.fn()),
+  useMutation: vi.fn<() => () => void>(() => vi.fn<() => void>()),
 }));
 
 vi.mock(import("next/navigation"), () => ({
-  useRouter: () => ({ push: vi.fn() }),
+  useRouter: () => ({ push: vi.fn<(url: string) => void>() }),
 }));
 
-const sessionIdMock = vi.fn(() => ["session-123"]);
+const sessionIdMock = vi.fn<() => string[]>(() => ["session-123"]);
 
 vi.mock(import("convex-helpers/react/sessions"), () => ({
   useSessionId: () => sessionIdMock(),
@@ -36,7 +36,7 @@ afterEach(() => {
   vi.clearAllMocks();
 });
 
-describe(LandingPageContent, () => {
+describe("LandingPageContent", () => {
   it("renders title, tagline, and create button", () => {
     render(<LandingPageContent />);
 

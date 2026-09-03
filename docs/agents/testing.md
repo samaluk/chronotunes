@@ -47,12 +47,13 @@ test("displays player name", () => {
 - Choose the lightest test layer that can falsify the behavior. Escalate to integration or end-to-end tests only when the behavior genuinely depends on those boundaries.
 - Prefer fewer, longer tests when multiple actions and assertions belong to one meaningful workflow.
 - Treat each test like a manual tester's script: explicit setup, realistic actions, and all relevant assertions for the journey.
-- Do not split one coherent flow merely to achieve one assertion per test. Multiple related assertions in one test are desirable.
-- Keep suites flat where practical. Prefer top-level `test(...)`/`it(...)` over deep `describe` nesting.
-- Avoid shared setup such as `beforeEach`/`afterEach` when it hides what a test needs. Prefer inline setup or explicit factory helpers.
+- Do not split one coherent flow merely to achieve one assertion per test. Multiple related assertions in one test are desirable (we reject arbitrary caps like `max-expects` in favor of complete workflow testing).
+- Keep suites flat where practical. Prefer top-level `test(...)` over mandatory or deep `describe` nesting (`max-nested-describe` is capped at 2; `require-top-level-describe` is deliberately off).
+- Avoid shared mutable setup in `beforeEach` that hides dependencies or forces `let` reassignments. Prefer inline setup or explicit factory helpers (`setup()`). Reserve `afterEach`/`afterAll` for essential teardown, server stops, and mock cleanup.
 - Avoid shared mutable state between tests. If later assertions depend on the same rendered object, request, response, or state transition, they likely belong in the same test.
 - Build helpers that return ready-to-use objects or fixtures instead of mutable globals.
-- Keep test names behavior-focused and specific.
+- Keep test names behavior-focused, specific, and lowercase (e.g. `test("creates lobby ...")` or `it("renders error ...")`), while `describe` blocks name the component or unit (e.g. `describe("GameView", ...)`).
+- Provide explicit TypeScript type parameters for all test mocks (e.g. `vi.fn<() => void>()`, `vi.importActual<typeof import("...")>("...")`) to avoid silent fallback to `any`.
 - Test observable behavior and stable contracts rather than implementation details.
 - Avoid tests that merely pin incidental copy, descriptions, warnings, or configuration strings. Prefer structured output or user-visible outcomes.
 - Do not test guarantees already enforced by the type system unless runtime behavior adds something materially different.

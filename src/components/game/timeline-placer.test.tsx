@@ -9,40 +9,40 @@ import { TimelinePlacer } from "./timeline-placer";
 vi.mock(import("@/convex/_generated/api.js"), () => ({
   api: {
     rounds: {
-      setPlacementPreview: vi.fn(),
-      submitPlacement: vi.fn(),
+      setPlacementPreview: vi.fn<() => void>(),
+      submitPlacement: vi.fn<() => void>(),
     },
   },
 }));
 
 vi.mock(import("convex/react"), () => ({
-  useMutation: vi.fn(() => vi.fn()),
+  useMutation: vi.fn<() => () => void>(() => vi.fn<() => void>()),
 }));
 
 vi.mock(import("convex-helpers/react/sessions"), () => ({
   SessionProvider: ({ children }: { children: React.ReactNode }) => children,
-  useSessionMutation: vi.fn(() => vi.fn()),
-  useSessionQuery: vi.fn(() => null),
+  useSessionMutation: vi.fn<() => () => void>(() => vi.fn<() => void>()),
+  useSessionQuery: vi.fn<() => null>(() => null),
 }));
 
 vi.mock(import("react"), () => ({
   // oxlint-disable-next-line typescript/no-unsafe-return
-  useCallback: vi.fn((fn) => fn),
+  useCallback: vi.fn<<T extends (...args: unknown[]) => unknown>(fn: T) => T>((fn) => fn),
   // oxlint-disable-next-line typescript/no-unsafe-call, typescript/no-unsafe-return
-  useEffect: vi.fn((fn) => fn()),
+  useEffect: vi.fn<(fn: () => void) => void>((fn) => fn()),
   // oxlint-disable-next-line typescript/no-unsafe-return
-  useEffectEvent: vi.fn((fn) => fn),
+  useEffectEvent: vi.fn<<T extends (...args: unknown[]) => unknown>(fn: T) => T>((fn) => fn),
   // oxlint-disable-next-line typescript/no-unsafe-call, typescript/no-unsafe-return
-  useMemo: vi.fn((fn) => fn()),
+  useMemo: vi.fn<<T>(fn: () => T) => T>((fn) => fn()),
   // oxlint-disable-next-line typescript/no-unsafe-assignment
-  useRef: vi.fn((initial) => ({ current: initial })),
-  useState: vi.fn((initial) => {
+  useRef: vi.fn<<T>(initial: T) => { current: T }>((initial) => ({ current: initial })),
+  useState: vi.fn<<T>(initial: T | (() => T)) => [T, (val: unknown) => void]>((initial) => {
     if (typeof initial === "function") {
       // oxlint-disable-next-line typescript/no-unsafe-call, typescript/no-unsafe-return
-      return [initial(), vi.fn()];
+      return [initial(), vi.fn<(val: unknown) => void>()];
     }
     // oxlint-disable-next-line typescript/no-unsafe-return
-    return [initial, vi.fn()];
+    return [initial, vi.fn<(val: unknown) => void>()];
   }),
 }));
 
@@ -118,7 +118,7 @@ const placeSongHeadingText = "Place the Song";
 const placeOnTimelineText = /Place on timeline/i;
 const confirmPlacementText = "Confirm Placement";
 
-describe(TimelinePlacer, () => {
+describe("TimelinePlacer", () => {
   test("renders loading state when track is null", () => {
     const mockPlayer = createMockPlayer();
 

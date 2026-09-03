@@ -55,7 +55,7 @@ describe("lobbies", () => {
     });
 
     expect(players).toHaveLength(1);
-    expect(players[0]?.isHost).toBeTruthy();
+    expect(players[0]?.isHost).toBe(true);
     expect(players[0]?.displayName).toBe("HostPlayer");
   });
 
@@ -81,7 +81,7 @@ describe("lobbies", () => {
         displayName: "",
         sessionId: asSessionId("test-session-empty"),
       }),
-    ).rejects.toThrow();
+    ).rejects.toThrow("Display name must be between 1 and 20 characters");
   });
 
   test("create lobby rejects display name too long", async () => {
@@ -91,7 +91,7 @@ describe("lobbies", () => {
         displayName: "A".repeat(51),
         sessionId: asSessionId("test-session-long"),
       }),
-    ).rejects.toThrow();
+    ).rejects.toThrow("Display name must be between 1 and 20 characters");
   });
 
   test("create lobby generates unique codes", async () => {
@@ -152,7 +152,7 @@ describe("lobbies", () => {
         displayName: "InvalidPlayer",
         sessionId: asSessionId("invalid-session"),
       }),
-    ).rejects.toThrow();
+    ).rejects.toThrow("Lobby not found");
   });
 
   test("join lobby rejects empty display name", async () => {
@@ -168,7 +168,7 @@ describe("lobbies", () => {
         displayName: "",
         sessionId: asSessionId("empty-display-session"),
       }),
-    ).rejects.toThrow();
+    ).rejects.toThrow("Display name must be between 1 and 20 characters");
   });
 
   test("join lobby rejects display name too long", async () => {
@@ -184,7 +184,7 @@ describe("lobbies", () => {
         displayName: "A".repeat(51),
         sessionId: asSessionId("long-name-session"),
       }),
-    ).rejects.toThrow();
+    ).rejects.toThrow("Display name must be between 1 and 20 characters");
   });
 
   test("join lobby rejects when session already in lobby", async () => {
@@ -200,7 +200,7 @@ describe("lobbies", () => {
         displayName: "Player",
         sessionId: asSessionId("duplicate-session"),
       }),
-    ).rejects.toThrow();
+    ).rejects.toThrow("You are already in this lobby");
   });
 
   test("join lobby rejects when lobby status is in_game", async () => {
@@ -223,7 +223,7 @@ describe("lobbies", () => {
         displayName: "Player",
         sessionId: asSessionId("game-player"),
       }),
-    ).rejects.toThrow();
+    ).rejects.toThrow("Cannot join lobby that is not in lobby status");
   });
 
   test("join lobby is case insensitive for code", async () => {
@@ -312,7 +312,7 @@ describe("lobbies", () => {
         code,
         sessionId: asSessionId("not-in-lobby-player"),
       }),
-    ).rejects.toThrow();
+    ).rejects.toThrow("You are not in this lobby");
   });
 
   test("leave lobby rejects when lobby not found", async () => {
@@ -322,7 +322,7 @@ describe("lobbies", () => {
         code: "NOTFOUND",
         sessionId: asSessionId("not-found-session"),
       }),
-    ).rejects.toThrow();
+    ).rejects.toThrow("Lobby not found");
   });
 
   test("leave lobby transfers host when host leaves and players remain", async () => {
@@ -349,7 +349,7 @@ describe("lobbies", () => {
     });
 
     const remainingPlayer = players.find((p) => p.sessionId === "transfer-player");
-    expect(remainingPlayer?.isHost).toBeTruthy();
+    expect(remainingPlayer?.isHost).toBe(true);
   });
 
   test("leave lobby deletes lobby when last player leaves", async () => {
@@ -418,7 +418,7 @@ describe("lobbies", () => {
     });
 
     expect(players).toHaveLength(1);
-    expect(players[0]?.isHost).toBeTruthy();
+    expect(players[0]?.isHost).toBe(true);
   });
 
   test("get lobby returns lobby by code", async () => {
@@ -556,7 +556,7 @@ describe("lobbies", () => {
         sessionId: asSessionId("non-host-update-player"),
         settings: { targetTimelineSize: 15 },
       }),
-    ).rejects.toThrow();
+    ).rejects.toThrow("Only the host can update settings");
   });
 
   test("updateSettings rejects targetTimelineSize below 5", async () => {
@@ -572,7 +572,7 @@ describe("lobbies", () => {
         sessionId: asSessionId("min-target-host"),
         settings: { targetTimelineSize: 4 },
       }),
-    ).rejects.toThrow();
+    ).rejects.toThrow("Target timeline size must be between 5 and 15");
   });
 
   test("updateSettings rejects targetTimelineSize above 15", async () => {
@@ -588,7 +588,7 @@ describe("lobbies", () => {
         sessionId: asSessionId("max-target-host"),
         settings: { targetTimelineSize: 16 },
       }),
-    ).rejects.toThrow();
+    ).rejects.toThrow("Target timeline size must be between 5 and 15");
   });
 
   test("updateSettings rejects startingCoins below 1", async () => {
@@ -604,7 +604,7 @@ describe("lobbies", () => {
         sessionId: asSessionId("min-coins-host"),
         settings: { startingCoins: 0 },
       }),
-    ).rejects.toThrow();
+    ).rejects.toThrow("Starting coins must be between 1 and 10");
   });
 
   test("updateSettings rejects startingCoins above 10", async () => {
@@ -620,7 +620,7 @@ describe("lobbies", () => {
         sessionId: asSessionId("max-coins-host"),
         settings: { startingCoins: 11 },
       }),
-    ).rejects.toThrow();
+    ).rejects.toThrow("Starting coins must be between 1 and 10");
   });
 
   test("updateSettings rejects turnSeconds below 15", async () => {
@@ -636,7 +636,7 @@ describe("lobbies", () => {
         sessionId: asSessionId("min-turn-host"),
         settings: { turnSeconds: 14 },
       }),
-    ).rejects.toThrow();
+    ).rejects.toThrow("Turn seconds must be between 15 and 120");
   });
 
   test("updateSettings rejects turnSeconds above 120", async () => {
@@ -652,7 +652,7 @@ describe("lobbies", () => {
         sessionId: asSessionId("max-turn-host"),
         settings: { turnSeconds: 121 },
       }),
-    ).rejects.toThrow();
+    ).rejects.toThrow("Turn seconds must be between 15 and 120");
   });
 
   test("updateSettings rejects bettingWindowSeconds below 5", async () => {
@@ -668,7 +668,7 @@ describe("lobbies", () => {
         sessionId: asSessionId("min-bet-host"),
         settings: { bettingWindowSeconds: 4 },
       }),
-    ).rejects.toThrow();
+    ).rejects.toThrow("Betting window seconds must be between 5 and 60");
   });
 
   test("updateSettings rejects bettingWindowSeconds above 60", async () => {
@@ -684,7 +684,7 @@ describe("lobbies", () => {
         sessionId: asSessionId("max-bet-host"),
         settings: { bettingWindowSeconds: 61 },
       }),
-    ).rejects.toThrow();
+    ).rejects.toThrow("Betting window seconds must be between 5 and 60");
   });
 
   test("updateSettings rejects minYear below 1900", async () => {
@@ -700,7 +700,7 @@ describe("lobbies", () => {
         sessionId: asSessionId("min-year-host"),
         settings: { minYear: 1899 },
       }),
-    ).rejects.toThrow();
+    ).rejects.toThrow("Invalid minimum year");
   });
 
   test("updateSettings rejects minYear above maxYear", async () => {
@@ -725,7 +725,7 @@ describe("lobbies", () => {
         sessionId: asSessionId("year-range-host"),
         settings: { minYear: 2025 },
       }),
-    ).rejects.toThrow();
+    ).rejects.toThrow("Invalid minimum year");
   });
 
   test("updateSettings rejects maxYear below minYear", async () => {
@@ -750,7 +750,7 @@ describe("lobbies", () => {
         sessionId: asSessionId("max-min-year-host"),
         settings: { maxYear: 1990 },
       }),
-    ).rejects.toThrow();
+    ).rejects.toThrow("Invalid maximum year");
   });
 
   test("updateSettings rejects maxYear above 2030", async () => {
@@ -766,7 +766,7 @@ describe("lobbies", () => {
         sessionId: asSessionId("max-max-year-host"),
         settings: { maxYear: 2031 },
       }),
-    ).rejects.toThrow();
+    ).rejects.toThrow("Invalid maximum year");
   });
 
   test("updateSettings rejects when lobby not found", async () => {
@@ -777,7 +777,7 @@ describe("lobbies", () => {
         sessionId: asSessionId("not-found-session"),
         settings: { targetTimelineSize: 12 },
       }),
-    ).rejects.toThrow();
+    ).rejects.toThrow("Lobby not found");
   });
 
   test("updateSettings rejects when lobby status is in_game", async () => {
@@ -800,7 +800,7 @@ describe("lobbies", () => {
         sessionId: asSessionId("game-update-host"),
         settings: { targetTimelineSize: 12 },
       }),
-    ).rejects.toThrow();
+    ).rejects.toThrow("Cannot update settings for a lobby that is not in lobby status");
   });
 
   test("updateSettings is case insensitive for code", async () => {
@@ -834,7 +834,7 @@ describe("lobbies", () => {
     });
 
     const lobby = await t.query(api.lobbies.get, { code });
-    expect(lobby?.settings.allowGuessTitleArtist).toBeTruthy();
-    expect(lobby?.settings.showLiveBets).toBeFalsy();
+    expect(lobby?.settings.allowGuessTitleArtist).toBe(true);
+    expect(lobby?.settings.showLiveBets).toBe(false);
   });
 });

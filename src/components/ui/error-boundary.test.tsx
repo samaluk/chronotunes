@@ -19,7 +19,7 @@ afterEach(() => {
   vi.restoreAllMocks();
 });
 
-describe(ErrorBoundary, () => {
+describe("ErrorBoundary", () => {
   it("renders children when no error is thrown", () => {
     render(
       <ErrorBoundary>

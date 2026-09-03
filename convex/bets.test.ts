@@ -1,5 +1,5 @@
 import { convexTest } from "convex-test";
-import { expect, test } from "vitest";
+import { assert, expect, test } from "vitest";
 
 import { api } from "./_generated/api";
 import type { Id } from "./_generated/dataModel";
@@ -159,29 +159,24 @@ test("preview creates unlocked bet for non-turn player", async () => {
 
   expect(result).toBeNull();
 
-  let betCreated = false;
-  await t.run(async (ctx) => {
+  const bet = await t.run(async (ctx) => {
     const game = await ctx.db.query("games").first();
-    if (game?.currentRoundId) {
-      const bet = await ctx.db
-        .query("roundBets")
-        .filter((q) =>
-          q.and(
-            q.eq(q.field("roundId"), game.currentRoundId),
-            q.eq(q.field("playerId"), nonTurnPlayerId),
-          ),
-        )
-        .first();
-      if (bet) {
-        betCreated = true;
-        expect(bet.lockedIn).toBeFalsy();
-        expect(bet.proposedIndex).toBe(1);
-        expect(bet.status).toBe("pending");
-      }
-    }
+    assert(game?.currentRoundId);
+    return await ctx.db
+      .query("roundBets")
+      .filter((q) =>
+        q.and(
+          q.eq(q.field("roundId"), game.currentRoundId),
+          q.eq(q.field("playerId"), nonTurnPlayerId),
+        ),
+      )
+      .first();
   });
 
-  expect(betCreated).toBeTruthy();
+  assert(bet);
+  expect(bet.lockedIn).toBe(false);
+  expect(bet.proposedIndex).toBe(1);
+  expect(bet.status).toBe("pending");
 });
 
 test("preview deducts 1 coin from player", async () => {
@@ -367,52 +362,35 @@ test("preview fails when player has no coins", async () => {
   // oxlint-disable-next-line typescript/no-non-null-assertion
   await moveRoundToBetting(t, lobby!._id);
 
-  let turnPlayerSessionId: SessionId | null = null;
-  await t.run(async (ctx) => {
+  const nonTurnPlayer = await t.run(async (ctx) => {
     const game = await ctx.db.query("games").first();
-    if (game?.currentRoundId) {
-      const round = await ctx.db.get(game.currentRoundId);
-      if (round) {
-        const player = await ctx.db.get(round.turnPlayerId);
-        if (player) {
-          // oxlint-disable-next-line typescript/consistent-type-assertions, typescript/no-unsafe-type-assertion
-          turnPlayerSessionId = player.sessionId as SessionId;
-        }
-      }
-    }
-  });
-
-  expect(turnPlayerSessionId).not.toBeNull();
-
-  await t.run(async (ctx) => {
+    assert(game?.currentRoundId);
+    const round = await ctx.db.get(game.currentRoundId);
+    assert(round);
     const player = await ctx.db
       .query("players")
-      .filter((q) => q.eq(q.field("sessionId"), asSessionId("spectator-session-nocoin")))
+      .filter((q) =>
+        q.and(
+          // oxlint-disable-next-line typescript/no-non-null-assertion
+          q.eq(q.field("lobbyId"), lobby!._id),
+          q.neq(q.field("_id"), round.turnPlayerId),
+        ),
+      )
       .first();
-    if (player) {
-      await ctx.db.patch(player._id, { coins: 0 });
-    }
+    assert(player);
+    await ctx.db.patch(player._id, { coins: 0 });
+    return player;
   });
 
-  if (turnPlayerSessionId === "spectator-session-nocoin") {
-    await expect(
-      t.mutation(api.bets.preview, {
-        // oxlint-disable-next-line typescript/no-non-null-assertion
-        lobbyId: lobby!._id,
-        proposedIndex: 0,
-        sessionId: asSessionId("spectator-session-nocoin"),
-      }),
-    ).rejects.toThrow("Turn player cannot place bets");
-  } else {
-    await expect(
-      t.mutation(api.bets.preview, {
-        // oxlint-disable-next-line typescript/no-non-null-assertion
-        lobbyId: lobby!._id,
-        proposedIndex: 0,
-        sessionId: asSessionId("spectator-session-nocoin"),
-      }),
-    ).rejects.toThrow("Not enough coins to place a bet");
-  }
+  await expect(
+    t.mutation(api.bets.preview, {
+      // oxlint-disable-next-line typescript/no-non-null-assertion
+      lobbyId: lobby!._id,
+      proposedIndex: 0,
+      // oxlint-disable-next-line typescript/consistent-type-assertions, typescript/no-unsafe-type-assertion
+      sessionId: nonTurnPlayer.sessionId as SessionId,
+    }),
+  ).rejects.toThrow("Not enough coins to place a bet");
 });
 
 test("preview fails for negative index", async () => {
@@ -448,42 +426,34 @@ test("preview fails for negative index", async () => {
   // oxlint-disable-next-line typescript/no-non-null-assertion
   await moveRoundToBetting(t, lobby!._id);
 
-  let turnPlayerSessionId: SessionId | null = null;
-  await t.run(async (ctx) => {
+  const nonTurnPlayer = await t.run(async (ctx) => {
     const game = await ctx.db.query("games").first();
-    if (game?.currentRoundId) {
-      const round = await ctx.db.get(game.currentRoundId);
-      if (round) {
-        const player = await ctx.db.get(round.turnPlayerId);
-        if (player) {
-          // oxlint-disable-next-line typescript/consistent-type-assertions, typescript/no-unsafe-type-assertion
-          turnPlayerSessionId = player.sessionId as SessionId;
-        }
-      }
-    }
+    assert(game?.currentRoundId);
+    const round = await ctx.db.get(game.currentRoundId);
+    assert(round);
+    const player = await ctx.db
+      .query("players")
+      .filter((q) =>
+        q.and(
+          // oxlint-disable-next-line typescript/no-non-null-assertion
+          q.eq(q.field("lobbyId"), lobby!._id),
+          q.neq(q.field("_id"), round.turnPlayerId),
+        ),
+      )
+      .first();
+    assert(player);
+    return player;
   });
 
-  expect(turnPlayerSessionId).not.toBeNull();
-
-  if (turnPlayerSessionId === "spectator-session-neg") {
-    await expect(
-      t.mutation(api.bets.preview, {
-        // oxlint-disable-next-line typescript/no-non-null-assertion
-        lobbyId: lobby!._id,
-        proposedIndex: -1,
-        sessionId: asSessionId("spectator-session-neg"),
-      }),
-    ).rejects.toThrow("Turn player cannot place bets");
-  } else {
-    await expect(
-      t.mutation(api.bets.preview, {
-        // oxlint-disable-next-line typescript/no-non-null-assertion
-        lobbyId: lobby!._id,
-        proposedIndex: -1,
-        sessionId: asSessionId("spectator-session-neg"),
-      }),
-    ).rejects.toThrow("Proposed index cannot be negative");
-  }
+  await expect(
+    t.mutation(api.bets.preview, {
+      // oxlint-disable-next-line typescript/no-non-null-assertion
+      lobbyId: lobby!._id,
+      proposedIndex: -1,
+      // oxlint-disable-next-line typescript/consistent-type-assertions, typescript/no-unsafe-type-assertion
+      sessionId: nonTurnPlayer.sessionId as SessionId,
+    }),
+  ).rejects.toThrow("Proposed index cannot be negative");
 });
 
 test("preview fails when betting on the turn player's placement", async () => {
@@ -843,7 +813,7 @@ test("lockIn sets lockedIn to true", async () => {
     }
   });
 
-  expect(betLockedIn).toBeTruthy();
+  expect(betLockedIn).toBe(true);
 });
 
 test("lockIn fails when no bet exists", async () => {
@@ -1146,7 +1116,7 @@ test("cancel deletes bet and refunds coin", async () => {
     }
   });
 
-  expect(betExists).toBeFalsy();
+  expect(betExists).toBe(false);
 
   let playerAfterCoins: number | null = null;
   await t.run(async (ctx) => {
@@ -1406,41 +1376,33 @@ test("preview works during betting phase", async () => {
     }
   });
 
-  let turnPlayerSessionId: SessionId | null = null;
-  await t.run(async (ctx) => {
-    const game = await ctx.db.query("games").first();
-    if (game?.currentRoundId) {
-      const round = await ctx.db.get(game.currentRoundId);
-      if (round) {
-        const player = await ctx.db.get(round.turnPlayerId);
-        if (player) {
-          // oxlint-disable-next-line typescript/consistent-type-assertions, typescript/no-unsafe-type-assertion
-          turnPlayerSessionId = player.sessionId as SessionId;
-        }
-      }
-    }
+  const nonTurnPlayer = await t.run(async (ctx) => {
+    const gameRecord = await ctx.db.query("games").first();
+    assert(gameRecord?.currentRoundId);
+    const round = await ctx.db.get(gameRecord.currentRoundId);
+    assert(round);
+    const player = await ctx.db
+      .query("players")
+      .filter((q) =>
+        q.and(
+          // oxlint-disable-next-line typescript/no-non-null-assertion
+          q.eq(q.field("lobbyId"), lobby!._id),
+          q.neq(q.field("_id"), round.turnPlayerId),
+        ),
+      )
+      .first();
+    assert(player);
+    return player;
   });
 
-  expect(turnPlayerSessionId).not.toBeNull();
-
-  if (turnPlayerSessionId === "spectator-session-betting") {
-    await expect(
-      t.mutation(api.bets.preview, {
-        // oxlint-disable-next-line typescript/no-non-null-assertion
-        lobbyId: lobby!._id,
-        proposedIndex: 0,
-        sessionId: asSessionId("spectator-session-betting"),
-      }),
-    ).rejects.toThrow("Turn player cannot place bets");
-  } else {
-    const result = await t.mutation(api.bets.preview, {
-      // oxlint-disable-next-line typescript/no-non-null-assertion
-      lobbyId: lobby!._id,
-      proposedIndex: 1,
-      sessionId: asSessionId("spectator-session-betting"),
-    });
-    expect(result).toBeNull();
-  }
+  const result = await t.mutation(api.bets.preview, {
+    // oxlint-disable-next-line typescript/no-non-null-assertion
+    lobbyId: lobby!._id,
+    proposedIndex: 1,
+    // oxlint-disable-next-line typescript/consistent-type-assertions, typescript/no-unsafe-type-assertion
+    sessionId: nonTurnPlayer.sessionId as SessionId,
+  });
+  expect(result).toBeNull();
 });
 
 test("preview works during placing phase", async () => {
@@ -1544,23 +1506,21 @@ test("listForRound returns all bets when showLiveBets is true", async () => {
   });
 
   expect(turnPlayerSessionId).not.toBeNull();
-  expect(nonTurnSessionId).not.toBeNull();
-
-  if (nonTurnSessionId) {
-    await t.mutation(api.bets.preview, {
-      // oxlint-disable-next-line typescript/no-non-null-assertion
-      lobbyId: lobby!._id,
-      proposedIndex: 1,
-      sessionId: nonTurnSessionId,
-    });
-
+  assert(nonTurnSessionId);
+  await t.mutation(api.bets.preview, {
     // oxlint-disable-next-line typescript/no-non-null-assertion
-    const bets = await t.query(api.bets.listForRound, { lobbyId: lobby!._id });
+    lobbyId: lobby!._id,
+    proposedIndex: 1,
+    sessionId: nonTurnSessionId,
+  });
 
-    expect(bets).toHaveLength(1);
-    expect(bets?.[0]?.lockedIn).toBeFalsy();
-    expect(bets?.[0]?.playerDisplayName).toBeTruthy();
-  }
+  // oxlint-disable-next-line typescript/no-non-null-assertion
+  const bets = await t.query(api.bets.listForRound, { lobbyId: lobby!._id });
+
+  expect(bets).toHaveLength(1);
+  assert(bets[0]);
+  expect(bets[0].lockedIn).toBe(false);
+  expect(bets[0].playerDisplayName).toBeDefined();
 });
 
 test("listForRound returns only locked bets when showLiveBets is false", async () => {
@@ -1658,7 +1618,7 @@ test("listForRound returns only locked bets when showLiveBets is false", async (
     lobbyId: lobby!._id,
   });
   expect(betsBeforeLock).toHaveLength(nonTurnSessions.length);
-  expect(betsBeforeLock?.every((bet) => bet.lockedIn === false)).toBeTruthy();
+  expect(betsBeforeLock?.every((bet) => bet.lockedIn === false)).toBe(true);
 
   await Promise.all(
     nonTurnSessions.map((sessionId) =>
@@ -1676,8 +1636,8 @@ test("listForRound returns only locked bets when showLiveBets is false", async (
   });
 
   expect(betsAfterLock).toHaveLength(nonTurnSessions.length);
-  expect(betsAfterLock?.every((bet) => bet.lockedIn === true)).toBeTruthy();
-  expect(betsAfterLock?.every((bet) => bet.playerDisplayName)).toBeTruthy();
+  expect(betsAfterLock?.every((bet) => bet.lockedIn === true)).toBe(true);
+  expect(betsAfterLock?.every((bet) => bet.playerDisplayName)).toBe(true);
 });
 
 test("listForRound returns empty array when no bets exist", async () => {

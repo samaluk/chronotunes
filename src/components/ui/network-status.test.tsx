@@ -14,7 +14,7 @@ const makeStatus = () => ({
   error: null,
   isConnected: currentStatus === "connected",
   isReconnecting: false,
-  retry: vi.fn(),
+  retry: vi.fn<() => void>(),
   status: currentStatus,
 });
 
@@ -26,7 +26,7 @@ afterEach(() => {
   cleanup();
 });
 
-describe(NetworkStatus, () => {
+describe("NetworkStatus", () => {
   it("renders nothing while connected", () => {
     const { container } = render(<NetworkStatus />);
     expect(container).toBeEmptyDOMElement();
@@ -51,7 +51,7 @@ describe(NetworkStatus, () => {
   });
 });
 
-describe(ConnectionBanner, () => {
+describe("ConnectionBanner", () => {
   it("renders nothing while connected", () => {
     currentStatus = "connected";
     const { container } = render(<ConnectionBanner />);

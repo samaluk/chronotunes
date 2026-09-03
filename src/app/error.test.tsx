@@ -12,7 +12,7 @@ afterEach(() => {
   vi.restoreAllMocks();
 });
 
-describe(ErrorPage, () => {
+describe("ErrorPage", () => {
   it("renders translated error UI", () => {
     render(<ErrorPage error={new Error("boom")} retry={() => {}} />);
 
@@ -23,11 +23,11 @@ describe(ErrorPage, () => {
   });
 
   it("calls retry when Try Again is clicked", () => {
-    const retry = vi.fn();
+    const retry = vi.fn<() => void>();
     render(<ErrorPage error={new Error("boom")} retry={retry} />);
 
     fireEvent.click(screen.getByRole("button", { name: "translated:tryAgain" }));
 
-    expect(retry).toHaveBeenCalledTimes(1);
+    expect(retry).toHaveBeenCalledOnce();
   });
 });
