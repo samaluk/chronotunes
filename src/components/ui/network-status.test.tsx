@@ -14,7 +14,7 @@ const makeStatus = () => ({
   error: null,
   isConnected: currentStatus === "connected",
   isReconnecting: false,
-  retry: vi.fn(),
+  retry: vi.fn<() => void>(),
   status: currentStatus,
 });
 

@@ -30,7 +30,7 @@ const createRosterPlayer = (overrides: Record<string, unknown>) => ({
 
 vi.mock(import("convex-helpers/react/sessions"), () => ({
   useSessionId: () => ["session-1"],
-  useSessionMutation: () => vi.fn(),
+  useSessionMutation: () => vi.fn<() => void>(),
   useSessionQuery: () => null,
 }));
 

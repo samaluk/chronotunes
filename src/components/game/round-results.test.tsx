@@ -62,14 +62,14 @@ const mockResolution = {
 };
 
 vi.mock(import("convex/react"), () => ({
-  useMutation: vi.fn(() => vi.fn()),
-  useQuery: vi.fn(() => null),
+  useMutation: vi.fn<() => () => void>(() => vi.fn<() => void>()),
+  useQuery: vi.fn<() => null>(() => null),
 }));
 
 vi.mock(import("convex-helpers/react/sessions"), () => ({
   SessionProvider: ({ children }: { children: React.ReactNode }) => children,
-  useSessionMutation: vi.fn(() => vi.fn()),
-  useSessionQuery: vi.fn(() => null),
+  useSessionMutation: vi.fn<() => () => void>(() => vi.fn<() => void>()),
+  useSessionQuery: vi.fn<() => null>(() => null),
 }));
 
 vi.mock(import("next-intl"), () => ({
@@ -79,22 +79,22 @@ vi.mock(import("next-intl"), () => ({
 let useStateCallCount = 0;
 
 vi.mock(import("react"), async () => {
-  const actual = await vi.importActual("react");
+  const actual = await vi.importActual<typeof import("react")>("react");
   return {
     ...actual,
     // oxlint-disable-next-line typescript/no-unsafe-call, typescript/no-unsafe-return
-    useMemo: vi.fn((fn) => fn()),
-    useState: vi.fn((initial) => {
+    useMemo: vi.fn<<T>(fn: () => T) => T>((fn) => fn()),
+    useState: vi.fn<<T>(initial: T | (() => T)) => [T, (val: unknown) => void]>((initial) => {
       useStateCallCount += 1;
       if (useStateCallCount === 2) {
-        return [true, vi.fn()];
+        return [true, vi.fn<(val: unknown) => void>()];
       }
       if (typeof initial === "function") {
         // oxlint-disable-next-line typescript/no-unsafe-call, typescript/no-unsafe-return
-        return [initial(), vi.fn()];
+        return [initial(), vi.fn<(val: unknown) => void>()];
       }
       // oxlint-disable-next-line typescript/no-unsafe-return
-      return [initial, vi.fn()];
+      return [initial, vi.fn<(val: unknown) => void>()];
     }),
   };
 });
@@ -115,8 +115,8 @@ const createContextValue = (
   } = {},
 ) => ({
   actions: {
-    handleModalClose: vi.fn(),
-    setSelectedPlayerForTimeline: vi.fn(),
+    handleModalClose: vi.fn<() => void>(),
+    setSelectedPlayerForTimeline: vi.fn<(player: unknown) => void>(),
   },
   meta: {
     code: "ABC123",

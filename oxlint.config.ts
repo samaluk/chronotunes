@@ -98,7 +98,6 @@ export default defineConfig({
     "vitest/no-restricted-matchers": "off",
     "vitest/no-restricted-vi-methods": "off",
     "vitest/require-hook": "off",
-    // Temporarily disabled while fixing offenders in subsequent commit
-    "vitest/require-mock-type-parameters": "off",
+    "vitest/require-mock-type-parameters": ["error", { checkImportFunctions: true }],
   },
 });

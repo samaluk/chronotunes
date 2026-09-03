@@ -7,11 +7,11 @@ import { SettingsPanel } from "./settings-panel";
 
 vi.mock(import("convex-helpers/react/sessions"), () => ({
   useSessionId: () => ["session-1"],
-  useSessionMutation: () => vi.fn(),
+  useSessionMutation: () => vi.fn<() => void>(),
 }));
 
 vi.mock(import("convex/react"), () => ({
-  useMutation: () => vi.fn(),
+  useMutation: () => vi.fn<() => void>(),
 }));
 
 vi.mock(import("next-intl"), () => ({

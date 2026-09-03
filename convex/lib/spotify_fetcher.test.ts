@@ -9,7 +9,7 @@ import {
 
 describe("getSpotifyClientCredentialsToken", () => {
   test("obtains access token with valid credentials", async () => {
-    const mockFetch: typeof fetch = vi.fn(
+    const mockFetch: typeof fetch = vi.fn<typeof fetch>(
       async () =>
         new Response(JSON.stringify({ access_token: "mock-spotify-token", expires_in: 3600 }), {
           status: 200,
@@ -22,7 +22,7 @@ describe("getSpotifyClientCredentialsToken", () => {
   });
 
   test("throws on authentication failure", async () => {
-    const mockFetch: typeof fetch = vi.fn(
+    const mockFetch: typeof fetch = vi.fn<typeof fetch>(
       async () => new Response("Invalid client credentials", { status: 401 }),
     );
 
@@ -66,7 +66,7 @@ describe("fetchPlaylistFromWebApi", () => {
     };
 
     let callCount = 0;
-    const mockFetch: typeof fetch = vi.fn(async () => {
+    const mockFetch: typeof fetch = vi.fn<typeof fetch>(async () => {
       callCount++;
       if (callCount === 1) {
         return new Response(JSON.stringify(page1), { status: 200 });
@@ -86,7 +86,9 @@ describe("fetchPlaylistFromWebApi", () => {
   });
 
   test("throws clear message on 404", async () => {
-    const mockFetch: typeof fetch = vi.fn(async () => new Response("Not Found", { status: 404 }));
+    const mockFetch: typeof fetch = vi.fn<typeof fetch>(
+      async () => new Response("Not Found", { status: 404 }),
+    );
 
     await expect(
       fetchPlaylistFromWebApi("nonexistent-id", "test-token", {
@@ -96,7 +98,7 @@ describe("fetchPlaylistFromWebApi", () => {
   });
 
   test("throws clear message on 429 rate limit", async () => {
-    const mockFetch: typeof fetch = vi.fn(
+    const mockFetch: typeof fetch = vi.fn<typeof fetch>(
       async () => new Response("Too Many Requests", { status: 429 }),
     );
 
@@ -136,7 +138,9 @@ describe("fetchPlaylistFromEmbed", () => {
 
     const html = `<html><body><script id="__NEXT_DATA__" type="application/json">${JSON.stringify(nextData)}</script></body></html>`;
 
-    const mockFetch: typeof fetch = vi.fn(async () => new Response(html, { status: 200 }));
+    const mockFetch: typeof fetch = vi.fn<typeof fetch>(
+      async () => new Response(html, { status: 200 }),
+    );
 
     const result = await fetchPlaylistFromEmbed("embed-id-123", {
       fetchFn: mockFetch,
@@ -174,7 +178,9 @@ describe("fetchPlaylistFromEmbed", () => {
 
     const html = `<html>\n  <body>\n    <script id="__NEXT_DATA__" type="application/json">\n      ${JSON.stringify(nextData, null, 2)}\n    </script>\n  </body>\n</html>`;
 
-    const mockFetch: typeof fetch = vi.fn(async () => new Response(html, { status: 200 }));
+    const mockFetch: typeof fetch = vi.fn<typeof fetch>(
+      async () => new Response(html, { status: 200 }),
+    );
     const result = await fetchPlaylistFromEmbed("multi-id", { fetchFn: mockFetch });
     expect(result.playlistName).toBe("Multiline Embed");
     expect(result.items).toHaveLength(1);
@@ -184,7 +190,7 @@ describe("fetchPlaylistFromEmbed", () => {
 
 describe("fetchSpotifyPlaylist", () => {
   test("uses token when provided directly", async () => {
-    const mockFetch: typeof fetch = vi.fn(
+    const mockFetch: typeof fetch = vi.fn<typeof fetch>(
       async () =>
         new Response(
           JSON.stringify({

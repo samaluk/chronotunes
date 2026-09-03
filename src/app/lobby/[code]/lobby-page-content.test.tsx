@@ -3,14 +3,14 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { LobbyPageContent } from "./lobby-page-content";
 
-const leaveLobbyMock = vi.fn();
+const leaveLobbyMock = vi.fn<() => void>();
 const getQueryMock = vi.fn<() => unknown>(() => undefined);
 
 vi.mock(import("convex/react"), () => ({
   useQuery: () => getQueryMock(),
 }));
 
-const sessionIdMock = vi.fn(() => ["session-123"]);
+const sessionIdMock = vi.fn<() => string[]>(() => ["session-123"]);
 
 vi.mock(import("convex-helpers/react/sessions"), () => ({
   useSessionId: () => sessionIdMock(),
@@ -18,7 +18,7 @@ vi.mock(import("convex-helpers/react/sessions"), () => ({
 }));
 
 vi.mock(import("next/navigation"), () => ({
-  useRouter: () => ({ push: vi.fn() }),
+  useRouter: () => ({ push: vi.fn<(url: string) => void>() }),
 }));
 
 vi.mock(import("next-intl"), () => ({
