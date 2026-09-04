@@ -75,7 +75,7 @@
     "fallow": "3.21.0",
     "jsdom": "30.0.1",
     "oxfmt": "0.65.0",
-    "oxlint": "1.80.0",
+    "oxlint": "1.81.0",
     "oxlint-tsgolint": "7.0.2001",
     "react-doctor": "0.9.12",
     "tailwindcss": "4.3.3",
