@@ -10,7 +10,6 @@ export default defineConfig({
     projects: [
       // Project for React component tests (jsdom environment)
       {
-        extends: true,
         resolve: {
           alias: [
             {
@@ -35,7 +34,6 @@ export default defineConfig({
       },
       // Project for Convex function tests (edge-runtime environment)
       {
-        extends: true,
         test: {
           environment: "edge-runtime",
           include: ["convex/**/*.test.ts"],
@@ -45,7 +43,6 @@ export default defineConfig({
       },
       // Project for Node.js script tests
       {
-        extends: true,
         test: {
           environment: "node",
           include: ["scripts/**/*.test.ts"],

@@ -33,7 +33,6 @@ vi.mock(import("@/components/ui/theme-toggle"), () => ({
 
 afterEach(() => {
   cleanup();
-  vi.clearAllMocks();
 });
 
 describe("LandingPageContent", () => {
