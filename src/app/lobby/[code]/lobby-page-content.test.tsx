@@ -33,7 +33,6 @@ vi.mock(import("@/components/ui/locale-switcher"), () => ({
 describe("LobbyPageContent", () => {
   afterEach(() => {
     cleanup();
-    vi.clearAllMocks();
   });
 
   it("shows an invalid-code message when code is empty", () => {

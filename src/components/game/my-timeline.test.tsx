@@ -99,7 +99,6 @@ const createGameContext = (player: any): any => ({
 });
 
 beforeEach(() => {
-  vi.clearAllMocks();
   // oxlint-disable-next-line typescript/consistent-type-assertions, typescript/no-unsafe-type-assertion
   (useQuery as unknown as ReturnType<typeof vi.fn>).mockImplementation(mockUseQuery);
 });
