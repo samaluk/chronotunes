@@ -9,12 +9,9 @@ import { ConnectionBanner, NetworkStatus } from "./network-status";
 // from the module under test (vi.mock replaces it wholesale).
 type Status = "connecting" | "connected" | "disconnected" | "reconnecting" | "error";
 let currentStatus: Status = "connected";
+let currentOffline = false;
 
 const makeStatus = () => ({
-  error: null,
-  isConnected: currentStatus === "connected",
-  isReconnecting: false,
-  retry: vi.fn<() => void>(),
   status: currentStatus,
 });
 
@@ -22,7 +19,17 @@ vi.mock(import("@/lib/hooks/use-convex-status"), () => ({
   useConvexStatus: () => makeStatus(),
 }));
 
+vi.mock(import("next/offline"), () => ({
+  useOffline: () => currentOffline,
+}));
+
+vi.mock(import("next-intl"), () => ({
+  useTranslations: () => (key: string) => `network:${key}`,
+}));
+
 afterEach(() => {
+  currentStatus = "connected";
+  currentOffline = false;
   cleanup();
 });
 
@@ -30,6 +37,20 @@ describe("NetworkStatus", () => {
   it("renders nothing while connected", () => {
     const { container } = render(<NetworkStatus />);
     expect(container).toBeEmptyDOMElement();
+  });
+
+  it("renders the offline state even when Convex is connected, then follows Convex after recovery", () => {
+    currentOffline = true;
+
+    const view = render(<NetworkStatus />);
+
+    expect(view.container.textContent).toContain("network:offline");
+
+    currentOffline = false;
+    currentStatus = "reconnecting";
+    view.rerender(<NetworkStatus />);
+
+    expect(view.container.textContent).toContain("network:reconnecting");
   });
 
   it.each(["disconnected", "error", "connecting", "reconnecting"] as const)(
@@ -58,11 +79,20 @@ describe("ConnectionBanner", () => {
     expect(container).toBeEmptyDOMElement();
   });
 
-  it("renders a fixed banner with retry control while offline", () => {
+  it("renders the offline state while Next has a pending request", () => {
+    currentOffline = true;
+
+    const { container } = render(<ConnectionBanner />);
+
+    expect(container.textContent).toContain("network:offline");
+  });
+
+  it("renders a fixed banner without a fake retry control", () => {
     currentStatus = "disconnected";
     const { container } = render(<ConnectionBanner />);
 
     expect(container.querySelector("svg")).not.toBeNull();
     expect(container.textContent?.length ?? 0).toBeGreaterThan(0);
+    expect(container.querySelector("button")).toBeNull();
   });
 });

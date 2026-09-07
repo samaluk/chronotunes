@@ -3,12 +3,12 @@
 import { useSessionId } from "convex-helpers/react/sessions";
 import { useMutation } from "convex/react";
 import { useTranslations } from "next-intl";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 
 import { api } from "@/convex/_generated/api";
 import { saveDisplayName } from "@/components/landing/display-name-store";
+import { useRouter } from "@/i18n/routing";
 import { runSafely } from "@/lib/run-safely";
 
 const LOBBY_CODE_LENGTH = 6;
@@ -102,6 +102,7 @@ export function useLobbyActions(displayName: string, t: ReturnType<typeof useTra
     await runSafely(
       async () => {
         saveDisplayName(name);
+        router.prefetch(`/lobby/${cleanedCode}`);
         await joinLobby({ code: cleanedCode, displayName: name, sessionId });
         toast.success(t("joinedGame"));
         router.push(`/lobby/${cleanedCode}`);

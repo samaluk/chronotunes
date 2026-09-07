@@ -1,23 +1,16 @@
 "use client";
 
-import { useParams } from "next/navigation";
+import { Suspense } from "react";
 import type { ReactNode } from "react";
 
-import { LobbyPageContent } from "./lobby-page-content";
+import { LobbyLoadingScreen } from "@/components/lobby/lobby-loading-screen";
+
+import { LobbyRoute } from "./lobby-route";
 
 export default function LobbyPage(): ReactNode {
-  const params = useParams();
-  const code = typeof params.code === "string" ? params.code.toUpperCase() : "";
-
-  if (!code) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-background">
-        <div className="text-center">
-          <p className="text-destructive">Invalid lobby code</p>
-        </div>
-      </div>
-    );
-  }
-
-  return <LobbyPageContent code={code} />;
+  return (
+    <Suspense fallback={<LobbyLoadingScreen />}>
+      <LobbyRoute />
+    </Suspense>
+  );
 }

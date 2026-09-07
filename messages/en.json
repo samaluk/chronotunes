@@ -228,6 +228,7 @@
     "failedToPlayAgain": "Failed to play again"
   },
   "network": {
+    "offline": "Offline. Pending requests will retry when you are back online.",
     "connecting": "Connecting...",
     "reconnecting": "Reconnecting",
     "reconnectRetry": "Retry now",

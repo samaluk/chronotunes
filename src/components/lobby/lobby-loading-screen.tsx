@@ -10,7 +10,7 @@ export function LobbyLoadingScreen(): ReactNode {
   const t = useTranslations("lobby");
 
   return (
-    <div className="flex min-h-screen flex-col bg-background">
+    <div aria-busy="true" className="flex min-h-screen flex-col bg-background">
       <header className="border-b bg-card">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
