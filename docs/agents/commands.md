@@ -3,8 +3,8 @@
 ## Development
 
 ```bash
-pnpm dev                    # Start Next.js dev server (Terminal 1)
-pnpm convex:dev             # Start the local Convex backend (Terminal 2)
+pnpm convex:dev             # Start the local Convex backend (Terminal 1)
+pnpm dev                    # Start Next.js dev server (Terminal 2)
 ```
 
 ## Linting and formatting (Oxlint + Oxfmt)
