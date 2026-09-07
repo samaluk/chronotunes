@@ -40,7 +40,7 @@
     "fallow:ci": "pnpm fallow:full"
   },
   "dependencies": {
-    "@base-ui/react": "1.7.0",
+    "@base-ui/react": "1.8.0",
     "@convex-dev/presence": "0.4.0",
     "class-variance-authority": "0.7.1",
     "clsx": "2.1.1",
