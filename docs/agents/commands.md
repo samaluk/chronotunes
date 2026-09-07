@@ -3,9 +3,8 @@
 ## Development
 
 ```bash
-pnpm dev                    # Start Next.js dev server
-just run-local-backend      # Start local Convex backend (Terminal 1)
-just convex dev             # Deploy to local backend (Terminal 2)
+pnpm convex:dev             # Start the local Convex backend (Terminal 1)
+pnpm dev                    # Start Next.js dev server (Terminal 2)
 ```
 
 ## Linting and formatting (Oxlint + Oxfmt)
@@ -78,13 +77,14 @@ hk run pre-commit --all      # Exercise the configured pre-commit hook
 The pre-commit hook uses hk's built-in Oxfmt and Oxlint integrations, coordinates fixes with
 file locks, stashes unstaged changes, and runs the read-only Fallow gate concurrently.
 
-## Pre-commit (must pass)
+## Before submitting (must pass)
 
 ```bash
 pnpm check
 pnpm next:typegen
 pnpm convex:typegen
-pnpm test
+pnpm test:once
+pnpm build
 ```
 
 ## CI runners
