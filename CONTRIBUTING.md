@@ -10,6 +10,11 @@ focused, explain the user-visible effect, and avoid adding bundled audio or
 publisher-curated catalog data. Do not include credentials or private deployment
 configuration in commits.
 
+For substantial work, use a GitHub Issue as the agreed spec and split it into
+dependency-aware, end-to-end tickets when one reviewable change is not enough. Work
+one ticket at a time and add or update tests before implementation. Small, explicit
+fixes do not need a new issue.
+
 ## Local workflow
 
 Install the pinned toolchain and dependencies, then start the app as described in the

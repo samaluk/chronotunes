@@ -1,6 +1,6 @@
 # Issue tracker: GitHub
 
-Issues and PRDs for this repo live as GitHub issues. Use the `gh` CLI for all operations.
+Specs and implementation tickets for this repo live as GitHub Issues. Use the `gh` CLI for all operations. Do not mirror issue state in generated task JSON, local tracker files, or agent run logs.
 
 ## Conventions
 

@@ -163,14 +163,6 @@ test("create lobby generates code", async () => {
 - React Testing Library for UI components
 - Mock Convex queries with vitest mocks
 
-### Automated Testing Loop (ralph-wiggum)
-
-Tests run in opencode-ralph-wiggum loop:
-
-- On each code change, pre-commit checks run automatically
-- Failures block commit until fixed
-- https://github.com/Th0rgal/opencode-ralph-wiggum
-
 ### Code Organization Rules
 
 1. **One component per .tsx file** (except shadcn/ui in components/ui/)

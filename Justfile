@@ -56,6 +56,5 @@ build:
 # Full setup: run local backend, deploy, and start dev server
 # Run each command in a separate terminal
 setup:
-    @echo "1. Terminal 1: just run-local-backend"
-    @echo "2. Terminal 2: just convex dev"
-    @echo "3. Terminal 3: just dev"
+    @echo "1. Terminal 1: pnpm convex:dev"
+    @echo "2. Terminal 2: pnpm dev"

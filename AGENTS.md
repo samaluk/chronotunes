@@ -19,6 +19,15 @@ ChronoTunes is a browser-based multiplayer music timeline game with YouTube audi
 - Type generation: `pnpm next:typegen`, `pnpm convex:typegen`
 - Do not skip tests or ignore lint or format issues; ask for explicit agreement first if either is proposed.
 
+## Build workflow
+
+- Use the current request for small, self-contained changes. Use GitHub Issues for work that needs a durable spec, decomposition, handoff, or coordination.
+- For substantial features, follow: clarify the idea, agree on a spec, split it into dependency-aware tracer-bullet tickets, implement one ticket test-first, then review and verify the diff.
+- Claim one ready ticket before editing. Do not run an autonomous loop over the backlog.
+- Read `CONTEXT.md`, relevant ADRs, and the linked subsystem guides before changing code. Keep their domain language in code, tests, and issue updates.
+- Run focused checks while working, then the complete pre-submit suite in `docs/agents/commands.md`.
+- See `docs/agents/workflow.md` for ticket states, test seams, bug diagnosis, and completion rules.
+
 ## More details
 
 - [Commands](docs/agents/commands.md)
@@ -160,9 +169,9 @@ Most formatting and common issues are automatically fixed by Oxlint + Oxfmt. Run
 
 ## Agent skills
 
-### Issue tracker
+### Backlog
 
-Issues are tracked in GitHub Issues via the `gh` CLI. See `docs/agents/issue-tracker.md`.
+Specs and implementation tickets are tracked in GitHub Issues via the `gh` CLI. See `docs/agents/issue-tracker.md`.
 
 ### Friction and lessons
 
