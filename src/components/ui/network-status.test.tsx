@@ -1,14 +1,13 @@
 import { cleanup, render } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
+import type { ConvexConnectionStatus } from "../../lib/hooks/use-convex-status";
+
 import { ConnectionBanner, NetworkStatus } from "./network-status";
 
 /* oxlint-disable typescript/no-unsafe-call -- jest-dom matchers are typed at runtime */
 
-// Mirrors ConvexConnectionStatus / UseConvexStatusReturn without importing
-// from the module under test (vi.mock replaces it wholesale).
-type Status = "connecting" | "connected" | "disconnected" | "reconnecting" | "error";
-let currentStatus: Status = "connected";
+let currentStatus: ConvexConnectionStatus = "connected";
 let currentOffline = false;
 
 const makeStatus = () => ({
@@ -53,22 +52,23 @@ describe("NetworkStatus", () => {
     expect(view.container.textContent).toContain("network:reconnecting");
   });
 
-  it.each(["disconnected", "error", "connecting", "reconnecting"] as const)(
+  it.each(["connecting", "reconnecting"] as const)(
     "renders a banner with a label for %s",
     (statusValue) => {
       currentStatus = statusValue;
       const { container } = render(<NetworkStatus />);
 
       expect(container.querySelector("svg")).not.toBeNull();
-      expect(container.textContent?.length ?? 0).toBeGreaterThan(0);
+      expect(container.textContent).toBe(`network:${statusValue}`);
     },
   );
 
   it("hides the label when showLabel is false but keeps the icon", () => {
-    currentStatus = "error";
+    currentStatus = "connecting";
     const { container } = render(<NetworkStatus showLabel={false} />);
 
     expect(container.querySelector("svg")).not.toBeNull();
+    expect(container.textContent).toBe("");
   });
 });
 
@@ -88,7 +88,7 @@ describe("ConnectionBanner", () => {
   });
 
   it("renders a fixed banner without a fake retry control", () => {
-    currentStatus = "disconnected";
+    currentStatus = "reconnecting";
     const { container } = render(<ConnectionBanner />);
 
     expect(container.querySelector("svg")).not.toBeNull();

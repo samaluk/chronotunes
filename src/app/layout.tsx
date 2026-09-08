@@ -27,6 +27,8 @@ export const metadata: Metadata = {
 };
 
 export default function Layout({ children }: { children: React.ReactNode }) {
+  // The cookie locale resolves under Suspense. LocalizedProviders sets lang on
+  // translated content before hydration; only the brand shell uses this default.
   return (
     <html className={inter.variable} lang={routing.defaultLocale} suppressHydrationWarning>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>

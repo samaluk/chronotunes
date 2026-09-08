@@ -1,6 +1,6 @@
 "use client";
 
-import { CheckCircle2, CircleDashed, RefreshCw, WifiOff } from "lucide-react";
+import { CircleDashed, RefreshCw, WifiOff } from "lucide-react";
 import { useOffline } from "next/offline";
 import { useTranslations } from "next-intl";
 
@@ -13,7 +13,7 @@ export interface NetworkStatusProps {
   showLabel?: boolean;
 }
 
-type NetworkStatusKind = ConvexConnectionStatus | "offline";
+type NetworkStatusKind = Exclude<ConvexConnectionStatus, "connected"> | "offline";
 
 export function NetworkStatus(props: NetworkStatusProps) {
   return <ConnectionIndicator {...props} />;
@@ -42,12 +42,7 @@ function ConnectionIndicator({
         isBanner
           ? "fixed right-0 bottom-0 left-0 z-50 flex items-center justify-center gap-2 px-4 py-2 font-medium text-sm"
           : "flex items-center gap-2 rounded-full px-3 py-1.5 font-medium text-xs transition-all",
-        (displayStatus === "offline" || displayStatus === "disconnected") &&
-          "bg-muted text-muted-foreground",
-        displayStatus === "error" &&
-          (isBanner
-            ? "bg-destructive text-destructive-foreground"
-            : "bg-destructive/10 text-destructive"),
+        displayStatus === "offline" && "bg-muted text-muted-foreground",
         displayStatus === "connecting" && "bg-primary/10 text-primary",
         displayStatus === "reconnecting" &&
           "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300",
@@ -69,16 +64,8 @@ function StatusIcon({ status }: { status: NetworkStatusKind }) {
     case "reconnecting": {
       return <RefreshCw className="h-3.5 w-3.5 animate-spin" />;
     }
-    case "offline":
-    case "disconnected":
-    case "error": {
+    case "offline": {
       return <WifiOff className="h-3.5 w-3.5" />;
-    }
-    case "connected": {
-      return <CheckCircle2 className="h-3.5 w-3.5" />;
-    }
-    default: {
-      return null;
     }
   }
 }
@@ -86,27 +73,5 @@ function StatusIcon({ status }: { status: NetworkStatusKind }) {
 function StatusLabel({ status }: { status: NetworkStatusKind }) {
   const t = useTranslations("network");
 
-  switch (status) {
-    case "offline": {
-      return <span>{t("offline")}</span>;
-    }
-    case "connecting": {
-      return <span>{t("connecting")}</span>;
-    }
-    case "reconnecting": {
-      return <span>{t("reconnecting")}</span>;
-    }
-    case "disconnected": {
-      return <span>{t("disconnected")}</span>;
-    }
-    case "error": {
-      return <span>{t("connectionError")}</span>;
-    }
-    case "connected": {
-      return <span>{t("connected")}</span>;
-    }
-    default: {
-      return null;
-    }
-  }
+  return <span>{t(status)}</span>;
 }

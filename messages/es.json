@@ -230,12 +230,7 @@
   "network": {
     "offline": "Sin conexión. Las solicitudes pendientes se reintentarán cuando vuelvas a estar conectado.",
     "connecting": "Conectando...",
-    "reconnecting": "Reconectando",
-    "reconnectRetry": "Reintentar ahora",
-    "disconnected": "Desconectado",
-    "connectionError": "Error de conexión",
-    "retry": "Reintentar",
-    "connected": "Conectado"
+    "reconnecting": "Reconectando"
   },
   "error": {
     "somethingWrong": "Algo salió mal",

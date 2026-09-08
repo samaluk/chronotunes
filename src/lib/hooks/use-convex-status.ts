@@ -2,12 +2,7 @@
 
 import { useConvexConnectionState } from "convex/react";
 
-export type ConvexConnectionStatus =
-  | "connecting"
-  | "connected"
-  | "disconnected"
-  | "reconnecting"
-  | "error";
+export type ConvexConnectionStatus = "connecting" | "connected" | "reconnecting";
 
 type ConnectionState = ReturnType<typeof useConvexConnectionState>;
 

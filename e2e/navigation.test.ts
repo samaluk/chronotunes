@@ -10,7 +10,19 @@ test("renders the chosen language and preserves locale changes on reload", async
 }) => {
   await context.addCookies([{ name: "locale", value: "en", url: baseURL }]);
 
+  // Inline streaming scripts can reveal content while hydration bundles stay blocked.
+  await page.route("**/_next/static/**/*.js", async (route) => {
+    await route.abort();
+  });
   await page.goto("/");
+
+  await expect(page.locator("html")).toHaveAttribute("lang", "es");
+  await expect(
+    page.locator('label[for="displayName"]:lang(en)').filter({ visible: true }),
+  ).toHaveText("Display Name");
+
+  await page.unroute("**/_next/static/**/*.js");
+  await page.reload();
 
   await expect(page.locator("html")).toHaveAttribute("lang", "en");
   await expect(page.locator("#displayName").filter({ visible: true })).toBeVisible();
