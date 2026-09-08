@@ -228,13 +228,9 @@
     "failedToPlayAgain": "Failed to play again"
   },
   "network": {
+    "offline": "Offline. Pending requests will retry when you are back online.",
     "connecting": "Connecting...",
-    "reconnecting": "Reconnecting",
-    "reconnectRetry": "Retry now",
-    "disconnected": "Disconnected",
-    "connectionError": "Connection error",
-    "retry": "Retry",
-    "connected": "Connected"
+    "reconnecting": "Reconnecting"
   },
   "error": {
     "somethingWrong": "Something went wrong",

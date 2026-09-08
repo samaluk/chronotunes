@@ -4,6 +4,26 @@ These guidelines adapt Kent C. Dodds' testing principles from Kody: https://gith
 
 Use the repository's existing commands and framework-specific setup; the principles below govern test design.
 
+## Browser navigation tests
+
+Run `pnpm exec playwright install chromium` once, then `pnpm test:e2e:build` and
+`pnpm test:e2e`. The test runner starts a production server on loopback port 33163.
+Use the dedicated test build: it enables the `@next/playwright` testing API and
+points Convex at loopback. Regular builds leave the testing API disabled.
+
+The tests in `e2e/` check initial loading shells, prefetched navigation, locale
+changes, and recovery after losing the network. Convex responses use a browser
+WebSocket fixture, so these tests need no account, deployed backend, or catalog.
+They verify the UI's behavior at the transport boundary, while Convex function
+tests cover lobby mutations. They do not test Convex's service availability or
+YouTube playback.
+
+Use `instant()` to pause dynamic Next.js responses and assert the visible shell.
+Wait for the destination URL inside its callback before asserting page content.
+For an initial `page.goto()`, pass Playwright's `baseURL` to `instant()`. Offline
+checks run against `next build` and `next start`, as development mode does not
+represent production offline behavior. CI retains traces when a test fails.
+
 ## File locations
 
 Tests live alongside source files:

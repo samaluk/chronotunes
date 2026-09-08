@@ -7,8 +7,11 @@ vi.mock(import("convex/react"), () => ({
   useMutation: vi.fn<() => () => void>(() => vi.fn<() => void>()),
 }));
 
-vi.mock(import("next/navigation"), () => ({
-  useRouter: () => ({ push: vi.fn<(url: string) => void>() }),
+vi.mock(import("@/i18n/routing"), () => ({
+  useRouter: () => ({
+    push: vi.fn<(url: string) => void>(),
+    prefetch: vi.fn<(url: string) => void>(),
+  }),
 }));
 
 const sessionIdMock = vi.fn<() => string[]>(() => ["session-123"]);

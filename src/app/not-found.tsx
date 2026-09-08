@@ -22,6 +22,7 @@ export default function NotFoundPage(): React.ReactNode {
       <Link
         className="inline-flex h-9 items-center justify-center rounded-md bg-primary px-4 font-medium text-primary-foreground transition-colors hover:bg-primary/80"
         href="/"
+        prefetch="auto"
       >
         {tCommon("returnHome")}
       </Link>

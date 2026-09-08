@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
-import type { Locale } from "next-intl";
-import { NextIntlClientProvider } from "next-intl";
-import { getLocale, getMessages } from "next-intl/server";
 import { Geist, Geist_Mono, Inter } from "next/font/google";
-import { cookies } from "next/headers";
+import { Suspense } from "react";
 
-import { Providers } from "./providers";
+import { AppLoadingScreen } from "@/components/ui/app-loading-screen";
+import { routing } from "@/i18n/routing";
+
+import { LocalizedProviders } from "./localized-providers";
 
 import "./globals.css";
 
@@ -26,22 +26,15 @@ export const metadata: Metadata = {
   title: "ChronoTunes - Music Timeline Game",
 };
 
-export default async function Layout({ children }: { children: React.ReactNode }) {
-  const locale = await getLocale();
-  const messages = await getMessages();
-
-  async function changeLocaleAction(nextLocale: Locale) {
-    "use server";
-    const store = await cookies();
-    store.set("locale", nextLocale);
-  }
-
+export default function Layout({ children }: { children: React.ReactNode }) {
+  // The cookie locale resolves under Suspense. LocalizedProviders sets lang on
+  // translated content before hydration; only the brand shell uses this default.
   return (
-    <html className={inter.variable} lang={locale} suppressHydrationWarning>
+    <html className={inter.variable} lang={routing.defaultLocale} suppressHydrationWarning>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <NextIntlClientProvider locale={locale} messages={messages}>
-          <Providers changeLocaleAction={changeLocaleAction}>{children}</Providers>
-        </NextIntlClientProvider>
+        <Suspense fallback={<AppLoadingScreen />}>
+          <LocalizedProviders>{children}</LocalizedProviders>
+        </Suspense>
       </body>
     </html>
   );

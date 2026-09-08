@@ -22,16 +22,17 @@ export const LocaleSwitcher = (): React.ReactNode => {
   const changeLocaleAction = useLocaleAction();
   const [isPending, startTransition] = useTransition();
 
-  const handleLocaleChange = (newLocale: string): void => {
+  const handleLocaleChange = (newLocale: Locale): void => {
     setIsOpen(false);
     if (newLocale === locale) {
       return;
     }
-    startTransition(() => {
-      // oxlint-disable-next-line typescript/consistent-type-assertions, typescript/no-unnecessary-type-assertion
-      changeLocaleAction(newLocale as Locale).catch((error) => {
+    startTransition(async () => {
+      try {
+        await changeLocaleAction(newLocale);
+      } catch (error) {
         console.error("Failed to change locale", error);
-      });
+      }
     });
   };
 

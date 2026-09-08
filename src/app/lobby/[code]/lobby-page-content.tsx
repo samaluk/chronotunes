@@ -1,7 +1,6 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { useRouter } from "next/navigation";
 import type { ReactNode } from "react";
 
 import { Copy } from "lucide-react";
@@ -21,7 +20,6 @@ export interface LobbyPageContentProps {
 
 export function LobbyPageContent({ code }: LobbyPageContentProps): ReactNode {
   const t = useTranslations("lobby");
-  const router = useRouter();
 
   const { handleCopyCode, handleLeaveLobby, lobby, me, players } = useLobbyRoom(code);
 
@@ -33,12 +31,12 @@ export function LobbyPageContent({ code }: LobbyPageContentProps): ReactNode {
     );
   }
 
-  if (lobby === undefined || players === undefined) {
-    return <LobbyLoadingScreen />;
+  if (lobby === null || players === null) {
+    return <LobbyNotFoundScreen />;
   }
 
-  if (lobby === null || players === null) {
-    return <LobbyNotFoundScreen onReturnHome={() => router.push("/")} />;
+  if (lobby === undefined || players === undefined) {
+    return <LobbyLoadingScreen />;
   }
 
   return (

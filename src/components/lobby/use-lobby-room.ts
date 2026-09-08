@@ -3,10 +3,10 @@
 import { useSessionId, useSessionMutation } from "convex-helpers/react/sessions";
 import { useQuery } from "convex/react";
 import { useTranslations } from "next-intl";
-import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
 import { api } from "@/convex/_generated/api";
+import { useRouter } from "@/i18n/routing";
 
 /** Session guard, leave mutation, clipboard action, and room queries. */
 export function useLobbyRoom(code: string) {
@@ -26,6 +26,7 @@ export function useLobbyRoom(code: string) {
       return;
     }
     try {
+      router.prefetch("/");
       await leaveLobby({ code });
       toast.success(t("leftLobby"));
       router.push("/");

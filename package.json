@@ -10,6 +10,8 @@
     "lint": "just lint",
     "test": "vitest",
     "test:once": "vitest run",
+    "test:e2e": "playwright test",
+    "test:e2e:build": "PLAYWRIGHT=1 NEXT_PUBLIC_CONVEX_URL=http://127.0.0.1:3210 next build",
     "test:debug": "vitest --inspect-brk --no-file-parallelism",
     "test:coverage": "vitest run --coverage",
     "test:ui": "vitest --ui --coverage",
@@ -63,6 +65,8 @@
   },
   "devDependencies": {
     "@edge-runtime/vm": "5.0.0",
+    "@next/playwright": "16.3.4",
+    "@playwright/test": "1.63.0",
     "@tailwindcss/postcss": "4.3.3",
     "@testing-library/jest-dom": "7.0.1",
     "@testing-library/react": "16.3.3",

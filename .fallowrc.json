@@ -116,6 +116,12 @@
         "patterns": [
           "src/i18n/**"
         ]
+      },
+      {
+        "name": "e2e",
+        "patterns": [
+          "e2e/**"
+        ]
       }
     ],
     "rules": [
@@ -147,6 +153,10 @@
       {
         "from": "i18n",
         "allow": []
+      },
+      {
+        "from": "e2e",
+        "allow": []
       }
     ],
     "coverage": {
@@ -157,7 +167,8 @@
         "oxlint.config.ts",
         "postcss.config.mjs",
         "vitest.config.ts",
-        "vitest.setup.ts"
+        "vitest.setup.ts",
+        "playwright.config.ts"
       ]
     }
   }

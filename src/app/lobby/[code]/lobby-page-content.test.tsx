@@ -1,5 +1,6 @@
 import { cleanup, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
+import type { ComponentProps } from "react";
 
 import { LobbyPageContent } from "./lobby-page-content";
 
@@ -17,11 +18,21 @@ vi.mock(import("convex-helpers/react/sessions"), () => ({
   useSessionMutation: () => leaveLobbyMock,
 }));
 
-vi.mock(import("next/navigation"), () => ({
-  useRouter: () => ({ push: vi.fn<(url: string) => void>() }),
+vi.mock(import("@/i18n/routing"), async (importOriginal) => ({
+  ...(await importOriginal()),
+  Link: ({ children, href, ...props }: ComponentProps<"a">) => (
+    <a href={href} {...props}>
+      {children}
+    </a>
+  ),
+  useRouter: () => ({
+    push: vi.fn<(url: string) => void>(),
+    prefetch: vi.fn<(url: string) => void>(),
+  }),
 }));
 
 vi.mock(import("next-intl"), () => ({
+  useLocale: () => "en",
   useTranslations: () => (key: string, params?: Record<string, unknown>) =>
     params === undefined ? `t:${key}` : `t:${key}:${JSON.stringify(params)}`,
 }));
@@ -49,5 +60,12 @@ describe("LobbyPageContent", () => {
     // oxlint-disable-next-line typescript/no-unsafe-call
     expect(screen.getByText("t:title")).toBeInTheDocument();
     expect(container.querySelector("[class*=animate]")).not.toBeNull();
+  });
+
+  it("offers a home link when the lobby is missing and player queries are skipped", () => {
+    getQueryMock.mockReturnValueOnce(null).mockReturnValue(undefined);
+    render(<LobbyPageContent code="ABC234" />);
+
+    expect(screen.getByRole("link", { name: "t:returnHome" }).getAttribute("href")).toBe("/");
   });
 });
