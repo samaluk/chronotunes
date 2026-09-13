@@ -261,8 +261,8 @@ importers:
         specifier: 5.0.0
         version: 5.0.0(vitest@5.0.0)
       convex-test:
-        specifier: 0.0.56
-        version: 0.0.56(convex@1.45.0(react@19.2.8))
+        specifier: 0.0.57
+        version: 0.0.57(convex@1.45.0(react@19.2.8))
       fallow:
         specifier: 3.24.1
         version: 3.24.1
@@ -2698,9 +2698,6 @@ packages:
   '@types/json-schema@7.0.15':
     resolution: {integrity: sha512-5+fP8P8MFNC+AyZCDxrB2pkZFPGzqQWUzpSeuuVLvm8VMcorNYavBqoFcxK8bQz4Qsbn4oUEEem4wDLfcysGHA==}
 
-  '@types/node@24.13.3':
-    resolution: {integrity: sha512-Dh8vAsV36ig5wa9OX4pXvMc9D3Veibfw2wix0CUwYODLD8nkj9UsLjASr49nPg+2eKzxhBV+v7L8pXvT4e639Q==}
-
   '@types/node@24.13.4':
     resolution: {integrity: sha512-YJ7EqCstVTzIr0fMr7qul/977en+pQHrfmuKIo6Zr9i75Be21dr3MovcfvGtyvi2HAUrRerWps5sMO9I7WaxDw==}
 
@@ -3150,8 +3147,8 @@ packages:
       zod:
         optional: true
 
-  convex-test@0.0.56:
-    resolution: {integrity: sha512-dLYXlQjKFoGqvjAmPzyLgb2HsYI7iLo1iuNTU2DZmSrMRLWosYk94erjSU67GG5ovfP6+MjX8RJO+ebhmL6QYA==}
+  convex-test@0.0.57:
+    resolution: {integrity: sha512-yedyPgFld7RYVXjozRB4WOVStsXrYuln4JfeZJTVbRNw9SjulK3w2Y7sta7Au/e//nZzzqj3a5T+eaIuWu2sAw==}
     peerDependencies:
       convex: ^1.43.0
 
@@ -6932,11 +6929,6 @@ snapshots:
 
   '@types/json-schema@7.0.15': {}
 
-  '@types/node@24.13.3':
-    dependencies:
-      undici-types: 7.18.2
-    optional: true
-
   '@types/node@24.13.4':
     dependencies:
       undici-types: 7.18.2
@@ -6951,7 +6943,7 @@ snapshots:
 
   '@types/set-cookie-parser@2.4.10':
     dependencies:
-      '@types/node': 24.13.3
+      '@types/node': 24.13.4
     optional: true
 
   '@types/statuses@2.0.6':
@@ -7317,7 +7309,7 @@ snapshots:
       typescript: 7.0.2
       zod: 3.25.76
 
-  convex-test@0.0.56(convex@1.45.0(react@19.2.8)):
+  convex-test@0.0.57(convex@1.45.0(react@19.2.8)):
     dependencies:
       convex: 1.45.0(react@19.2.8)
 
