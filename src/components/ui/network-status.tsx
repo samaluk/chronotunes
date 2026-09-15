@@ -45,7 +45,7 @@ function ConnectionIndicator({
         displayStatus === "offline" && "bg-muted text-muted-foreground",
         displayStatus === "connecting" && "bg-primary/10 text-primary",
         displayStatus === "reconnecting" &&
-          "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300",
+          "bg-warning/15 text-warning dark:bg-warning/30 dark:text-warning",
         className,
       )}
       role="status"
