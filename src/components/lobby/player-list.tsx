@@ -56,8 +56,8 @@ export function PlayerList({ lobbyId }: PlayerListProps): React.ReactNode {
                   <User className="h-5 w-5 text-primary" />
                 </div>
                 <span className="absolute -right-0.5 -bottom-0.5 flex h-3 w-3">
-                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-400 opacity-75" />
-                  <span className="relative inline-flex h-3 w-3 rounded-full bg-green-500" />
+                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-success opacity-75" />
+                  <span className="relative inline-flex h-3 w-3 rounded-full bg-success" />
                 </span>
               </div>
               <div className="min-w-0 flex-1">
@@ -69,7 +69,7 @@ export function PlayerList({ lobbyId }: PlayerListProps): React.ReactNode {
                     )}
                   </span>
                   {player.isHost && (
-                    <span className="inline-flex items-center gap-1 rounded-full bg-amber-100 px-2 py-0.5 font-medium text-amber-700 text-xs dark:bg-amber-900/30 dark:text-amber-300">
+                    <span className="inline-flex items-center gap-1 rounded-full bg-warning/15 px-2 py-0.5 font-medium text-warning text-xs dark:bg-warning/30 dark:text-warning">
                       <Crown className="h-3 w-3" />
                       {t("host")}
                     </span>

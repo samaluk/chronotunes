@@ -28,8 +28,8 @@ export function BettingPhaseContent(): React.ReactNode {
 
   return (
     <div className="flex flex-col items-center justify-center space-y-4 py-12">
-      <div className="flex h-16 w-16 items-center justify-center rounded-full bg-amber-100 dark:bg-amber-900/30">
-        <Music className="h-8 w-8 text-amber-600 dark:text-amber-400" />
+      <div className="flex h-16 w-16 items-center justify-center rounded-full bg-warning/15 dark:bg-warning/30">
+        <Music className="h-8 w-8 text-warning dark:text-warning" />
       </div>
       <div className="space-y-2 text-center">
         <p className="font-medium text-lg">{tBetting("placeYourBet")}</p>

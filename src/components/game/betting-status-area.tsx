@@ -70,9 +70,9 @@ export function BettingStatusArea({ status }: BettingStatusAreaProps): React.Rea
       variant: "amber",
     },
     {
-      icon: <Check className="h-4 w-4 text-green-600 dark:text-green-400" />,
+      icon: <Check className="h-4 w-4 text-success dark:text-success" />,
       key: "yourBetLocked",
-      labelClass: "font-medium text-green-700 dark:text-green-300",
+      labelClass: "font-medium text-success dark:text-success",
       show: hasLockedBet,
       variant: "green",
     },

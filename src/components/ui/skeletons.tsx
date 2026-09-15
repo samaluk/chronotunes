@@ -116,7 +116,7 @@ export function SkeletonTimeline({ className }: { className?: string }) {
       <Skeleton className="h-6 w-32" />
       <div className="flex gap-2 overflow-x-auto pb-4">
         {Array.from({ length: 5 }).map((_, i) => (
-          <Skeleton className="h-20 w-16 flex-shrink-0 rounded-lg" key={`timeline-${i}`} />
+          <Skeleton className="h-20 w-16 shrink-0 rounded-lg" key={`timeline-${i}`} />
         ))}
       </div>
     </div>

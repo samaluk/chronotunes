@@ -32,7 +32,7 @@ export function VolumeSlider({ className }: VolumeSliderProps): React.ReactNode 
     <div className={cn("flex items-center gap-2", className)}>
       <Button
         aria-label={isMuted ? "Unmute" : "Mute"}
-        className="shrink-0 p-1.5"
+        className="shrink-0"
         onClick={toggleMute}
         size={"icon-lg"}
         type="button"

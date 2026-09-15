@@ -43,7 +43,7 @@ export function BetZone({
         "min-h-14 w-full rounded-xl border px-4 py-3 text-left transition",
         isSelected ? "border-primary bg-primary/5 shadow-sm" : "border-border bg-card",
         appearance === "turn-player" &&
-          "border-amber-200 bg-amber-50/70 text-amber-800 dark:border-amber-800 dark:bg-amber-950/30 dark:text-amber-100",
+          "border-warning/40 bg-warning/10 text-warning dark:border-warning/50 dark:bg-warning/20 dark:text-warning",
         appearance === "open" && "border-dashed",
         isBlocked && "cursor-not-allowed",
         shouldDim && "opacity-60",

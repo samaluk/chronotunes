@@ -14,6 +14,8 @@ trustPolicyIgnoreAfter: 43200
 minimumReleaseAgeExclude:
   # eslint@10.9.0 entered the lockfile minutes after publication.
   - eslint@10.9.0
+  # @shadcn/lint@0.1.0 published the same day as this adoption.
+  - "@shadcn/lint@0.1.0"
   - fallow@3.20.0
   - "@fallow-cli/darwin-arm64@3.20.0"
   - "@fallow-cli/darwin-x64@3.20.0"

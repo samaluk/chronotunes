@@ -63,7 +63,7 @@ export function SettingSlider({
         <span className="whitespace-nowrap text-muted-foreground">{unitLabel}</span>
       </div>
       <Slider
-        className="h-2 w-full cursor-pointer appearance-none rounded-lg bg-secondary accent-primary"
+        className="h-2 w-full cursor-pointer"
         id={sliderId}
         max={max}
         min={min}

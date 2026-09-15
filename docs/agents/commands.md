@@ -10,7 +10,7 @@ pnpm dev                    # Start Next.js dev server (Terminal 2)
 ## Linting and formatting (Oxlint + Oxfmt)
 
 ```bash
-pnpm check                  # Lint (oxlint) and verify format (oxfmt --check)
+pnpm check                  # Lint (oxlint, including @shadcn/lint) and verify format (oxfmt --check)
 pnpm fix                    # Apply safe oxlint fixes and format with oxfmt
 just lint                   # Same as pnpm check
 just fix                    # Same as pnpm fix

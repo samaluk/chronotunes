@@ -32,9 +32,7 @@ export function JoinForm({
   return (
     <div className="flex flex-col gap-4">
       <div className="flex flex-col gap-2">
-        <Label className="font-medium text-foreground text-sm" htmlFor="joinCode">
-          {labels.codeLabel}
-        </Label>
+        <Label htmlFor="joinCode">{labels.codeLabel}</Label>
         <div className="flex w-full items-center justify-center">
           <InputOTP
             className="w-full"

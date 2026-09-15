@@ -38,7 +38,7 @@ export function LandingPageContent() {
 
   return (
     <div className="relative min-h-screen bg-background font-sans">
-      <div className="bg-hero-glow pointer-events-none absolute inset-0 from-primary/10 via-background to-background" />
+      <div className="hero-glow pointer-events-none absolute inset-0 from-primary/10 via-background to-background" />
       <div className="relative mx-auto flex min-h-screen w-full max-w-4xl flex-col px-6 py-10 sm:px-12 sm:py-12 lg:py-14">
         <LandingHeader title={t("title")} />
 
@@ -54,9 +54,7 @@ export function LandingPageContent() {
 
           <div className="flex w-full max-w-lg flex-col gap-4 rounded-3xl border border-border/60 bg-card/90 p-6 shadow-lg shadow-primary/10 backdrop-blur sm:p-8">
             <div className="flex flex-col gap-2">
-              <Label className="font-medium text-foreground text-sm" htmlFor="displayName">
-                {t("displayNameLabel")}
-              </Label>
+              <Label htmlFor="displayName">{t("displayNameLabel")}</Label>
               <Input
                 id="displayName"
                 maxLength={20}

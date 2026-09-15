@@ -2,13 +2,52 @@ import { defineConfig } from "oxlint";
 
 // Oxlint defaults (correctness category; typescript/unicorn/oxc plugins on) plus
 // type-aware linting via oxlint-tsgolint, strict TypeScript escape-hatch rules,
-// and React Compiler-derived rules from the react plugin.
+// React Compiler-derived rules from the react plugin, and @shadcn/lint for
+// Tailwind design-system contracts.
 export default defineConfig({
   plugins: ["unicorn", "typescript", "oxc", "react", "vitest"],
+  jsPlugins: ["@shadcn/lint"],
   options: {
     typeAware: true,
   },
+  settings: {
+    shadcn: {
+      note: "See docs/agents/ui-stack.md for ChronoTunes UI tokens and approved exceptions.",
+    },
+  },
+  overrides: [
+    {
+      // Primitive files own appearance; callers use variants, layout, and contracts.
+      files: ["src/components/ui/**"],
+      rules: {
+        "shadcn/no-restyle": "off",
+        "shadcn/no-arbitrary-values": "off",
+        "shadcn/require-static-classes": "off",
+      },
+    },
+  ],
   rules: {
+    "shadcn/no-restyle": [
+      "error",
+      {
+        allow: ["layout"],
+        contracts: [
+          {
+            pattern: "^Card$",
+            allow: ["layout", "spacing", "color", "effects", "motion"],
+          },
+          { pattern: "^CardContent$", allow: ["layout", "spacing"] },
+          { pattern: "^CardTitle$", allow: ["layout", "spacing"] },
+          { pattern: "^DialogTitle$", allow: ["layout", "spacing"] },
+          { pattern: "^InputOTPSlot$", allow: ["layout", "typography"] },
+        ],
+      },
+    ],
+    "shadcn/no-raw-colors": "error",
+    "shadcn/no-arbitrary-values": ["error", { allow: ["layout"] }],
+    "shadcn/no-inline-styles": "error",
+    "shadcn/require-static-classes": "error",
+    "shadcn/no-unknown-classes": "error",
     "typescript/ban-ts-comment": "error",
     "typescript/consistent-type-assertions": ["error", { assertionStyle: "never" }],
     "typescript/no-explicit-any": "error",
