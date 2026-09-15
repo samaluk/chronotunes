@@ -162,7 +162,12 @@
 
 /* Landing-page hero glow: radial fade from the top, tinted by gradient stops. */
 @utility hero-glow {
-  background-image: radial-gradient(circle at top, var(--tw-gradient-stops));
+  background-image: radial-gradient(
+    circle at top,
+    var(--tw-gradient-from),
+    var(--tw-gradient-via),
+    var(--tw-gradient-to)
+  );
 }
 
 /* Modal body scroll region: viewport-relative so long lists stay inside short screens. */
