@@ -71,17 +71,17 @@ const getStatusInfo = (
 
   if (isMobile && !hasUserInitiated) {
     return {
-      indicator: <span className="h-2 w-2 animate-pulse rounded-full bg-amber-500" />,
+      indicator: <span className="h-2 w-2 animate-pulse rounded-full bg-warning" />,
       label: tPlayer("tapToEnableAudio"),
-      tone: "text-amber-600 dark:text-amber-400",
+      tone: "text-warning dark:text-warning",
     };
   }
 
   if (status === "playing") {
     return {
-      indicator: <span className="h-2 w-2 animate-pulse rounded-full bg-green-500" />,
+      indicator: <span className="h-2 w-2 animate-pulse rounded-full bg-success" />,
       label: tPlayer("playingAudio"),
-      tone: "text-green-600 dark:text-green-400",
+      tone: "text-success dark:text-success",
     };
   }
 
