@@ -38,7 +38,7 @@ export function LandingPageContent() {
 
   return (
     <div className="relative min-h-screen bg-background font-sans">
-      <div className="bg-hero-glow pointer-events-none absolute inset-0 from-primary/10 via-background to-background" />
+      <div className="hero-glow pointer-events-none absolute inset-0 from-primary/10 via-background to-background" />
       <div className="relative mx-auto flex min-h-screen w-full max-w-4xl flex-col px-6 py-10 sm:px-12 sm:py-12 lg:py-14">
         <LandingHeader title={t("title")} />
 
