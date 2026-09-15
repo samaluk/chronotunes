@@ -60,8 +60,15 @@ export default defineConfig({
     "shadcn/no-arbitrary-values": ["error", { allow: ["layout"] }],
     "shadcn/no-inline-styles": "error",
     "shadcn/require-static-classes": "error",
-    // Deferred: Tailwind theme cannot be built with fluid-tailwindcss (`b is not a function`).
-    "shadcn/no-unknown-classes": "off",
+    "shadcn/no-unknown-classes": [
+      "error",
+      {
+        // fluid-tailwindcss's default export is a namespace object, so the
+        // Tailwind worker throws `b is not a function` and falls back to the
+        // bundled grammar. No matching shadcn-ui/lint issue; closest is #9.
+        allow: ["fl-*"],
+      },
+    ],
     "typescript/ban-ts-comment": "error",
     "typescript/consistent-type-assertions": ["error", { assertionStyle: "never" }],
     "typescript/no-explicit-any": "error",
