@@ -10,8 +10,8 @@ export type StatusNoticeVariant = "amber" | "green" | "muted";
 
 const VARIANT_CLASSES: Record<StatusNoticeVariant, string> = {
   amber:
-    "border-amber-200 bg-amber-50 text-amber-700 dark:border-amber-800 dark:bg-amber-950/30 dark:text-amber-200",
-  green: "border-green-200 bg-green-50 dark:border-green-800 dark:bg-green-950/30",
+    "border-warning/40 bg-warning/10 text-warning dark:border-warning/50 dark:bg-warning/20 dark:text-warning",
+  green: "border-success/40 bg-success/10 dark:border-success/50 dark:bg-success/20",
   muted: "border bg-muted/50 text-muted-foreground",
 };
 

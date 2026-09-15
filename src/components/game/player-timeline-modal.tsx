@@ -42,7 +42,7 @@ export function PlayerTimelineModal({
           <DialogTitle className="flex items-center gap-2">
             <span>{t("title", { name: player.displayName })}</span>
             {player.isHost && (
-              <span className="rounded bg-blue-100 px-2 py-0.5 text-2xs text-blue-700 dark:bg-blue-900/30 dark:text-blue-400">
+              <span className="rounded bg-info/15 px-2 py-0.5 text-2xs text-info dark:bg-info/30 dark:text-info">
                 {t("hostBadge")}
               </span>
             )}

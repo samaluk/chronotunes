@@ -20,7 +20,7 @@ export function BettingHeader({
         <p className="mt-1 text-muted-foreground text-xs">{description}</p>
       </div>
       <div className="flex items-center gap-2">
-        <Coins className="h-4 w-4 text-amber-500" />
+        <Coins className="h-4 w-4 text-warning" />
         <span className="font-medium text-sm">{betCoinsLabel}</span>
       </div>
     </div>

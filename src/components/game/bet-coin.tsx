@@ -19,9 +19,9 @@ const FALLBACK_INITIAL = "?";
 
 const STATE_CLASSES: Record<BetCoinState, string> = {
   blocked:
-    "border-amber-300 bg-amber-100 text-amber-700 dark:border-amber-700 dark:bg-amber-900/30 dark:text-amber-200",
+    "border-warning/50 bg-warning/15 text-warning dark:border-warning/40 dark:bg-warning/30 dark:text-warning",
   locked:
-    "border-emerald-300 bg-emerald-100 text-emerald-700 dark:border-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-200",
+    "border-success/50 bg-success/15 text-success dark:border-success/40 dark:bg-success/30 dark:text-success",
   pending: "border-muted-foreground/30 bg-background text-muted-foreground/80",
 };
 

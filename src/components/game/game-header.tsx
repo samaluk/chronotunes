@@ -10,9 +10,9 @@ import { useGame } from "./game-context";
 import { GameTimer } from "./game-timer";
 
 const phaseStyles = {
-  betting: "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400",
-  placing: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400",
-  resolved: "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400",
+  betting: "bg-warning/15 text-warning dark:bg-warning/30 dark:text-warning",
+  placing: "bg-info/15 text-info dark:bg-info/30 dark:text-info",
+  resolved: "bg-success/15 text-success dark:bg-success/30 dark:text-success",
 };
 
 export const GameHeader = (): React.ReactNode => {
@@ -63,7 +63,7 @@ export const GameHeader = (): React.ReactNode => {
 
         {phase === "betting" && bettingStartedAt && bettingWindowSeconds && (
           <GameTimer
-            className={isMyTurn ? "bg-amber-50 dark:bg-amber-950/20" : ""}
+            className={isMyTurn ? "bg-warning/10 dark:bg-warning/15" : ""}
             startedAt={bettingStartedAt}
             totalSeconds={bettingWindowSeconds}
             variant="betting"
@@ -75,8 +75,8 @@ export const GameHeader = (): React.ReactNode => {
             className={cn(
               "flex items-center gap-2 rounded-lg px-4 py-2 font-medium",
               currentRound.resolution.turnPlayerWasCorrect
-                ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
-                : "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400",
+                ? "bg-success/15 text-success dark:bg-success/30 dark:text-success"
+                : "bg-destructive/15 text-destructive dark:bg-destructive/30 dark:text-destructive",
             )}
           >
             {currentRound.resolution.turnPlayerWasCorrect ? (

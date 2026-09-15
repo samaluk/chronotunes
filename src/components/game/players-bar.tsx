@@ -52,7 +52,7 @@ export const PlayersBar = ({
               className={cn(
                 "relative flex min-w-40 items-center gap-2.5 rounded-xl border bg-card px-4 py-2.5 text-left",
                 "transition-all duration-200 hover:shadow-md",
-                isTurnPlayer && "ring-2 ring-amber-500 ring-offset-2 dark:ring-offset-background",
+                isTurnPlayer && "ring-2 ring-warning ring-offset-2 dark:ring-offset-background",
                 onPlayerClick && "cursor-pointer hover:bg-muted/50",
               )}
               key={player._id}
@@ -60,7 +60,7 @@ export const PlayersBar = ({
               type="button"
             >
               {isTurnPlayer && (
-                <div className="zoom-in absolute -top-2 left-1/2 -translate-x-1/2 animate-in rounded-full bg-amber-500 px-2 py-0.5 font-bold text-2xs text-white shadow-sm">
+                <div className="zoom-in absolute -top-2 left-1/2 -translate-x-1/2 animate-in rounded-full bg-warning px-2 py-0.5 font-bold text-2xs text-white shadow-sm">
                   TURN
                 </div>
               )}
@@ -79,12 +79,12 @@ export const PlayersBar = ({
                   )}
                 </div>
                 {isLeader && (
-                  <div className="absolute -right-1 -bottom-1 flex h-4 w-4 items-center justify-center rounded-full bg-amber-500 text-white">
+                  <div className="absolute -right-1 -bottom-1 flex h-4 w-4 items-center justify-center rounded-full bg-warning text-white">
                     <Crown className="h-2.5 w-2.5" />
                   </div>
                 )}
                 {isHost && !isLeader && (
-                  <div className="absolute -right-1 -bottom-1 flex h-4 w-4 items-center justify-center rounded-full bg-blue-500 text-white">
+                  <div className="absolute -right-1 -bottom-1 flex h-4 w-4 items-center justify-center rounded-full bg-info text-white">
                     <Star className="h-2.5 w-2.5" />
                   </div>
                 )}
@@ -124,7 +124,7 @@ export const PlayersBar = ({
                   </span>
                   <span>•</span>
                   <span className="inline-flex items-center gap-1">
-                    <Coins className="h-3 w-3 text-amber-500" />
+                    <Coins className="h-3 w-3 text-warning" />
                     {coins}
                   </span>
                 </div>

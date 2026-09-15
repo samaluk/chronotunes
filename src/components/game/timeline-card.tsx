@@ -18,7 +18,7 @@ export interface TimelineCardProps {
 }
 
 const ICON_COLORS = {
-  amber: "bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400",
+  amber: "bg-warning/15 dark:bg-warning/30 text-warning dark:text-warning",
   muted: "bg-muted text-muted-foreground",
   primary: "bg-primary/20 text-primary",
 };

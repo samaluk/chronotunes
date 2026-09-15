@@ -65,7 +65,7 @@ export function BettingTimeline({
           <BetCoin isPreview playerName={me.displayName} state="pending" />
         )}
         {slotState.isTurnPlayerSlot && (
-          <span className="inline-flex h-7 items-center gap-1.5 rounded-full border border-amber-300 bg-amber-100 px-2 font-medium text-amber-800 text-xs dark:border-amber-700 dark:bg-amber-900/30 dark:text-amber-200">
+          <span className="inline-flex h-7 items-center gap-1.5 rounded-full border border-warning/50 bg-warning/15 px-2 font-medium text-warning text-xs dark:border-warning/40 dark:bg-warning/30 dark:text-warning">
             {tCommon("newSong")}
           </span>
         )}

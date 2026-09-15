@@ -35,18 +35,18 @@ const getCorrectnessStyles = (showCorrectness: boolean, isCorrect: boolean) => {
 
   if (isCorrect) {
     return {
-      container: "scale-100 bg-green-100 dark:bg-green-900/30",
-      icon: <Check className="h-10 w-10 animate-bounce text-green-600 dark:text-green-400" />,
+      container: "scale-100 bg-success/15 dark:bg-success/30",
+      icon: <Check className="h-10 w-10 animate-bounce text-success dark:text-success" />,
       label: "correct",
-      text: "text-green-600 dark:text-green-400",
+      text: "text-success dark:text-success",
     };
   }
 
   return {
-    container: "scale-100 bg-red-100 dark:bg-red-900/30",
-    icon: <X className="h-10 w-10 animate-shake text-red-600 dark:text-red-400" />,
+    container: "scale-100 bg-destructive/15 dark:bg-destructive/30",
+    icon: <X className="h-10 w-10 animate-shake text-destructive dark:text-destructive" />,
     label: "incorrect",
-    text: "text-red-600 dark:text-red-400",
+    text: "text-destructive dark:text-destructive",
   };
 };
 
@@ -54,20 +54,21 @@ const getBetStatusStyles = (status: BetWithPlayer["status"]) => {
   switch (status) {
     case "won": {
       return {
-        badge: "bg-green-100 text-green-600 dark:bg-green-900/50 dark:text-green-400",
-        container: "border-green-200 bg-green-50 dark:border-green-800 dark:bg-green-950/20",
+        badge: "bg-success/15 text-success dark:bg-success/40 dark:text-success",
+        container: "border-success/40 bg-success/10 dark:border-success/50 dark:bg-success/15",
         icon: <Check className="h-4 w-4" />,
         label: "Won",
-        labelClass: "text-green-600 dark:text-green-400",
+        labelClass: "text-success dark:text-success",
       };
     }
     case "lost": {
       return {
-        badge: "bg-red-100 text-red-600 dark:bg-red-900/50 dark:text-red-400",
-        container: "border-red-200 bg-red-50 dark:border-red-800 dark:bg-red-950/20",
+        badge: "bg-destructive/15 text-destructive dark:bg-destructive/40 dark:text-destructive",
+        container:
+          "border-destructive/40 bg-destructive/10 dark:border-destructive/50 dark:bg-destructive/15",
         icon: <X className="h-4 w-4" />,
         label: "Lost",
-        labelClass: "text-red-600 dark:text-red-400",
+        labelClass: "text-destructive dark:text-destructive",
       };
     }
     default: {
@@ -167,7 +168,7 @@ function AwardedPlayer({
           <p className="text-muted-foreground text-xs">Got the card via {viaLabel}</p>
         </div>
       </div>
-      <Star className="h-4 w-4 text-green-600 dark:text-green-400" />
+      <Star className="h-4 w-4 text-success dark:text-success" />
     </div>
   );
 }
@@ -293,8 +294,8 @@ function RoundRevealPlaceholder({ t }: { t: ReturnType<typeof useTranslations> }
   return (
     <div className="space-y-6">
       <div className="flex flex-col items-center justify-center space-y-4 py-12">
-        <div className="flex h-16 w-16 items-center justify-center rounded-full bg-green-100 dark:bg-green-900/30">
-          <Music className="h-8 w-8 text-green-600 dark:text-green-400" />
+        <div className="flex h-16 w-16 items-center justify-center rounded-full bg-success/15 dark:bg-success/30">
+          <Music className="h-8 w-8 text-success dark:text-success" />
         </div>
         <div className="space-y-2 text-center">
           <p className="font-medium text-lg">{t("roundResults")}</p>

@@ -58,9 +58,9 @@ function formatDuration(startTime: number, endTime: number): string {
 }
 
 const RANK_BADGE_CLASSES = [
-  "bg-amber-100 text-amber-700 dark:bg-amber-900/50 dark:text-amber-300",
-  "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300",
-  "bg-orange-100 text-orange-700 dark:bg-orange-900/50 dark:text-orange-300",
+  "bg-warning/15 text-warning dark:bg-warning/40 dark:text-warning",
+  "bg-muted text-muted-foreground dark:bg-muted dark:text-muted-foreground",
+  "bg-warning/10 text-warning/80 dark:bg-warning/25 dark:text-warning/80",
 ];
 
 const getRankBadgeClass = (rank: number): string =>
@@ -74,19 +74,19 @@ function WinnerCard({
   winner: ResultsPlayer;
 }): React.ReactNode {
   return (
-    <Card className="overflow-hidden border-amber-200 bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-950/30 dark:to-orange-950/30">
+    <Card className="overflow-hidden border-warning/40 bg-gradient-to-br from-warning/10 to-warning/15 dark:from-warning/20 dark:to-warning/20">
       <CardContent className="p-8">
         <div className="flex flex-col items-center gap-4">
-          <div className="flex h-16 w-16 items-center justify-center rounded-full bg-amber-100 dark:bg-amber-900/50">
-            <Trophy className="h-8 w-8 text-amber-600 dark:text-amber-400" />
+          <div className="flex h-16 w-16 items-center justify-center rounded-full bg-warning/15 dark:bg-warning/40">
+            <Trophy className="h-8 w-8 text-warning dark:text-warning" />
           </div>
           <div className="text-center">
             <p className="text-muted-foreground text-sm uppercase tracking-wider">Winner</p>
-            <p className="font-bold text-2xl text-amber-700 dark:text-amber-300">
+            <p className="font-bold text-2xl text-warning dark:text-warning">
               {winner.displayName}
               {winner._id === meId && <span className="ml-2 text-sm">(You)</span>}
             </p>
-            <p className="mt-1 text-amber-600 text-sm dark:text-amber-400">
+            <p className="mt-1 text-warning text-sm dark:text-warning">
               {winner.timelineSize} songs on timeline
             </p>
           </div>
@@ -100,7 +100,7 @@ function standingRowClassName(index: number, isMe: boolean): string {
   return cn(
     "flex items-center justify-between rounded-lg border p-4 transition-all",
     index === 0
-      ? "border-amber-200 bg-gradient-to-r from-amber-50 to-yellow-50 dark:border-amber-800 dark:from-amber-950/20 dark:to-yellow-950/20"
+      ? "border-warning/40 bg-gradient-to-r from-warning/10 to-warning/15 dark:border-warning/50 dark:from-warning/15 dark:to-warning/10"
       : "bg-muted/30",
     isMe && "ring-2 ring-primary/20",
   );
@@ -132,7 +132,7 @@ function StandingRow({
           <p className="font-medium">
             {player.displayName}
             {isMe && <span className="ml-2 text-primary text-xs">(You)</span>}
-            {index === 0 && <Trophy className="ml-2 inline h-4 w-4 text-amber-500" />}
+            {index === 0 && <Trophy className="ml-2 inline h-4 w-4 text-warning" />}
           </p>
           <p className="text-muted-foreground text-sm">{player.timeline.length} songs collected</p>
         </div>
@@ -232,8 +232,8 @@ export function GameResults({ lobbyId }: GameResultsProps): React.ReactNode {
   return (
     <div className="w-full space-y-8">
       <div className="space-y-4 text-center">
-        <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-yellow-100 to-amber-100 dark:from-yellow-900/30 dark:to-amber-900/30">
-          <Trophy className="h-10 w-10 text-amber-600 dark:text-amber-400" />
+        <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-warning/15 dark:bg-warning/20">
+          <Trophy className="h-10 w-10 text-warning dark:text-warning" />
         </div>
         <div>
           <h1 className="font-bold text-3xl">Game Over!</h1>

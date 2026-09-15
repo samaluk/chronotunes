@@ -20,8 +20,8 @@ export function ResolvedPhaseContent(): React.ReactNode {
   if (!(lobby && track && currentRound?.resolution && players && turnPlayer)) {
     return (
       <div className="flex flex-col items-center justify-center space-y-4 py-12">
-        <div className="flex h-16 w-16 items-center justify-center rounded-full bg-green-100 dark:bg-green-900/30">
-          <Music className="h-8 w-8 text-green-600 dark:text-green-400" />
+        <div className="flex h-16 w-16 items-center justify-center rounded-full bg-success/15 dark:bg-success/30">
+          <Music className="h-8 w-8 text-success dark:text-success" />
         </div>
         <div className="space-y-2 text-center">
           <p className="font-medium text-lg">{tResults("roundResults")}</p>
@@ -39,6 +39,9 @@ export function ResolvedPhaseContent(): React.ReactNode {
     );
   }
 
+  // Shared element so dismiss moves the same results tree out of the dialog.
+  // Cannot hoist: RoundResults reads Game context and must not be a module singleton.
+  // react-doctor-disable-next-line react-doctor/rendering-hoist-jsx
   const resultsContent = <RoundResults />;
 
   return (
