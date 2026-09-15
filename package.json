@@ -82,7 +82,7 @@
     "oxfmt": "0.67.0",
     "oxlint": "1.82.0",
     "oxlint-tsgolint": "7.0.2001",
-    "react-doctor": "0.9.13",
+    "react-doctor": "0.9.14",
     "tailwindcss": "4.3.3",
     "typescript": "7.0.2",
     "vitest": "5.0.0"
