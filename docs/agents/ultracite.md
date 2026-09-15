@@ -1,6 +1,6 @@
 # Oxlint / Oxfmt standards
 
-This project uses **Oxlint** for linting and **Oxfmt** for formatting with near-default configs in [`oxlint.config.ts`](../../oxlint.config.ts) and [`oxfmt.config.ts`](../../oxfmt.config.ts). There is no Biome configuration and no Ultracite dependency.
+This project uses **Oxlint** for linting and **Oxfmt** for formatting with near-default configs in [`oxlint.config.ts`](../../oxlint.config.ts) and [`oxfmt.config.ts`](../../oxfmt.config.ts). There is no Biome configuration and no Ultracite dependency. Tailwind usage is also checked by [`@shadcn/lint`](https://github.com/shadcn-ui/lint); see [UI stack](ui-stack.md).
 
 ## Core principles
 

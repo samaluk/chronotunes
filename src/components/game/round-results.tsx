@@ -117,21 +117,23 @@ function SongCard({
   track: { artist?: string; title?: string; year?: number };
 }): React.ReactNode {
   return (
-    <Card className="fade-in slide-in-from-bottom-2 animate-in p-4 text-center">
-      <p className="text-muted-foreground text-xs uppercase tracking-wide">{t("theSongWas")}</p>
-      <div className="flex items-center justify-between">
-        <span className="font-medium text-lg text-muted-foreground">Title</span>
-        <p className="font-bold text-2xl text-foreground">{track.title}</p>
-      </div>
-      <div className="flex items-center justify-between">
-        <span className="font-medium text-lg text-muted-foreground">Artist</span>
-        <p className="font-bold text-2xl text-foreground">{track.artist}</p>
-      </div>
-      <div className="flex items-center justify-between">
-        <span className="font-medium text-lg text-muted-foreground">Year</span>
-        <p className="font-bold text-2xl text-foreground">{track.year}</p>
-      </div>
-    </Card>
+    <div className="fade-in slide-in-from-bottom-2 animate-in">
+      <Card className="p-4 text-center">
+        <p className="text-muted-foreground text-xs uppercase tracking-wide">{t("theSongWas")}</p>
+        <div className="flex items-center justify-between">
+          <span className="font-medium text-lg text-muted-foreground">Title</span>
+          <p className="font-bold text-2xl text-foreground">{track.title}</p>
+        </div>
+        <div className="flex items-center justify-between">
+          <span className="font-medium text-lg text-muted-foreground">Artist</span>
+          <p className="font-bold text-2xl text-foreground">{track.artist}</p>
+        </div>
+        <div className="flex items-center justify-between">
+          <span className="font-medium text-lg text-muted-foreground">Year</span>
+          <p className="font-bold text-2xl text-foreground">{track.year}</p>
+        </div>
+      </Card>
+    </div>
   );
 }
 

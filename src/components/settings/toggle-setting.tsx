@@ -20,7 +20,7 @@ export function ToggleSetting({
   return (
     <div className="flex items-center justify-between">
       <div className="space-y-0.5">
-        <Label className="cursor-pointer text-sm" htmlFor={toggleId}>
+        <Label className="cursor-pointer" htmlFor={toggleId}>
           {label}
         </Label>
         <p className="text-muted-foreground text-xs">{description}</p>

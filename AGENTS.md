@@ -44,7 +44,7 @@ ChronoTunes is a browser-based multiplayer music timeline game with YouTube audi
 
 ## Code quality (Oxlint + Oxfmt)
 
-Linting and formatting use **Oxlint** and **Oxfmt** with near-default configs in [`oxlint.config.ts`](oxlint.config.ts) and [`oxfmt.config.ts`](oxfmt.config.ts) (see [Oxlint / Oxfmt standards](docs/agents/ultracite.md)).
+Linting and formatting use **Oxlint** and **Oxfmt** with near-default configs in [`oxlint.config.ts`](oxlint.config.ts) and [`oxfmt.config.ts`](oxfmt.config.ts) (see [Oxlint / Oxfmt standards](docs/agents/ultracite.md)). Tailwind design-system rules come from `@shadcn/lint` (see [UI stack](docs/agents/ui-stack.md)). After UI changes, run `pnpm check` and fix all errors.
 
 ### Quick Reference
 

@@ -54,9 +54,7 @@ export function LandingPageContent() {
 
           <div className="flex w-full max-w-lg flex-col gap-4 rounded-3xl border border-border/60 bg-card/90 p-6 shadow-lg shadow-primary/10 backdrop-blur sm:p-8">
             <div className="flex flex-col gap-2">
-              <Label className="font-medium text-foreground text-sm" htmlFor="displayName">
-                {t("displayNameLabel")}
-              </Label>
+              <Label htmlFor="displayName">{t("displayNameLabel")}</Label>
               <Input
                 id="displayName"
                 maxLength={20}
