@@ -1,4 +1,4 @@
-import { cleanup, render, screen } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { SettingsPanel } from "./settings-panel";
@@ -44,9 +44,16 @@ describe("SettingsPanel", () => {
   });
 
   it("shows editing controls for hosts", () => {
-    render(<SettingsPanel code="ABC234" currentSettings={{ ...baseSettings }} isHost />);
+    const { container } = render(
+      <SettingsPanel code="ABC234" currentSettings={{ ...baseSettings }} isHost />,
+    );
 
-    // Host sees the collapsible settings body rather than the summary.
-    expect(screen.getAllByRole("button").length).toBeGreaterThan(0);
+    fireEvent.click(screen.getByRole("button"));
+
+    const sliderTracks = container.querySelectorAll('[data-slot="slider-track"]');
+    expect(sliderTracks.length).toBeGreaterThan(0);
+    for (const track of sliderTracks) {
+      expect(track.parentElement).toHaveClass("rounded-lg", "bg-secondary");
+    }
   });
 });
