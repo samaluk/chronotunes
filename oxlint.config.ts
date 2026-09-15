@@ -43,32 +43,11 @@ export default defineConfig({
         ],
       },
     ],
-    "shadcn/no-raw-colors": [
-      "error",
-      {
-        allow: [
-          "bg-hero-glow",
-          "*-amber-*",
-          "*-green-*",
-          "*-red-*",
-          "*-blue-*",
-          "*-orange-*",
-          "*-yellow-*",
-        ],
-      },
-    ],
+    "shadcn/no-raw-colors": "error",
     "shadcn/no-arbitrary-values": ["error", { allow: ["layout"] }],
     "shadcn/no-inline-styles": "error",
     "shadcn/require-static-classes": "error",
-    "shadcn/no-unknown-classes": [
-      "error",
-      {
-        // fluid-tailwindcss's default export is a namespace object, so the
-        // Tailwind worker throws `b is not a function` and falls back to the
-        // bundled grammar. No matching shadcn-ui/lint issue; closest is #9.
-        allow: ["fl-*"],
-      },
-    ],
+    "shadcn/no-unknown-classes": "error",
     "typescript/ban-ts-comment": "error",
     "typescript/consistent-type-assertions": ["error", { assertionStyle: "never" }],
     "typescript/no-explicit-any": "error",
