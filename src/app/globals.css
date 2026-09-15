@@ -156,16 +156,16 @@
   }
 }
 
-.animate-shake {
+@utility animate-shake {
   animation: shake 0.5s ease-in-out;
 }
 
 /* Landing-page hero glow: radial fade from the top, tinted by gradient stops. */
-.hero-glow {
+@utility hero-glow {
   background-image: radial-gradient(circle at top, var(--tw-gradient-stops));
 }
 
 /* Modal body scroll region: viewport-relative so long lists stay inside short screens. */
-.dialog-body-scroll {
+@utility dialog-body-scroll {
   max-height: 60vh;
 }
