@@ -1,5 +1,5 @@
-amends "package://github.com/jdx/hk/releases/download/v1.55.0/hk@1.55.0#/Config.pkl"
-import "package://github.com/jdx/hk/releases/download/v1.55.0/hk@1.55.0#/Builtins.pkl"
+amends "package://github.com/jdx/hk/releases/download/v2.0.1/hk@2.0.1#/Config.pkl"
+import "package://github.com/jdx/hk/releases/download/v2.0.1/hk@2.0.1#/Builtins.pkl"
 
 fail_fast = false
 
@@ -36,12 +36,18 @@ local react_doctor_changed = Step {
 
 local fast_steps = new Mapping<String, Step> {
   ["oxfmt"] = (Builtins.oxfmt) {
-    prefix = "pnpm exec --"
+    prefix = List("pnpm", "exec", "--")
   }
   ["oxlint"] = (Builtins.ox_lint) {
-    prefix = "pnpm exec --"
-    check = "oxlint {{files}}"
-    fix = "oxlint --fix {{files}}"
+    prefix = List("pnpm", "exec", "--")
+    check = new CommandSpec {
+      command = new Command { argv = List("oxlint", "{{files}}") }
+      effect = "read"
+    }
+    fix = new CommandSpec {
+      command = new Command { argv = List("oxlint", "--fix", "{{files}}") }
+      effect = "write"
+    }
   }
   ["fallow-audit"] = fallow_staged
   ["react-doctor"] = react_doctor_staged
@@ -58,6 +64,7 @@ local push_steps = new Mapping<String, Step> {
 hooks {
   ["pre-commit"] {
     fix = true
+    stage = true
     stash = "git"
     steps = fast_steps
   }
@@ -69,6 +76,7 @@ hooks {
   }
   ["fix"] {
     fix = true
+    stage = false
     steps = fast_steps
   }
 }
