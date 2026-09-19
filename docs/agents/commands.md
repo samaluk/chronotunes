@@ -69,13 +69,16 @@ pnpx --yes frog@1.0.15 list  # Validate the unresolved friction inbox
 ```bash
 mise install                 # Install the pinned hk version
 hk install --global          # Install hooks once for all hk-enabled repositories
+hk validate                  # Validate the Pkl configuration
 hk check --all               # Check all repository files without modifying them
 hk fix --all                 # Fix all repository files
 hk run pre-commit --all      # Exercise the configured pre-commit hook
 ```
 
 The pre-commit hook uses hk's built-in Oxfmt and Oxlint integrations, coordinates fixes with
-file locks, stashes unstaged changes, and runs the read-only Fallow gate concurrently.
+file locks, stashes unstaged changes, stages fixes, and runs the read-only Fallow gate concurrently.
+With hk v2, `hk fix` leaves fixes unstaged for review; use `hk fix --all --stage` to stage them
+explicitly. Keep the hk version in `mise.toml` and both package imports in `hk.pkl` aligned.
 
 ## Before submitting (must pass)
 

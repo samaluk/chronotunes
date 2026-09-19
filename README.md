@@ -24,6 +24,10 @@ The global hk hooks are a no-op outside repositories with an `hk.pkl` file. If m
 available, install hk with Homebrew (`brew install hk`) or another method from the
 [hk installation guide](https://hk.jdx.dev/getting_started.html#installation).
 
+The hook configuration requires hk v2. Run `mise install` when upgrading an existing checkout.
+Pre-commit stages formatter and linter fixes while preserving unstaged edits. Manual `hk fix`
+runs leave fixes unstaged for review; add `--stage` to stage them explicitly.
+
 Open `http://localhost:3000` in your browser.
 
 The local app uses Convex for realtime game state. Run `pnpm convex:dev` in a second
