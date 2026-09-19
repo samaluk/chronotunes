@@ -22,10 +22,13 @@ README:
 
 ```bash
 mise install
-hk install --global
+hk install --global --mise
 pnpm install
 pnpm dev
 ```
+
+When upgrading an existing checkout, repeat `mise install` and `hk install --global --mise`
+so Git uses the repository's pinned hk version instead of an old launcher path.
 
 Before submitting, run:
 

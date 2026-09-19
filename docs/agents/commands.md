@@ -68,12 +68,16 @@ pnpx --yes frog@1.0.15 list  # Validate the unresolved friction inbox
 
 ```bash
 mise install                 # Install the pinned hk version
-hk install --global          # Install hooks once for all hk-enabled repositories
+hk install --global --mise   # Install global hooks using each repository's pinned hk
 hk validate                  # Validate the Pkl configuration
 hk check --all               # Check all repository files without modifying them
 hk fix --all                 # Fix all repository files
 hk run pre-commit --all      # Exercise the configured pre-commit hook
 ```
+
+When upgrading an existing checkout, run both `mise install` and `hk install --global --mise`
+to replace any launcher still pointing directly to hk v1. Installing a new version alone does
+not rewrite existing hooks.
 
 The pre-commit hook uses hk's built-in Oxfmt and Oxlint integrations, coordinates fixes with
 file locks, stashes unstaged changes, stages fixes, and runs the read-only Fallow gate concurrently.

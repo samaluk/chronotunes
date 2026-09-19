@@ -15,16 +15,19 @@ YouTube videos.
 
 ```bash
 mise install
-hk install --global
+hk install --global --mise
 pnpm install
 pnpm dev
 ```
 
-The global hk hooks are a no-op outside repositories with an `hk.pkl` file. If mise is not
-available, install hk with Homebrew (`brew install hk`) or another method from the
-[hk installation guide](https://hk.jdx.dev/getting_started.html#installation).
+The global hk hooks are a no-op outside repositories with an `hk.pkl` file. The mise launcher
+makes Git use the hk version pinned by each repository's `mise.toml`; see the
+[hk mise integration guide](https://hk.jdx.dev/mise_integration.html#make-tools-available-to-git).
 
-The hook configuration requires hk v2. Run `mise install` when upgrading an existing checkout.
+The hook configuration requires hk v2. When upgrading an existing checkout, run `mise install`
+followed by `hk install --global --mise` to replace existing hooks that may still point directly
+to hk v1. Installing a new version alone does not rewrite an already-installed launcher.
+
 Pre-commit stages formatter and linter fixes while preserving unstaged edits. Manual `hk fix`
 runs leave fixes unstaged for review; add `--stage` to stage them explicitly.
 
