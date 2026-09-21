@@ -181,11 +181,12 @@ describe("RoundResults", () => {
 
     render(
       <GameContext.Provider
+        // oxlint-disable-next-line typescript/no-unsafe-assignment
         value={
-          // oxlint-disable-next-line typescript/consistent-type-assertions, typescript/no-unsafe-assignment, typescript/no-unsafe-type-assertion
+          // oxlint-disable-next-line typescript/consistent-type-assertions
           createContextValue({
             state: { currentRound: { resolution: wrongResolution } },
-            // oxlint-disable-next-line typescript/no-explicit-any
+            // oxlint-disable-next-line typescript/no-explicit-any, typescript/no-unsafe-type-assertion
           }) as any
         }
       >
@@ -232,11 +233,12 @@ describe("RoundResults", () => {
 
     render(
       <GameContext.Provider
+        // oxlint-disable-next-line typescript/no-unsafe-assignment
         value={
-          // oxlint-disable-next-line typescript/consistent-type-assertions, typescript/no-unsafe-assignment, typescript/no-unsafe-type-assertion
+          // oxlint-disable-next-line typescript/consistent-type-assertions
           createContextValue({
             state: { currentRound: { resolution: noAwardResolution } },
-            // oxlint-disable-next-line typescript/no-explicit-any
+            // oxlint-disable-next-line typescript/no-explicit-any, typescript/no-unsafe-type-assertion
           }) as any
         }
       >

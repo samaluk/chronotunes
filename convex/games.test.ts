@@ -407,8 +407,8 @@ async function placeDummyBets(t: ReturnType<typeof convexTest>, lobbyId: string)
   const turnPlayerId = game!.turnPlayerId!;
 
   const players = await t.run(
+    // oxlint-disable-next-line typescript/no-unsafe-return
     async (ctx) =>
-      // oxlint-disable-next-line typescript/no-unsafe-return
       await ctx.db
         .query("players")
         .filter((q) => q.eq(q.field("lobbyId"), lobbyId))
@@ -458,8 +458,8 @@ async function declineAllNonTurnPlayers(t: ReturnType<typeof convexTest>, lobbyI
   const turnPlayerId = game!.turnPlayerId!;
 
   const players = await t.run(
+    // oxlint-disable-next-line typescript/no-unsafe-return
     async (ctx) =>
-      // oxlint-disable-next-line typescript/no-unsafe-return
       await ctx.db
         .query("players")
         .filter((q) => q.eq(q.field("lobbyId"), lobbyId))
