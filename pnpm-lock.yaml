@@ -237,8 +237,8 @@ importers:
         specifier: 1.63.0
         version: 1.63.0
       '@shadcn/lint':
-        specifier: 0.1.0
-        version: 0.1.0(eslint@10.9.0(jiti@2.7.0)(supports-color@7.2.0))(supports-color@7.2.0)(typescript@7.0.2)
+        specifier: 0.1.1
+        version: 0.1.1(eslint@10.9.0(jiti@2.7.0)(supports-color@7.2.0))(supports-color@7.2.0)(typescript@7.0.2)
       '@tailwindcss/postcss':
         specifier: 4.3.3
         version: 4.3.3
@@ -2362,8 +2362,8 @@ packages:
     resolution: {integrity: sha512-rzegZjMFFgCp3o+N8+XU13rfSvz4B+f8rU0ijBGrQcHdMNyfsFDTu1UTm262JofmrV2u+s+D0u0vFTnqtOGkbA==}
     engines: {node: '>=18'}
 
-  '@shadcn/lint@0.1.0':
-    resolution: {integrity: sha512-UDSxO4eQa8UAclN1tChum+L336CL2uB2ZLGYiJ7r/GDrYUBOKPWWNUVoAfh2dZs4LhcwJRCn62+fKG12eAy1FQ==}
+  '@shadcn/lint@0.1.1':
+    resolution: {integrity: sha512-00FroeyOehwp18oWk6ybuGJDm5IMc7ywmEvCODIj2yjPISSzgx+fv/BB4V6nh/Wiwrw6XoRobk89d/T2Hc3QJg==}
     engines: {node: '>=20.19'}
     peerDependencies:
       eslint: '>=9.30.0'
@@ -6691,7 +6691,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@shadcn/lint@0.1.0(eslint@10.9.0(jiti@2.7.0)(supports-color@7.2.0))(supports-color@7.2.0)(typescript@7.0.2)':
+  '@shadcn/lint@0.1.1(eslint@10.9.0(jiti@2.7.0)(supports-color@7.2.0))(supports-color@7.2.0)(typescript@7.0.2)':
     dependencies:
       '@eslint/core': 0.17.0
       '@typescript-eslint/parser': 8.70.0(eslint@10.9.0(jiti@2.7.0)(supports-color@7.2.0))(supports-color@7.2.0)(typescript@7.0.2)
