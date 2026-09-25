@@ -78,7 +78,7 @@
     "@vitest/ui": "5.0.1",
     "convex-test": "0.0.59",
     "fallow": "3.27.0",
-    "jsdom": "30.1.0",
+    "jsdom": "30.1.1",
     "oxfmt": "0.68.0",
     "oxlint": "1.83.0",
     "oxlint-tsgolint": "7.0.2002",
