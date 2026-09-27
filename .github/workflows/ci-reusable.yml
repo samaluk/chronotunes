@@ -123,7 +123,7 @@ jobs:
       - name: Fallow (native PR feedback)
         if: steps.coverage.outputs.available == 'true'
         continue-on-error: true
-        uses: fallow-rs/fallow@adff2c9f20fe769e2e093b2e99ee09723f6310bd # v3.27.0
+        uses: fallow-rs/fallow@bd8fca5af5df4ccfd94c7a835d17bd93c31a7cef # v3.28.0
         with:
           command: audit
           gate: all
