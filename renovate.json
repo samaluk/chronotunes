@@ -40,7 +40,8 @@
         "package://github.com/jdx/hk/releases/download/v(?<currentValue>[^/]+)/hk@[^#\"]+"
       ],
       "datasourceTemplate": "github-releases",
-      "depNameTemplate": "jdx/hk"
+      "depNameTemplate": "jdx/hk",
+      "autoReplaceStringTemplate": "package://github.com/jdx/hk/releases/download/v{{{newValue}}}/hk@{{{newValue}}}"
     }
   ]
 }
