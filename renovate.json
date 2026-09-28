@@ -17,11 +17,30 @@
       "groupSingleUpdates": true
     },
     {
+      "description": "Keep the hk binary and hk.pkl schema pins together",
+      "matchPackageNames": ["hk", "jdx/hk"],
+      "groupName": "hk",
+      "groupSlug": "hk",
+      "groupSingleUpdates": true
+    },
+    {
       "description": "Keep Pullfrog on major-version tags",
       "matchDepTypes": ["action"],
       "matchPackageNames": ["pullfrog/pullfrog"],
       "pinDigests": false,
       "rangeStrategy": "replace"
+    }
+  ],
+  "customManagers": [
+    {
+      "customType": "regex",
+      "description": "hk.pkl package URLs for the Config and Builtins schema",
+      "managerFilePatterns": ["/\\.pkl$/"],
+      "matchStrings": [
+        "package://github.com/jdx/hk/releases/download/v(?<currentValue>[^/]+)/hk@[^#\"]+"
+      ],
+      "datasourceTemplate": "github-releases",
+      "depNameTemplate": "jdx/hk"
     }
   ]
 }
