@@ -2,7 +2,7 @@ import { cleanup, render, screen } from "@testing-library/react";
 import type { GenericId } from "convex/values";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { GameContext } from "./game-context";
+import { GameContext, type CurrentRound, type GameContextValue } from "./game-context";
 import { RoundResults } from "./round-results";
 
 // oxlint-disable-next-line typescript/consistent-type-assertions, typescript/no-unsafe-type-assertion
@@ -61,6 +61,20 @@ const mockResolution = {
   validIndexMin: 0,
 };
 
+const mockRound: CurrentRound = {
+  _creationTime: now,
+  // oxlint-disable-next-line typescript/consistent-type-assertions, typescript/no-unsafe-type-assertion
+  _id: "round1" as GenericId<"rounds">,
+  // oxlint-disable-next-line typescript/consistent-type-assertions, typescript/no-unsafe-type-assertion
+  gameId: "game1" as GenericId<"games">,
+  phase: "resolved",
+  resolution: mockResolution,
+  roundNumber: 1,
+  startedAt: now,
+  track: { trackId: mockTrack._id },
+  turnPlayerId: mockPlayers[0]._id,
+};
+
 vi.mock(import("convex/react"), () => ({
   useMutation: vi.fn<() => () => void>(() => vi.fn<() => void>()),
   useQuery: vi.fn<() => null>(() => null),
@@ -110,10 +124,10 @@ const resolvedAtRegex = /Resolved at/i;
 
 const createContextValue = (
   overrides: {
-    state?: Record<string, unknown>;
-    meta?: Record<string, unknown>;
+    state?: Partial<GameContextValue["state"]>;
+    meta?: Partial<GameContextValue["meta"]>;
   } = {},
-) => ({
+): GameContextValue => ({
   actions: {
     handleModalClose: vi.fn<() => void>(),
     setSelectedPlayerForTimeline: vi.fn<(player: unknown) => void>(),
@@ -126,7 +140,7 @@ const createContextValue = (
   },
   state: {
     bettingWindowSeconds: undefined,
-    currentRound: { resolution: mockResolution },
+    currentRound: mockRound,
     game: null,
     isGameFinished: false,
     isMyTurn: false,
@@ -147,8 +161,7 @@ const createContextValue = (
 describe("RoundResults", () => {
   it("displays song title, artist, and year", () => {
     render(
-      // oxlint-disable-next-line typescript/consistent-type-assertions, typescript/no-explicit-any, typescript/no-unsafe-assignment, typescript/no-unsafe-type-assertion
-      <GameContext.Provider value={createContextValue() as any}>
+      <GameContext.Provider value={createContextValue()}>
         <RoundResults />
       </GameContext.Provider>,
     );
@@ -163,8 +176,7 @@ describe("RoundResults", () => {
 
   it("shows correct placement result when turn player was correct", () => {
     render(
-      // oxlint-disable-next-line typescript/consistent-type-assertions, typescript/no-explicit-any, typescript/no-unsafe-assignment, typescript/no-unsafe-type-assertion
-      <GameContext.Provider value={createContextValue() as any}>
+      <GameContext.Provider value={createContextValue()}>
         <RoundResults />
       </GameContext.Provider>,
     );
@@ -181,14 +193,9 @@ describe("RoundResults", () => {
 
     render(
       <GameContext.Provider
-        // oxlint-disable-next-line typescript/no-unsafe-assignment
-        value={
-          // oxlint-disable-next-line typescript/consistent-type-assertions
-          createContextValue({
-            state: { currentRound: { resolution: wrongResolution } },
-            // oxlint-disable-next-line typescript/no-explicit-any, typescript/no-unsafe-type-assertion
-          }) as any
-        }
+        value={createContextValue({
+          state: { currentRound: { ...mockRound, resolution: wrongResolution } },
+        })}
       >
         <RoundResults />
       </GameContext.Provider>,
@@ -200,8 +207,7 @@ describe("RoundResults", () => {
 
   it("displays card awards for awarded players", () => {
     render(
-      // oxlint-disable-next-line typescript/consistent-type-assertions, typescript/no-explicit-any, typescript/no-unsafe-assignment, typescript/no-unsafe-type-assertion
-      <GameContext.Provider value={createContextValue() as any}>
+      <GameContext.Provider value={createContextValue()}>
         <RoundResults />
       </GameContext.Provider>,
     );
@@ -214,8 +220,7 @@ describe("RoundResults", () => {
 
   it("displays resolved timestamp", () => {
     render(
-      // oxlint-disable-next-line typescript/consistent-type-assertions, typescript/no-explicit-any, typescript/no-unsafe-assignment, typescript/no-unsafe-type-assertion
-      <GameContext.Provider value={createContextValue() as any}>
+      <GameContext.Provider value={createContextValue()}>
         <RoundResults />
       </GameContext.Provider>,
     );
@@ -233,14 +238,9 @@ describe("RoundResults", () => {
 
     render(
       <GameContext.Provider
-        // oxlint-disable-next-line typescript/no-unsafe-assignment
-        value={
-          // oxlint-disable-next-line typescript/consistent-type-assertions
-          createContextValue({
-            state: { currentRound: { resolution: noAwardResolution } },
-            // oxlint-disable-next-line typescript/no-explicit-any, typescript/no-unsafe-type-assertion
-          }) as any
-        }
+        value={createContextValue({
+          state: { currentRound: { ...mockRound, resolution: noAwardResolution } },
+        })}
       >
         <RoundResults />
       </GameContext.Provider>,
@@ -252,8 +252,7 @@ describe("RoundResults", () => {
 
   it("highlights current user with (You) indicator", () => {
     render(
-      // oxlint-disable-next-line typescript/consistent-type-assertions, typescript/no-explicit-any, typescript/no-unsafe-assignment, typescript/no-unsafe-type-assertion
-      <GameContext.Provider value={createContextValue() as any}>
+      <GameContext.Provider value={createContextValue()}>
         <RoundResults />
       </GameContext.Provider>,
     );
@@ -264,8 +263,7 @@ describe("RoundResults", () => {
 
   it("shows host controls when user is host", () => {
     render(
-      // oxlint-disable-next-line typescript/consistent-type-assertions, typescript/no-explicit-any, typescript/no-unsafe-assignment, typescript/no-unsafe-type-assertion
-      <GameContext.Provider value={createContextValue() as any}>
+      <GameContext.Provider value={createContextValue()}>
         <RoundResults />
       </GameContext.Provider>,
     );
@@ -276,8 +274,7 @@ describe("RoundResults", () => {
 
   it("shows waiting state when user is not host", () => {
     render(
-      // oxlint-disable-next-line typescript/consistent-type-assertions, typescript/no-explicit-any, typescript/no-unsafe-assignment, typescript/no-unsafe-type-assertion
-      <GameContext.Provider value={createContextValue({ state: { me: mockPlayers[1] } }) as any}>
+      <GameContext.Provider value={createContextValue({ state: { me: mockPlayers[1] } })}>
         <RoundResults />
       </GameContext.Provider>,
     );
