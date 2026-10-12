@@ -1,4 +1,4 @@
-import { convexTest } from "convex-test";
+import { convexTest, type TestConvex } from "convex-test";
 import { expect, test } from "vitest";
 
 import { api } from "./_generated/api";
@@ -398,16 +398,14 @@ async function setupGameForResolve(t: ReturnType<typeof convexTest>) {
   return { lobbyId: lobby!._id };
 }
 
-async function placeDummyBets(t: ReturnType<typeof convexTest>, lobbyId: string) {
+async function placeDummyBets(t: TestConvex<typeof schema>, lobbyId: Id<"lobbies">) {
   const game = await t.query(api.games.getCurrent, {
-    // oxlint-disable-next-line typescript/consistent-type-assertions, typescript/no-unsafe-type-assertion
-    lobbyId: lobbyId as Id<"lobbies">,
+    lobbyId,
   });
   // oxlint-disable-next-line typescript/no-non-null-assertion
   const turnPlayerId = game!.turnPlayerId!;
 
   const players = await t.run(
-    // oxlint-disable-next-line typescript/no-unsafe-return
     async (ctx) =>
       await ctx.db
         .query("players")
@@ -415,23 +413,19 @@ async function placeDummyBets(t: ReturnType<typeof convexTest>, lobbyId: string)
         .collect(),
   );
 
-  // oxlint-disable-next-line typescript/no-non-null-assertion, typescript/no-unsafe-assignment, typescript/no-unsafe-return
+  // oxlint-disable-next-line typescript/no-non-null-assertion
   const round = await t.run(async (ctx) => await ctx.db.get(game!.currentRoundId!));
 
-  // oxlint-disable-next-line typescript/no-unsafe-assignment, typescript/no-unsafe-member-access
   const placementIndex = round?.placement?.proposedIndex ?? 0;
   const proposedIndex = placementIndex === 0 ? 1 : 0;
 
-  // oxlint-disable-next-line typescript/no-unsafe-member-access
   const nonTurnPlayers = players.filter((player) => player._id !== turnPlayerId);
 
   await Promise.all(
     nonTurnPlayers.map((player) =>
       t.mutation(api.bets.preview, {
-        // oxlint-disable-next-line typescript/consistent-type-assertions, typescript/no-unsafe-type-assertion
-        lobbyId: lobbyId as Id<"lobbies">,
+        lobbyId,
         proposedIndex,
-        // oxlint-disable-next-line typescript/no-unsafe-argument, typescript/no-unsafe-member-access
         sessionId: asSessionId(player.sessionId),
       }),
     ),
@@ -440,25 +434,21 @@ async function placeDummyBets(t: ReturnType<typeof convexTest>, lobbyId: string)
   await Promise.all(
     nonTurnPlayers.map((player) =>
       t.mutation(api.bets.lockIn, {
-        // oxlint-disable-next-line typescript/consistent-type-assertions, typescript/no-unsafe-type-assertion
-        lobbyId: lobbyId as Id<"lobbies">,
-        // oxlint-disable-next-line typescript/no-unsafe-argument, typescript/no-unsafe-member-access
+        lobbyId,
         sessionId: asSessionId(player.sessionId),
       }),
     ),
   );
 }
 
-async function declineAllNonTurnPlayers(t: ReturnType<typeof convexTest>, lobbyId: string) {
+async function declineAllNonTurnPlayers(t: TestConvex<typeof schema>, lobbyId: Id<"lobbies">) {
   const game = await t.query(api.games.getCurrent, {
-    // oxlint-disable-next-line typescript/consistent-type-assertions, typescript/no-unsafe-type-assertion
-    lobbyId: lobbyId as Id<"lobbies">,
+    lobbyId,
   });
   // oxlint-disable-next-line typescript/no-non-null-assertion
   const turnPlayerId = game!.turnPlayerId!;
 
   const players = await t.run(
-    // oxlint-disable-next-line typescript/no-unsafe-return
     async (ctx) =>
       await ctx.db
         .query("players")
@@ -466,15 +456,12 @@ async function declineAllNonTurnPlayers(t: ReturnType<typeof convexTest>, lobbyI
         .collect(),
   );
 
-  // oxlint-disable-next-line typescript/no-unsafe-member-access
   const nonTurnPlayers = players.filter((player) => player._id !== turnPlayerId);
 
   await Promise.all(
     nonTurnPlayers.map((player) =>
       t.mutation(api.rounds.declineBet, {
-        // oxlint-disable-next-line typescript/consistent-type-assertions, typescript/no-unsafe-type-assertion
-        lobbyId: lobbyId as Id<"lobbies">,
-        // oxlint-disable-next-line typescript/no-unsafe-argument, typescript/no-unsafe-member-access
+        lobbyId,
         sessionId: asSessionId(player.sessionId),
       }),
     ),
