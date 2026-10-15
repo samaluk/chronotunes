@@ -264,8 +264,8 @@ importers:
         specifier: 5.0.4
         version: 5.0.4(vitest@5.0.4)
       convex-test:
-        specifier: 0.0.61
-        version: 0.0.61(convex@1.46.0(react@19.3.0))
+        specifier: 0.0.62
+        version: 0.0.62(convex@1.46.0(react@19.3.0))
       fallow:
         specifier: 3.33.1
         version: 3.33.1
@@ -3142,8 +3142,8 @@ packages:
       zod:
         optional: true
 
-  convex-test@0.0.61:
-    resolution: {integrity: sha512-uYKCFk9+iu8jJB7TW3BHm3EAM6yPoXERoLHGiomhgUwuTLdSUjOk9SYnnnDc1UA1MQrMPYfUFSp+0+GWyFREng==}
+  convex-test@0.0.62:
+    resolution: {integrity: sha512-gvFps/A1JhOlFToZKjStSX8lWQS8oPF4oKm6U5D/ZdmOtfC7bKqw5Ce5ccAf45jvxPKPcFiyWt8JrueE+byB2g==}
     peerDependencies:
       convex: ^1.43.0
 
@@ -7278,7 +7278,7 @@ snapshots:
       typescript: 7.0.2
       zod: 3.25.76
 
-  convex-test@0.0.61(convex@1.46.0(react@19.3.0)):
+  convex-test@0.0.62(convex@1.46.0(react@19.3.0)):
     dependencies:
       convex: 1.46.0(react@19.3.0)
 
