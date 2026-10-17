@@ -171,7 +171,7 @@ importers:
         version: 1.9.0(@date-fns/tz@1.4.1)(@types/react@19.3.0)(date-fns@4.2.1)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       '@convex-dev/presence':
         specifier: 0.4.0
-        version: 0.4.0(convex@1.46.0(react@19.3.1))(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
+        version: 0.4.0(convex@1.47.0(react@19.3.1))(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       class-variance-authority:
         specifier: 0.7.1
         version: 0.7.1
@@ -179,11 +179,11 @@ importers:
         specifier: 2.1.1
         version: 2.1.1
       convex:
-        specifier: 1.46.0
-        version: 1.46.0(react@19.3.1)
+        specifier: 1.47.0
+        version: 1.47.0(react@19.3.1)
       convex-helpers:
         specifier: 0.1.128
-        version: 0.1.128(@standard-schema/spec@1.1.0)(convex@1.46.0(react@19.3.1))(hono@4.12.19)(react@19.3.1)(typescript@7.0.2)(zod@4.6.7)
+        version: 0.1.128(@standard-schema/spec@1.1.0)(convex@1.47.0(react@19.3.1))(hono@4.12.19)(react@19.3.1)(typescript@7.0.2)(zod@4.6.7)
       fluid-tailwindcss:
         specifier: 1.1.8
         version: 1.1.8(tailwindcss@4.3.3)
@@ -265,7 +265,7 @@ importers:
         version: 5.0.5(vitest@5.0.5)
       convex-test:
         specifier: 0.0.62
-        version: 0.0.62(convex@1.46.0(react@19.3.1))
+        version: 0.0.62(convex@1.47.0(react@19.3.1))
       fallow:
         specifier: 3.33.1
         version: 3.33.1
@@ -2952,11 +2952,6 @@ packages:
     resolution: {integrity: sha512-BLrgEcRTwX2o6gGxGOCNyMvGSp35YofuYzw9h1IMTRmKqttAZZVU67bdb9Pr2vUHA8+j3i2tJfjO6C6+4myGTA==}
     engines: {node: 18 || 20 || >=22}
 
-  baseline-browser-mapping@2.10.30:
-    resolution: {integrity: sha512-xjOFN16Ha1+Rz4nFYKqHU/LSB+gx/Vi3yQLX7r7sAW+Wa+8hhF2h4pvqTrTMc8+WcDBEunnUurr46Jvv0jk3Vg==}
-    engines: {node: '>=6.0.0'}
-    hasBin: true
-
   baseline-browser-mapping@2.11.28:
     resolution: {integrity: sha512-br0LOmjJqr6Rt4AEkadbcNf67Zpo7EPwKsWbjnRrJIa1QYFHQBqM4C7F2WTbV8ahTEcg1Eo+Y0aWjjORInYFyA==}
     engines: {node: '>=6.0.0'}
@@ -3011,9 +3006,6 @@ packages:
   call-bound@1.0.4:
     resolution: {integrity: sha512-+ys997U96po4Kx/ABpBCqhA9EuxJaQWDQg7295H4hBphv3IZg0boBKuwYpt4YXp6MZ5AmZQnU/tyMTlRpaSejg==}
     engines: {node: '>= 0.4'}
-
-  caniuse-lite@1.0.30001792:
-    resolution: {integrity: sha512-hVLMUZFgR4JJ6ACt1uEESvQN1/dBVqPAKY0hgrV70eN3391K6juAfTjKZLKvOMsx8PxA7gsY1/tLMMTcfFLLpw==}
 
   caniuse-lite@1.0.30001816:
     resolution: {integrity: sha512-+8Yx7BXCoqk6IF8yTicjfUR6D/ldJzdlsodlEOiOSPmhK844WIgk67/zIQaGAOxNkZyyvBlrRFnLvqKIoqbAFw==}
@@ -3146,8 +3138,8 @@ packages:
     peerDependencies:
       convex: ^1.43.0
 
-  convex@1.46.0:
-    resolution: {integrity: sha512-dhBwDQTZDOhi5SUGAX17EWNehCdNq6/UFrSL0eLZuGfMkdsQbCVWVRZCzbZ5CF+/pgvoGxtApbEoTSipqL4JTw==}
+  convex@1.47.0:
+    resolution: {integrity: sha512-B1z/lOmex7i09NASq8+2WG9rZLzGXXOSkpwGOpaNIvOs4awyW4RMgpVBjt8r2wvvHwhEBEsOr2pGYpulnmAxYQ==}
     engines: {node: '>=20.0.0', npm: '>=7.0.0'}
     hasBin: true
     peerDependencies:
@@ -5408,15 +5400,15 @@ snapshots:
     dependencies:
       css-tree: 3.2.1
 
-  '@convex-dev/batch-worker@0.2.0(convex@1.46.0(react@19.3.1))(react@19.3.1)':
+  '@convex-dev/batch-worker@0.2.0(convex@1.47.0(react@19.3.1))(react@19.3.1)':
     dependencies:
-      convex: 1.46.0(react@19.3.1)
+      convex: 1.47.0(react@19.3.1)
       react: 19.3.1
 
-  '@convex-dev/presence@0.4.0(convex@1.46.0(react@19.3.1))(react-dom@19.3.1(react@19.3.1))(react@19.3.1)':
+  '@convex-dev/presence@0.4.0(convex@1.47.0(react@19.3.1))(react-dom@19.3.1(react@19.3.1))(react@19.3.1)':
     dependencies:
-      '@convex-dev/batch-worker': 0.2.0(convex@1.46.0(react@19.3.1))(react@19.3.1)
-      convex: 1.46.0(react@19.3.1)
+      '@convex-dev/batch-worker': 0.2.0(convex@1.47.0(react@19.3.1))(react@19.3.1)
+      convex: 1.47.0(react@19.3.1)
       react: 19.3.1
       react-dom: 19.3.1(react@19.3.1)
 
@@ -7114,8 +7106,6 @@ snapshots:
 
   balanced-match@4.0.4: {}
 
-  baseline-browser-mapping@2.10.30: {}
-
   baseline-browser-mapping@2.11.28: {}
 
   bcp-47-match@2.0.3: {}
@@ -7184,8 +7174,6 @@ snapshots:
     dependencies:
       call-bind-apply-helpers: 1.0.2
       get-intrinsic: 1.3.0
-
-  caniuse-lite@1.0.30001792: {}
 
   caniuse-lite@1.0.30001816: {}
 
@@ -7271,9 +7259,9 @@ snapshots:
 
   convert-source-map@2.0.0: {}
 
-  convex-helpers@0.1.128(@standard-schema/spec@1.1.0)(convex@1.46.0(react@19.3.1))(hono@4.12.19)(react@19.3.1)(typescript@7.0.2)(zod@4.6.7):
+  convex-helpers@0.1.128(@standard-schema/spec@1.1.0)(convex@1.47.0(react@19.3.1))(hono@4.12.19)(react@19.3.1)(typescript@7.0.2)(zod@4.6.7):
     dependencies:
-      convex: 1.46.0(react@19.3.1)
+      convex: 1.47.0(react@19.3.1)
     optionalDependencies:
       '@standard-schema/spec': 1.1.0
       hono: 4.12.19
@@ -7281,11 +7269,11 @@ snapshots:
       typescript: 7.0.2
       zod: 4.6.7
 
-  convex-test@0.0.62(convex@1.46.0(react@19.3.1)):
+  convex-test@0.0.62(convex@1.47.0(react@19.3.1)):
     dependencies:
-      convex: 1.46.0(react@19.3.1)
+      convex: 1.47.0(react@19.3.1)
 
-  convex@1.46.0(react@19.3.1):
+  convex@1.47.0(react@19.3.1):
     dependencies:
       esbuild: 0.27.0
       prettier: 3.8.3
