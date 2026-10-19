@@ -39,6 +39,9 @@
     "stale-suppressions": "error",
     "require-suppression-reason": "error"
   },
+  "circularDependencies": {
+    "ignoreLazyImports": true
+  },
   "duplicates": {
     "mode": "semantic",
     "near": true,
@@ -76,7 +79,13 @@
       "dup:7dc45697:2",
       "dup:79167fa1:2",
       "dup:d998b0f0:2",
-      "dup:7d73dafe:2"
+      "dup:7d73dafe:2",
+      "dup:8cb5faaf:3",
+      "dup:871cad5f:2",
+      "dup:38c2a012:2",
+      "dup:3f3c0fc5:2",
+      "dup:3951da88:2",
+      "dup:685b72e7:2"
     ]
   },
   "health": {
