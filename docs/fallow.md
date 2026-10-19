@@ -131,6 +131,21 @@ The list below is the complete pair-level result from Fallow 3.20.0 with semanti
 | `dup:c77b3abb6f87acd9-15` |     2 | Round and bet handlers intentionally combine distinct game reads.           |
 | `dup:c77b3abb6f87acd9-12` |     2 | Lobby and schema declarations intentionally mirror record fields.           |
 
+Six further groups were reviewed when Fallow 3.34.0 stopped filtering copied blocks inside object-literal arguments and callback-bearing method chains. The block behind each pair is unchanged pre-existing code that the older filter simply skipped; extraction was declined because a shared helper would have to take the differing outcome messages or phase literals as parameters, which reads worse than the repetition it removes.
+
+| Fingerprint    | Count | Review reason                                                                      |
+| -------------- | ----: | ---------------------------------------------------------------------------------- |
+| `dup:8cb5faaf` |     3 | Lobby membership lookups intentionally repeat the session-scoped player query.     |
+| `dup:871cad5f` |     2 | Lobby membership lookups intentionally repeat the session-scoped player query.     |
+| `dup:38c2a012` |     2 | Host transfer intentionally repeats the same membership lookup twice.              |
+| `dup:3f3c0fc5` |     2 | Track deal and first-round seeding intentionally share the draw-and-pick steps.    |
+| `dup:3951da88` |     2 | Read-only queries intentionally repeat the lobby → game → round null guard chain.  |
+| `dup:685b72e7` |     2 | Round mutations intentionally repeat phase and turn-player guards with own errors. |
+
+### Cycle policy
+
+`circularDependencies.ignoreLazyImports` is enabled. `convex/test.setup.ts` exposes its convex-test modules through a lazy `import.meta.glob`, so the setup module holds an import edge to every `convex/*.test.ts` that reads `modules` from it. Those edges are load-on-demand, cannot initialize circularly, and only became visible once 3.34.0 applied the shared extglob rewrite to `import.meta.glob`. Ignoring lazy edges is the documented mechanism for that shape rather than a per-file suppression, so the rule stays on and the cycles are not enumerated one by one.
+
 ## CI and hooks
 
 Pull requests use the reusable `.github/workflows/ci-reusable.yml`: `test:coverage`, one coverage artifact upload, the preserved Frog validation, and `fallow:ci` (≡ `fallow:full`) in the authoritative `ci / ci` job. The optional `ci / Fallow feedback` job runs the official SHA-pinned Action on `ubuntu-latest`, consuming the artifact without blocking merges.
