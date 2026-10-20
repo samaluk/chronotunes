@@ -79,7 +79,7 @@
     "convex-test": "0.0.62",
     "fallow": "3.34.1",
     "jsdom": "30.1.3",
-    "oxfmt": "0.73.0",
+    "oxfmt": "0.74.0",
     "oxlint": "1.89.0",
     "oxlint-tsgolint": "7.0.2004",
     "react-doctor": "0.9.18",
