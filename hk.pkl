@@ -5,14 +5,14 @@ fail_fast = false
 
 // Pre-commit: fallow audit scoped to the staged diff; every finding on a
 // staged line blocks, because there is no inherited debt anymore.
-local fallow_staged = Step {
+local fallow_staged = new Step {
   check = "pnpm fallow:staged"
   stomp = true
 }
 
 // Pre-push: full zero-debt scan (audit + dead-code + dupes + health) after
 // normal checks and fresh coverage; every finding blocks.
-local fallow_full = Step {
+local fallow_full = new Step {
   check = "pnpm check && pnpm next:typegen && pnpm test:coverage && pnpm fallow:full"
   stomp = true
 }
@@ -20,7 +20,7 @@ local fallow_full = Step {
 // Pre-commit: scan only the files actually being committed. `--staged` exits 0
 // when nothing is staged, and `--blocking warning` fails on any newly
 // introduced warning or error.
-local react_doctor_staged = Step {
+local react_doctor_staged = new Step {
   check = "pnpm react-doctor:staged"
   stomp = true
 }
@@ -28,7 +28,7 @@ local react_doctor_staged = Step {
 // Pre-push: fail if the branch introduces any warning or error relative to
 // origin/master (the PR merge-base), so pushed branches are always
 // review-clean. Depends on the `fetch` step so the base ref is fresh.
-local react_doctor_changed = Step {
+local react_doctor_changed = new Step {
   check = "pnpm react-doctor:changed"
   depends = List("fetch")
   stomp = true
