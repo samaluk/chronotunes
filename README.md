@@ -24,6 +24,11 @@ The global hk hooks are a no-op outside repositories with an `hk.pkl` file. The 
 makes Git use the hk version pinned by each repository's `mise.toml`; see the
 [hk mise integration guide](https://hk.jdx.dev/mise_integration.html#make-tools-available-to-git).
 
+`mise install` also provisions the pinned system command runner `just` from
+`mise.toml`. Activate mise in your shell, or use `mise exec -- just lint` for
+the `Justfile` recipes. `pnpm lint` delegates to that same runner; CI runs
+`pnpm check` directly and does not require `just`.
+
 The hook configuration requires hk v2. When upgrading an existing checkout, run `mise install`
 followed by `hk install --global --mise` to replace existing hooks that may still point directly
 to hk v1. Installing a new version alone does not rewrite an already-installed launcher.
