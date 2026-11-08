@@ -25,6 +25,9 @@
     "react-doctor",
     "shadcn"
   ],
+  "ignoreBinaries": [
+    "just"
+  ],
   "typeAware": {
     "enabled": true,
     "require": "complete",
@@ -35,6 +38,9 @@
     ]
   },
   "rules": {
+    "duplicate-export-aliases": "error",
+    "unlisted-binaries": "error",
+    "unused-namespace-members": "error",
     "private-type-leaks": "error",
     "stale-suppressions": "error",
     "require-suppression-reason": "error"

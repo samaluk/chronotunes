@@ -4,11 +4,50 @@ ChronoTunes enforces the canonical Fallow 3.20.0 ZERO-DEBT architecture. Every g
 
 ## Version and execution model
 
-- The `fallow` dev dependency, type-aware companion, and MCP server are pinned to `3.20.0`.
-- pnpm's strict one-day minimum release-age policy remains enabled; it has exact `3.20.0` exceptions only for Fallow and the eight Fallow platform packages plus the type-aware companion required by the lockfile.
+- The `fallow` dev dependency, its eight platform packages, type-aware companion, and bundled MCP server are pinned to `3.40.0` in the manifest and lockfile. The official Action is pinned to the matching release commit `90833be1e8d12202e6f6084c417585e3b78005ce`.
+- pnpm's strict one-day minimum release-age and trust policies remain enabled without Fallow exceptions.
 - The reusable CI workflow keeps the lockfile-controlled CLI gate authoritative and uploads one fresh coverage report. Optional `ci / Fallow feedback` consumes that artifact on `ubuntu-latest` for the official Action's pull-request summary, Check Run, and inline review feedback.
 - The repo-local MCP entry in `.opencode/opencode.json` runs `pnpm exec fallow-mcp`.
-- The vendored `.agents/skills/fallow` directory is the skill shipped with Fallow 3.20.0.
+- The vendored `.agents/skills/fallow` directory is the skill shipped with Fallow 3.40.0, with repository-specific execution notes.
+
+### 3.40.0 adoption
+
+All three new rules (`duplicate-export-aliases`, `unlisted-binaries`, and
+`unused-namespace-members`) are explicitly errors, including in staged audits.
+The sole binary exception is the exact name `just`: `package.json` delegates
+`lint` to the root `Justfile`, and `mise install` provisions the system runner
+at the version pinned in `mise.toml`. It is not an npm dependency. CI invokes
+`pnpm check` directly, so its image need not provide `just`. No wildcard binary
+exceptions or rule downgrades are used.
+
+The upgrade retains complete evidence for all three configured TypeScript
+projects and semantic/near clone detection with fingerprint/count exceptions.
+Existing clone handles must still match; do not regenerate the allowlist just
+to make an upgrade pass. Historical adoption measurements below are not current
+release measurements.
+
+Upstream also adds optional route/caller cloud inventory, targeted mutation
+kill matrices, workspace settings, support-only production entries, and Rust
+MCP routing. This single-package JavaScript app has no Rust workspace, migrated
+configuration, cloud upload, or production-only gate requiring those features.
+The existing Vitest configuration remains detected; expanded security sinks,
+dependency/config discovery, class-member credit, and cache invalidation fixes
+apply automatically. Security candidates remain a human-review surface, not a
+substitute for the blocking zero-debt gate. Hosted cloud MCP is optional; the
+repository keeps its lockfile-controlled local MCP server. The refreshed skill
+includes the new doctor preflight and hosted MCP documentation.
+
+Upgrade verification: 45 test files / 381 tests pass; fresh coverage is 74.59%
+of lines and 67.55% of branches. The full zero-debt gate passes with zero dead
+code, zero unreviewed clones, health 79/B, zero security candidates, and three
+existing reasoned duplication suppressions (none stale). Removing the clone
+allowlist for inspection exposes the same 31 reviewed theme, UI scaffolding,
+Convex handler, and typed-fixture groups; the committed handles are unchanged.
+Temporary negative probes confirm that unused files, all three new rules,
+forbidden boundaries, fresh semantic clones, and excessive uncovered complexity
+still fail. A broken test project's `extends` fails the covered audit and health
+commands specifically through `type-aware-require`; a candidate-free dead-code
+scan alone does not need to start that semantic analysis.
 
 ## Gate semantics
 
