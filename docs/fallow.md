@@ -4,11 +4,24 @@ ChronoTunes enforces the canonical Fallow 3.20.0 ZERO-DEBT architecture. Every g
 
 ## Version and execution model
 
-- The `fallow` dev dependency, its eight platform packages, type-aware companion, and bundled MCP server are pinned to `3.40.0` in the manifest and lockfile. The official Action is pinned to the matching release commit `90833be1e8d12202e6f6084c417585e3b78005ce`.
+- The `fallow` dev dependency, its eight platform packages, type-aware companion, and bundled MCP server are pinned to `3.42.0` in the manifest and lockfile. The official Action is pinned to the matching `v3.42.0` release commit `ab762fb12b040889025f7d52902d86c3a26911c0`.
 - pnpm's strict one-day minimum release-age and trust policies remain enabled without Fallow exceptions.
 - The reusable CI workflow keeps the lockfile-controlled CLI gate authoritative and uploads one fresh coverage report. Optional `ci / Fallow feedback` consumes that artifact on `ubuntu-latest` for the official Action's pull-request summary, Check Run, and inline review feedback.
 - The repo-local MCP entry in `.opencode/opencode.json` runs `pnpm exec fallow-mcp`.
-- The vendored `.agents/skills/fallow` directory is the skill shipped with Fallow 3.40.0, with repository-specific execution notes.
+- The vendored `.agents/skills/fallow` directory is the skill shipped with Fallow 3.42.0, with repository-specific execution notes.
+
+### 3.42.0 adoption
+
+The 3.41+/3.42.0 clone-token span correction rotates seven reviewed fingerprints
+without changing their source pairs. Both versions were run on the same tree;
+each new instance remains inside its old line span, including the two pairs
+whose line ranges are unchanged but whose token boundaries moved. The reviewed
+ledger below records the replacements and the newly visible start/restart
+preamble. No threshold, rule, or occurrence-count relaxation is needed.
+
+The vendored skill and all references match the installed 3.42.0 bundle, apart
+from the preserved ChronoTunes execution notes. This includes the updated
+mutation CLI options, mutation task inspection, and MCP tool contracts.
 
 ### 3.40.0 adoption
 
@@ -180,6 +193,30 @@ Six further groups were reviewed when Fallow 3.34.0 stopped filtering copied blo
 | `dup:3f3c0fc5` |     2 | Track deal and first-round seeding intentionally share the draw-and-pick steps.    |
 | `dup:3951da88` |     2 | Read-only queries intentionally repeat the lobby → game → round null guard chain.  |
 | `dup:685b72e7` |     2 | Round mutations intentionally repeat phase and turn-player guards with own errors. |
+
+### 3.42.0 reviewed clone refresh
+
+These entries supersede the corresponding historical fingerprints above. Each
+pair still has exactly two occurrences; the config replaces only these seven
+keys rather than regenerating the allowlist. Locations are the 3.42.0 spans.
+
+| Previous fingerprint         | Current fingerprint | Count | Reviewed locations and reason                                                                                                                                                                                                           |
+| ---------------------------- | ------------------- | ----: | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `dup:3c73ba2e`               | `dup:0a132f27`      |     2 | `convex/bets.ts:122-145,159-182`: lock-in and cancellation repeat betting/player guards but retain operation-specific errors and writes.                                                                                                |
+| `dup:776f017f`               | `dup:91240e15`      |     2 | `convex/test/factories/games.ts:144-164`, `players.ts:129-149`: typed single-record test adapters retain collection-specific IDs and result types.                                                                                      |
+| `dup:38c2a012`               | `dup:e613a573`      |     2 | `convex/lobbies.ts:102-113,298-320`: join and host transfer repeat session-scoped membership lookup with different preceding guards and subsequent checks. This corrects the older ledger's description of both sites as host transfer. |
+| `dup:cc5cd00c`               | `dup:569d2cc6`      |     2 | `convex/lobbies.ts:185-199`, `convex/schema.ts:14-30`: mutation and schema validators intentionally mirror lobby settings fields.                                                                                                       |
+| `dup:3951da88`               | `dup:1592b763`      |     2 | `convex/rounds.ts:13-29`, `convex/tracks.ts:73-89`: read-only queries retain the lobby → game → round null guards before different projections.                                                                                         |
+| `dup:79167fa1`               | `dup:f90e8df4`      |     2 | `src/components/ui/skeletons.tsx:137-151,156-170`: betting and results skeletons share a card layout but differ in loading-state composition.                                                                                           |
+| `dup:d998b0f0`               | `dup:acff5a98`      |     2 | `convex/bets.ts:66-74`, `convex/rounds.ts:65-73`: bet preview and placement preview share Convex arguments/session/game reads before distinct validations and writes.                                                                   |
+| Previously inline-suppressed | `dup:1dbd0da0`      |     2 | `convex/games.ts:193-208,605-620`: `start` and `playAgain` share host/session scaffolding but require different lobby statuses and error messages. Extraction would parameterize those lifecycle differences rather than clarify them.  |
+
+The last group was previously covered by the broad span adjacent to
+`convex/games.ts:180`. Tightened spans no longer reach that suppression.
+The existing suppression still covers other scaffolding and remains non-stale;
+the newly exposed pair is now explicitly count-locked in `ignoredClones`.
+The standalone duplication gate hides 31 reviewed groups and reports zero
+unreviewed groups at 3.42.0.
 
 ### Cycle policy
 
