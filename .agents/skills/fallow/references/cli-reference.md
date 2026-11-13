@@ -53,7 +53,7 @@ Every fallow command with its purpose and key flags. The table is regenerated fr
 | `type-aware` | Inspect the optional TypeScript semantic companion |  |
 | `doctor` | Diagnose project readiness without analysis or mutation |  |
 | `similar-code` | Find semantically similar functions with a pinned local model (opt-in) | `--threshold`, `--min-lines`, `--top`, `--file` |
-| `mutation` | Measure how well the tests detect changes in the code (opt-in) | `--all`, `--plan`, `--max-mutants`, `--time-budget`, `--concurrency`, `--runtime`, `--runner-config`, `--allow-dirty`, `--allow-side-effects` |
+| `mutation` | Measure how well the tests detect changes in the code (opt-in) | `--all`, `--plan`, `--max-mutants`, `--mutants-per-line`, `--function-scope`, `--time-budget`, `--concurrency`, `--runtime`, `--runner-config`, `--allow-dirty`, `--allow-side-effects` |
 | `inspect` | Compose one evidence bundle for a file or exported symbol, with optional Fallow Cloud production data | `--file <path>`, `--symbol <file>:<export>`, `--cloud`, `--repo <owner/repo>` |
 | `cloud` | Log in to Fallow Cloud with the device flow and store a read-only API key (login, logout) | `login --machine-name <name>`, `login --api-url <url>`, `logout` |
 | `trace` | Trace a symbol's call chain, or with `--path` the shortest import path between two modules (best-effort, syntactic; OFF the ranked path) | `symbol`, `--path <FROM> <TO>`, `--eager-only`, `--callers`, `--callees`, `--depth` |
@@ -85,7 +85,7 @@ Every fallow command with its purpose and key flags. The table is regenerated fr
 | `decision-surface` | Surface the consequential structural DECISIONS a change embeds (the apex of the review brief), each framed as a judgment question with the routed expert to ask | `--max-decisions` |
 | `impact` | Show what fallow has done for you: how many issues it is surfacing, the trend since the last recorded run, and how many commits it contained at the pre-commit gate | `--all`, `--sort`, `--limit` |
 | `security` | Surface opt-in local security candidates for agent verification (not confirmed vulnerabilities). Rule families include the graph rule `client-server-leak`, a data-driven `tainted-sink` catalogue, and the include-required `hardcoded-secret` category for provider-prefix credentials and high-entropy literals assigned to secret-shaped identifiers. Most catalogue rows require non-literal input; narrowly literal-aware rows flag deterministic unsafe literals. Rules default off; suppress a file with `// fallow-ignore-file security-sink`; scope categories with `security.categories`. Add project-local request object names with `security.requestReceivers`; it extends the built-in `req` / `request` / `ctx` / `context` / `event` allowlist for HTTP `query`, `params`, and `body` reads. `hardcoded-secret` runs only when listed in `security.categories.include`. | `--format human\|json\|sarif`, `--changed-since`, `--file`, `--diff-file`, `--workspace`, `--changed-workspaces`, `--surface`, `--ci`, `--fail-on-issues`, `--sarif-file`, `--summary` |
-| `report` | Render a saved `--format json` results file in another format without re-running analysis (analyze once, render annotations and the job summary from the same file). | `--from` |
+| `report` | Render a saved `--format json` results file in another format without re-running analysis (analyze once, render annotations and the job summary from the same file). With a CI format, `--mutation-report` adds a saved `fallow mutation --format json` report, and `--mutation-not-run` states why mutation testing did not run. | `--from`, `--mutation-report`, `--mutation-not-run` |
 | `schema` | Dump CLI definition as JSON |  |
 | `ci-template` | Print or vendor CI integration templates |  |
 | `migrate` | Convert knip/jscpd config | `--dry-run`, `--from PATH` |
@@ -530,7 +530,7 @@ Human output groups paths under "Shared with your team (commit these)" and "Loca
 {
   "kind": "agent-install",
   "schema_version": 1,
-  "fallow_version": "3.40.0",
+  "fallow_version": "3.42.0",
   "root": "/abs/path",
   "mode": "install",
   "dry_run": false,
@@ -742,7 +742,7 @@ fallow health --format json --quiet --trend
 {
   "kind": "health",
   "schema_version": 7,
-  "version": "3.40.0",
+  "version": "3.42.0",
   "elapsed_ms": 32,
   "summary": {
     "files_analyzed": 482,
@@ -1217,7 +1217,7 @@ fallow audit \
 {
   "kind": "audit",
   "schema_version": 7,
-  "version": "3.40.0",
+  "version": "3.42.0",
   "command": "audit",
   "verdict": "fail",
   "changed_files_count": 12,
@@ -1305,7 +1305,7 @@ fallow flags --format json --quiet --workspace my-package
 ```json
 {
   "schema_version": 7,
-  "version": "3.40.0",
+  "version": "3.42.0",
   "elapsed_ms": 116,
   "feature_flags": [],
   "total_flags": 0
@@ -1406,7 +1406,7 @@ fallow security --gate newly-reachable --changed-since origin/main
 {
   "kind": "security",
   "schema_version": "4",
-  "version": "3.40.0",
+  "version": "3.42.0",
   "elapsed_ms": 42,
   "config": {
     "rules": {
@@ -1435,7 +1435,7 @@ fallow security --gate newly-reachable --changed-since origin/main
 {
   "kind": "security",
   "schema_version": "4",
-  "version": "3.40.0",
+  "version": "3.42.0",
   "elapsed_ms": 42,
   "config": {
     "rules": {
@@ -2263,7 +2263,8 @@ Use this mode to check whether specific tests are redundant without a full kill 
 
 - Only the mutants that a target test covers run. The other mutants are `pruned` with `prune_reason: "no-target-coverage"`.
 - Each mutant runs its target tests with bail disabled, then its other covering tests with bail enabled, up to the first failure.
-- `kill_matrix.targets` lists each target with the `test_ids` that it selects. A target that selects no test exits `2` with `FALLOW_MUTATION_TARGET_UNMATCHED`.
+- `kill_matrix.targets` lists each target with the `test_ids` that it selects. A target that selects no test exits `2` with `FALLOW_MUTATION_TARGET_UNMATCHED`. A test ID target that names a duplicate test ID (two tests of one file with the same title) exits `2` with `FALLOW_MUTATION_TARGET_DUPLICATE_TEST_ID`. A file target drops the duplicate IDs, and the `duplicate-test-ids` entry of `errors` names them.
+- Each target has its own `status` (`complete` or `incomplete`) and `reasons`. Only the tests of a complete target can be candidates. `candidates` can be nonempty while the top-level `status` is `incomplete`.
 - `kill_matrix.tests` has rows for target tests only. `unique_kills` are kills that no other test detects, target or not. `target_only_kills` lists kills that only other targets share, each with those `targets`. `subsuming_tests` is empty (note `subsumers-not-computed`).
 - A target with kills and no `unique_kills` is a candidate. With `target_only_kills`, it stays redundant only while one of the sharing targets stays. Do not remove all sharing targets together.
 - The evidence covers the planned scope only. A unique kill outside the scope is not visible.
@@ -2330,7 +2331,7 @@ The HTTP layer mirrors the bash `gh_api_retry` / `curl_retry` helpers: `FALLOW_A
 {
   "kind": "dead-code",
   "schema_version": 7,
-  "version": "3.40.0",
+  "version": "3.42.0",
   "elapsed_ms": 45,
   "total_issues": 12,
   "entry_points": {
@@ -2490,7 +2491,7 @@ When `--baseline` is used in combined output, the JSON includes a `baseline_delt
 {
   "kind": "dupes",
   "schema_version": 7,
-  "version": "3.40.0",
+  "version": "3.42.0",
   "elapsed_ms": 82,
   "total_clones": 15,
   "total_lines_duplicated": 230,
@@ -2534,11 +2535,11 @@ When running `fallow` with no subcommand (all analyses), the JSON output combine
 {
   "kind": "combined",
   "schema_version": 7,
-  "version": "3.40.0",
+  "version": "3.42.0",
   "elapsed_ms": 159,
   "check": {
     "schema_version": 7,
-    "version": "3.40.0",
+    "version": "3.42.0",
     "elapsed_ms": 45,
     "total_issues": 12,
     "unused_files": [],
