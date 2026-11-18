@@ -1,4 +1,3 @@
-/* oxlint-disable landmines-structure/test-file-names -- TODO(landmines): rename grandfathered fixture to convex.fixture.ts. */
 import type { Page, WebSocketRoute } from "@playwright/test";
 
 const LOBBY_CODE = "ABC234";

@@ -100,7 +100,7 @@ Oxlint enables all five testing rules from `@interfere/landmines/testing` as
 errors, plus `landmines-structure/test-file-names`. The style and types plugins
 are not registered. Existing tests retain their behavior.
 
-The adoption backlog is **129 violations across 27 files**:
+The adoption backlog is **128 violations across 26 files**:
 
 | Rule                 | Violations | Files |
 | -------------------- | ---------: | ----: |
@@ -109,16 +109,16 @@ The adoption backlog is **129 violations across 27 files**:
 | `no-fixed-sleep`     |          0 |     0 |
 | `no-unsignaled-poll` |          0 |     0 |
 | `no-flake-masking`   |          0 |     0 |
-| `test-file-names`    |          1 |     1 |
+| `test-file-names`    |          0 |     0 |
 
-The testing-only backlog is 128 violations in 26 files. Rules with per-file
-exact-count allowlists (`strict-msw`, `no-fixed-sleep`, `no-unsignaled-poll`,
+Follow-up work is tracked in [#688](https://github.com/samaluk/chronotunes/issues/688).
+
+Rules with per-file exact-count allowlists (`strict-msw`, `no-fixed-sleep`, `no-unsignaled-poll`,
 and `no-flake-masking`) start clean, so no allowances are needed. When violations
 fall below an allowance, the rule reports a stale count until the config is updated.
 
 `no-test-doubles` does not support allowlists: existing sites use narrow
 `oxlint-disable-next-line` directives marked `TODO(landmines)`. Remove each
 directive when replacing that test double with real behavior. The filename rule
-also lacks allowlists; `e2e/convex-fixture.ts` has one file-level directive because
-the diagnostic targets the program, not a statement. Rename it to
-`convex.fixture.ts` and update its imports before removing that directive.
+starts clean after renaming the browser fixture to `e2e/convex.fixture.ts`; it
+has no suppressions.
