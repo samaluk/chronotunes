@@ -3,6 +3,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { GameTimer } from "./game-timer";
 
+// oxlint-disable-next-line landmines-testing/no-test-doubles -- TODO(landmines): remove grandfathered violation.
 vi.mock(import("next-intl"), () => ({
   useTranslations: () => (key: string, params?: Record<string, unknown>) =>
     params === undefined ? `t:${key}` : `t:${key}:${JSON.stringify(params)}`,

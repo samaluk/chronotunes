@@ -6,26 +6,34 @@ import { describe, expect, it, vi } from "vitest";
 import messages from "../../../messages/en.json";
 import { BettingPanel } from "./betting-panel";
 
+// oxlint-disable-next-line landmines-testing/no-test-doubles -- TODO(landmines): remove grandfathered violation.
 vi.mock(import("convex/react"), () => ({
+  // oxlint-disable-next-line landmines-testing/no-test-doubles -- TODO(landmines): remove grandfathered violation.
   useMutation: vi.fn<() => () => void>(() => vi.fn<() => void>()),
+  // oxlint-disable-next-line landmines-testing/no-test-doubles -- TODO(landmines): remove grandfathered violation.
   useQuery: vi.fn<() => unknown[]>(() => []),
 }));
 
+// oxlint-disable-next-line landmines-testing/no-test-doubles -- TODO(landmines): remove grandfathered violation.
 vi.mock(import("convex-helpers/react/sessions"), () => ({
   SessionProvider: ({ children }: { children: React.ReactNode }) => children,
+  // oxlint-disable-next-line landmines-testing/no-test-doubles -- TODO(landmines): remove grandfathered violation.
   useSessionMutation: vi.fn<() => () => void>(() => vi.fn<() => void>()),
+  // oxlint-disable-next-line landmines-testing/no-test-doubles -- TODO(landmines): remove grandfathered violation.
   useSessionQuery: vi.fn<() => null>(() => null),
 }));
 
+// oxlint-disable-next-line landmines-testing/no-test-doubles -- TODO(landmines): remove grandfathered violation.
 vi.mock(import("react"), () => ({
-  // oxlint-disable-next-line typescript/no-unsafe-return
+  // oxlint-disable-next-line typescript/no-unsafe-return, landmines-testing/no-test-doubles -- TODO(landmines): remove grandfathered violation.
   useCallback: vi.fn<<T extends (...args: unknown[]) => unknown>(fn: T) => T>((fn) => fn),
-  // oxlint-disable-next-line typescript/no-unsafe-call, typescript/no-unsafe-return
+  // oxlint-disable-next-line typescript/no-unsafe-call, typescript/no-unsafe-return, landmines-testing/no-test-doubles -- TODO(landmines): remove grandfathered violation.
   useEffect: vi.fn<(fn: () => void) => void>((fn) => fn()),
-  // oxlint-disable-next-line typescript/no-unsafe-call, typescript/no-unsafe-return
+  // oxlint-disable-next-line typescript/no-unsafe-call, typescript/no-unsafe-return, landmines-testing/no-test-doubles -- TODO(landmines): remove grandfathered violation.
   useMemo: vi.fn<<T>(fn: () => T) => T>((fn) => fn()),
-  // oxlint-disable-next-line typescript/no-unsafe-assignment
+  // oxlint-disable-next-line typescript/no-unsafe-assignment, landmines-testing/no-test-doubles -- TODO(landmines): remove grandfathered violation.
   useRef: vi.fn<<T>(initial: T) => { current: T }>((initial) => ({ current: initial })),
+  // oxlint-disable-next-line landmines-testing/no-test-doubles -- TODO(landmines): remove grandfathered violation.
   useState: vi.fn<<T>(initial: T | (() => T)) => [T, (val: unknown) => void]>((initial) => {
     if (typeof initial === "function") {
       // oxlint-disable-next-line typescript/no-unsafe-call, typescript/no-unsafe-return

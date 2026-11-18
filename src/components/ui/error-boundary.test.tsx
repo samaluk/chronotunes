@@ -11,6 +11,7 @@ function FlakyChild({ fail }: { fail: boolean }): React.ReactNode {
 }
 
 beforeEach(() => {
+  // oxlint-disable-next-line landmines-testing/no-test-doubles -- TODO(landmines): remove grandfathered violation.
   vi.spyOn(console, "error").mockImplementation(() => {});
 });
 

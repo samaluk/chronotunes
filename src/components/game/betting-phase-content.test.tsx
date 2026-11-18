@@ -5,10 +5,12 @@ import { BettingPhaseContent } from "./betting-phase-content";
 
 /* oxlint-disable typescript/no-unsafe-call -- jest-dom matchers are typed at runtime */
 
+// oxlint-disable-next-line landmines-testing/no-test-doubles -- TODO(landmines): remove grandfathered violation.
 vi.mock(import("./game-context"), () => ({
   useGame: () => ({ state: {}, actions: {}, meta: {} }),
 }));
 
+// oxlint-disable-next-line landmines-testing/no-test-doubles -- TODO(landmines): remove grandfathered violation.
 vi.mock(import("next-intl"), () => ({
   useTranslations: () => (key: string) => `t:${key}`,
 }));

@@ -175,6 +175,7 @@ describe("validateTrackItem", () => {
 describe("importTracksFromCsv", () => {
   test("imports valid tracks and flags invalid ones", async () => {
     const t = convexTest(schema, modules);
+    // oxlint-disable-next-line landmines-testing/no-test-doubles -- TODO(landmines): remove grandfathered violation.
     vi.spyOn(console, "error").mockImplementation(() => {});
 
     const result = await t.mutation(internal.import_tracks.importTracksFromCsv, {

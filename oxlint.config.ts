@@ -6,7 +6,11 @@ import { defineConfig } from "oxlint";
 // Tailwind design-system contracts.
 export default defineConfig({
   plugins: ["unicorn", "typescript", "oxc", "react", "vitest"],
-  jsPlugins: ["@shadcn/lint"],
+  jsPlugins: [
+    "@shadcn/lint",
+    { name: "landmines-testing", specifier: "@interfere/landmines/testing" },
+    { name: "landmines-structure", specifier: "@interfere/landmines/structure" },
+  ],
   options: {
     typeAware: true,
   },
@@ -27,6 +31,12 @@ export default defineConfig({
     },
   ],
   rules: {
+    "landmines-testing/no-test-doubles": "error",
+    "landmines-testing/strict-msw": "error",
+    "landmines-testing/no-fixed-sleep": "error",
+    "landmines-testing/no-unsignaled-poll": "error",
+    "landmines-testing/no-flake-masking": "error",
+    "landmines-structure/test-file-names": "error",
     "shadcn/no-restyle": [
       "error",
       {
