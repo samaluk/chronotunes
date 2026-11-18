@@ -48,19 +48,22 @@ const createMockTrack = (id: string, title: string, artist: string, year: number
 
 const mockUseQuery = vi.fn<() => unknown>();
 
+// oxlint-disable-next-line landmines-testing/no-test-doubles -- TODO(landmines): remove grandfathered violation.
 vi.mock(import("convex/react"), () => ({
   useQuery: vi.fn<() => unknown>(),
 }));
 
+// oxlint-disable-next-line landmines-testing/no-test-doubles -- TODO(landmines): remove grandfathered violation.
 vi.mock(import("usehooks-ts"), () => ({
   useIsMounted: () => () => true,
 }));
 
+// oxlint-disable-next-line landmines-testing/no-test-doubles -- TODO(landmines): remove grandfathered violation.
 vi.mock(import("react"), async () => {
   const actual = await vi.importActual<typeof import("react")>("react");
   return {
     ...actual,
-    // oxlint-disable-next-line typescript/no-unsafe-call, typescript/no-unsafe-return
+    // oxlint-disable-next-line typescript/no-unsafe-call, typescript/no-unsafe-return, landmines-testing/no-test-doubles -- TODO(landmines): remove grandfathered violation.
     useMemo: vi.fn<<T>(fn: () => T) => T>((fn) => fn()),
   };
 });
@@ -99,7 +102,7 @@ const createGameContext = (player: any): any => ({
 });
 
 beforeEach(() => {
-  // oxlint-disable-next-line typescript/consistent-type-assertions, typescript/no-unsafe-type-assertion
+  // oxlint-disable-next-line typescript/consistent-type-assertions, typescript/no-unsafe-type-assertion, landmines-testing/no-test-doubles -- TODO(landmines): remove grandfathered violation.
   (useQuery as unknown as ReturnType<typeof vi.fn>).mockImplementation(mockUseQuery);
 });
 
@@ -107,6 +110,7 @@ describe("MyTimeline", () => {
   test("displays empty state when timeline is empty", () => {
     // oxlint-disable-next-line typescript/no-unsafe-assignment
     const mockPlayer = createMockPlayer();
+    // oxlint-disable-next-line landmines-testing/no-test-doubles -- TODO(landmines): remove grandfathered violation.
     mockUseQuery.mockReturnValue([]);
 
     const TestWrapper = ({ children }: { children: React.ReactNode }) => (
@@ -135,6 +139,7 @@ describe("MyTimeline", () => {
       timelineSize: 1,
     });
 
+    // oxlint-disable-next-line landmines-testing/no-test-doubles -- TODO(landmines): remove grandfathered violation.
     mockUseQuery.mockReturnValue([createMockTrack("track1", "Test Song", "Test Artist", 1990)]);
 
     const TestWrapper = ({ children }: { children: React.ReactNode }) => (
@@ -169,6 +174,7 @@ describe("MyTimeline", () => {
       timelineSize: 2,
     });
 
+    // oxlint-disable-next-line landmines-testing/no-test-doubles -- TODO(landmines): remove grandfathered violation.
     mockUseQuery.mockReturnValue([
       createMockTrack("track1", "Song One", "Artist One", 1985),
       createMockTrack("track2", "Song Two", "Artist Two", 1995),
@@ -202,6 +208,7 @@ describe("MyTimeline", () => {
       timelineSize: 1,
     });
 
+    // oxlint-disable-next-line landmines-testing/no-test-doubles -- TODO(landmines): remove grandfathered violation.
     mockUseQuery.mockReturnValue([createMockTrack("track1", "Test Song", "Test Artist", 1990)]);
 
     const TestWrapper = ({ children }: { children: React.ReactNode }) => (
@@ -229,6 +236,7 @@ describe("MyTimeline", () => {
       timelineSize: 1,
     });
 
+    // oxlint-disable-next-line landmines-testing/no-test-doubles -- TODO(landmines): remove grandfathered violation.
     mockUseQuery.mockReturnValue([createMockTrack("track1", "Test Song", "Test Artist", 1990)]);
 
     const TestWrapper = ({ children }: { children: React.ReactNode }) => (
@@ -256,6 +264,7 @@ describe("MyTimeline", () => {
       timelineSize: 1,
     });
 
+    // oxlint-disable-next-line landmines-testing/no-test-doubles -- TODO(landmines): remove grandfathered violation.
     mockUseQuery.mockReturnValue([createMockTrack("track1", "Test Song", "Test Artist", 1990)]);
 
     const TestWrapper = ({ children }: { children: React.ReactNode }) => (

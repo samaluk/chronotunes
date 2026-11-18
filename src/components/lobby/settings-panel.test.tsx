@@ -5,15 +5,18 @@ import { SettingsPanel } from "./settings-panel";
 
 /* oxlint-disable typescript/no-unsafe-call -- jest-dom matchers are typed at runtime */
 
+// oxlint-disable-next-line landmines-testing/no-test-doubles -- TODO(landmines): remove grandfathered violation.
 vi.mock(import("convex-helpers/react/sessions"), () => ({
   useSessionId: () => ["session-1"],
   useSessionMutation: () => vi.fn<() => void>(),
 }));
 
+// oxlint-disable-next-line landmines-testing/no-test-doubles -- TODO(landmines): remove grandfathered violation.
 vi.mock(import("convex/react"), () => ({
   useMutation: () => vi.fn<() => void>(),
 }));
 
+// oxlint-disable-next-line landmines-testing/no-test-doubles -- TODO(landmines): remove grandfathered violation.
 vi.mock(import("next-intl"), () => ({
   useTranslations: () => (key: string, params?: Record<string, unknown>) =>
     params === undefined ? `t:${key}` : `t:${key}:${JSON.stringify(params)}`,

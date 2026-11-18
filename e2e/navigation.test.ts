@@ -1,7 +1,7 @@
 import { instant } from "@next/playwright";
 import { expect, test } from "@playwright/test";
 
-import { installConvexFixture } from "./convex-fixture";
+import { installConvexFixture } from "./convex.fixture";
 
 test("renders the chosen language and preserves locale changes on reload", async ({
   page,

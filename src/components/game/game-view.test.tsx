@@ -27,20 +27,26 @@ const nameOf = (fn: unknown): string =>
 /** Query results keyed by Convex function name ("module/function"). */
 const queryResults = new Map<string, unknown>();
 
+// oxlint-disable-next-line landmines-testing/no-test-doubles -- TODO(landmines): remove grandfathered violation.
 vi.mock(import("convex/react"), () => ({
+  // oxlint-disable-next-line landmines-testing/no-test-doubles -- TODO(landmines): remove grandfathered violation.
   useQuery: vi.fn<(fn: unknown) => unknown>((fn: unknown) => queryResults.get(nameOf(fn))),
 }));
 
+// oxlint-disable-next-line landmines-testing/no-test-doubles -- TODO(landmines): remove grandfathered violation.
 vi.mock(import("convex-helpers/react/sessions"), () => ({
   SessionProvider: ({ children }: { children: React.ReactNode }) => children,
   useSessionId: () => ["session-1"],
+  // oxlint-disable-next-line landmines-testing/no-test-doubles -- TODO(landmines): remove grandfathered violation.
   useSessionMutation: vi.fn<() => () => void>(() => vi.fn<() => void>()),
+  // oxlint-disable-next-line landmines-testing/no-test-doubles -- TODO(landmines): remove grandfathered violation.
   useSessionQuery: vi.fn<(fn: unknown) => unknown>((fn: unknown) => queryResults.get(nameOf(fn))),
 }));
 
 /** Flipped per-test to cover the pre-mount branch. */
 let mounted = true;
 
+// oxlint-disable-next-line landmines-testing/no-test-doubles -- TODO(landmines): remove grandfathered violation.
 vi.mock(import("usehooks-ts"), () => ({
   useIsMounted: () => () => mounted,
 }));
