@@ -43,7 +43,7 @@ cargo install fallow-cli   # build from source
 
 ## ChronoTunes project notes
 
-This repository pins `fallow@3.43.1` and `fallow-type-aware@3.43.1` and uses the canonical zero-debt Fallow
+This repository pins `fallow@3.43.2` and `fallow-type-aware@3.43.2` and uses the canonical zero-debt Fallow
 architecture. The blocking CI gate is the full `pnpm fallow:ci` composition;
 pull-request validation is the primary boundary.
 
