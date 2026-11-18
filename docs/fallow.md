@@ -4,24 +4,24 @@ ChronoTunes enforces the canonical Fallow 3.20.0 ZERO-DEBT architecture. Every g
 
 ## Version and execution model
 
-- The `fallow` and `fallow-type-aware` dev dependencies are explicitly pinned to `3.43.1` in the manifest and lockfile, alongside Fallow's eight platform packages and bundled MCP server. The official Action is pinned to the matching `v3.43.1` release commit `8cc305d74aeb77b7ab316388f8ab41cce20a394f`. Renovate groups both npm packages and the Action so they update together.
+- The `fallow` and `fallow-type-aware` dev dependencies are explicitly pinned to `3.43.2` in the manifest and lockfile, alongside Fallow's eight platform packages and bundled MCP server. The official Action is pinned to the matching `v3.43.2` release commit `b6a3e048dc882bdf11c8269c73167223b9e32774`. Renovate groups both npm packages and the Action so they update together.
 - pnpm's strict one-day minimum release-age and trust policies remain enabled without Fallow exceptions.
 - The reusable CI workflow keeps the lockfile-controlled CLI gate authoritative and uploads one fresh coverage report. Optional `ci / Fallow feedback` consumes that artifact on `ubuntu-latest` for the official Action's pull-request summary, Check Run, and inline review feedback.
 - The repo-local MCP entry in `.opencode/opencode.json` runs `pnpm exec fallow-mcp`.
-- The vendored `.agents/skills/fallow` directory is the skill shipped with Fallow 3.43.1, with repository-specific execution notes.
+- The vendored `.agents/skills/fallow` directory is the skill shipped with Fallow 3.43.2, with repository-specific execution notes.
 
-### 3.43.1 adoption
+### 3.43.2 adoption
 
 Fallow 3.43 no longer bundles its type-aware companion. Install
-`fallow-type-aware@3.43.1` explicitly alongside `fallow@3.43.1`; the existing
+`fallow-type-aware@3.43.2` explicitly alongside `fallow@3.43.2`; the existing
 complete-evidence gates remain enabled for all three TypeScript projects.
-`pnpm fallow:status` verifies companion 3.43.1 with protocol 7.
+`pnpm fallow:status` verifies companion 3.43.2 with protocol 7.
 
-Unlike the 3.42.0 refresh below, 3.43.1 needs no clone fingerprint changes:
+Unlike the 3.42.0 refresh below, 3.43.2 needs no clone fingerprint changes:
 `pnpm fallow:dupes` still hides the same 31 reviewed groups and reports zero
 unreviewed groups. The count-locked `ignoredClones` and reviewed-clone ledger
 remain unchanged. The vendored skill and references are refreshed from the
-installed 3.43.1 bundle, preserving the ChronoTunes execution notes.
+installed 3.43.2 bundle, preserving the ChronoTunes execution notes.
 
 ### 3.42.0 adoption
 
