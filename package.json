@@ -75,8 +75,8 @@
     "@types/node": "26.6.6",
     "@types/react": "19.3.0",
     "@types/react-dom": "19.3.0",
-    "@vitest/coverage-v8": "5.1.0",
-    "@vitest/ui": "5.1.0",
+    "@vitest/coverage-v8": "5.1.1",
+    "@vitest/ui": "5.1.1",
     "convex-test": "0.0.72",
     "fallow": "3.43.2",
     "fallow-type-aware": "3.43.2",
@@ -87,7 +87,7 @@
     "react-doctor": "0.9.23",
     "tailwindcss": "4.3.5",
     "typescript": "7.0.2",
-    "vitest": "5.1.0"
+    "vitest": "5.1.1"
   },
   "engines": {
     "node": "26.13.1"
