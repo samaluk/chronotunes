@@ -65,7 +65,7 @@
   },
   "devDependencies": {
     "@edge-runtime/vm": "5.0.0",
-    "@interfere/landmines": "0.0.0",
+    "@interfere/landmines": "0.1.0",
     "@next/playwright": "16.4.6",
     "@playwright/test": "1.65.1",
     "@shadcn/lint": "0.2.5",
