@@ -4,11 +4,21 @@ ChronoTunes enforces the canonical Fallow 3.20.0 ZERO-DEBT architecture. Every g
 
 ## Version and execution model
 
-- The `fallow` and `fallow-type-aware` dev dependencies are explicitly pinned to `3.43.2` in the manifest and lockfile, alongside Fallow's eight platform packages and bundled MCP server. The official Action is pinned to the matching `v3.43.2` release commit `b6a3e048dc882bdf11c8269c73167223b9e32774`. Renovate groups both npm packages and the Action so they update together.
+- The `fallow` and `fallow-type-aware` dev dependencies are explicitly pinned to `3.44.0` in the manifest and lockfile, alongside Fallow's eight platform packages and bundled MCP server. The official Action is pinned to the matching `v3.44.0` release commit `2d55db7a9f0e3501c8be43f64400c47be365e668`. Renovate groups both npm packages and the Action so they update together.
 - pnpm's strict one-day minimum release-age and trust policies remain enabled without Fallow exceptions.
 - The reusable CI workflow keeps the lockfile-controlled CLI gate authoritative and uploads one fresh coverage report. Optional `ci / Fallow feedback` consumes that artifact on `ubuntu-latest` for the official Action's pull-request summary, Check Run, and inline review feedback.
 - The repo-local MCP entry in `.opencode/opencode.json` runs `pnpm exec fallow-mcp`.
-- The vendored `.agents/skills/fallow` directory is the skill shipped with Fallow 3.43.2, with repository-specific execution notes.
+- The vendored `.agents/skills/fallow` directory is the skill shipped with Fallow 3.44.0, with repository-specific execution notes.
+
+### 3.44.0 adoption
+
+Both npm packages remain pinned together at 3.44.0. The vendored skill references
+are refreshed from the installed 3.44.0 bundle, preserving project notes.
+Unfiltered semantic/near reports from 3.43.2 and 3.44.0 on the same source tree
+confirm three rotated groups, one retired group, and one newly detected CSS
+mapping group. The reviewed-clone refresh below records their actual locations;
+the CSS token group changes from six to seven instances as token spans change.
+The gate still enforces the same thresholds and count-locks all 31 live groups.
 
 ### 3.43.2 adoption
 
@@ -166,6 +176,9 @@ Dispositions for the advisory surfaces named in #313's exit criterion 5:
 
 ### Reviewed clone groups
 
+The historical tables are retained for provenance; the versioned refreshes below
+supersede their keys. The latest refresh lists retired keys explicitly.
+
 The list below is the complete pair-level result from Fallow 3.20.0 with semantic and near detection enabled. The count suffix is part of each reviewed key; adding an instance or changing the normalized content creates a new finding.
 
 | Fingerprint               | Count | Review reason                                                               |
@@ -271,3 +284,24 @@ Representative failure probes (exit criterion 6), run before flipping hooks/CI t
 During the migration, the standalone probes were also observed failing on the real inherited debt as each category was driven to zero (dead-code 91 → 0, health hotspots 42 → 0, duplication 102 → 0 unreviewed groups); per-PR evidence is in the #342–#348 PR descriptions.
 
 `pnpm fallow:full` chains the strict changed-code audit, dead-code, duplication, and health analyses; `pnpm fallow:ci` is its CI alias. The hk pre-commit runs the staged-diff audit (`fallow:staged`, gate all), pre-push runs the covered full scan, and reusable CI runs it once per PR. The native PR feedback is audit-based with `gate: all`.
+
+### 3.44.0 reviewed clone refresh
+
+These dispositions supersede the corresponding historical entries. Reports were
+compared with the allowlist disabled in a temporary config, on the same source
+tree, using each version's semantic and near-duplicate detection.
+
+| Previous key           | Current key      | Reviewed locations and reason                                                                                                                                                                                                           |
+| ---------------------- | ---------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `dup:2606856d:6`       | `dup:17900347:7` | `src/app/globals.css:56-63,64-71,72-79,83-90,94-101,102-109,114-121`: light/dark semantic tokens intentionally repeat CSS declaration structure. The new token spans yield seven instances rather than six; no declarations were added. |
+| `dup:e9c7fa61:3`       | `dup:037cfe24:3` | `src/components/ui/skeletons.tsx:113-124,143-160,162-182`: timeline, betting, and results skeletons retain distinct loading compositions.                                                                                               |
+| `dup:1dbd0da0:2`       | `dup:4001ac65:2` | `convex/games.ts:195-208,607-620`: start/restart retain different lifecycle guards and errors; only clone boundaries change.                                                                                                            |
+| Not detected in 3.43.2 | `dup:f9db1a25:2` | `src/app/globals.css:10-27,28-45`: theme-inline mappings intentionally repeat CSS variable declarations for distinct design tokens. Reviewed directly; this is not a replacement for the bet/round pair.                                |
+| `dup:acff5a98:2`       | Retired          | `convex/bets.ts:66-74`, `convex/rounds.ts:65-73`: the preview pair is no longer reported by 3.44.0; no new allowance replaces it.                                                                                                       |
+
+Six additional keys already matched no group in the unfiltered 3.43.2 report and
+remain absent in 3.44.0. They are removed, not re-fingerprinted:
+`dup:80dd416f:4`, `dup:bd1723a3:5`, `dup:e03487a3:2`,
+`dup:68751c8d:3`, `dup:6f87acd9:2`, and `dup:531b7506:3`.
+The other 27 live keys remain unchanged. All 31 configured keys match exactly
+one current group and its occurrence count; no stale clone allowances remain.
