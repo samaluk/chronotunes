@@ -6,7 +6,7 @@ fail_fast = false
 // Pre-commit: fallow audit scoped to the staged diff; every finding on a
 // staged line blocks, because there is no inherited debt anymore.
 local fallow_staged = new Step {
-  check = "pnpm fallow:staged"
+  check = "pnpm exec fallow audit --staged --quiet"
   stomp = true
 }
 

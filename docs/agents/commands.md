@@ -22,7 +22,7 @@ pnpm exec oxlint --print-config   # Print resolved Oxlint configuration
 ```bash
 # Canonical gate surface
 pnpm fallow              # Bare CLI passthrough
-pnpm fallow:staged       # Pre-commit: staged-diff audit, gate all
+pnpm fallow:staged       # Alias: audit --staged --quiet, gate all from config
 pnpm fallow:audit        # Covered changed-code audit, gate all
 pnpm fallow:full         # Audit + dead-code + dupes + health, all blocking
 pnpm fallow:ci           # Alias of fallow:full used by CI
@@ -81,6 +81,9 @@ not rewrite existing hooks.
 
 The pre-commit hook uses hk's built-in Oxfmt and Oxlint integrations, coordinates fixes with
 file locks, stashes unstaged changes, stages fixes, and runs the read-only Fallow gate concurrently.
+Fallow runs `pnpm exec fallow audit --staged --quiet`, the official staged-hook command;
+the repository config retains `audit.gate: all` and complete type-aware evidence.
+The pre-push hook retains `pnpm fallow:full` after fresh coverage.
 With hk v2, `hk fix` leaves fixes unstaged for review; use `hk fix --all --stage` to stage them
 explicitly. Keep the hk version in `mise.toml` and both package imports in `hk.pkl` aligned.
 
