@@ -62,6 +62,7 @@ next-env.d.ts
 
 # fallow drift-scan exactly-once markers
 .fallow-drift/
+.fallow/
 
 # ignore gemini
 .gemini/
