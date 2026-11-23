@@ -193,14 +193,16 @@ Dispositions for the advisory surfaces named in #313's exit criterion 5:
 - Coverage gaps: the CRAP gate forces coverage wherever untested complexity breaches the health thresholds (the game hot paths decomposed in this stack all carry render suites); remaining uncovered files are UI shells, generated bindings, and config entry points where behavior is pinned by type-aware analysis. Coverage-gap findings stay `off` in rules because the CRAP gate is the enforcement surface.
 - Duplication dispositions: one genuine repeated range-normalization block was refactored; the remaining 25 stable groups are individually fingerprinted below because extraction would reduce clarity or discard intentional fixture/design-token structure. A changed clone body or occurrence count is intentionally unreviewed and blocks until reclassified.
 
-### Current reviewed-clone list (3.44.0)
+### Current reviewed-clone list (3.46.0)
 
 `duplicates.ignoredClones` is Fallow's official reviewed-clone list, not a baseline.
-The table below is the authoritative ledger: exactly the 31 count-locked keys
+The table below is the authoritative ledger: exactly the 30 count-locked keys
 in `.fallowrc.json`. An unfiltered semantic/near run of the pinned CLI confirms
 every key and occurrence count; this alignment requires no rotations, additions,
 or pruning. Historical tables below preserve earlier review provenance, not active
-allowances. Changed content or occurrence counts must be reviewed again; do not
+allowances. The settings-validator consolidation retired `dup:569d2cc6:2` by
+sharing one backend validator between schema and API. Changed content or
+occurrence counts must be reviewed again; do not
 regenerate this list merely to make a gate pass.
 
 | Reviewed key     | Locations                                                                                                                                                                                                      | Review reason                                                                                   |
@@ -224,7 +226,6 @@ regenerate this list merely to make a gate pass.
 | `dup:a54398ee:2` | `convex/test/factories/lobbies.ts:222-233`, `convex/test/factories/players.ts:117-128`                                                                                                                         | Typed test factories intentionally mirror distinct collection adapters and fixture setup.       |
 | `dup:e19c3ce8:2` | `src/components/ui/dialog.tsx:97-129`, `src/components/ui/progress.tsx:41-66`                                                                                                                                  | UI primitives retain distinct slot and forwarding wrappers.                                     |
 | `dup:550f178f:2` | `src/components/ui/card.tsx:17-45`, `src/components/ui/card.tsx:53-75`                                                                                                                                         | UI primitives retain distinct slot and forwarding wrappers.                                     |
-| `dup:569d2cc6:2` | `convex/lobbies.ts:185-199`, `convex/schema.ts:14-30`                                                                                                                                                          | Lobby input validation mirrors the stored schema contract.                                      |
 | `dup:407c8433:2` | `convex/rounds.ts:94-106`, `convex/rounds.ts:162-175`                                                                                                                                                          | Distinct backend operations retain their own lifecycle guards, validation, and database writes. |
 | `dup:7dc45697:2` | `src/components/ui/dialog.tsx:97-120`, `src/components/ui/progress.tsx:19-42`                                                                                                                                  | UI primitives retain distinct slot and forwarding wrappers.                                     |
 | `dup:f90e8df4:2` | `src/components/ui/skeletons.tsx:137-151`, `src/components/ui/skeletons.tsx:156-170`                                                                                                                           | Distinct loading-state compositions intentionally repeat skeleton structure.                    |

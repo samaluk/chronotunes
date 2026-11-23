@@ -1,7 +1,10 @@
 import { convexTest } from "convex-test";
+import { makeFunctionReference } from "convex/server";
+import type { Value } from "convex/values";
 import { describe, expect, test } from "vitest";
 
 import { api } from "./_generated/api";
+import { DEFAULT_SETTINGS } from "./lib/lobby_settings";
 import { asSessionId } from "./lib/sessions";
 import schema from "./schema";
 import { modules } from "./test.setup";
@@ -9,6 +12,59 @@ import { modules } from "./test.setup";
 const LOBBY_CODE_REGEX = /^[A-Z23456789]+$/;
 
 describe("lobbies", () => {
+  test("settings updates preserve defaults, accept false flags, and merge partial changes", async () => {
+    const backend = convexTest(schema, modules);
+    const sessionId = asSessionId("settings-contract-host");
+    const { code } = await backend.mutation(api.lobbies.create, { displayName: "Host", sessionId });
+    const initial = await backend.query(api.lobbies.get, { code });
+    expect(initial?.settings).toStrictEqual(DEFAULT_SETTINGS);
+    await backend.mutation(api.lobbies.updateSettings, { code, sessionId, settings: {} });
+    expect((await backend.query(api.lobbies.get, { code }))?.settings).toStrictEqual(
+      DEFAULT_SETTINGS,
+    );
+    const settings = {
+      allowBetRetraction: false,
+      allowGuessTitleArtist: false,
+      bettingWindowSeconds: 5,
+      maxYear: 2030,
+      minYear: 1900,
+      showLiveBets: false,
+      startingCoins: 1,
+      targetTimelineSize: 5,
+      turnSeconds: 15,
+    };
+    await backend.mutation(api.lobbies.updateSettings, { code, sessionId, settings });
+    expect((await backend.query(api.lobbies.get, { code }))?.settings).toStrictEqual(settings);
+    await backend.mutation(api.lobbies.updateSettings, {
+      code,
+      sessionId,
+      settings: { startingCoins: 2 },
+    });
+    expect((await backend.query(api.lobbies.get, { code }))?.settings).toStrictEqual({
+      ...settings,
+      startingCoins: 2,
+    });
+  });
+
+  test.each<Record<string, Value>>([{ turnSeconds: "30" }, { unknownSetting: true }])(
+    "rejects malformed settings at the API boundary: %j",
+    async (settings) => {
+      const backend = convexTest(schema, modules);
+      const sessionId = asSessionId("invalid-settings-host");
+      const { code } = await backend.mutation(api.lobbies.create, {
+        displayName: "Host",
+        sessionId,
+      });
+      const updateSettings = makeFunctionReference<"mutation">("lobbies:updateSettings");
+      await expect(backend.mutation(updateSettings, { code, sessionId, settings })).rejects.toThrow(
+        "Validator error",
+      );
+      expect((await backend.query(api.lobbies.get, { code }))?.settings).toStrictEqual(
+        DEFAULT_SETTINGS,
+      );
+    },
+  );
+
   test("create lobby generates 6-char code", async () => {
     const t = convexTest(schema, modules);
     const result = await t.mutation(api.lobbies.create, {

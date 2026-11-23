@@ -1,17 +1,21 @@
+import { type Infer, v } from "convex/values";
+
 export const LOBBY_CODE_CHARS = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
 export const LOBBY_CODE_LENGTH = 6;
 
-export interface LobbySettings {
-  allowBetRetraction: boolean;
-  allowGuessTitleArtist: boolean;
-  bettingWindowSeconds: number;
-  maxYear: number;
-  minYear: number;
-  showLiveBets: boolean;
-  startingCoins: number;
-  targetTimelineSize: number;
-  turnSeconds: number;
-}
+export const lobbySettingsValidator = v.object({
+  allowBetRetraction: v.boolean(),
+  allowGuessTitleArtist: v.boolean(),
+  bettingWindowSeconds: v.number(),
+  maxYear: v.number(),
+  minYear: v.number(),
+  showLiveBets: v.boolean(),
+  startingCoins: v.number(),
+  targetTimelineSize: v.number(),
+  turnSeconds: v.number(),
+});
+
+export type LobbySettings = Infer<typeof lobbySettingsValidator>;
 
 export const DEFAULT_SETTINGS: Readonly<LobbySettings> = {
   allowBetRetraction: true,
