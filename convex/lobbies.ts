@@ -4,7 +4,7 @@ import { ConvexError, v } from "convex/values";
 import type { Doc } from "./_generated/dataModel";
 import { query } from "./_generated/server";
 import type { MutationCtx } from "./_generated/server";
-import { DEFAULT_SETTINGS, generateLobbyCode } from "./lib/lobby_settings";
+import { DEFAULT_SETTINGS, generateLobbyCode, lobbySettingsValidator } from "./lib/lobby_settings";
 import { mutationWithSession } from "./lib/sessions";
 
 const normalizeLobbyCode = (code: string) => code.trim().toUpperCase();
@@ -182,18 +182,6 @@ export const get = query({
 
     return lobby;
   },
-});
-
-const lobbySettingsValidator = v.object({
-  allowBetRetraction: v.boolean(),
-  allowGuessTitleArtist: v.boolean(),
-  bettingWindowSeconds: v.number(),
-  maxYear: v.number(),
-  minYear: v.number(),
-  showLiveBets: v.boolean(),
-  startingCoins: v.number(),
-  targetTimelineSize: v.number(),
-  turnSeconds: v.number(),
 });
 
 const validateTargetTimelineSize = (value?: number) => {

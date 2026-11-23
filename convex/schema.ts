@@ -1,6 +1,8 @@
 import { defineSchema, defineTable } from "convex/server";
 import { v } from "convex/values";
 
+import { lobbySettingsValidator } from "./lib/lobby_settings";
+
 // Lobby status enum values
 const lobbyStatus = v.union(v.literal("lobby"), v.literal("in_game"), v.literal("finished"));
 
@@ -12,19 +14,6 @@ const roundPhase = v.union(v.literal("placing"), v.literal("betting"), v.literal
 
 // Bet status enum values
 const betStatus = v.union(v.literal("pending"), v.literal("won"), v.literal("lost"));
-
-// Lobby settings object
-const lobbySettings = v.object({
-  allowBetRetraction: v.boolean(),
-  allowGuessTitleArtist: v.boolean(),
-  bettingWindowSeconds: v.number(),
-  maxYear: v.number(),
-  minYear: v.number(),
-  showLiveBets: v.boolean(),
-  startingCoins: v.number(),
-  targetTimelineSize: v.number(),
-  turnSeconds: v.number(),
-});
 
 // Timeline entry for player's timeline (embedded array)
 const timelineEntry = v.object({
@@ -91,7 +80,7 @@ export default defineSchema({
     code: v.string(),
     hostSessionId: v.string(),
     hostTransferDeadline: v.optional(v.number()),
-    settings: lobbySettings,
+    settings: lobbySettingsValidator,
     status: lobbyStatus,
   }).index("by_code", ["code"]),
 
