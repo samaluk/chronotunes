@@ -177,7 +177,6 @@ const applyDeclinedBets = async (ctx: MutationCtx, declinedBets: Doc<"roundBets"
   await Promise.all(declinedBets.map((bet) => ctx.db.patch(bet._id, { status: "lost" })));
 };
 
-// fallow-ignore-next-line code-duplication -- Convex handler scaffolding is idiomatic; these near-clone spans pair unrelated handlers.
 const persistTimelineUpdates = async (
   ctx: MutationCtx,
   timelineUpdates: Map<Id<"players">, { newTimeline: TimelineEntry[]; newTimelineSize: number }>,
@@ -382,7 +381,7 @@ export const skipTurn = mutationWithSession({
       return { gameEnded: true, noTracksAvailable: true, winnerPlayerId: null };
     }
 
-    // fallow-ignore-next-line code-duplication -- resolveAndNext's result shape is unique to this handler; the matched span is scaffolding only.
+    // fallow-ignore-next-line code-duplication -- skipTurn and resolveAndNext share the successful next-round response; their lifecycle guards and terminal-result contracts differ, so keep response assembly local.
     return {
       gameEnded: false,
       nextRoundId: result.nextRoundId,
@@ -575,7 +574,6 @@ const toGameSummary = (game: Doc<"games">) => ({
   winnerPlayerId: game.winnerPlayerId,
 });
 
-// fallow-ignore-next-line code-duplication -- getResults is a read-model query; its handler preamble mirrors mutations by Convex convention, not shared logic.
 export const getResults = query({
   args: { lobbyId: v.id("lobbies") },
   handler: async (ctx, args) => {
