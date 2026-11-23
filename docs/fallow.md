@@ -4,7 +4,7 @@ ChronoTunes uses blocking Fallow audits and full-repository checks with an expli
 
 ## Version and execution model
 
-- The `fallow` and `fallow-type-aware` dev dependencies are explicitly pinned to `3.44.0` in the manifest and lockfile, alongside Fallow's eight platform packages and bundled MCP server. The official Action is pinned to the matching `v3.44.0` release commit `2d55db7a9f0e3501c8be43f64400c47be365e668`. Renovate groups both npm packages and the Action so they update together.
+- The `fallow` and `fallow-type-aware` dev dependencies are explicitly pinned to `3.46.0` in the manifest and lockfile, alongside Fallow's eight platform packages and bundled MCP server. The official Action is pinned to the matching `v3.46.0` release commit `965f068ca91c11d6ab2a631101bcd3709569c422`. Renovate groups both npm packages and the Action so they update together.
 - pnpm's strict one-day minimum release-age and trust policies remain enabled without Fallow exceptions.
 - Keep `fallow` and `fallow-type-aware` pinned to exactly the same version: their wire protocol is version-coupled. Upgrade both packages and the matching Action together, then verify `pnpm fallow:status` before running the gates.
 - The reusable CI workflow keeps the lockfile-controlled `pnpm fallow:ci` full gate authoritative and uploads one fresh coverage report. The normal failing `ci / Fallow feedback` job consumes that artifact on `ubuntu-latest` for the official Action's pull-request summary, Check Run, and inline review feedback. Missing coverage fails the job instead of silently skipping analysis. The Action posts feedback even when its analysis gate fails; neither the job nor its steps use `continue-on-error`, and `fail-on-issues` retains its default `true` behavior.
@@ -14,6 +14,20 @@ ChronoTunes uses blocking Fallow audits and full-repository checks with an expli
 - `.fallow/` is ignored local tool state, not a committed baseline.
 
 Official references: [agent skills](https://fallow.tools/docs/integrations/agent-skills/), [Git hooks](https://fallow.tools/docs/cli/hooks/), [GitHub Action](https://fallow.tools/docs/integrations/ci-github/), and [duplication](https://fallow.tools/docs/analysis/duplication/).
+
+### 3.46.0 adoption
+
+Both npm packages and the official Action move together to 3.46.0. The companion
+reports protocol 9, and both shared pointer skills are refreshed to 3.46.0.
+Unfiltered semantic/near reports on the same source tree at 3.44.0 and 3.46.0
+retain all 31 reviewed fingerprints and occurrence counts: 791 duplicated lines
+(6.23%) before allowances, with zero unreviewed groups after allowances. No
+clone-list, threshold, or rule changes are needed.
+
+The new public-package, entry-export, CSS-health, and security surfaces remain
+opt-in and are not enabled by the repository's configuration or gate commands.
+Both CI checkouts already fetch full history, so the shallow-history audit
+warning requires no workflow change.
 
 ### 3.44.0 adoption
 
