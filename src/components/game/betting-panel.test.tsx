@@ -73,8 +73,8 @@ const renderKeyboardPanel = (overrides: Partial<ComponentProps<typeof BettingPan
           revealedTracks={[]}
           track={mockTrack}
           turnPlayerId={null}
-          turnPlayerTimeline={[1990, 2000].map((year) => ({
-            earnedAtRoundNumber: 1,
+          turnPlayerTimeline={[1990, 2000].map((year, roundIndex) => ({
+            earnedAtRoundNumber: roundIndex + 1,
             earnedBy: "initial",
             trackId: mockTrack._id,
             year,
