@@ -23,7 +23,7 @@
     "fix": "oxlint --fix . && oxfmt .",
     "fallow": "fallow",
     "fallow:staged": "fallow audit --staged --quiet",
-    "fallow:audit": "fallow audit --gate all --type-aware --coverage coverage/coverage-final.json --coverage-root \"$PWD\" --dupes-mode semantic --dupes-near --dupes-ignore-imports",
+    "fallow:audit": "fallow audit --gate all --type-aware --coverage coverage/coverage-final.json --coverage-root \"$PWD\"",
     "fallow:full": "pnpm fallow:audit && pnpm fallow:dead-code && pnpm fallow:dupes && pnpm fallow:health",
     "fallow:config": "fallow config",
     "fallow:recommend": "fallow recommend",

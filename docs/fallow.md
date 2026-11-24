@@ -20,7 +20,7 @@ ChronoTunes uses blocking Fallow audits and full-repository checks with an expli
 
 ## Version and execution model
 
-- The `fallow` and `fallow-type-aware` dev dependencies are explicitly pinned to `3.46.0` in the manifest and lockfile, alongside Fallow's eight platform packages and bundled MCP server. The official Action is pinned to the matching `v3.46.0` release commit `965f068ca91c11d6ab2a631101bcd3709569c422`. Renovate groups both npm packages and the Action so they update together.
+- The `fallow` and `fallow-type-aware` dev dependencies are explicitly pinned to `3.47.0` in the manifest and lockfile, alongside Fallow's eight platform packages and bundled MCP server. The official Action is pinned to the matching `v3.47.0` release commit `3631c7d79610266cfbef7524dec1cc0b3fbdaccf`. Renovate groups both npm packages and the Action so they update together.
 - pnpm's strict one-day minimum release-age and trust policies remain enabled without Fallow exceptions.
 - Keep `fallow` and `fallow-type-aware` pinned to exactly the same version: their wire protocol is version-coupled. Upgrade both packages and the matching Action together, then verify `pnpm fallow:status` before running the gates.
 - The reusable CI workflow keeps the lockfile-controlled `pnpm fallow:ci` full gate authoritative and uploads one fresh coverage report. The normal failing `ci / Fallow feedback` job consumes that artifact on `ubuntu-latest` for the official Action's pull-request summary, Check Run, and inline review feedback. Missing coverage fails the job instead of silently skipping analysis. The Action posts feedback even when its analysis gate fails; neither the job nor its steps use `continue-on-error`, and `fail-on-issues` retains its default `true` behavior.
@@ -30,6 +30,18 @@ ChronoTunes uses blocking Fallow audits and full-repository checks with an expli
 - `.fallow/` is ignored local tool state, not a committed baseline.
 
 Official references: [agent skills](https://fallow.tools/docs/integrations/agent-skills/), [Git hooks](https://fallow.tools/docs/cli/hooks/), [GitHub Action](https://fallow.tools/docs/integrations/ci-github/), and [duplication](https://fallow.tools/docs/analysis/duplication/).
+
+### 3.47.0 adoption
+
+`fallow audit` now rejects the global `--dupes-mode`, `--dupes-near`, and
+`--dupes-ignore-imports` flags. The audit uses the existing `duplicates` settings
+in `.fallowrc.json`, which already select semantic mode, near clones, and ignored
+imports. The standalone duplication command and gate settings are unchanged.
+
+The companion reports protocol 9, and both shared pointer skills match 3.47.0.
+Unfiltered reports from 3.46.0 and 3.47.0 on the same source tree retain all 16
+reviewed fingerprints and occurrence counts, with 471 duplicated lines (3.77%)
+before allowances and zero unreviewed groups after allowances.
 
 ### 3.46.0 adoption
 
@@ -209,7 +221,7 @@ Dispositions for the advisory surfaces named in #313's exit criterion 5:
 - Coverage gaps: the CRAP gate forces coverage wherever untested complexity breaches the health thresholds (the game hot paths decomposed in this stack all carry render suites); remaining uncovered files are UI shells, generated bindings, and config entry points where behavior is pinned by type-aware analysis. Coverage-gap findings stay `off` in rules because the CRAP gate is the enforcement surface.
 - Duplication dispositions: one genuine repeated range-normalization block was refactored; the remaining 25 stable groups are individually fingerprinted below because extraction would reduce clarity or discard intentional fixture/design-token structure. A changed clone body or occurrence count is intentionally unreviewed and blocks until reclassified.
 
-### Current reviewed-clone list (3.46.0)
+### Current reviewed-clone list (3.47.0)
 
 `duplicates.ignoredClones` is Fallow's official reviewed-clone list, not a baseline.
 The table below is the authoritative ledger: exactly the 16 count-locked keys
