@@ -9,10 +9,10 @@ import { PlayersBar } from "./players-bar";
 // oxlint-disable-next-line typescript/consistent-type-assertions, typescript/no-unsafe-type-assertion
 const mockLobbyId = "lobby123" as GenericId<"lobbies">;
 
-// oxlint-disable-next-line landmines-testing/no-test-doubles -- TODO(landmines): remove grandfathered violation.
+// oxlint-disable-next-line landmines/no-test-doubles -- TODO(landmines): remove grandfathered violation.
 const playersQueryMock = vi.fn<() => unknown>(() => undefined);
 
-// oxlint-disable-next-line landmines-testing/no-test-doubles -- TODO(landmines): remove grandfathered violation.
+// oxlint-disable-next-line landmines/no-test-doubles -- TODO(landmines): remove grandfathered violation.
 vi.mock(import("convex/react"), () => ({
   useQuery: () => playersQueryMock(),
 }));
@@ -30,7 +30,7 @@ const createRosterPlayer = (overrides: Record<string, unknown>) => ({
   ...overrides,
 });
 
-// oxlint-disable-next-line landmines-testing/no-test-doubles -- TODO(landmines): remove grandfathered violation.
+// oxlint-disable-next-line landmines/no-test-doubles -- TODO(landmines): remove grandfathered violation.
 vi.mock(import("convex-helpers/react/sessions"), () => ({
   useSessionId: () => ["session-1"],
   useSessionMutation: () => vi.fn<() => void>(),
@@ -43,7 +43,7 @@ afterEach(() => {
 
 describe("PlayersBar", () => {
   it("renders a skeleton while the roster loads", () => {
-    // oxlint-disable-next-line landmines-testing/no-test-doubles -- TODO(landmines): remove grandfathered violation.
+    // oxlint-disable-next-line landmines/no-test-doubles -- TODO(landmines): remove grandfathered violation.
     playersQueryMock.mockReturnValue(undefined);
     const { container } = render(<PlayersBar lobbyId={mockLobbyId} />);
 
@@ -51,7 +51,7 @@ describe("PlayersBar", () => {
   });
 
   it("renders the roster once players load", () => {
-    // oxlint-disable-next-line landmines-testing/no-test-doubles -- TODO(landmines): remove grandfathered violation.
+    // oxlint-disable-next-line landmines/no-test-doubles -- TODO(landmines): remove grandfathered violation.
     playersQueryMock.mockReturnValue([
       createRosterPlayer({ displayName: "Host", isHost: true, sessionId: "session-1" }),
       createRosterPlayer({

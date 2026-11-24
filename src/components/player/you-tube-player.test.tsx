@@ -6,7 +6,7 @@ import { expect, test, vi } from "vitest";
 
 import messages from "../../../messages/en.json";
 
-// oxlint-disable-next-line landmines-testing/no-test-doubles -- TODO(landmines): remove grandfathered violation.
+// oxlint-disable-next-line landmines/no-test-doubles -- TODO(landmines): remove grandfathered violation.
 vi.mock(import("react-player"), () => ({
   default: () => createElement("span", { "data-testid": "mock-react-player" }),
 }));

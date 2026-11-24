@@ -250,7 +250,7 @@ describe("importSpotifyPlaylist internal action", () => {
     const t = convexTest(schema, modules);
 
     const originalFetch = globalThis.fetch;
-    // oxlint-disable-next-line landmines-testing/no-test-doubles -- TODO(landmines): remove grandfathered violation.
+    // oxlint-disable-next-line landmines/no-test-doubles -- TODO(landmines): remove grandfathered violation.
     globalThis.fetch = async (input: RequestInfo | URL) => {
       const urlStr =
         typeof input === "string" ? input : input instanceof URL ? input.href : input.url;
@@ -296,7 +296,7 @@ describe("importSpotifyPlaylist internal action", () => {
       expect(report.dryRun).toBe(true);
       expect(report.importedCount).toBe(0);
     } finally {
-      // oxlint-disable-next-line landmines-testing/no-test-doubles -- TODO(landmines): remove grandfathered violation.
+      // oxlint-disable-next-line landmines/no-test-doubles -- TODO(landmines): remove grandfathered violation.
       globalThis.fetch = originalFetch;
     }
   });
@@ -305,7 +305,7 @@ describe("importSpotifyPlaylist internal action", () => {
     const t = convexTest(schema, modules);
 
     const originalFetch = globalThis.fetch;
-    // oxlint-disable-next-line landmines-testing/no-test-doubles -- TODO(landmines): remove grandfathered violation.
+    // oxlint-disable-next-line landmines/no-test-doubles -- TODO(landmines): remove grandfathered violation.
     globalThis.fetch = async (input: RequestInfo | URL) => {
       const urlStr =
         typeof input === "string" ? input : input instanceof URL ? input.href : input.url;
@@ -363,7 +363,7 @@ describe("importSpotifyPlaylist internal action", () => {
       expect(tracks[0]?.title).toBe("Thriller");
       expect(tracks[0]?.externalIds.youtubeVideoId).toBe("yt-thriller-123");
     } finally {
-      // oxlint-disable-next-line landmines-testing/no-test-doubles -- TODO(landmines): remove grandfathered violation.
+      // oxlint-disable-next-line landmines/no-test-doubles -- TODO(landmines): remove grandfathered violation.
       globalThis.fetch = originalFetch;
     }
   });

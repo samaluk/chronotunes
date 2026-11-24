@@ -96,20 +96,21 @@ Before adding a new test, ask:
 
 ## Landmines testing guardrails
 
-Oxlint enables all five testing rules from `@interfere/landmines/testing` as
-errors, plus `landmines-structure/test-file-names`. The style and types plugins
-are not registered. Existing tests retain their behavior.
+Oxlint registers the unified `@interfere/landmines` plugin and explicitly enables
+the six `landmines/` rules listed below as errors. No Landmines preset is enabled.
+Playwright runs without retries locally and in CI, so a passing rerun cannot
+hide a failure.
 
-The adoption backlog is **128 violations across 26 files**:
+The original adoption backlog was **128 violations across 26 files**:
 
-| Rule                 | Violations | Files |
-| -------------------- | ---------: | ----: |
-| `no-test-doubles`    |        128 |    26 |
-| `strict-msw`         |          0 |     0 |
-| `no-fixed-sleep`     |          0 |     0 |
-| `no-unsignaled-poll` |          0 |     0 |
-| `no-flake-masking`   |          0 |     0 |
-| `test-file-names`    |          0 |     0 |
+| Rule                           | Violations | Files |
+| ------------------------------ | ---------: | ----: |
+| `landmines/no-test-doubles`    |        128 |    26 |
+| `landmines/strict-msw`         |          0 |     0 |
+| `landmines/no-fixed-sleep`     |          0 |     0 |
+| `landmines/no-unsignaled-poll` |          0 |     0 |
+| `landmines/no-flake-masking`   |          0 |     0 |
+| `landmines/test-file-names`    |          0 |     0 |
 
 Follow-up work is tracked in [#688](https://github.com/samaluk/chronotunes/issues/688).
 

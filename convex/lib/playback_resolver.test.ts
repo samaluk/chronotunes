@@ -138,7 +138,7 @@ describe("createYouTubeApiPlaybackResolver", () => {
   });
 
   test("fetches video ID using YouTube Data API", async () => {
-    // oxlint-disable-next-line landmines-testing/no-test-doubles -- TODO(landmines): remove grandfathered violation.
+    // oxlint-disable-next-line landmines/no-test-doubles -- TODO(landmines): remove grandfathered violation.
     const mockFetch: typeof fetch = vi.fn<typeof fetch>(
       async () =>
         new Response(
@@ -160,7 +160,7 @@ describe("createYouTubeApiPlaybackResolver", () => {
   });
 
   test("throws on failed HTTP response", async () => {
-    // oxlint-disable-next-line landmines-testing/no-test-doubles -- TODO(landmines): remove grandfathered violation.
+    // oxlint-disable-next-line landmines/no-test-doubles -- TODO(landmines): remove grandfathered violation.
     const mockFetch: typeof fetch = vi.fn<typeof fetch>(
       async () => new Response("Forbidden", { status: 403 }),
     );
@@ -173,7 +173,7 @@ describe("createYouTubeApiPlaybackResolver", () => {
   });
 
   test("throws clear error on 429 rate limit response", async () => {
-    // oxlint-disable-next-line landmines-testing/no-test-doubles -- TODO(landmines): remove grandfathered violation.
+    // oxlint-disable-next-line landmines/no-test-doubles -- TODO(landmines): remove grandfathered violation.
     const mockFetch: typeof fetch = vi.fn<typeof fetch>(
       async () => new Response("Rate limit", { status: 429 }),
     );
@@ -186,7 +186,7 @@ describe("createYouTubeApiPlaybackResolver", () => {
   });
 
   test("throws clear error on quota exhaustion", async () => {
-    // oxlint-disable-next-line landmines-testing/no-test-doubles -- TODO(landmines): remove grandfathered violation.
+    // oxlint-disable-next-line landmines/no-test-doubles -- TODO(landmines): remove grandfathered violation.
     const mockFetch: typeof fetch = vi.fn<typeof fetch>(
       async () =>
         new Response(JSON.stringify({ error: { errors: [{ reason: "quotaExceeded" }] } }), {

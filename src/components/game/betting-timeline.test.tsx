@@ -8,7 +8,7 @@ import type { Player, SlotInfo } from "./betting-types";
 /* oxlint-disable typescript/no-unsafe-call -- jest-dom matchers are typed at runtime */
 /* oxlint-disable typescript/consistent-type-assertions, typescript/no-unsafe-type-assertion */
 
-// oxlint-disable-next-line landmines-testing/no-test-doubles -- TODO(landmines): remove grandfathered violation.
+// oxlint-disable-next-line landmines/no-test-doubles -- TODO(landmines): remove grandfathered violation.
 vi.mock(import("next-intl"), () => ({
   useTranslations: () => (key: string) => `t:${key}`,
 }));

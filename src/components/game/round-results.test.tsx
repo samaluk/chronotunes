@@ -75,38 +75,38 @@ const mockRound: CurrentRound = {
   turnPlayerId: mockPlayers[0]._id,
 };
 
-// oxlint-disable-next-line landmines-testing/no-test-doubles -- TODO(landmines): remove grandfathered violation.
+// oxlint-disable-next-line landmines/no-test-doubles -- TODO(landmines): remove grandfathered violation.
 vi.mock(import("convex/react"), () => ({
-  // oxlint-disable-next-line landmines-testing/no-test-doubles -- TODO(landmines): remove grandfathered violation.
+  // oxlint-disable-next-line landmines/no-test-doubles -- TODO(landmines): remove grandfathered violation.
   useMutation: vi.fn<() => () => void>(() => vi.fn<() => void>()),
-  // oxlint-disable-next-line landmines-testing/no-test-doubles -- TODO(landmines): remove grandfathered violation.
+  // oxlint-disable-next-line landmines/no-test-doubles -- TODO(landmines): remove grandfathered violation.
   useQuery: vi.fn<() => null>(() => null),
 }));
 
-// oxlint-disable-next-line landmines-testing/no-test-doubles -- TODO(landmines): remove grandfathered violation.
+// oxlint-disable-next-line landmines/no-test-doubles -- TODO(landmines): remove grandfathered violation.
 vi.mock(import("convex-helpers/react/sessions"), () => ({
   SessionProvider: ({ children }: { children: React.ReactNode }) => children,
-  // oxlint-disable-next-line landmines-testing/no-test-doubles -- TODO(landmines): remove grandfathered violation.
+  // oxlint-disable-next-line landmines/no-test-doubles -- TODO(landmines): remove grandfathered violation.
   useSessionMutation: vi.fn<() => () => void>(() => vi.fn<() => void>()),
-  // oxlint-disable-next-line landmines-testing/no-test-doubles -- TODO(landmines): remove grandfathered violation.
+  // oxlint-disable-next-line landmines/no-test-doubles -- TODO(landmines): remove grandfathered violation.
   useSessionQuery: vi.fn<() => null>(() => null),
 }));
 
-// oxlint-disable-next-line landmines-testing/no-test-doubles -- TODO(landmines): remove grandfathered violation.
+// oxlint-disable-next-line landmines/no-test-doubles -- TODO(landmines): remove grandfathered violation.
 vi.mock(import("next-intl"), () => ({
   useTranslations: () => (key: string) => key,
 }));
 
 let useStateCallCount = 0;
 
-// oxlint-disable-next-line landmines-testing/no-test-doubles -- TODO(landmines): remove grandfathered violation.
+// oxlint-disable-next-line landmines/no-test-doubles -- TODO(landmines): remove grandfathered violation.
 vi.mock(import("react"), async () => {
   const actual = await vi.importActual<typeof import("react")>("react");
   return {
     ...actual,
-    // oxlint-disable-next-line typescript/no-unsafe-call, typescript/no-unsafe-return, landmines-testing/no-test-doubles -- TODO(landmines): remove grandfathered violation.
+    // oxlint-disable-next-line typescript/no-unsafe-call, typescript/no-unsafe-return, landmines/no-test-doubles -- TODO(landmines): remove grandfathered violation.
     useMemo: vi.fn<<T>(fn: () => T) => T>((fn) => fn()),
-    // oxlint-disable-next-line landmines-testing/no-test-doubles -- TODO(landmines): remove grandfathered violation.
+    // oxlint-disable-next-line landmines/no-test-doubles -- TODO(landmines): remove grandfathered violation.
     useState: vi.fn<<T>(initial: T | (() => T)) => [T, (val: unknown) => void]>((initial) => {
       useStateCallCount += 1;
       if (useStateCallCount === 2) {

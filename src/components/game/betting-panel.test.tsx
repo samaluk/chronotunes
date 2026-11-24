@@ -14,24 +14,24 @@ const transport = vi.hoisted<{
   calls: { name: string; args: unknown }[];
 }>(() => ({ bets: [], calls: [] }));
 
-// oxlint-disable-next-line landmines-testing/no-test-doubles -- TODO(landmines): remove grandfathered violation.
+// oxlint-disable-next-line landmines/no-test-doubles -- TODO(landmines): remove grandfathered violation.
 vi.mock(import("convex/react"), () => ({
-  // oxlint-disable-next-line landmines-testing/no-test-doubles -- TODO(landmines): remove grandfathered violation.
+  // oxlint-disable-next-line landmines/no-test-doubles -- TODO(landmines): remove grandfathered violation.
   useMutation: vi.fn<() => () => void>(() => vi.fn<() => void>()),
-  // oxlint-disable-next-line landmines-testing/no-test-doubles -- TODO(landmines): remove grandfathered violation.
+  // oxlint-disable-next-line landmines/no-test-doubles -- TODO(landmines): remove grandfathered violation.
   useQuery: vi.fn<() => RoundBet[]>(() => transport.bets),
 }));
 
-// oxlint-disable-next-line landmines-testing/no-test-doubles -- TODO(landmines): remove grandfathered violation.
+// oxlint-disable-next-line landmines/no-test-doubles -- TODO(landmines): remove grandfathered violation.
 vi.mock(import("convex-helpers/react/sessions"), () => ({
   SessionProvider: ({ children }: { children: React.ReactNode }) => children,
-  // oxlint-disable-next-line landmines-testing/no-test-doubles -- TODO(landmines): remove grandfathered violation.
+  // oxlint-disable-next-line landmines/no-test-doubles -- TODO(landmines): remove grandfathered violation.
   useSessionMutation: vi.fn<
     (reference: Parameters<typeof getFunctionName>[0]) => (args: unknown) => Promise<void>
   >((reference: Parameters<typeof getFunctionName>[0]) => async (args: unknown) => {
     transport.calls.push({ args, name: getFunctionName(reference) });
   }),
-  // oxlint-disable-next-line landmines-testing/no-test-doubles -- TODO(landmines): remove grandfathered violation.
+  // oxlint-disable-next-line landmines/no-test-doubles -- TODO(landmines): remove grandfathered violation.
   useSessionQuery: vi.fn<() => null>(() => null),
 }));
 

@@ -9,7 +9,7 @@ import {
 
 describe("getSpotifyClientCredentialsToken", () => {
   test("obtains access token with valid credentials", async () => {
-    // oxlint-disable-next-line landmines-testing/no-test-doubles -- TODO(landmines): remove grandfathered violation.
+    // oxlint-disable-next-line landmines/no-test-doubles -- TODO(landmines): remove grandfathered violation.
     const mockFetch: typeof fetch = vi.fn<typeof fetch>(
       async () =>
         new Response(JSON.stringify({ access_token: "mock-spotify-token", expires_in: 3600 }), {
@@ -23,7 +23,7 @@ describe("getSpotifyClientCredentialsToken", () => {
   });
 
   test("throws on authentication failure", async () => {
-    // oxlint-disable-next-line landmines-testing/no-test-doubles -- TODO(landmines): remove grandfathered violation.
+    // oxlint-disable-next-line landmines/no-test-doubles -- TODO(landmines): remove grandfathered violation.
     const mockFetch: typeof fetch = vi.fn<typeof fetch>(
       async () => new Response("Invalid client credentials", { status: 401 }),
     );
@@ -68,7 +68,7 @@ describe("fetchPlaylistFromWebApi", () => {
     };
 
     let callCount = 0;
-    // oxlint-disable-next-line landmines-testing/no-test-doubles -- TODO(landmines): remove grandfathered violation.
+    // oxlint-disable-next-line landmines/no-test-doubles -- TODO(landmines): remove grandfathered violation.
     const mockFetch: typeof fetch = vi.fn<typeof fetch>(async () => {
       callCount++;
       if (callCount === 1) {
@@ -89,7 +89,7 @@ describe("fetchPlaylistFromWebApi", () => {
   });
 
   test("throws clear message on 404", async () => {
-    // oxlint-disable-next-line landmines-testing/no-test-doubles -- TODO(landmines): remove grandfathered violation.
+    // oxlint-disable-next-line landmines/no-test-doubles -- TODO(landmines): remove grandfathered violation.
     const mockFetch: typeof fetch = vi.fn<typeof fetch>(
       async () => new Response("Not Found", { status: 404 }),
     );
@@ -102,7 +102,7 @@ describe("fetchPlaylistFromWebApi", () => {
   });
 
   test("throws clear message on 429 rate limit", async () => {
-    // oxlint-disable-next-line landmines-testing/no-test-doubles -- TODO(landmines): remove grandfathered violation.
+    // oxlint-disable-next-line landmines/no-test-doubles -- TODO(landmines): remove grandfathered violation.
     const mockFetch: typeof fetch = vi.fn<typeof fetch>(
       async () => new Response("Too Many Requests", { status: 429 }),
     );
@@ -143,7 +143,7 @@ describe("fetchPlaylistFromEmbed", () => {
 
     const html = `<html><body><script id="__NEXT_DATA__" type="application/json">${JSON.stringify(nextData)}</script></body></html>`;
 
-    // oxlint-disable-next-line landmines-testing/no-test-doubles -- TODO(landmines): remove grandfathered violation.
+    // oxlint-disable-next-line landmines/no-test-doubles -- TODO(landmines): remove grandfathered violation.
     const mockFetch: typeof fetch = vi.fn<typeof fetch>(
       async () => new Response(html, { status: 200 }),
     );
@@ -184,7 +184,7 @@ describe("fetchPlaylistFromEmbed", () => {
 
     const html = `<html>\n  <body>\n    <script id="__NEXT_DATA__" type="application/json">\n      ${JSON.stringify(nextData, null, 2)}\n    </script>\n  </body>\n</html>`;
 
-    // oxlint-disable-next-line landmines-testing/no-test-doubles -- TODO(landmines): remove grandfathered violation.
+    // oxlint-disable-next-line landmines/no-test-doubles -- TODO(landmines): remove grandfathered violation.
     const mockFetch: typeof fetch = vi.fn<typeof fetch>(
       async () => new Response(html, { status: 200 }),
     );
@@ -197,7 +197,7 @@ describe("fetchPlaylistFromEmbed", () => {
 
 describe("fetchSpotifyPlaylist", () => {
   test("uses token when provided directly", async () => {
-    // oxlint-disable-next-line landmines-testing/no-test-doubles -- TODO(landmines): remove grandfathered violation.
+    // oxlint-disable-next-line landmines/no-test-doubles -- TODO(landmines): remove grandfathered violation.
     const mockFetch: typeof fetch = vi.fn<typeof fetch>(
       async () =>
         new Response(
