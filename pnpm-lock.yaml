@@ -250,8 +250,8 @@ importers:
         specifier: 5.0.0
         version: 5.0.0
       '@interfere/landmines':
-        specifier: 0.1.1
-        version: 0.1.1(oxlint@1.94.0(oxlint-tsgolint@7.0.2008))
+        specifier: 0.2.1
+        version: 0.2.1(oxlint@1.94.0(oxlint-tsgolint@7.0.2008))
       '@next/playwright':
         specifier: 16.4.6
         version: 16.4.6(@playwright/test@1.65.1)
@@ -1241,8 +1241,8 @@ packages:
       '@types/node':
         optional: true
 
-  '@interfere/landmines@0.1.1':
-    resolution: {integrity: sha512-ClZhJIIMJaibCU11dQru3APhnHtzrfSRFbAfUhisusA/6ueURr1FRjJeu0i1n0Y0lGMwPNTqv9GNspJ23N9/hg==}
+  '@interfere/landmines@0.2.1':
+    resolution: {integrity: sha512-og4Z394nr2o7SUqIR4haAIMKAD6ffNwd5tnNAobZxAatana4oLXX7J+PkDJRiPqAXXswDyDduqrmdWhzhRH9Gw==}
     engines: {node: '>=22.18.0'}
     peerDependencies:
       oxlint: '>=1.81.0'
@@ -5565,11 +5565,12 @@ snapshots:
       '@types/node': 26.6.6
     optional: true
 
-  '@interfere/landmines@0.1.1(oxlint@1.94.0(oxlint-tsgolint@7.0.2008))':
+  '@interfere/landmines@0.2.1(oxlint@1.94.0(oxlint-tsgolint@7.0.2008))':
     dependencies:
       '@babel/parser': 8.0.4
       '@babel/types': 8.0.4
       '@oxlint/plugins': 1.81.0
+      jsonc-parser: 3.3.1
       oxc-resolver: 11.24.2
       oxlint: 1.94.0(oxlint-tsgolint@7.0.2008)
       zod: 4.6.6
