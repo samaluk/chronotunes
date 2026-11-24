@@ -7,6 +7,45 @@ import { asSessionId } from "./lib/sessions";
 import type { SessionId } from "./lib/sessions";
 import schema from "./schema";
 import { modules } from "./test.setup";
+import { factories } from "./test/factories";
+
+test("editable bets check phase, membership and lock state before slot or coin rules", async () => {
+  const backend = convexTest(schema, modules);
+  const guestSession = asSessionId("editable-guest");
+  const outsider = asSessionId("editable-outsider");
+  await factories.tracks.create(backend);
+  const lobby = await factories.lobbies.createWithGame(backend, "editable-host", 1, {
+    playerOverrides: [{ coins: 0, sessionId: guestSession }],
+  });
+  const guestId = lobby.playerIds[1];
+  assert(guestId);
+  const lockIn = (sessionId: SessionId) =>
+    backend.mutation(api.bets.lockIn, { lobbyId: lobby.id, sessionId });
+  const cancel = (sessionId: SessionId) =>
+    backend.mutation(api.bets.cancel, { lobbyId: lobby.id, sessionId });
+
+  await expect(lockIn(outsider)).rejects.toThrow("Can only lock in bets during betting phase");
+  await expect(cancel(outsider)).rejects.toThrow("Can only cancel bets during betting phase");
+  await moveRoundToBetting(backend, lobby.id);
+  await expect(lockIn(outsider)).rejects.toThrow("Player not found in this lobby");
+  await expect(cancel(outsider)).rejects.toThrow("Player not found in this lobby");
+  await expect(lockIn(guestSession)).rejects.toThrow("No bet to lock in");
+  const bet = await factories.roundBets.createLocked(backend, lobby.roundId, guestId, 0);
+  await factories.roundBets.create(backend, lobby.roundId, guestId, { proposedIndex: 1 });
+  await expect(lockIn(guestSession)).rejects.toThrow("Bet is already locked in");
+  await expect(cancel(guestSession)).rejects.toThrow("Cannot cancel a locked bet");
+
+  await backend.run(async (ctx) => ctx.db.patch(bet.id, { lockedIn: false }));
+  await expect(lockIn(guestSession)).rejects.toThrow("Cannot bet on the turn player's placement");
+  await backend.run(async (ctx) => ctx.db.patch(bet.id, { proposedIndex: 1 }));
+  await expect(lockIn(guestSession)).rejects.toThrow("Not enough coins to lock in bet");
+  expect(
+    await factories.roundBets.findByPlayerAndRound(backend, lobby.roundId, guestId),
+  ).toMatchObject({
+    id: bet.id,
+    record: { lockedIn: false },
+  });
+});
 
 async function seedTestData(t: ReturnType<typeof convexTest>) {
   await t.run(async (ctx) => {
