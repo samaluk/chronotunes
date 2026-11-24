@@ -1,10 +1,46 @@
 import type { Infer } from "convex/values";
+import type { Query } from "convex/server";
 
-import type { Id } from "../../_generated/dataModel";
+import type { DataModel, Id, TableNames } from "../../_generated/dataModel";
 import type { QueryCtx } from "../../_generated/server";
 import type schema from "../../schema";
+import type { TestContext } from "./types";
 
 export type Round = Infer<typeof schema.tables.rounds.validator>;
+
+function toFactoryResult<RecordType extends { _id: string }>(
+  record: RecordType,
+): { id: RecordType["_id"]; record: RecordType } {
+  return { id: record._id, record };
+}
+
+export async function readResult<RecordType extends { _id: string }>(
+  t: TestContext,
+  read: (ctx: QueryCtx) => Promise<RecordType | null>,
+): Promise<{ id: RecordType["_id"]; record: RecordType } | null> {
+  return await t.run(async (ctx: QueryCtx) => {
+    const record = await read(ctx);
+    return record ? toFactoryResult(record) : null;
+  });
+}
+
+export async function readFirstWhere<Table extends TableNames>(
+  t: TestContext,
+  table: Table,
+  filter: Parameters<Query<DataModel[Table]>["filter"]>[0],
+) {
+  return await readResult(t, async (ctx: QueryCtx) => ctx.db.query(table).filter(filter).first());
+}
+
+export async function readAllWhere<Table extends TableNames>(
+  t: TestContext,
+  table: Table,
+  filter: Parameters<Query<DataModel[Table]>["filter"]>[0],
+) {
+  return await t.run(async (ctx: QueryCtx) =>
+    (await ctx.db.query(table).filter(filter).collect()).map(toFactoryResult),
+  );
+}
 
 /** Returns the first seeded track, throwing when the test forgot to seed any. */
 export async function requireFirstTrackId(ctx: QueryCtx): Promise<Id<"tracks">> {

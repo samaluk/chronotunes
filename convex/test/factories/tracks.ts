@@ -1,9 +1,8 @@
 import type { Infer } from "convex/values";
 
-import type { Id } from "../../_generated/dataModel";
 import type { MutationCtx } from "../../_generated/server";
 import type schema from "../../schema";
-import type { TestContext } from "./types";
+import type { FactoryResult, TestContext } from "./types";
 import { withIndex } from "./types";
 
 export type Track = Infer<typeof schema.tables.tracks.validator>;
@@ -40,16 +39,12 @@ function buildTrackData(overrides: TrackOverrides, index: number): Track {
 export async function create(
   t: TestContext,
   overrides: TrackOverrides = {},
-): Promise<{ id: Id<"tracks">; record: Track }> {
+): Promise<FactoryResult<"tracks">> {
   const data = buildTrackData(overrides, 1);
-  let trackId: Id<"tracks"> | null = null;
-
-  await t.run(async (ctx: MutationCtx) => {
-    trackId = await ctx.db.insert("tracks", data);
+  return await t.run(async (ctx: MutationCtx) => {
+    const trackId = await ctx.db.insert("tracks", data);
+    return { id: trackId, record: data };
   });
-
-  // oxlint-disable-next-line typescript/no-non-null-assertion
-  return { id: trackId!, record: data };
 }
 
 export async function createMany(
@@ -57,7 +52,7 @@ export async function createMany(
   count: number,
   overrides: TrackOverrides = {},
   options: { startIndex?: number } = {},
-): Promise<{ id: Id<"tracks">; record: Track }[]> {
+): Promise<FactoryResult<"tracks">[]> {
   const startIndex = options.startIndex ?? 1;
 
   return await Promise.all(
@@ -76,7 +71,7 @@ export function createWithYear(
   t: TestContext,
   year: number,
   overrides: TrackOverrides = {},
-): Promise<{ id: Id<"tracks">; record: Track }> {
+): Promise<FactoryResult<"tracks">> {
   return create(t, { ...overrides, year });
 }
 
@@ -85,7 +80,7 @@ export function createForTimeline(
   year: number,
   title: string,
   artist: string,
-): Promise<{ id: Id<"tracks">; record: Track }> {
+): Promise<FactoryResult<"tracks">> {
   return create(t, {
     artist,
     externalIds: {

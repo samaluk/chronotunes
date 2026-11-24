@@ -3,7 +3,8 @@ import type { Infer } from "convex/values";
 import type { Id } from "../../_generated/dataModel";
 import type { MutationCtx, QueryCtx } from "../../_generated/server";
 import type schema from "../../schema";
-import type { TestContext } from "./types";
+import { readResult, readFirstWhere, readAllWhere } from "./shared";
+import type { FactoryResult, TestContext } from "./types";
 import { uuid } from "./types";
 
 export type Player = Infer<typeof schema.tables.players.validator>;
@@ -17,7 +18,7 @@ export interface PlayerOverrides {
   timelineSize?: number;
 }
 
-function buildPlayerData(
+export function buildPlayerData(
   lobbyId: Id<"lobbies">,
   overrides: PlayerOverrides,
   index: number,
@@ -39,16 +40,12 @@ export async function create(
   t: TestContext,
   lobbyId: Id<"lobbies">,
   overrides: PlayerOverrides = {},
-): Promise<{ id: Id<"players">; record: Player }> {
+): Promise<FactoryResult<"players">> {
   const data = buildPlayerData(lobbyId, overrides, 1);
-  let playerId: Id<"players"> | null = null;
-
-  await t.run(async (ctx: MutationCtx) => {
-    playerId = await ctx.db.insert("players", data);
+  return await t.run(async (ctx: MutationCtx) => {
+    const playerId = await ctx.db.insert("players", data);
+    return { id: playerId, record: data };
   });
-
-  // oxlint-disable-next-line typescript/no-non-null-assertion
-  return { id: playerId!, record: data };
 }
 
 export function createHost(
@@ -57,7 +54,7 @@ export function createHost(
   sessionId: string,
   displayName: string,
   overrides: PlayerOverrides = {},
-): Promise<{ id: Id<"players">; record: Player }> {
+): Promise<FactoryResult<"players">> {
   return create(t, lobbyId, {
     ...overrides,
     displayName,
@@ -71,7 +68,7 @@ export async function createMany(
   lobbyId: Id<"lobbies">,
   count: number,
   overrides: PlayerOverrides = {},
-): Promise<{ id: Id<"players">; record: Player }[]> {
+): Promise<FactoryResult<"players">[]> {
   return await Promise.all(
     Array.from({ length: count }, (_, i) => {
       const isHost = overrides.isHost ?? i === 0;
@@ -91,7 +88,7 @@ export function createWithTimeline(
   lobbyId: Id<"lobbies">,
   timeline: Player["timeline"],
   overrides: PlayerOverrides = {},
-): Promise<{ id: Id<"players">; record: Player }> {
+): Promise<FactoryResult<"players">> {
   return create(t, lobbyId, {
     ...overrides,
     timeline,
@@ -104,69 +101,30 @@ export function createWithCoins(
   lobbyId: Id<"lobbies">,
   coins: number,
   overrides: PlayerOverrides = {},
-): Promise<{ id: Id<"players">; record: Player }> {
+): Promise<FactoryResult<"players">> {
   return create(t, lobbyId, {
     ...overrides,
     coins,
   });
 }
 
-export async function findBySessionId(
+export function findBySessionId(
   t: TestContext,
   sessionId: string,
-): Promise<{ id: Id<"players">; record: Player } | null> {
-  let result: { id: Id<"players">; record: Player } | null = null;
-
-  await t.run(async (ctx: QueryCtx) => {
-    const player = await ctx.db
-      .query("players")
-      .filter((q) => q.eq(q.field("sessionId"), sessionId))
-      .first();
-
-    if (player) {
-      // oxlint-disable-next-line typescript/consistent-type-assertions, typescript/no-unnecessary-type-assertion
-      result = { id: player._id, record: player as Player };
-    }
-  });
-
-  return result;
+): Promise<FactoryResult<"players"> | null> {
+  return readFirstWhere(t, "players", (q) => q.eq(q.field("sessionId"), sessionId));
 }
 
-export async function findById(
+export function findById(
   t: TestContext,
   playerId: Id<"players">,
-): Promise<{ id: Id<"players">; record: Player } | null> {
-  let result: { id: Id<"players">; record: Player } | null = null;
-
-  await t.run(async (ctx: QueryCtx) => {
-    const player = await ctx.db.get(playerId);
-    if (player) {
-      // oxlint-disable-next-line typescript/consistent-type-assertions, typescript/no-unnecessary-type-assertion
-      result = { id: player._id, record: player as Player };
-    }
-  });
-
-  return result;
+): Promise<FactoryResult<"players"> | null> {
+  return readResult(t, async (ctx: QueryCtx) => ctx.db.get(playerId));
 }
 
-export async function getAllInLobby(
+export function getAllInLobby(
   t: TestContext,
   lobbyId: Id<"lobbies">,
-): Promise<{ id: Id<"players">; record: Player }[]> {
-  let results: { id: Id<"players">; record: Player }[] = [];
-
-  await t.run(async (ctx: QueryCtx) => {
-    const players = await ctx.db
-      .query("players")
-      .filter((q) => q.eq(q.field("lobbyId"), lobbyId))
-      .collect();
-
-    results = players.map((p) => ({
-      id: p._id,
-      // oxlint-disable-next-line typescript/consistent-type-assertions
-      record: p as Player,
-    }));
-  });
-
-  return results;
+): Promise<FactoryResult<"players">[]> {
+  return readAllWhere(t, "players", (q) => q.eq(q.field("lobbyId"), lobbyId));
 }

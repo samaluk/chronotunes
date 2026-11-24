@@ -1,7 +1,13 @@
 import type { Id } from "../../_generated/dataModel";
 import type { MutationCtx, QueryCtx } from "../../_generated/server";
-import type { TestContext } from "./types";
-import { buildRoundData, resolveRoundContext, type Round, type RoundOverrides } from "./shared";
+import type { FactoryResult, TestContext } from "./types";
+import {
+  buildRoundData,
+  resolveRoundContext,
+  readResult,
+  type Round,
+  type RoundOverrides,
+} from "./shared";
 
 export type { Round, RoundOverrides };
 
@@ -9,7 +15,7 @@ export async function create(
   t: TestContext,
   gameId: Id<"games">,
   overrides: RoundOverrides = {},
-): Promise<{ id: Id<"rounds">; record: Round }> {
+): Promise<FactoryResult<"rounds">> {
   const resolved = await t.run(async (ctx: QueryCtx) =>
     resolveRoundContext(ctx, gameId, overrides),
   );
@@ -71,29 +77,22 @@ export async function createInPhase(
   return { id: roundId, record: data, turnPlayerId: resolved.turnPlayerId };
 }
 
-export async function findCurrent(t: TestContext, gameId: Id<"games">) {
-  await t.run(async (ctx: QueryCtx) => {
+export function findCurrent(
+  t: TestContext,
+  gameId: Id<"games">,
+): Promise<FactoryResult<"rounds"> | null> {
+  return readResult(t, async (ctx: QueryCtx) => {
     const game = await ctx.db.get(gameId);
     if (game?.currentRoundId) {
-      const round = await ctx.db.get(game.currentRoundId);
-      if (!round) {
-        return null;
-      }
-      return { id: round._id, record: round };
+      return await ctx.db.get(game.currentRoundId);
     }
     return null;
   });
 }
 
-export async function findById(t: TestContext, roundId: Id<"rounds">) {
-  let result: { id: Id<"rounds">; record: Round } | null = null;
-
-  await t.run(async (ctx: QueryCtx) => {
-    const round = await ctx.db.get(roundId);
-    if (round) {
-      result = { id: round._id, record: round };
-    }
-  });
-
-  return result;
+export function findById(
+  t: TestContext,
+  roundId: Id<"rounds">,
+): Promise<FactoryResult<"rounds"> | null> {
+  return readResult(t, async (ctx: QueryCtx) => ctx.db.get(roundId));
 }

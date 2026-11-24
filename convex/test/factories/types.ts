@@ -1,13 +1,13 @@
 import type { convexTest } from "convex-test";
-import type { SystemTableNames } from "convex/server";
+import type { WithoutSystemFields } from "convex/server";
 
-import type { Id, TableNames } from "../../_generated/dataModel";
+import type { Doc, Id, TableNames } from "../../_generated/dataModel";
 
 export type TestContext = ReturnType<typeof convexTest>;
 
-export interface FactoryResult<T extends TableNames | SystemTableNames> {
+export interface FactoryResult<T extends TableNames> {
   id: Id<T>;
-  record: Record<string, unknown>;
+  record: WithoutSystemFields<Doc<T>>;
 }
 
 export interface CreateManyOptions {

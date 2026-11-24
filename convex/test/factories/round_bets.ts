@@ -1,9 +1,10 @@
 import type { Infer } from "convex/values";
 
 import type { Id } from "../../_generated/dataModel";
-import type { MutationCtx, QueryCtx } from "../../_generated/server";
+import type { MutationCtx } from "../../_generated/server";
 import type schema from "../../schema";
-import type { TestContext } from "./types";
+import { readFirstWhere, readAllWhere } from "./shared";
+import type { FactoryResult, TestContext } from "./types";
 
 export type RoundBet = Infer<typeof schema.tables.roundBets.validator>;
 
@@ -18,7 +19,7 @@ export async function create(
   roundId: Id<"rounds">,
   playerId: Id<"players">,
   overrides: BetOverrides = {},
-): Promise<{ id: Id<"roundBets">; record: RoundBet }> {
+): Promise<FactoryResult<"roundBets">> {
   const data: RoundBet = {
     lockedIn: overrides.lockedIn ?? false,
     placedAt: Date.now(),
@@ -28,17 +29,10 @@ export async function create(
     status: overrides.status ?? "pending",
   };
 
-  let betId: Id<"roundBets"> | null = null;
-
-  await t.run(async (ctx: MutationCtx) => {
-    betId = await ctx.db.insert("roundBets", data);
+  return await t.run(async (ctx: MutationCtx) => {
+    const betId = await ctx.db.insert("roundBets", data);
+    return { id: betId, record: data };
   });
-
-  if (!betId) {
-    throw new Error("Failed to create bet");
-  }
-
-  return { id: betId, record: data };
 }
 
 export function createLocked(
@@ -46,7 +40,7 @@ export function createLocked(
   roundId: Id<"rounds">,
   playerId: Id<"players">,
   proposedIndex: number,
-): Promise<{ id: Id<"roundBets">; record: RoundBet }> {
+): Promise<FactoryResult<"roundBets">> {
   return create(t, roundId, playerId, {
     lockedIn: true,
     proposedIndex,
@@ -61,7 +55,7 @@ export async function createMany(
     proposedIndex?: number;
     lockedIn?: boolean;
   } = {},
-): Promise<{ id: Id<"roundBets">; record: RoundBet }[]> {
+): Promise<FactoryResult<"roundBets">[]> {
   return await Promise.all(
     playerIds.map((playerId) =>
       create(t, roundId, playerId, {
@@ -72,46 +66,19 @@ export async function createMany(
   );
 }
 
-export async function findByPlayerAndRound(
+export function findByPlayerAndRound(
   t: TestContext,
   roundId: Id<"rounds">,
   playerId: Id<"players">,
-): Promise<{ id: Id<"roundBets">; record: RoundBet } | null> {
-  let result: { id: Id<"roundBets">; record: RoundBet } | null = null;
-
-  await t.run(async (ctx: QueryCtx) => {
-    const bet = await ctx.db
-      .query("roundBets")
-      .filter((q) => q.and(q.eq(q.field("roundId"), roundId), q.eq(q.field("playerId"), playerId)))
-      .first();
-
-    if (bet) {
-      // oxlint-disable-next-line typescript/consistent-type-assertions, typescript/no-unnecessary-type-assertion
-      result = { id: bet._id, record: bet as RoundBet };
-    }
-  });
-
-  return result;
+): Promise<FactoryResult<"roundBets"> | null> {
+  return readFirstWhere(t, "roundBets", (q) =>
+    q.and(q.eq(q.field("roundId"), roundId), q.eq(q.field("playerId"), playerId)),
+  );
 }
 
-export async function findAllInRound(
+export function findAllInRound(
   t: TestContext,
   roundId: Id<"rounds">,
-): Promise<{ id: Id<"roundBets">; record: RoundBet }[]> {
-  let results: { id: Id<"roundBets">; record: RoundBet }[] = [];
-
-  await t.run(async (ctx: QueryCtx) => {
-    const bets = await ctx.db
-      .query("roundBets")
-      .filter((q) => q.eq(q.field("roundId"), roundId))
-      .collect();
-
-    results = bets.map((b) => ({
-      id: b._id,
-      // oxlint-disable-next-line typescript/consistent-type-assertions
-      record: b as RoundBet,
-    }));
-  });
-
-  return results;
+): Promise<FactoryResult<"roundBets">[]> {
+  return readAllWhere(t, "roundBets", (q) => q.eq(q.field("roundId"), roundId));
 }

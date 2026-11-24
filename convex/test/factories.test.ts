@@ -5,6 +5,129 @@ import schema from "../schema";
 import { modules } from "../test.setup";
 import { factories } from "./factories";
 
+test("factory reads return stored records and null for missing records", async () => {
+  const t = convexTest(schema, modules);
+  await factories.tracks.create(t);
+  const lobby = await factories.lobbies.createWithGame(t, "lookup-host", 1);
+  const playerId = lobby.playerIds[1];
+  if (!playerId) {
+    throw new Error("Expected a guest player");
+  }
+  const bet = await factories.roundBets.create(t, lobby.roundId, playerId);
+
+  expect(await factories.lobbies.findByCode(t, String(lobby.record.code))).toMatchObject({
+    id: lobby.id,
+  });
+  expect(await factories.lobbies.findById(t, lobby.id)).toMatchObject({
+    record: { activeGameId: lobby.gameId, status: "in_game" },
+  });
+  const player = await factories.players.findById(t, playerId);
+  expect(player).toMatchObject({ id: playerId, record: { lobbyId: lobby.id } });
+  expect(await factories.players.findBySessionId(t, "player-1-session")).toStrictEqual(player);
+  expect(await factories.players.getAllInLobby(t, lobby.id)).toHaveLength(2);
+  expect(await factories.games.findCurrent(t, lobby.id)).toMatchObject({ id: lobby.gameId });
+  expect(await factories.games.findById(t, lobby.gameId)).toMatchObject({
+    record: { currentRoundId: lobby.roundId },
+  });
+  expect(await factories.rounds.findCurrent(t, lobby.gameId)).toMatchObject({ id: lobby.roundId });
+  expect(await factories.rounds.findById(t, lobby.roundId)).toMatchObject({ id: lobby.roundId });
+  expect(await factories.roundBets.findByPlayerAndRound(t, lobby.roundId, playerId)).toMatchObject(
+    bet,
+  );
+  expect(await factories.roundBets.findAllInRound(t, lobby.roundId)).toMatchObject([bet]);
+
+  await t.run(async (ctx) => {
+    await ctx.db.delete(lobby.gameId);
+    await ctx.db.delete(lobby.roundId);
+    await ctx.db.delete(playerId);
+    await ctx.db.delete(lobby.id);
+    await ctx.db.delete(bet.id);
+  });
+  expect(await factories.lobbies.findById(t, lobby.id)).toBeNull();
+  expect(await factories.lobbies.findByCode(t, String(lobby.record.code))).toBeNull();
+  expect(await factories.players.findById(t, playerId)).toBeNull();
+  expect(await factories.players.findBySessionId(t, "player-1-session")).toBeNull();
+  expect(await factories.games.findCurrent(t, lobby.id)).toBeNull();
+  expect(await factories.games.findById(t, lobby.gameId)).toBeNull();
+  expect(await factories.rounds.findCurrent(t, lobby.gameId)).toBeNull();
+  expect(await factories.rounds.findById(t, lobby.roundId)).toBeNull();
+  expect(await factories.roundBets.findByPlayerAndRound(t, lobby.roundId, playerId)).toBeNull();
+  expect(await factories.roundBets.findAllInRound(t, lobby.roundId)).toStrictEqual([]);
+});
+
+test("lobby player builders preserve host defaults and guest overrides", async () => {
+  const t = convexTest(schema, modules);
+  const track = await factories.tracks.create(t);
+  const timeline = [
+    { earnedAtRoundNumber: 1, earnedBy: "bet" as const, trackId: track.id, year: 1985 },
+  ];
+  const lobby = await factories.lobbies.createWithPlayers(t, "builder-host", 2, {
+    hostDisplayName: "Builder Host",
+    settings: { startingCoins: 7 },
+    playerOverrides: [
+      { sessionId: "guest", displayName: "Guest", coins: 0, timeline, timelineSize: 4 },
+    ],
+  });
+  const players = await factories.players.getAllInLobby(t, lobby.id);
+  expect(players.map((player) => player.id)).toStrictEqual(lobby.playerIds);
+  expect(players.map((player) => player.record)).toMatchObject([
+    {
+      sessionId: "builder-host",
+      displayName: "Builder Host",
+      coins: 7,
+      isHost: true,
+      timeline: [],
+      timelineSize: 0,
+    },
+    {
+      sessionId: "guest",
+      displayName: "Guest",
+      coins: 0,
+      isHost: false,
+      timeline,
+      timelineSize: 4,
+    },
+    {
+      sessionId: "player-2-session",
+      displayName: "Player 2",
+      coins: 7,
+      isHost: false,
+      timeline: [],
+      timelineSize: 0,
+    },
+  ]);
+});
+
+test("factory first-result reads tolerate multiple matches and retain insertion order", async () => {
+  const t = convexTest(schema, modules);
+  const lobby = await factories.lobbies.create(t, "duplicate-session", "First");
+  await factories.players.create(t, lobby.id, { sessionId: "duplicate-session" });
+  expect(await factories.players.findBySessionId(t, "duplicate-session")).toMatchObject({
+    id: lobby.hostPlayerId,
+  });
+  expect(
+    (await factories.players.getAllInLobby(t, lobby.id)).map((player) => player.record.sessionId),
+  ).toStrictEqual(["duplicate-session", "duplicate-session"]);
+  expect(await factories.games.findCurrent(t, lobby.id)).toBeNull();
+  await factories.tracks.create(t);
+  const game = await factories.games.create(t, lobby.id, [lobby.hostPlayerId]);
+  expect(await factories.rounds.findCurrent(t, game.id)).toBeNull();
+  const round = await factories.rounds.create(t, game.id);
+  const firstBet = await factories.roundBets.create(t, round.id, lobby.hostPlayerId);
+  await factories.roundBets.create(t, round.id, lobby.hostPlayerId, { proposedIndex: 1 });
+  expect(
+    await factories.roundBets.findByPlayerAndRound(t, round.id, lobby.hostPlayerId),
+  ).toMatchObject(firstBet);
+  expect(await factories.roundBets.findAllInRound(t, round.id)).toHaveLength(2);
+  await t.run(async (ctx) => {
+    await ctx.db.patch(game.id, { currentRoundId: round.id });
+    await ctx.db.delete(round.id);
+  });
+  expect(await factories.rounds.findCurrent(t, game.id)).toBeNull();
+  await t.run(async (ctx) => ctx.db.delete(game.id));
+  expect(await factories.games.findCurrent(t, lobby.id)).toBeNull();
+});
+
 test("tracks.create creates a track with defaults", async () => {
   const t = convexTest(schema, modules);
 
