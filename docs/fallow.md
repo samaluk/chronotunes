@@ -5,11 +5,16 @@
 The typed fixture refactor removes all ten factory clone allowances from the
 current reviewed ledger. Small typed read-result adapters preserve first/collect
 cardinality, and lobby/player builders preserve explicit scenario transactions.
-No replacement factory allowances or suppressions are needed. The remaining
-twenty allowances retain the reasons recorded below: eleven theme/UI vocabulary
-groups, five distinct lifecycle/read-model groups, and four membership/editable-bet
-groups scheduled for a separate approved refactor. Historical inventories below
-describe their original snapshots, not the current configuration.
+No replacement factory allowances or suppressions are needed.
+
+## Membership and editable-bet guards
+
+The guard refactor removes three lobby membership clone allowances and one
+editable-bet allowance. Lobby mutations share an optional first-match lookup;
+betting still requires unique membership. Lock-in and cancellation share the
+phase, membership, and editable-bet checks, but keep their own errors and writes.
+The sixteen retained allowances cover eleven theme/UI vocabulary groups and
+five distinct lifecycle/read-model groups, with reasons in the ledger below.
 
 ChronoTunes uses blocking Fallow audits and full-repository checks with an explicit reviewed-clone list. Every gate — pre-commit, pre-push, and pull-request CI — fails on enforced findings; there is no baseline. The migration from the adoption-era `new-only` gate was tracked in [#313](https://github.com/samaluk/chronotunes/issues/313). Generic validation is PR-first; default-branch workflows are reserved for genuinely post-merge behavior. Phase 1 aligns tooling and enforcement only; clone extraction and dead-code cleanup are separate work.
 
@@ -207,10 +212,9 @@ Dispositions for the advisory surfaces named in #313's exit criterion 5:
 ### Current reviewed-clone list (3.46.0)
 
 `duplicates.ignoredClones` is Fallow's official reviewed-clone list, not a baseline.
-The table below is the authoritative ledger: exactly the 30 count-locked keys
+The table below is the authoritative ledger: exactly the 16 count-locked keys
 in `.fallowrc.json`. An unfiltered semantic/near run of the pinned CLI confirms
-every key and occurrence count; this alignment requires no rotations, additions,
-or pruning. Historical tables below preserve earlier review provenance, not active
+every key and occurrence count. Historical tables below preserve earlier review provenance, not active
 allowances. The settings-validator consolidation retired `dup:569d2cc6:2` by
 sharing one backend validator between schema and API. Changed content or
 occurrence counts must be reviewed again; do not
@@ -224,16 +228,12 @@ regenerate this list merely to make a gate pass.
 | `dup:0ac88ddf:2` | `src/app/globals.css:55-74`, `src/app/globals.css:93-112`                                                                                                                                                      | Distinct design tokens intentionally repeat theme declaration and mapping structure.            |
 | `dup:d9ff721b:2` | `src/app/globals.css:56-82`, `src/app/globals.css:94-107`                                                                                                                                                      | Distinct design tokens intentionally repeat theme declaration and mapping structure.            |
 | `dup:037cfe24:3` | `src/components/ui/skeletons.tsx:113-124`, `src/components/ui/skeletons.tsx:143-160`, `src/components/ui/skeletons.tsx:162-182`                                                                                | Distinct loading-state compositions intentionally repeat skeleton structure.                    |
-| `dup:0a132f27:2` | `convex/bets.ts:122-145`, `convex/bets.ts:159-182`                                                                                                                                                             | Distinct backend operations retain their own lifecycle guards, validation, and database writes. |
 | `dup:74ee6e0c:2` | `src/components/ui/card.tsx:23-55`, `src/components/ui/card.tsx:59-88`                                                                                                                                         | UI primitives retain distinct slot and forwarding wrappers.                                     |
 | `dup:e19c3ce8:2` | `src/components/ui/dialog.tsx:97-129`, `src/components/ui/progress.tsx:41-66`                                                                                                                                  | UI primitives retain distinct slot and forwarding wrappers.                                     |
 | `dup:550f178f:2` | `src/components/ui/card.tsx:17-45`, `src/components/ui/card.tsx:53-75`                                                                                                                                         | UI primitives retain distinct slot and forwarding wrappers.                                     |
 | `dup:407c8433:2` | `convex/rounds.ts:94-106`, `convex/rounds.ts:162-175`                                                                                                                                                          | Distinct backend operations retain their own lifecycle guards, validation, and database writes. |
 | `dup:7dc45697:2` | `src/components/ui/dialog.tsx:97-120`, `src/components/ui/progress.tsx:19-42`                                                                                                                                  | UI primitives retain distinct slot and forwarding wrappers.                                     |
 | `dup:f90e8df4:2` | `src/components/ui/skeletons.tsx:137-151`, `src/components/ui/skeletons.tsx:156-170`                                                                                                                           | Distinct loading-state compositions intentionally repeat skeleton structure.                    |
-| `dup:8cb5faaf:3` | `convex/lobbies.ts:142-151`, `convex/lobbies.ts:302-311`, `convex/lobbies.ts:313-322`                                                                                                                          | Distinct backend operations retain their own lifecycle guards, validation, and database writes. |
-| `dup:871cad5f:2` | `convex/lobbies.ts:142-153`, `convex/lobbies.ts:313-324`                                                                                                                                                       | Distinct backend operations retain their own lifecycle guards, validation, and database writes. |
-| `dup:e613a573:2` | `convex/lobbies.ts:102-113`, `convex/lobbies.ts:298-320`                                                                                                                                                       | Distinct backend operations retain their own lifecycle guards, validation, and database writes. |
 | `dup:3f3c0fc5:2` | `convex/games.ts:262-270`, `convex/games.ts:322-330`                                                                                                                                                           | Distinct backend operations retain their own lifecycle guards, validation, and database writes. |
 | `dup:1592b763:2` | `convex/rounds.ts:13-29`, `convex/tracks.ts:73-89`                                                                                                                                                             | Distinct backend operations retain their own lifecycle guards, validation, and database writes. |
 | `dup:685b72e7:2` | `convex/rounds.ts:70-81`, `convex/rounds.ts:170-181`                                                                                                                                                           | Distinct backend operations retain their own lifecycle guards, validation, and database writes. |

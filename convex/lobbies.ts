@@ -1,7 +1,7 @@
 import { vSessionId } from "convex-helpers/server/sessions";
 import { ConvexError, v } from "convex/values";
 
-import type { Doc } from "./_generated/dataModel";
+import type { Doc, Id } from "./_generated/dataModel";
 import { query } from "./_generated/server";
 import type { MutationCtx } from "./_generated/server";
 import { DEFAULT_SETTINGS, generateLobbyCode, lobbySettingsValidator } from "./lib/lobby_settings";
@@ -86,6 +86,12 @@ export const create = mutationWithSession({
   },
 });
 
+const findLobbyParticipant = (ctx: MutationCtx, lobbyId: Id<"lobbies">, sessionId: string) =>
+  ctx.db
+    .query("players")
+    .withIndex("by_lobby_and_session", (q) => q.eq("lobbyId", lobbyId).eq("sessionId", sessionId))
+    .first();
+
 export const join = mutationWithSession({
   args: {
     code: v.string(),
@@ -103,12 +109,7 @@ export const join = mutationWithSession({
       throw new ConvexError("Cannot join lobby that is not in lobby status");
     }
 
-    const existingPlayer = await ctx.db
-      .query("players")
-      .filter((q) =>
-        q.and(q.eq(q.field("lobbyId"), lobby._id), q.eq(q.field("sessionId"), sessionId)),
-      )
-      .first();
+    const existingPlayer = await findLobbyParticipant(ctx, lobby._id, sessionId);
 
     if (existingPlayer) {
       throw new ConvexError("You are already in this lobby");
@@ -139,12 +140,7 @@ export const leave = mutationWithSession({
 
     const lobby = await getLobbyByCode(ctx, code);
 
-    const player = await ctx.db
-      .query("players")
-      .filter((q) =>
-        q.and(q.eq(q.field("lobbyId"), lobby._id), q.eq(q.field("sessionId"), sessionId)),
-      )
-      .first();
+    const player = await findLobbyParticipant(ctx, lobby._id, sessionId);
 
     if (!player) {
       throw new ConvexError("You are not in this lobby");
@@ -287,23 +283,13 @@ export const transferHost = mutationWithSession({
       throw new ConvexError("Cannot transfer host to yourself");
     }
 
-    const currentHostPlayer = await ctx.db
-      .query("players")
-      .filter((q) =>
-        q.and(q.eq(q.field("lobbyId"), lobby._id), q.eq(q.field("sessionId"), sessionId)),
-      )
-      .first();
+    const currentHostPlayer = await findLobbyParticipant(ctx, lobby._id, sessionId);
 
     if (!currentHostPlayer) {
       throw new ConvexError("You are not in this lobby");
     }
 
-    const newHostPlayer = await ctx.db
-      .query("players")
-      .filter((q) =>
-        q.and(q.eq(q.field("lobbyId"), lobby._id), q.eq(q.field("sessionId"), newHostSessionId)),
-      )
-      .first();
+    const newHostPlayer = await findLobbyParticipant(ctx, lobby._id, newHostSessionId);
 
     if (!newHostPlayer) {
       throw new ConvexError("New host player is not in this lobby");

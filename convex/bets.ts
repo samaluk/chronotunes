@@ -123,34 +123,48 @@ export const preview = mutationWithSession({
   },
 });
 
+const requireEditableBet = async (
+  ctx: MutationCtx,
+  lobbyId: Id<"lobbies">,
+  sessionId: string,
+  errors: { phase: string; missing: string; locked: string },
+) => {
+  const { round } = await getGameContext(ctx, lobbyId);
+  const bettingRound = requireBettingRound(round, errors.phase);
+  const player = await getPlayerBySession(ctx, lobbyId, sessionId);
+  const bet = await getBetForPlayer(ctx, bettingRound._id, player._id);
+
+  if (!bet) {
+    throw new ConvexError(errors.missing);
+  }
+  if (bet.lockedIn) {
+    throw new ConvexError(errors.locked);
+  }
+
+  return { bet, player, bettingRound };
+};
+
 export const lockIn = mutationWithSession({
   args: { lobbyId: v.id("lobbies") },
   handler: async (ctx, args) => {
-    const { lobbyId } = args;
-    const { sessionId } = ctx;
+    const { bet, bettingRound, player } = await requireEditableBet(
+      ctx,
+      args.lobbyId,
+      ctx.sessionId,
+      {
+        phase: "Can only lock in bets during betting phase",
+        missing: "No bet to lock in",
+        locked: "Bet is already locked in",
+      },
+    );
 
-    const { round } = await getGameContext(ctx, lobbyId);
-    const bettingRound = requireBettingRound(round, "Can only lock in bets during betting phase");
-
-    const player = await getPlayerBySession(ctx, lobbyId, sessionId);
-
-    const existingBet = await getBetForPlayer(ctx, bettingRound._id, player._id);
-
-    if (!existingBet) {
-      throw new ConvexError("No bet to lock in");
-    }
-
-    if (existingBet.lockedIn) {
-      throw new ConvexError("Bet is already locked in");
-    }
-
-    assertNotTurnPlacement(bettingRound, existingBet.proposedIndex);
+    assertNotTurnPlacement(bettingRound, bet.proposedIndex);
 
     if (player.coins < 1) {
       throw new ConvexError("Not enough coins to lock in bet");
     }
 
-    await ctx.db.patch(existingBet._id, {
+    await ctx.db.patch(bet._id, {
       lockedIn: true,
     });
 
@@ -163,25 +177,13 @@ export const lockIn = mutationWithSession({
 export const cancel = mutationWithSession({
   args: { lobbyId: v.id("lobbies") },
   handler: async (ctx, args) => {
-    const { lobbyId } = args;
-    const { sessionId } = ctx;
+    const { bet } = await requireEditableBet(ctx, args.lobbyId, ctx.sessionId, {
+      phase: "Can only cancel bets during betting phase",
+      missing: "No bet to cancel",
+      locked: "Cannot cancel a locked bet",
+    });
 
-    const { round } = await getGameContext(ctx, lobbyId);
-    const bettingRound = requireBettingRound(round, "Can only cancel bets during betting phase");
-
-    const player = await getPlayerBySession(ctx, lobbyId, sessionId);
-
-    const existingBet = await getBetForPlayer(ctx, bettingRound._id, player._id);
-
-    if (!existingBet) {
-      throw new ConvexError("No bet to cancel");
-    }
-
-    if (existingBet.lockedIn) {
-      throw new ConvexError("Cannot cancel a locked bet");
-    }
-
-    await ctx.db.delete(existingBet._id);
+    await ctx.db.delete(bet._id);
   },
 });
 

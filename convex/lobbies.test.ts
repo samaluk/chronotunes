@@ -8,8 +8,76 @@ import { DEFAULT_SETTINGS } from "./lib/lobby_settings";
 import { asSessionId } from "./lib/sessions";
 import schema from "./schema";
 import { modules } from "./test.setup";
+import { factories } from "./test/factories";
 
 const LOBBY_CODE_REGEX = /^[A-Z23456789]+$/;
+
+test("host transfer picks the first matching participant and moves host authority", async () => {
+  const backend = convexTest(schema, modules);
+  const sessionId = asSessionId("transfer-host");
+  const newHostSessionId = asSessionId("transfer-guest");
+  await factories.lobbies.create(backend, newHostSessionId, "Other Lobby Host");
+  const lobby = await factories.lobbies.create(backend, sessionId, "Host");
+  const guest = await factories.players.create(backend, lobby.id, {
+    sessionId: newHostSessionId,
+  });
+  const duplicate = await factories.players.create(backend, lobby.id, {
+    sessionId: newHostSessionId,
+  });
+  const { code } = lobby.record;
+
+  await backend.mutation(api.lobbies.transferHost, { code, newHostSessionId, sessionId });
+  expect(await backend.query(api.lobbies.get, { code })).toMatchObject({
+    hostSessionId: newHostSessionId,
+  });
+  const players = await backend.query(api.players.list, { lobbyId: lobby.id });
+  expect(players).toMatchObject([
+    { _id: lobby.hostPlayerId, isHost: false },
+    { _id: guest.id, isHost: true },
+    { _id: duplicate.id, isHost: false },
+  ]);
+  await expect(
+    backend.mutation(api.lobbies.updateSettings, {
+      code,
+      sessionId,
+      settings: { startingCoins: 4 },
+    }),
+  ).rejects.toThrow("Only the host can update settings");
+  await backend.mutation(api.lobbies.updateSettings, {
+    code,
+    sessionId: newHostSessionId,
+    settings: { startingCoins: 4 },
+  });
+  expect(await backend.query(api.lobbies.get, { code })).toMatchObject({
+    settings: { startingCoins: 4 },
+  });
+});
+
+test("host transfer checks authorization and self-transfer before participant membership", async () => {
+  const backend = convexTest(schema, modules);
+  const hostSession = asSessionId("transfer-owner");
+  const outsider = asSessionId("transfer-outsider");
+  await factories.lobbies.create(backend, outsider, "Other Lobby Host");
+  const lobby = await factories.lobbies.create(backend, hostSession, "Host");
+  const { code } = lobby.record;
+  const transfer = (sessionId: typeof hostSession, newHostSessionId: typeof hostSession) =>
+    backend.mutation(api.lobbies.transferHost, { code, newHostSessionId, sessionId });
+
+  await expect(transfer(outsider, outsider)).rejects.toThrow(
+    "Only the host can transfer host privileges",
+  );
+  await expect(transfer(hostSession, outsider)).rejects.toThrow(
+    "New host player is not in this lobby",
+  );
+  await backend.run(async (ctx) => ctx.db.delete(lobby.hostPlayerId));
+  await expect(transfer(hostSession, hostSession)).rejects.toThrow(
+    "Cannot transfer host to yourself",
+  );
+  await expect(transfer(hostSession, outsider)).rejects.toThrow("You are not in this lobby");
+  expect(await backend.query(api.lobbies.get, { code })).toMatchObject({
+    hostSessionId: hostSession,
+  });
+});
 
 describe("lobbies", () => {
   test("settings updates preserve defaults, accept false flags, and merge partial changes", async () => {
