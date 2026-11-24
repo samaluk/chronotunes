@@ -18,7 +18,7 @@ let currentConnectionState: ConnectionState = {
   timeOfOldestInflightRequest: null,
 };
 
-// oxlint-disable-next-line landmines-testing/no-test-doubles -- TODO(landmines): remove grandfathered violation.
+// oxlint-disable-next-line landmines/no-test-doubles -- TODO(landmines): remove grandfathered violation.
 vi.mock(import("convex/react"), () => ({
   useConvexConnectionState: () => currentConnectionState,
 }));

@@ -3,13 +3,13 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { LandingPageContent } from "./landing-page-content";
 
-// oxlint-disable-next-line landmines-testing/no-test-doubles -- TODO(landmines): remove grandfathered violation.
+// oxlint-disable-next-line landmines/no-test-doubles -- TODO(landmines): remove grandfathered violation.
 vi.mock(import("convex/react"), () => ({
-  // oxlint-disable-next-line landmines-testing/no-test-doubles -- TODO(landmines): remove grandfathered violation.
+  // oxlint-disable-next-line landmines/no-test-doubles -- TODO(landmines): remove grandfathered violation.
   useMutation: vi.fn<() => () => void>(() => vi.fn<() => void>()),
 }));
 
-// oxlint-disable-next-line landmines-testing/no-test-doubles -- TODO(landmines): remove grandfathered violation.
+// oxlint-disable-next-line landmines/no-test-doubles -- TODO(landmines): remove grandfathered violation.
 vi.mock(import("@/i18n/routing"), () => ({
   useRouter: () => ({
     push: vi.fn<(url: string) => void>(),
@@ -17,27 +17,27 @@ vi.mock(import("@/i18n/routing"), () => ({
   }),
 }));
 
-// oxlint-disable-next-line landmines-testing/no-test-doubles -- TODO(landmines): remove grandfathered violation.
+// oxlint-disable-next-line landmines/no-test-doubles -- TODO(landmines): remove grandfathered violation.
 const sessionIdMock = vi.fn<() => string[]>(() => ["session-123"]);
 
-// oxlint-disable-next-line landmines-testing/no-test-doubles -- TODO(landmines): remove grandfathered violation.
+// oxlint-disable-next-line landmines/no-test-doubles -- TODO(landmines): remove grandfathered violation.
 vi.mock(import("convex-helpers/react/sessions"), () => ({
   useSessionId: () => sessionIdMock(),
 }));
 
-// oxlint-disable-next-line landmines-testing/no-test-doubles -- TODO(landmines): remove grandfathered violation.
+// oxlint-disable-next-line landmines/no-test-doubles -- TODO(landmines): remove grandfathered violation.
 vi.mock(import("next-intl"), () => ({
   useLocale: () => "en",
   useTranslations: () => (key: string, params?: Record<string, unknown>) =>
     params === undefined ? `t:${key}` : `t:${key}:${JSON.stringify(params)}`,
 }));
 
-// oxlint-disable-next-line landmines-testing/no-test-doubles -- TODO(landmines): remove grandfathered violation.
+// oxlint-disable-next-line landmines/no-test-doubles -- TODO(landmines): remove grandfathered violation.
 vi.mock(import("@/components/ui/locale-switcher"), () => ({
   LocaleSwitcher: () => <div data-testid="locale-switcher" />,
 }));
 
-// oxlint-disable-next-line landmines-testing/no-test-doubles -- TODO(landmines): remove grandfathered violation.
+// oxlint-disable-next-line landmines/no-test-doubles -- TODO(landmines): remove grandfathered violation.
 vi.mock(import("@/components/ui/theme-toggle"), () => ({
   ThemeToggle: () => <div data-testid="theme-toggle" />,
 }));

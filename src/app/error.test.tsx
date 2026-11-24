@@ -3,7 +3,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 import ErrorPage from "./error";
 
-// oxlint-disable-next-line landmines-testing/no-test-doubles -- TODO(landmines): remove grandfathered violation.
+// oxlint-disable-next-line landmines/no-test-doubles -- TODO(landmines): remove grandfathered violation.
 vi.mock(import("next-intl"), () => ({
   useTranslations: () => (key: string) => `translated:${key}`,
 }));

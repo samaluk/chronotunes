@@ -7,25 +7,25 @@ import type { Player } from "./betting-types";
 
 /* oxlint-disable typescript/no-unsafe-call -- jest-dom matchers are typed at runtime */
 
-// oxlint-disable-next-line landmines-testing/no-test-doubles -- TODO(landmines): remove grandfathered violation.
+// oxlint-disable-next-line landmines/no-test-doubles -- TODO(landmines): remove grandfathered violation.
 vi.mock(import("next-intl"), () => ({
   useTranslations: () => (key: string, params?: Record<string, unknown>) =>
     params === undefined ? `t:${key}` : `t:${key}:${JSON.stringify(params)}`,
 }));
 
-// oxlint-disable-next-line landmines-testing/no-test-doubles -- TODO(landmines): remove grandfathered violation.
+// oxlint-disable-next-line landmines/no-test-doubles -- TODO(landmines): remove grandfathered violation.
 vi.mock(import("convex/react"), () => ({
-  // oxlint-disable-next-line landmines-testing/no-test-doubles -- TODO(landmines): remove grandfathered violation.
+  // oxlint-disable-next-line landmines/no-test-doubles -- TODO(landmines): remove grandfathered violation.
   useQuery: vi.fn<() => null>(() => null),
 }));
 
-// oxlint-disable-next-line landmines-testing/no-test-doubles -- TODO(landmines): remove grandfathered violation.
+// oxlint-disable-next-line landmines/no-test-doubles -- TODO(landmines): remove grandfathered violation.
 vi.mock(import("convex-helpers/react/sessions"), () => ({
   useSessionMutation: () => vi.fn<() => void>(),
   useSessionQuery: () => null,
 }));
 
-// oxlint-disable-next-line landmines-testing/no-test-doubles -- TODO(landmines): remove grandfathered violation.
+// oxlint-disable-next-line landmines/no-test-doubles -- TODO(landmines): remove grandfathered violation.
 vi.mock(import("usehooks-ts"), () => ({
   useIsMounted: () => () => true,
 }));

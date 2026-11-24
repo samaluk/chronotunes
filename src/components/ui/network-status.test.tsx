@@ -14,17 +14,17 @@ const makeStatus = () => ({
   status: currentStatus,
 });
 
-// oxlint-disable-next-line landmines-testing/no-test-doubles -- TODO(landmines): remove grandfathered violation.
+// oxlint-disable-next-line landmines/no-test-doubles -- TODO(landmines): remove grandfathered violation.
 vi.mock(import("@/lib/hooks/use-convex-status"), () => ({
   useConvexStatus: () => makeStatus(),
 }));
 
-// oxlint-disable-next-line landmines-testing/no-test-doubles -- TODO(landmines): remove grandfathered violation.
+// oxlint-disable-next-line landmines/no-test-doubles -- TODO(landmines): remove grandfathered violation.
 vi.mock(import("next/offline"), () => ({
   useOffline: () => currentOffline,
 }));
 
-// oxlint-disable-next-line landmines-testing/no-test-doubles -- TODO(landmines): remove grandfathered violation.
+// oxlint-disable-next-line landmines/no-test-doubles -- TODO(landmines): remove grandfathered violation.
 vi.mock(import("next-intl"), () => ({
   useTranslations: () => (key: string) => `network:${key}`,
 }));
