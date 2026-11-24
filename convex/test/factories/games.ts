@@ -9,7 +9,8 @@ import {
   type Round,
   type RoundOverrides,
 } from "./rounds";
-import type { TestContext } from "./types";
+import type { FactoryResult, TestContext } from "./types";
+import { readResult } from "./shared";
 
 export type Game = Infer<typeof schema.tables.games.validator>;
 export type { Round, RoundOverrides };
@@ -26,7 +27,7 @@ export async function create(
   lobbyId: Id<"lobbies">,
   turnOrder: Id<"players">[],
   overrides: GameOverrides = {},
-): Promise<{ id: Id<"games">; record: Game }> {
+): Promise<FactoryResult<"games">> {
   // oxlint-disable-next-line typescript/no-non-null-assertion, typescript/no-unnecessary-type-assertion
   const turnPlayerId = overrides.turnPlayerId ?? turnOrder[0]!;
 
@@ -39,18 +40,11 @@ export async function create(
     turnPlayerId,
   };
 
-  let gameId: Id<"games"> | null = null;
-
-  await t.run(async (ctx: MutationCtx) => {
-    gameId = await ctx.db.insert("games", data);
+  return await t.run(async (ctx: MutationCtx) => {
+    const gameId = await ctx.db.insert("games", data);
     await ctx.db.patch(lobbyId, { activeGameId: gameId, status: "in_game" });
+    return { id: gameId, record: data };
   });
-
-  if (!gameId) {
-    throw new Error("Failed to create game");
-  }
-
-  return { id: gameId, record: data };
 }
 
 export async function createWithRound(
@@ -99,19 +93,17 @@ export async function createInPhase(
   roundId: Id<"rounds">;
   playerIds: Id<"players">[];
 }> {
-  let { playerIds } = options;
-
-  if (!playerIds) {
-    await t.run(async (ctx: QueryCtx) => {
+  const playerIds =
+    options.playerIds ??
+    (await t.run(async (ctx: QueryCtx) => {
       const players = await ctx.db
         .query("players")
         .filter((q) => q.eq(q.field("lobbyId"), lobbyId))
         .collect();
-      playerIds = players.map((player) => player._id);
-    });
-  }
+      return players.map((player) => player._id);
+    }));
 
-  if (!playerIds || playerIds.length === 0) {
+  if (playerIds.length === 0) {
     throw new Error("No players found in lobby");
   }
 
@@ -127,39 +119,22 @@ export async function createInPhase(
   return { id: game.id, playerIds, record: game.record, roundId: round.id };
 }
 
-export async function findCurrent(
+export function findCurrent(
   t: TestContext,
   lobbyId: Id<"lobbies">,
-): Promise<{ id: Id<"games">; record: Game } | null> {
-  let result: { id: Id<"games">; record: Game } | null = null;
-
-  await t.run(async (ctx: QueryCtx) => {
+): Promise<FactoryResult<"games"> | null> {
+  return readResult(t, async (ctx: QueryCtx) => {
     const lobby = await ctx.db.get(lobbyId);
-    if (lobby?.activeGameId) {
-      const game = await ctx.db.get(lobby.activeGameId);
-      if (game) {
-        // oxlint-disable-next-line typescript/consistent-type-assertions, typescript/no-unnecessary-type-assertion
-        result = { id: game._id, record: game as Game };
-      }
+    if (!lobby?.activeGameId) {
+      return null;
     }
+    return await ctx.db.get(lobby.activeGameId);
   });
-
-  return result;
 }
 
-export async function findById(
+export function findById(
   t: TestContext,
   gameId: Id<"games">,
-): Promise<{ id: Id<"games">; record: Game } | null> {
-  let result: { id: Id<"games">; record: Game } | null = null;
-
-  await t.run(async (ctx: QueryCtx) => {
-    const game = await ctx.db.get(gameId);
-    if (game) {
-      // oxlint-disable-next-line typescript/consistent-type-assertions, typescript/no-unnecessary-type-assertion
-      result = { id: game._id, record: game as Game };
-    }
-  });
-
-  return result;
+): Promise<FactoryResult<"games"> | null> {
+  return readResult(t, async (ctx: QueryCtx) => ctx.db.get(gameId));
 }
