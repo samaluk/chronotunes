@@ -189,8 +189,8 @@ importers:
         specifier: 1.9.0
         version: 1.9.0(@date-fns/tz@1.4.1)(@types/react@19.3.0)(date-fns@4.2.1)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       '@convex-dev/presence':
-        specifier: 0.4.0
-        version: 0.4.0(convex@1.51.0(react@19.3.1))(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
+        specifier: 0.4.1
+        version: 0.4.1(convex@1.51.0(react@19.3.1))(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       class-variance-authority:
         specifier: 0.7.1
         version: 0.7.1
@@ -533,8 +533,8 @@ packages:
       convex: ^1.36.1
       react: ^18.3.1 || ^19.0.0
 
-  '@convex-dev/presence@0.4.0':
-    resolution: {integrity: sha512-T1f2aHyS2D2dxvMnvY+qSJBIRG0W7ph8+mgOvZif52JLlLNscCHTangAgNWR4VLYGhXFFDxwSSpdh7vxzA/hPQ==}
+  '@convex-dev/presence@0.4.1':
+    resolution: {integrity: sha512-BXcDnMMFM0+8AZ0H8Tkdvu1/oOOaPcmE3HCgd2naPpTgPllqZRZA6fUdYjHII4/z1rzxtCsq4XN78eyPJyTxoQ==}
     peerDependencies:
       convex: ^1.36.1
       expo-crypto: '>=14.1.0'
@@ -5082,7 +5082,7 @@ snapshots:
       convex: 1.51.0(react@19.3.1)
       react: 19.3.1
 
-  '@convex-dev/presence@0.4.0(convex@1.51.0(react@19.3.1))(react-dom@19.3.1(react@19.3.1))(react@19.3.1)':
+  '@convex-dev/presence@0.4.1(convex@1.51.0(react@19.3.1))(react-dom@19.3.1(react@19.3.1))(react@19.3.1)':
     dependencies:
       '@convex-dev/batch-worker': 0.2.0(convex@1.51.0(react@19.3.1))(react@19.3.1)
       convex: 1.51.0(react@19.3.1)
