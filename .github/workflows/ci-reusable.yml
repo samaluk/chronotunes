@@ -107,7 +107,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Fallow (native PR feedback)
-        uses: fallow-rs/fallow@3631c7d79610266cfbef7524dec1cc0b3fbdaccf # v3.47.0
+        uses: fallow-rs/fallow@003cc8af2be876b8b8d48cfe2b6b44a36ec95402 # v3.48.0
         with:
           command: audit
           gate: all
