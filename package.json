@@ -77,7 +77,7 @@
     "@types/react-dom": "19.3.0",
     "@vitest/coverage-v8": "5.1.1",
     "@vitest/ui": "5.1.1",
-    "convex-test": "0.0.73",
+    "convex-test": "0.0.75",
     "fallow": "3.47.0",
     "fallow-type-aware": "3.47.0",
     "jsdom": "31.0.1",
