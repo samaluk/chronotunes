@@ -83,7 +83,7 @@
     "jsdom": "31.0.1",
     "oxfmt": "0.80.0",
     "oxlint": "1.95.0",
-    "oxlint-tsgolint": "7.0.2008",
+    "oxlint-tsgolint": "7.0.2009",
     "react-doctor": "0.9.23",
     "tailwindcss": "4.3.5",
     "typescript": "7.0.2",
