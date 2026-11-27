@@ -20,7 +20,7 @@ ChronoTunes uses blocking Fallow audits and full-repository checks with an expli
 
 ## Version and execution model
 
-- The `fallow` and `fallow-type-aware` dev dependencies are explicitly pinned to `3.48.0` in the manifest and lockfile, alongside Fallow's eight platform packages and bundled MCP server. The official Action is pinned to the matching `v3.48.0` release commit `003cc8af2be876b8b8d48cfe2b6b44a36ec95402`. Renovate groups both npm packages and the Action so they update together.
+- The `fallow` and `fallow-type-aware` dev dependencies are explicitly pinned to `3.49.0` in the manifest and lockfile, alongside Fallow's eight platform packages and bundled MCP server. The official Action is pinned to the matching `v3.49.0` release commit `4c2eede9e2335822a275bf1bbd2a9023286d25a4`. Renovate groups both npm packages and the Action so they update together.
 - pnpm's strict one-day minimum release-age and trust policies remain enabled without Fallow exceptions.
 - For a grouped upgrade, check the Action's one-day Renovate minimum release age from its official GitHub release publication time. pnpm checks the npm packages against their own registry publication times.
 - Keep `fallow` and `fallow-type-aware` pinned to exactly the same version: their wire protocol is version-coupled. Upgrade both packages and the matching Action together, then verify `pnpm fallow:status` before running the gates.
@@ -31,6 +31,17 @@ ChronoTunes uses blocking Fallow audits and full-repository checks with an expli
 - `.fallow/` is ignored local tool state, not a committed baseline.
 
 Official references: [agent skills](https://fallow.tools/docs/integrations/agent-skills/), [Git hooks](https://fallow.tools/docs/cli/hooks/), [GitHub Action](https://fallow.tools/docs/integrations/ci-github/), and [duplication](https://fallow.tools/docs/analysis/duplication/).
+
+### 3.49.0 adoption
+
+Unfiltered semantic and near-duplicate scans of the same tree report the same
+16 clone groups in 3.48.0 and 3.49.0. The reviewed CSS group at
+`src/app/globals.css:56-82,94-107` retains both token ranges and its 117-token
+count. The [3.49.0 release notes](https://github.com/fallow-rs/fallow/releases/tag/v3.49.0)
+document a one-time key change for groups with merged occurrences. The ledger
+replaces `dup:d9ff721b:2` with `dup:4aec9a2c:2`, retaining the two-instance limit.
+With fresh coverage from 398 passing tests, `pnpm fallow:ci` reports zero
+unreviewed clone groups. A mismatched count still fails the duplication gate.
 
 ### 3.48.0 adoption
 
@@ -235,7 +246,7 @@ Dispositions for the advisory surfaces named in #313's exit criterion 5:
 - Coverage gaps: the CRAP gate forces coverage wherever untested complexity breaches the health thresholds (the game hot paths decomposed in this stack all carry render suites); remaining uncovered files are UI shells, generated bindings, and config entry points where behavior is pinned by type-aware analysis. Coverage-gap findings stay `off` in rules because the CRAP gate is the enforcement surface.
 - Duplication dispositions: one genuine repeated range-normalization block was refactored; the remaining 25 stable groups are individually fingerprinted below because extraction would reduce clarity or discard intentional fixture/design-token structure. A changed clone body or occurrence count is intentionally unreviewed and blocks until reclassified.
 
-### Current reviewed-clone list (3.48.0)
+### Current reviewed-clone list (3.49.0)
 
 `duplicates.ignoredClones` is Fallow's official reviewed-clone list, not a baseline.
 The table below is the authoritative ledger: exactly the 16 count-locked keys
@@ -252,7 +263,7 @@ regenerate this list merely to make a gate pass.
 | `dup:17900347:7` | `src/app/globals.css:56-63`, `src/app/globals.css:64-71`, `src/app/globals.css:72-79`, `src/app/globals.css:83-90`, `src/app/globals.css:94-101`, `src/app/globals.css:102-109`, `src/app/globals.css:114-121` | Distinct design tokens intentionally repeat theme declaration and mapping structure.            |
 | `dup:f9db1a25:2` | `src/app/globals.css:10-27`, `src/app/globals.css:28-45`                                                                                                                                                       | Distinct design tokens intentionally repeat theme declaration and mapping structure.            |
 | `dup:0ac88ddf:2` | `src/app/globals.css:55-74`, `src/app/globals.css:93-112`                                                                                                                                                      | Distinct design tokens intentionally repeat theme declaration and mapping structure.            |
-| `dup:d9ff721b:2` | `src/app/globals.css:56-82`, `src/app/globals.css:94-107`                                                                                                                                                      | Distinct design tokens intentionally repeat theme declaration and mapping structure.            |
+| `dup:4aec9a2c:2` | `src/app/globals.css:56-82`, `src/app/globals.css:94-107`                                                                                                                                                      | Distinct design tokens intentionally repeat theme declaration and mapping structure.            |
 | `dup:037cfe24:3` | `src/components/ui/skeletons.tsx:113-124`, `src/components/ui/skeletons.tsx:143-160`, `src/components/ui/skeletons.tsx:162-182`                                                                                | Distinct loading-state compositions intentionally repeat skeleton structure.                    |
 | `dup:74ee6e0c:2` | `src/components/ui/card.tsx:23-55`, `src/components/ui/card.tsx:59-88`                                                                                                                                         | UI primitives retain distinct slot and forwarding wrappers.                                     |
 | `dup:e19c3ce8:2` | `src/components/ui/dialog.tsx:97-129`, `src/components/ui/progress.tsx:41-66`                                                                                                                                  | UI primitives retain distinct slot and forwarding wrappers.                                     |
